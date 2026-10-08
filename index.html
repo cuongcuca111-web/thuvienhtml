@@ -366,79 +366,6 @@
             <i data-lucide="more-vertical" class="w-3.5 h-3.5 sm:hidden"></i>
             <i data-lucide="chevron-down" class="w-3 h-3 hidden sm:inline opacity-60"></i>
           </button>
-
-          <!-- Dropdown / Bottom Sheet Backdrop trên Mobile -->
-          <div id="userDropdownBackdrop" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden transition-opacity"></div>
-
-          <!-- Dropdown Menu Desktop / Bottom Sheet Mobile -->
-          <div id="userDropdown" class="hidden fixed md:absolute bottom-0 md:bottom-auto md:top-full right-0 left-0 md:left-auto mt-2 md:w-64 max-h-[85dvh] overflow-y-auto bg-white dark:bg-[#161A20] border-t md:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl md:rounded-card shadow-2xl p-4 md:p-2 z-50 text-xs">
-            
-            <!-- Handle bar cho Bottom Sheet trên mobile -->
-            <div class="w-12 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-3 md:hidden"></div>
-
-            <div class="px-2 py-2 border-b border-[#E6E6E1] dark:border-[#262C36] mb-2">
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-sm md:text-xs" id="userNameDisplay">Người dùng</span>
-                <span id="userBadgeType" class="text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">Đã đăng nhập</span>
-              </div>
-              <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate" id="userEmailDisplay">loading...</p>
-              <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
-            </div>
-
-            <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
-            <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-2">
-              <i data-lucide="link" class="w-4 h-4"></i>
-              <span>Tạo link chia sẻ 7 ngày</span>
-            </button>
-
-            <!-- Cụm chỉnh cỡ chữ thu nhỏ trong Menu cho mobile -->
-            <div class="sm:hidden flex items-center justify-between px-3 py-2 bg-[#F7F7F5] dark:bg-[#0F1115] rounded-card border border-[#E6E6E1] dark:border-[#262C36] mb-2">
-              <span class="text-[#6B6B66] dark:text-[#9AA3B2] font-medium">Cỡ chữ văn bản:</span>
-              <div class="flex items-center gap-1">
-                <button id="btnMenuFontDec" class="w-7 h-7 rounded border border-gray-300 dark:border-gray-700 font-bold flex items-center justify-center">A-</button>
-                <span id="menuFontScaleDisplay" class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] min-w-[36px] text-center">100%</span>
-                <button id="btnMenuFontInc" class="w-7 h-7 rounded border border-gray-300 dark:border-gray-700 font-bold flex items-center justify-center">A+</button>
-              </div>
-            </div>
-
-            <div id="guestUpgradeBlock" class="hidden p-2.5 mb-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-card border border-indigo-100 dark:border-indigo-900/50">
-              <p class="text-xs text-indigo-900 dark:text-indigo-200 font-medium mb-1">Đang dùng chế độ Khách</p>
-              <p class="text-[11px] text-indigo-700 dark:text-indigo-300 mb-2 leading-relaxed">Đăng ký để dữ liệu lưu vĩnh viễn và đồng bộ trên mọi thiết bị.</p>
-              <button id="btnOpenAuthFromGuest" class="w-full py-2 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] text-white font-medium text-xs text-center transition">
-                Đăng ký / Đăng nhập
-              </button>
-            </div>
-
-            <button id="btnSwitchAccount" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-              <i data-lucide="log-in" class="w-4 h-4 text-[#4F46E5] dark:text-[#818CF8]"></i>
-              <span id="btnSwitchAccountLabel">Đăng nhập tài khoản khác</span>
-            </button>
-
-            <!-- Cài đặt app PWA trên mobile -->
-            <button id="btnMenuPwaInstall" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-              <i data-lucide="download" class="w-4 h-4"></i>
-              <span>Cài app lên màn hình chính</span>
-            </button>
-
-            <div class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
-
-            <button id="btnExportData" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-              <i data-lucide="download" class="w-4 h-4"></i>
-              <span>Xuất sao lưu (.json)</span>
-            </button>
-            <label class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-              <i data-lucide="upload" class="w-4 h-4"></i>
-              <span>Nhập sao lưu (.json)</span>
-              <input type="file" id="importBackupInput" accept=".json" class="hidden" />
-            </label>
-
-            <div class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
-
-            <button id="btnLogout" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
-              <i data-lucide="log-out" class="w-4 h-4"></i>
-              <span>Đăng xuất</span>
-            </button>
-          </div>
         </div>
       </div>
     </header>
@@ -799,9 +726,88 @@
     </button>
   </div>
 
+  <!-- MODAL / BOTTOM SHEET MENU TÀI KHOẢN (FIX: Tách khỏi header để không bị backdrop-blur tạo containing block làm cắt menu trên iOS) -->
+  <div id="userDropdownBackdrop" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity"></div>
+  <div id="userDropdown" class="hidden fixed bottom-0 md:bottom-auto md:top-14 right-0 md:right-4 left-0 md:left-auto z-[65] w-full md:w-72 max-h-[85dvh] overflow-y-auto overscroll-contain bg-white dark:bg-[#161A20] border-t md:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl md:rounded-card shadow-2xl p-4 md:p-3 text-xs pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] md:pb-3" style="-webkit-overflow-scrolling: touch;">
+    <!-- Handle bar & Header cho Bottom sheet trên mobile -->
+    <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E6E6E1] dark:border-[#262C36] md:hidden">
+      <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto"></div>
+      <button id="btnCloseUserMenuMobile" class="touch-target p-1 text-[#6B6B66] dark:text-[#9AA3B2] absolute right-3 top-2.5" aria-label="Đóng menu tài khoản">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Thông tin người dùng -->
+    <div class="px-2 py-2 border-b border-[#E6E6E1] dark:border-[#262C36] mb-2">
+      <div class="flex items-center justify-between mb-0.5">
+        <span class="font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-sm md:text-xs" id="userNameDisplay">Người dùng</span>
+        <span id="userBadgeType" class="text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">Đã đăng nhập</span>
+      </div>
+      <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate" id="userEmailDisplay">loading...</p>
+      <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
+    </div>
+
+    <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
+    <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-2">
+      <i data-lucide="link" class="w-4 h-4"></i>
+      <span>Tạo link chia sẻ 7 ngày</span>
+    </button>
+
+    <!-- Cụm chỉnh cỡ chữ thu nhỏ trong Menu cho mobile -->
+    <div class="sm:hidden flex items-center justify-between px-3 py-2 bg-[#F7F7F5] dark:bg-[#0F1115] rounded-card border border-[#E6E6E1] dark:border-[#262C36] mb-2">
+      <span class="text-[#6B6B66] dark:text-[#9AA3B2] font-medium">Cỡ chữ văn bản:</span>
+      <div class="flex items-center gap-1">
+        <button id="btnMenuFontDec" class="w-7 h-7 rounded border border-gray-300 dark:border-gray-700 font-bold flex items-center justify-center">A-</button>
+        <span id="menuFontScaleDisplay" class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] min-w-[36px] text-center">100%</span>
+        <button id="btnMenuFontInc" class="w-7 h-7 rounded border border-gray-300 dark:border-gray-700 font-bold flex items-center justify-center">A+</button>
+      </div>
+    </div>
+
+    <!-- Khối nâng cấp dành riêng cho Chế độ Khách -->
+    <div id="guestUpgradeBlock" class="hidden p-3 mb-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-card border border-indigo-100 dark:border-indigo-900/50">
+      <p class="text-xs text-indigo-900 dark:text-indigo-200 font-semibold mb-1">Bạn đang dùng chế độ Khách</p>
+      <p class="text-[11px] text-indigo-700 dark:text-indigo-300 mb-2 leading-relaxed">Đăng ký để dữ liệu được lưu vĩnh viễn và đồng bộ trên mọi thiết bị.</p>
+      <button id="btnOpenAuthFromGuest" class="w-full py-2.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-xs text-center transition shadow-sm">
+        Đăng ký / Đăng nhập
+      </button>
+    </div>
+
+    <!-- Nút đổi tài khoản (chỉ hiện khi đã đăng nhập) -->
+    <button id="btnSwitchAccount" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
+      <i data-lucide="log-in" class="w-4 h-4 text-[#4F46E5] dark:text-[#818CF8]"></i>
+      <span id="btnSwitchAccountLabel">Đăng nhập tài khoản khác</span>
+    </button>
+
+    <!-- Cài đặt app PWA trên mobile -->
+    <button id="btnMenuPwaInstall" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
+      <i data-lucide="download" class="w-4 h-4"></i>
+      <span>Cài app lên màn hình chính</span>
+    </button>
+
+    <div class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
+
+    <button id="btnExportData" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
+      <i data-lucide="download" class="w-4 h-4"></i>
+      <span>Xuất sao lưu (.json)</span>
+    </button>
+    <label class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
+      <i data-lucide="upload" class="w-4 h-4"></i>
+      <span>Nhập sao lưu (.json)</span>
+      <input type="file" id="importBackupInput" accept=".json" class="hidden" />
+    </label>
+
+    <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
+
+    <!-- Nút Đăng xuất (FIX: Ẩn khi ở chế độ Khách, chỉ hiện khi đã đăng nhập) -->
+    <button id="btnLogout" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
+      <i data-lucide="log-out" class="w-4 h-4"></i>
+      <span>Đăng xuất</span>
+    </button>
+  </div>
+
   <!-- MODAL: TẠO LINK CHIA SẺ NHANH (LƯU 7 NGÀY) -->
   <div id="quickShareModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-lg max-h-[90dvh] shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-lg max-h-[85dvh] sm:max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="flex items-center justify-between pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-card bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-[#818CF8] flex items-center justify-center">
@@ -870,7 +876,7 @@
 
   <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ (BOTTOM SHEET TRÊN MOBILE) -->
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[92dvh] shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[85dvh] sm:max-h-[92dvh] overflow-y-auto overscroll-contain shadow-2xl flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="p-4 sm:p-5 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-card bg-[#4F46E5] text-white flex items-center justify-center">
@@ -1004,7 +1010,7 @@
 
   <!-- MODAL: TẢI FILE VÀO THƯ VIỆN (BOTTOM SHEET TRÊN MOBILE) -->
   <div id="uploadModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-2xl max-h-[85dvh] sm:max-h-[90dvh] overflow-y-auto overscroll-contain flex flex-col shadow-2xl pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="p-4 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="upload" class="w-5 h-5 text-[#4F46E5] dark:text-[#818CF8]"></i>
@@ -1040,7 +1046,7 @@
 
   <!-- MODAL: MỤC MỚI / ĐỔI TÊN MỤC -->
   <div id="categoryModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md shadow-2xl p-4 sm:p-5 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <h3 id="categoryModalTitle" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-3">Tạo mục bài học mới</h3>
       <input 
         id="categoryNameInput" 
@@ -1058,7 +1064,7 @@
 
   <!-- MODAL: ĐỔI TÊN BÀI HỌC -->
   <div id="renameLessonModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md shadow-2xl p-4 sm:p-5 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Đổi tên bài học</h3>
       <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mb-3">Tên này sẽ hiển thị ở danh sách bài và kết quả tìm kiếm.</p>
       
@@ -1086,7 +1092,7 @@
 
   <!-- MODAL XÁC NHẬN XÓA -->
   <div id="confirmDeleteModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-sm shadow-2xl p-5 text-center">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center" style="-webkit-overflow-scrolling: touch;">
       <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3">
         <i data-lucide="trash-2" class="w-6 h-6"></i>
       </div>
@@ -1101,7 +1107,7 @@
 
   <!-- MODAL HƯỚNG DẪN CÀI PWA CHO IOS (SAFARI) -->
   <div id="pwaIosModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-sm shadow-2xl p-5 text-center pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="w-12 h-12 rounded-[14px] bg-[#8696FB] text-white flex items-center justify-center mx-auto mb-3 shadow-md">
         <i data-lucide="book-open" class="w-6 h-6"></i>
       </div>
@@ -1384,6 +1390,9 @@
             localStorage.setItem('has_authenticated_account', 'true');
             localStorage.setItem('last_auth_user_email', user.email || '');
             localStorage.setItem('last_auth_user_name', user.displayName || user.email?.split('@')[0] || '');
+          } else {
+            // FIX: Khi là khách, nạp ngay dữ liệu LocalStorage vào trước để không bị mất khi F5
+            loadLocalState();
           }
 
           updateUserUI(user);
@@ -1465,6 +1474,9 @@
       const badgeType = document.getElementById('userBadgeType');
       const guestUpgradeBlock = document.getElementById('guestUpgradeBlock');
       const btnSwitchLabel = document.getElementById('btnSwitchAccountLabel');
+      const btnSwitchAccount = document.getElementById('btnSwitchAccount');
+      const btnLogout = document.getElementById('btnLogout');
+      const logoutDivider = document.getElementById('logoutDivider');
 
       if (isAnonymous) {
         initialEl.innerText = "K";
@@ -1477,8 +1489,11 @@
         badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300");
         
         checkShowGuestBanner();
-        guestUpgradeBlock.classList.remove('hidden');
-        btnSwitchLabel.innerText = "Đăng nhập tài khoản thật";
+        if (guestUpgradeBlock) guestUpgradeBlock.classList.remove('hidden');
+        if (btnSwitchAccount) btnSwitchAccount.classList.add('hidden');
+        // FIX: Không hiển thị nút "Đăng xuất" khi đang ở Chế độ Khách
+        if (btnLogout) btnLogout.classList.add('hidden');
+        if (logoutDivider) logoutDivider.classList.add('hidden');
       } else {
         const displayName = user.displayName || user.email?.split('@')[0] || "Thành viên";
         initialEl.innerText = (displayName[0] || "U").toUpperCase();
@@ -1491,8 +1506,14 @@
         badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300");
         
         document.getElementById('guestWarningBanner').classList.add('hidden');
-        guestUpgradeBlock.classList.add('hidden');
-        btnSwitchLabel.innerText = "Chuyển tài khoản khác";
+        if (guestUpgradeBlock) guestUpgradeBlock.classList.add('hidden');
+        if (btnSwitchAccount) {
+          btnSwitchAccount.classList.remove('hidden');
+          btnSwitchLabel.innerText = "Chuyển tài khoản khác";
+        }
+        // FIX: Hiển thị nút "Đăng xuất" khi đã đăng nhập
+        if (btnLogout) btnLogout.classList.remove('hidden');
+        if (logoutDivider) logoutDivider.classList.remove('hidden');
       }
 
       refreshIcons();
@@ -1813,7 +1834,15 @@
           loadedCats.push({ id: docSnap.id, ...docSnap.data() });
         });
         loadedCats.sort((a, b) => (a.order || 0) - (b.order || 0));
-        state.categories = loadedCats;
+        // FIX: Nếu là khách và Firestore trả về rỗng nhưng LocalStorage có dữ liệu, không ghi đè xóa mất dữ liệu
+        if (loadedCats.length > 0 || !(!state.user || state.user.isAnonymous)) {
+          state.categories = loadedCats;
+        } else if (state.categories.length === 0) {
+          try {
+            const stored = localStorage.getItem('local_cats');
+            if (stored) state.categories = JSON.parse(stored);
+          } catch (_) {}
+        }
         renderCategoriesAndLessons();
       }, (error) => {
         console.warn("Firestore Categories error:", error);
@@ -1825,7 +1854,15 @@
           loadedLessons.push({ id: docSnap.id, ...docSnap.data() });
         });
         loadedLessons.sort((a, b) => (a.order || 0) - (b.order || 0));
-        state.lessons = loadedLessons;
+        // FIX: Nếu là khách và Firestore trả về rỗng nhưng LocalStorage có dữ liệu, không ghi đè xóa mất dữ liệu
+        if (loadedLessons.length > 0 || !(!state.user || state.user.isAnonymous)) {
+          state.lessons = loadedLessons;
+        } else if (state.lessons.length === 0) {
+          try {
+            const stored = localStorage.getItem('local_lessons');
+            if (stored) state.lessons = JSON.parse(stored);
+          } catch (_) {}
+        }
 
         if (!state.isSharedMode) {
           if (!state.activeLessonId && state.lessons.length > 0) {
@@ -1847,7 +1884,11 @@
         statsSummary.innerText = `${state.categories.length} mục • ${state.lessons.length} bài`;
       }
 
-      if (state.categories.length === 0) {
+      // FIX: Tách các bài chưa có mục hoặc mục không khớp trong state.categories
+      const uncategorizedLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+
+      // FIX: Chỉ hiện empty state khi cả danh mục và bài học chưa phân loại đều rỗng
+      if (state.categories.length === 0 && uncategorizedLessons.length === 0) {
         container.innerHTML = `
           <div class="text-center py-8 px-4 text-[#6B6B66] dark:text-[#9AA3B2]">
             <i data-lucide="folder" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
@@ -1960,6 +2001,85 @@
           </div>
         `;
       });
+
+      // FIX: Hiển thị nhóm "Chưa phân loại" nếu có bài học chưa thuộc mục nào
+      if (uncategorizedLessons.length > 0) {
+        let filteredUncat = uncategorizedLessons;
+        if (state.activeFilter === 'favorites') {
+          filteredUncat = uncategorizedLessons.filter(l => l.isFavorite);
+        } else if (state.activeFilter === 'unread') {
+          filteredUncat = uncategorizedLessons.filter(l => !l.isCompleted);
+        }
+
+        const completedUncat = uncategorizedLessons.filter(l => l.isCompleted).length;
+        const totalUncat = uncategorizedLessons.length;
+        const isUncatExpanded = state.categoryExpanded['__uncategorized__'] !== false;
+
+        html += `
+          <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat">
+            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="__uncategorized__">
+              <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
+                <i data-lucide="${isUncatExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"></i>
+                <span class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] leading-tight break-words">
+                  Chưa phân loại
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-[10px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] px-1.5 py-0.5 rounded border border-[#E6E6E1] dark:border-[#262C36]">
+                  ${completedUncat}/${totalUncat}
+                </span>
+              </div>
+            </div>
+
+            ${isUncatExpanded ? `
+              <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
+                ${filteredUncat.length === 0 ? `
+                  <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Không có bài học phù hợp bộ lọc.</p>
+                ` : filteredUncat.map(lesson => {
+                  const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
+                  return `
+                    <div 
+                      class="group/item flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
+                        isActive 
+                          ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
+                          : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
+                      }"
+                      data-select-lesson="${lesson.id}"
+                    >
+                      <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
+                        ${lesson.isCompleted 
+                          ? '<i data-lucide="check-circle-2" class="w-4 h-4 text-[#16A34A]"></i>' 
+                          : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block"></span>'
+                        }
+                      </button>
+
+                      <div class="flex-1 min-w-0 pt-0.5">
+                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-3">
+                          ${lesson.title}
+                        </p>
+                      </div>
+
+                      <div class="flex items-center gap-1 shrink-0">
+                        ${lesson.isFavorite ? '<i data-lucide="star" class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]"></i>' : ''}
+                        
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
+                          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
+                          <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-delete-lesson="${lesson.id}" title="Xóa bài">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
 
       container.innerHTML = html;
       refreshIcons();
@@ -2084,7 +2204,13 @@
       if (state.isSharedMode) {
         currentLesson = state.sharedLessonData;
       } else {
+        // FIX: Nếu activeLessonId chưa được set hoặc không tìm thấy bài nhưng state.lessons có bài, tự động chọn bài đầu tiên
         currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
+        if (!currentLesson && state.lessons.length > 0) {
+          currentLesson = state.lessons[0];
+          state.activeLessonId = currentLesson.id;
+          state.activeCategoryId = currentLesson.categoryId;
+        }
       }
 
       if (!currentLesson) {
@@ -2156,8 +2282,17 @@
         btnBottomPrev.disabled = true;
         btnBottomNext.disabled = true;
       } else {
-        const catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
-        const currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
+        // FIX: Hỗ trợ tính số thứ tự bài học chuẩn xác ngay cả khi bài chưa có danh mục
+        let catLessons = [];
+        if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
+          catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+        } else {
+          catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+        }
+        if (catLessons.length === 0) catLessons = state.lessons;
+
+        let currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
+        if (currentIndex === -1) currentIndex = 0;
         const totalInCat = catLessons.length;
 
         indexBadge.innerText = `${currentIndex + 1} / ${totalInCat}`;
@@ -2400,7 +2535,15 @@
       if (state.isSharedMode) return;
       const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
       if (!currentLesson) return;
-      const catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+      // FIX: Chuyển bài hỗ trợ cả bài trong mục và bài chưa phân loại
+      let catLessons = [];
+      if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
+        catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+      } else {
+        catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+      }
+      if (catLessons.length === 0) catLessons = state.lessons;
+
       const currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
       const targetIndex = currentIndex + direction;
 
@@ -2417,8 +2560,10 @@
         renderActiveLesson();
       }
 
+      // FIX: Luôn lưu vào LocalStorage
+      saveLocalLessons();
+
       if (state.useLocalFallback || !db) {
-        saveLocalLessons();
         return;
       }
 
@@ -2444,8 +2589,10 @@
       renderCategoriesAndLessons();
       renderActiveLesson();
 
+      // FIX: Luôn cập nhật LocalStorage
+      saveLocalLessons();
+
       if (state.useLocalFallback || !db) {
-        saveLocalLessons();
         showToast("Đã xóa bài học");
         return;
       }
@@ -2473,9 +2620,11 @@
       renderCategoriesAndLessons();
       renderActiveLesson();
 
+      // FIX: Luôn cập nhật LocalStorage
+      saveLocalCategories();
+      saveLocalLessons();
+
       if (state.useLocalFallback || !db) {
-        saveLocalCategories();
-        saveLocalLessons();
         showToast("Đã xóa mục");
         return;
       }
@@ -3161,7 +3310,15 @@
     btnConfirmUpload.addEventListener('click', async () => {
       if (state.stagedUploadFiles.length === 0) return;
       
-      let targetCatId = state.activeCategoryId || (state.categories[0] ? state.categories[0].id : null);
+      // FIX: Xác định mục mục tiêu an toàn, chỉ dùng mục thực sự tồn tại trong state.categories
+      let targetCat = state.categories.find(c => c.id === state.activeCategoryId);
+      if (!targetCat && state.categories.length > 0) {
+        targetCat = state.categories[0];
+      }
+
+      let targetCatId = targetCat ? targetCat.id : null;
+
+      // FIX: Nếu chưa có mục nào hợp lệ, tạo mục mặc định "Tài liệu của tôi"
       if (!targetCatId) {
         targetCatId = 'cat_default_' + Date.now();
         const defaultCat = {
@@ -3173,10 +3330,15 @@
         state.categories.push(defaultCat);
         state.activeCategoryId = targetCatId;
 
+        // FIX: Luôn lưu vào LocalStorage
+        saveLocalCategories();
+
         if (!state.useLocalFallback && db && state.userId) {
-          await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', targetCatId), defaultCat);
-        } else {
-          saveLocalCategories();
+          try {
+            await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', targetCatId), defaultCat);
+          } catch (e) {
+            console.warn("Lỗi lưu category lên Firestore:", e);
+          }
         }
       }
 
@@ -3203,19 +3365,26 @@
           newLessons.push(lessonData);
 
           if (!state.useLocalFallback && db && state.userId) {
-            const lRef = doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', newDocId);
-            await setDoc(lRef, lessonData);
+            try {
+              const lRef = doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', newDocId);
+              await setDoc(lRef, lessonData);
+            } catch (fsErr) {
+              console.warn("Lỗi lưu bài học lên Firestore:", fsErr);
+            }
           }
         }
 
-        if (state.useLocalFallback || !db) {
-          state.lessons.push(...newLessons);
-          saveLocalLessons();
-          renderCategoriesAndLessons();
-        }
+        // FIX: Luôn cập nhật state.lessons và lưu vào LocalStorage ngay lập tức
+        state.lessons.push(...newLessons);
+        saveLocalLessons();
+        saveLocalCategories();
 
-        if (!state.activeLessonId && newLessons.length > 0) {
-          state.activeLessonId = newLessons[0].id;
+        // FIX: Tự động trỏ activeLessonId vào bài vừa tải nếu chưa có bài được chọn
+        if (!state.activeLessonId || !state.lessons.some(l => l.id === state.activeLessonId)) {
+          if (newLessons.length > 0) {
+            state.activeLessonId = newLessons[0].id;
+            state.activeCategoryId = targetCatId;
+          }
         }
 
         renderCategoriesAndLessons();
@@ -3267,12 +3436,12 @@
           const cat = state.categories.find(c => c.id === editingCategoryId);
           if (cat) cat.title = name;
           renderCategoriesAndLessons();
+          // FIX: Luôn cập nhật LocalStorage
+          saveLocalCategories();
 
           if (!state.useLocalFallback && db && state.userId) {
             const catRef = doc(db, 'artifacts', appId, 'users', state.userId, 'categories', editingCategoryId);
             await updateDoc(catRef, { title: name, updatedAt: new Date().toISOString() });
-          } else {
-            saveLocalCategories();
           }
           showToast("Đã đổi tên mục");
         } else {
@@ -3286,12 +3455,12 @@
           state.categories.push(newCat);
           state.activeCategoryId = newCatId;
           renderCategoriesAndLessons();
+          // FIX: Luôn cập nhật LocalStorage
+          saveLocalCategories();
 
           if (!state.useLocalFallback && db && state.userId) {
             const catRef = doc(db, 'artifacts', appId, 'users', state.userId, 'categories', newCatId);
             await setDoc(catRef, newCat);
-          } else {
-            saveLocalCategories();
           }
           showToast("Đã tạo mục mới");
         }
@@ -3434,7 +3603,15 @@
       if (state.isSharedMode) return;
       const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
       if (!currentLesson) return;
-      const catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+      // FIX: Tìm bài học theo nhóm danh mục hoặc bài chưa phân loại
+      let catLessons = [];
+      if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
+        catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+      } else {
+        catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+      }
+      if (catLessons.length === 0) catLessons = state.lessons;
+
       const target = catLessons[val];
       if (target) {
         selectLesson(target.id);
@@ -3449,7 +3626,15 @@
       const num = parseInt(e.target.value, 10);
       const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
       if (!currentLesson) return;
-      const catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+      // FIX: Nhảy bài theo nhóm danh mục hoặc bài chưa phân loại
+      let catLessons = [];
+      if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
+        catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+      } else {
+        catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+      }
+      if (catLessons.length === 0) catLessons = state.lessons;
+
       if (num >= 1 && num <= catLessons.length) {
         selectLesson(catLessons[num - 1].id);
       }
@@ -3766,13 +3951,15 @@
     const btnUserMenu = document.getElementById('btnUserMenu');
     const userDropdown = document.getElementById('userDropdown');
     const userDropdownBackdrop = document.getElementById('userDropdownBackdrop');
+    const btnCloseUserMenuMobile = document.getElementById('btnCloseUserMenuMobile');
 
     function toggleUserMenu() {
       const isHidden = userDropdown.classList.contains('hidden');
       if (isHidden) {
         userDropdown.classList.remove('hidden');
+        userDropdownBackdrop.classList.remove('hidden');
         if (window.innerWidth < 768) {
-          userDropdownBackdrop.classList.remove('hidden');
+          document.body.style.overflow = 'hidden'; // FIX: Khóa cuộn nền khi mở menu trên mobile
         }
       } else {
         closeUserMenu();
@@ -3782,10 +3969,14 @@
     function closeUserMenu() {
       userDropdown.classList.add('hidden');
       userDropdownBackdrop.classList.add('hidden');
+      document.body.style.overflow = ''; // FIX: Khôi phục cuộn nền
     }
 
     btnUserMenu.addEventListener('click', toggleUserMenu);
     userDropdownBackdrop.addEventListener('click', closeUserMenu);
+    if (btnCloseUserMenuMobile) {
+      btnCloseUserMenuMobile.addEventListener('click', closeUserMenu);
+    }
 
     document.addEventListener('click', (e) => {
       if (window.innerWidth >= 768 && !btnUserMenu.contains(e.target) && !userDropdown.contains(e.target)) {
