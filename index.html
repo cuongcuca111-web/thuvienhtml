@@ -410,7 +410,9 @@
 
     /* // ANIM: Mục lục bên trái (Sidebar Lesson Items) */
     .lesson-item-row {
-      transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      transition: transform var(--dur-fast) var(--ease-out), background-color 200ms ease-out, border-color 250ms ease-out, box-shadow 300ms ease-out;
     }
     .lesson-item-row:hover {
       transform: translateX(2px);
@@ -557,19 +559,36 @@
     }
 
     /* // PHẦN B: THIẾT KẾ ĐA TẦNG TINH TẾ CHO BÀI "ĐÃ HỌC" */
-    /* 1. Nền thẻ bài khi đã học: xanh lá rất nhạt */
+    /* 1. Cả THẺ BÀI khi đã học: Viền xanh lá 1.5px bao quanh, nền xanh rất nhạt, quầng sáng nhẹ */
     .lesson-item-row.is-completed {
+      border-color: #10B981;
       background-color: rgba(16, 185, 129, 0.06);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
     }
     .dark .lesson-item-row.is-completed {
+      border-color: rgba(52, 211, 153, 0.85);
       background-color: rgba(16, 185, 129, 0.10);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
     }
-    /* Khi VỪA đang chọn VỪA đã học: giữ nguyên nền tím đặc trưng */
+    /* Chế độ "Làm mờ": ẩn viền xanh và quầng sáng nếu người dùng chỉ chọn làm mờ */
+    body.dim-only-learned-mode .lesson-item-row.is-completed {
+      border-color: transparent !important;
+      box-shadow: none !important;
+    }
+    /* Khi VỪA đang chọn VỪA đã học: giữ nguyên nền tím đặc trưng, vạch trái indigo, đồng thời viền xanh lá và quầng sáng bao quanh */
     .lesson-item-row.is-active.is-completed {
       background-color: rgba(79, 70, 229, 0.10) !important;
+      border-color: #10B981 !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12) !important;
     }
     .dark .lesson-item-row.is-active.is-completed {
       background-color: rgba(129, 140, 248, 0.15) !important;
+      border-color: rgba(52, 211, 153, 0.85) !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18) !important;
+    }
+    body.dim-only-learned-mode .lesson-item-row.is-active.is-completed {
+      border-color: transparent !important;
+      box-shadow: none !important;
     }
 
     /* 2. Vạch dọc 3px màu xanh lá bên trái khi đã học */
@@ -614,7 +633,7 @@
       transform: translateY(-50%) scale(1);
     }
 
-    /* 4. Tiêu đề bài: KHÔNG gạch ngang mặc định, làm mờ dịu mắt, clamp 2 dòng */
+    /* 4. Tiêu đề bài: KHÔNG gạch ngang mặc định, làm mờ dịu mắt (opacity 0.75), clamp 2 dòng */
     .lesson-title-text {
       transition: color var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
       display: -webkit-box;
@@ -625,11 +644,11 @@
       text-overflow: ellipsis;
     }
     .lesson-item-row.is-completed .lesson-title-text {
-      opacity: 0.65;
+      opacity: 0.75;
       color: #4B5563;
     }
     .dark .lesson-item-row.is-completed .lesson-title-text {
-      opacity: 0.65;
+      opacity: 0.75;
       color: #9CA3AF;
     }
 
@@ -647,6 +666,14 @@
     .lesson-item-row.is-completed .lesson-sub-filename {
       opacity: 0.55 !important;
       transition: opacity var(--dur-base) var(--ease-out);
+    }
+
+    /* Khung nhóm khi hoàn thành 100%: Viền xanh lá mảnh 1px */
+    .drop-target-category.is-group-completed {
+      border-color: #10B981 !important;
+    }
+    .dark .drop-target-category.is-group-completed {
+      border-color: rgba(52, 211, 153, 0.70) !important;
     }
 
     /* 6. Huy hiệu nhỏ "Đã học" bên phải tên file (tùy chọn bật/tắt) */
@@ -754,13 +781,17 @@
       display: flex !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 12px !important;
-      height: 58px;
+      gap: 10px !important;
+      height: 60px !important;
       position: sticky;
       top: 0;
-      z-index: 40;
+      z-index: 50;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #E7E5DF;
+    }
+    .dark header.editorial-header {
+      border-bottom-color: #262C36;
     }
     .header-divider-v {
       width: 1px;
@@ -772,14 +803,34 @@
       background-color: #262C36;
     }
 
+    /* Popover Menu Hiển thị */
+    #displaySettingsPopover {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 60;
+      width: 288px;
+      max-width: calc(100vw - 24px);
+      transform-origin: top right;
+      transition: transform 200ms var(--ease-out), opacity 180ms var(--ease-out);
+    }
+    #displaySettingsPopover:not(.hidden) {
+      animation: popoverScaleIn 200ms var(--ease-out) both;
+    }
+    @keyframes popoverScaleIn {
+      from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     #userDropdown {
       transition: transform 200ms var(--ease-out), opacity 180ms var(--ease-out);
       transform-origin: top right;
+      z-index: 65;
     }
     @media (min-width: 640px) {
       #userDropdown {
         position: fixed;
-        top: 60px;
+        top: 68px;
         right: 16px;
         width: 280px;
         max-width: calc(100vw - 24px);
@@ -1387,7 +1438,7 @@
     </div>
 
     <!-- // REDESIGN: HEADER 1 HÀNG GỌN GÀNG, CHUẨN EDITORIAL (TIÊU ĐỀ SERIF, TRÁI - GIỮA - PHẢI CÂN ĐỐI) -->
-    <header class="editorial-header h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-3 flex-nowrap shrink-0 sticky top-0 z-40 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36]">
+    <header class="editorial-header h-[60px] px-3 sm:px-6 flex items-center justify-between gap-2.5 flex-nowrap shrink-0 sticky top-0 z-50 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36]">
       
       <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif -->
       <div class="flex items-center gap-2.5 min-w-0 shrink-0">
@@ -1407,7 +1458,7 @@
       </div>
 
       <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (với phím tắt Ctrl K) -->
-      <div class="hidden min-[900px]:block relative flex-1 min-w-0 max-w-[560px] mx-2">
+      <div class="hidden min-[900px]:block relative flex-1 min-w-0 max-w-[520px] mx-2">
         <div class="relative flex items-center">
           <svg class="w-4 h-4 absolute left-3.5 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
           <input 
@@ -1424,7 +1475,7 @@
       </div>
 
       <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0) -->
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
+      <div class="flex items-center gap-2 shrink-0 flex-nowrap">
         
         <!-- Nút Tiếp tục học & Tìm kiếm khi màn hình nhỏ (< 900px) -->
         <button id="btnMobileResumeHeader" class="md:hidden hidden items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold border border-indigo-200/80 dark:border-indigo-800/80 shadow-2xs transition active:scale-95 shrink-0" title="Mở nhanh bài đang học">
@@ -1546,16 +1597,18 @@
               </button>
             </div>
 
-            <!-- Nhóm 6: PHẦN B - Kiểu hiển thị bài đã học (Làm mờ vs Gạch ngang) -->
+            <!-- Nhóm 6: PHẦN B - Kiểu hiển thị bài đã học (3 tùy chọn: Viền xanh / Làm mờ / Gạch ngang) -->
             <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
               <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] mb-1">Kiểu bài đã học</div>
-              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] mb-2">Chọn cách thể hiện tiêu đề bài đã hoàn thành</div>
-              <div class="grid grid-cols-2 gap-1.5 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36]">
-                <button id="btnStyleDim" type="button" class="py-1 px-2 rounded-md text-[11px] font-medium text-center transition flex items-center justify-center gap-1 bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs">
-                  <span>Làm mờ</span>
-                  <span class="text-[9px] opacity-75">(Chuẩn)</span>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] mb-2">Chọn cách thể hiện thẻ bài và tiêu đề đã hoàn thành</div>
+              <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36]">
+                <button id="btnStyleBorder" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-0.5 bg-white dark:bg-[#20242D] text-emerald-600 dark:text-emerald-400 shadow-xs" title="Viền xanh emerald bao quanh thẻ (Mặc định)">
+                  <span>Viền xanh</span>
                 </button>
-                <button id="btnStyleStrike" type="button" class="py-1 px-2 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-1">
+                <button id="btnStyleDim" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Làm mờ dịu mắt, không viền nổi">
+                  <span>Làm mờ</span>
+                </button>
+                <button id="btnStyleStrike" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Gạch ngang nhẹ tiêu đề">
                   <span>Gạch ngang</span>
                 </button>
               </div>
@@ -1805,7 +1858,7 @@
     <main id="readingArea" class="flex-1 overflow-y-auto flex flex-col relative scroll-smooth focus:outline-none min-w-0 pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] md:pb-6">
       
       <!-- // REDESIGN: THANH CÔNG CỤ BÀI ĐỌC (3 NHÓM RÕ RÀNG: ĐIỀU HƯỚNG | HIỂN THỊ | HÀNH ĐỘNG) -->
-      <div id="stickyReaderHeader" class="sticky top-0 z-20 backdrop-blur-md bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-2 sm:gap-3 text-xs flex-nowrap overflow-x-auto no-scrollbar transition-colors">
+      <div id="stickyReaderHeader" class="sticky top-0 z-30 backdrop-blur-md bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-2 sm:gap-3 text-xs flex-nowrap overflow-x-auto no-scrollbar transition-colors">
         
         <!-- NHÓM 1: ĐIỀU HƯỚNG (Trước / Bộ đếm / Sau / Ô Tới) -->
         <div class="flex items-center gap-1.5 shrink-0 flex-nowrap">
@@ -4956,7 +5009,7 @@
         console.warn("Lỗi đọc Firestore settings:", e);
       }
       try {
-        const learnedStyle = localStorage.getItem('cfg_learned_style') || 'dim';
+        const learnedStyle = localStorage.getItem('cfg_learned_style') || 'border';
         updateLearnedStyleUI(learnedStyle);
 
         const hideBadge = localStorage.getItem('cfg_hide_learned_badge') === 'true';
@@ -6999,7 +7052,7 @@
         const isExpanded = state.categoryExpanded[cat.id] !== false;
 
         html += `
-          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-shadow duration-200" data-cat-id="${cat.id}">
+          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-all duration-200 ${progressPercent === 100 && totalCount > 0 ? 'is-group-completed' : ''}" data-cat-id="${cat.id}">
             <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isExpanded ? 'is-expanded' : ''}" data-toggle-cat="${cat.id}">
               <div class="flex items-center gap-1.5 flex-1 min-w-0 pr-1">
                 <div class="flex items-center text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
@@ -9314,27 +9367,43 @@
     });
 
     function updateLearnedStyleUI(mode) {
+      const currentMode = mode || 'border';
+      const btnBorder = document.getElementById('btnStyleBorder');
       const btnDim = document.getElementById('btnStyleDim');
       const btnStrike = document.getElementById('btnStyleStrike');
-      if (mode === 'strike') {
+
+      const activeClass = 'py-1 px-1.5 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-0.5 bg-white dark:bg-[#20242D] text-emerald-600 dark:text-emerald-400 shadow-xs';
+      const inactiveClass = 'py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5';
+
+      if (currentMode === 'strike') {
         document.body.classList.add('strike-learned-mode');
-        if (btnStrike) {
-          btnStrike.className = 'py-1 px-2 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-1 bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs';
-        }
-        if (btnDim) {
-          btnDim.className = 'py-1 px-2 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-1';
-        }
-      } else {
+        document.body.classList.remove('dim-only-learned-mode');
+        if (btnStrike) btnStrike.className = activeClass;
+        if (btnDim) btnDim.className = inactiveClass;
+        if (btnBorder) btnBorder.className = inactiveClass;
+      } else if (currentMode === 'dim') {
         document.body.classList.remove('strike-learned-mode');
-        if (btnDim) {
-          btnDim.className = 'py-1 px-2 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-1 bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs';
-        }
-        if (btnStrike) {
-          btnStrike.className = 'py-1 px-2 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-1';
-        }
+        document.body.classList.add('dim-only-learned-mode');
+        if (btnDim) btnDim.className = activeClass;
+        if (btnStrike) btnStrike.className = inactiveClass;
+        if (btnBorder) btnBorder.className = inactiveClass;
+      } else {
+        // 'border' (mặc định)
+        document.body.classList.remove('strike-learned-mode', 'dim-only-learned-mode');
+        if (btnBorder) btnBorder.className = activeClass;
+        if (btnDim) btnDim.className = inactiveClass;
+        if (btnStrike) btnStrike.className = inactiveClass;
       }
     }
     window.updateLearnedStyleUI = updateLearnedStyleUI;
+
+    const btnStyleBorderEl = document.getElementById('btnStyleBorder');
+    if (btnStyleBorderEl) {
+      btnStyleBorderEl.addEventListener('click', () => {
+        updateLearnedStyleUI('border');
+        localStorage.setItem('cfg_learned_style', 'border');
+      });
+    }
 
     const btnStyleDimEl = document.getElementById('btnStyleDim');
     if (btnStyleDimEl) {
@@ -9653,6 +9722,8 @@
     function toggleUserMenu() {
       const isHidden = userDropdown.classList.contains('hidden');
       if (isHidden) {
+        const dPopover = document.getElementById('displaySettingsPopover');
+        if (dPopover) dPopover.classList.add('hidden');
         userDropdown.classList.remove('hidden', 'user-menu-closing');
         userDropdownBackdrop.classList.remove('hidden');
         void userDropdown.offsetWidth;
@@ -9666,9 +9737,17 @@
       }
     }
 
-    function closeUserMenu() {
+    function closeUserMenu(immediate = false) {
       if (userDropdown.classList.contains('hidden')) return;
       userDropdown.classList.remove('user-menu-active');
+      if (immediate) {
+        userDropdown.classList.add('hidden');
+        userDropdown.classList.remove('user-menu-closing');
+        userDropdownBackdrop.classList.remove('backdrop-active');
+        userDropdownBackdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+        return;
+      }
       userDropdown.classList.add('user-menu-closing');
       userDropdownBackdrop.classList.remove('backdrop-active');
       setTimeout(() => {
@@ -9678,6 +9757,7 @@
         document.body.style.overflow = ''; // FIX: Khôi phục cuộn nền
       }, 250);
     }
+    window.closeUserMenu = closeUserMenu;
 
     btnUserMenu.addEventListener('click', toggleUserMenu);
     userDropdownBackdrop.addEventListener('click', closeUserMenu);
@@ -9692,8 +9772,10 @@
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !userDropdown.classList.contains('hidden')) {
-        closeUserMenu();
+      if (e.key === 'Escape') {
+        if (!userDropdown.classList.contains('hidden')) closeUserMenu();
+        const dPopover = document.getElementById('displaySettingsPopover');
+        if (dPopover && !dPopover.classList.contains('hidden')) dPopover.classList.add('hidden');
       }
     });
 
@@ -9942,6 +10024,10 @@
     if (btnDisplaySettingsToggle && displaySettingsPopover) {
       btnDisplaySettingsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
+        const willOpen = displaySettingsPopover.classList.contains('hidden');
+        if (willOpen && typeof window.closeUserMenu === 'function') {
+          window.closeUserMenu(true);
+        }
         displaySettingsPopover.classList.toggle('hidden');
         if (!displaySettingsPopover.classList.contains('hidden')) {
           refreshIcons(displaySettingsPopover);
