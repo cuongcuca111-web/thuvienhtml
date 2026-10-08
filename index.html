@@ -606,6 +606,7 @@
     </button>
   </div>
 
+  <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ -->
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
       <!-- Đầu Modal -->
@@ -860,6 +861,8 @@
     import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
     import { 
       getAuth, 
+      setPersistence,
+      browserLocalPersistence,
       signInAnonymously, 
       signInWithCustomToken, 
       signInWithEmailAndPassword,
@@ -910,6 +913,10 @@
     try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
+      // Thiết lập lưu phiên vĩnh viễn trên trình duyệt bằng browserLocalPersistence
+      setPersistence(auth, browserLocalPersistence).catch((err) => {
+        console.warn("Lỗi thiết lập browserLocalPersistence:", err);
+      });
       db = getFirestore(app);
     } catch (e) {
       console.warn("Lỗi khởi tạo Firebase SDK:", e);
@@ -1159,54 +1166,84 @@
       } catch (_) {}
     }
 
+    /* KHỞI TẠO XÁC THỰC: ĐẢM BẢO DUY TRÌ PHIÊN VĨNH VIỄN, KHÔNG BỊ VĂNG RA KHÁCH */
     async function initAuthAndData() {
       if (!auth) {
         enableFallbackMode("Không thể kết nối Firebase SDK. Đang dùng chế độ ngoại tuyến.");
         return;
       }
 
-      // 1. Kiểm tra phiên đăng nhập đã có hoặc token hệ thống
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+      // 1. Kiểm tra cache thông tin đăng nhập trước đó để hiển thị ngay, tránh nhấp nháy giao diện
+      const cachedEmail = localStorage.getItem('last_auth_user_email');
+      const cachedName = localStorage.getItem('last_auth_user_name');
+      const hasRealAuth = localStorage.getItem('has_authenticated_account') === 'true';
+
+      if (hasRealAuth && (cachedEmail || cachedName)) {
+        const headerLabel = document.getElementById('headerAccountLabel');
+        const initialEl = document.getElementById('userInitial');
+        const nameEl = document.getElementById('userNameDisplay');
+        const emailEl = document.getElementById('userEmailDisplay');
+        const badgeType = document.getElementById('userBadgeType');
+
+        const disp = cachedName || (cachedEmail ? cachedEmail.split('@')[0] : 'Thành viên');
+        if (headerLabel) headerLabel.innerText = disp;
+        if (initialEl) initialEl.innerText = (disp[0] || 'U').toUpperCase();
+        if (nameEl) nameEl.innerText = disp;
+        if (emailEl) emailEl.innerText = cachedEmail || 'Đang kết nối...';
+        if (badgeType) {
+          badgeType.innerText = "Đang kết nối...";
+          badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300");
+        }
+      }
+
+      // 2. Xử lý token khởi tạo nếu có
+      if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+        try {
           await signInWithCustomToken(auth, __initial_auth_token);
-        } else if (!auth.currentUser) {
+        } catch (tokErr) {
+          console.warn("Lỗi đăng nhập bằng initial_auth_token:", tokErr);
+        }
+      }
+
+      // 3. ĐĂNG KÝ LISTENER TRẠNG THÁI AUTH:
+      // Firebase Auth sẽ tự động đọc từ IndexedDB/LocalStorage và khôi phục đúng tài khoản thật
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // Phiên đăng nhập hợp lệ (Tài khoản thật hoặc Khách đã lưu)
+          state.user = user;
+          state.userId = user.uid;
+          state.useLocalFallback = false;
+
+          if (!user.isAnonymous) {
+            localStorage.setItem('has_authenticated_account', 'true');
+            localStorage.setItem('last_auth_user_email', user.email || '');
+            localStorage.setItem('last_auth_user_name', user.displayName || user.email?.split('@')[0] || '');
+          }
+
+          updateUserUI(user);
+
+          // Hủy các listener cũ nếu có trước khi lắng nghe tài khoản mới
+          if (state.unsubscribeCategories) state.unsubscribeCategories();
+          if (state.unsubscribeLessons) state.unsubscribeLessons();
+
+          await loadUserSettings();
+          setupRealtimeListeners();
+        } else {
+          // CHỈ KHI FIREBASE XÁC NHẬN HOÀN TOÀN KHÔNG CÓ PHIÊN (Lần đầu hoặc vừa bấm Đăng xuất)
+          localStorage.removeItem('last_auth_user_email');
+          localStorage.removeItem('last_auth_user_name');
+          localStorage.removeItem('has_authenticated_account');
+
           try {
             await signInAnonymously(auth);
           } catch (anonErr) {
-            console.warn("signInAnonymously thất bại (có thể chưa bật trong Firebase Console):", anonErr);
-            setupLocalGuestUser();
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn("Khởi tạo auth ban đầu:", err);
-        setupLocalGuestUser();
-        return;
-      }
-
-      // 2. Lắng nghe trạng thái đăng nhập thời gian thực
-      onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-          try {
-            await signInAnonymously(auth);
-          } catch (_) {
+            console.warn("signInAnonymously không khả dụng:", anonErr);
             setupLocalGuestUser();
           }
-          return;
         }
-
-        state.user = user;
-        state.userId = user.uid;
-        state.useLocalFallback = false;
-        updateUserUI(user);
-
-        // Hủy các listener Firestore của tài khoản cũ trước khi gắn tài khoản mới
-        if (state.unsubscribeCategories) state.unsubscribeCategories();
-        if (state.unsubscribeLessons) state.unsubscribeLessons();
-
-        // Tải cấu hình cá nhân và gắn listener dữ liệu Firestore
-        await loadUserSettings();
-        setupRealtimeListeners();
+      }, (error) => {
+        console.error("Lỗi onAuthStateChanged:", error);
+        enableFallbackMode("Lỗi xác thực: " + (error.message || ''));
       });
     }
 
@@ -1431,6 +1468,7 @@
       try {
         if (state.authMode === 'login') {
           await signInWithEmailAndPassword(auth, email, password);
+          localStorage.setItem('has_authenticated_account', 'true');
           showToast('Đăng nhập thành công!');
           authModal.classList.add('hidden');
         } else if (state.authMode === 'register') {
@@ -1438,6 +1476,7 @@
           if (name && cred.user) {
             await updateProfile(cred.user, { displayName: name });
           }
+          localStorage.setItem('has_authenticated_account', 'true');
           showToast('Đăng ký tài khoản thành công!');
           authModal.classList.add('hidden');
         } else if (state.authMode === 'forgot') {
@@ -1460,6 +1499,7 @@
       try {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
+        localStorage.setItem('has_authenticated_account', 'true');
         showToast('Đăng nhập bằng Google thành công!');
         authModal.classList.add('hidden');
       } catch (err) {
@@ -1468,9 +1508,12 @@
       }
     });
 
-    // Chế độ Khách
+    // Chuyển về Chế độ Khách
     document.getElementById('btnGuestAuth').addEventListener('click', async () => {
       setAuthError(null);
+      localStorage.removeItem('has_authenticated_account');
+      localStorage.removeItem('last_auth_user_email');
+      localStorage.removeItem('last_auth_user_name');
       try {
         if (!auth.currentUser || !auth.currentUser.isAnonymous) {
           await signInAnonymously(auth);
@@ -1485,13 +1528,15 @@
       }
     });
 
-    // Đăng xuất
+    // Đăng xuất (Chủ động thoát tài khoản)
     document.getElementById('btnLogout').addEventListener('click', async () => {
       document.getElementById('userDropdown').classList.add('hidden');
       askConfirmDelete('Bạn có chắc chắn muốn đăng xuất không?', async () => {
         try {
+          localStorage.removeItem('has_authenticated_account');
+          localStorage.removeItem('last_auth_user_email');
+          localStorage.removeItem('last_auth_user_name');
           if (auth) await signOut(auth);
-          setupLocalGuestUser();
           showToast('Đã đăng xuất');
         } catch (err) {
           console.error("Logout error:", err);
