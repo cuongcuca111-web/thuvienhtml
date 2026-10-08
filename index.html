@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v3.9.0';
+    const CURRENT_APP_VERSION = 'v3.9.5';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1850,84 +1850,89 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v3.9.0 - build 08/10/2026 21:15
+        Thư viện Sách HTML v3.9.5 - build 08/10/2026 22:30
       </div>
     </aside>
 
     <!-- // REDESIGN: KHU VỰC ĐỌC NỘI DUNG CHÍNH (READING AREA) -->
     <main id="readingArea" class="flex-1 overflow-y-auto flex flex-col relative scroll-smooth focus:outline-none min-w-0 pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] md:pb-6">
       
-      <!-- // REDESIGN: THANH CÔNG CỤ BÀI ĐỌC (3 NHÓM RÕ RÀNG: ĐIỀU HƯỚNG | HIỂN THỊ | HÀNH ĐỘNG) -->
-      <div id="stickyReaderHeader" class="sticky top-0 z-30 backdrop-blur-md bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-2 sm:gap-3 text-xs flex-nowrap overflow-x-auto no-scrollbar transition-colors">
+      <!-- // REDESIGN: THANH CÔNG CỤ BÀI ĐỌC (CAO 52PX, 3 NHÓM RÕ RÀNG: ĐIỀU HƯỚNG | HIỂN THỊ | HÀNH ĐỘNG, THANH TIẾN ĐỘ 3PX ĐÁY) -->
+      <div id="stickyReaderHeader" class="sticky top-0 z-30 h-[52px] min-h-[52px] px-3 sm:px-6 bg-[#FAF9F5]/95 dark:bg-[#111317]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 text-xs sm:text-[13px] flex-nowrap overflow-x-auto no-scrollbar relative transition-colors select-none">
         
-        <!-- NHÓM 1: ĐIỀU HƯỚNG (Trước / Bộ đếm / Sau / Ô Tới) -->
-        <div class="flex items-center gap-1.5 shrink-0 flex-nowrap">
-          <button id="btnPrevLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài trước">
+        <!-- NHÓM 1: ĐIỀU HƯỚNG (Trước / Bộ đếm tích hợp nhảy bài / Sau) -->
+        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap">
+          <button id="btnPrevLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài trước" title="Bài trước (←)">
             <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-chevron-left"></use></svg>
             <span class="hidden sm:inline">Trước</span>
           </button>
 
-          <div class="px-2.5 py-1 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] font-medium whitespace-nowrap text-[11px] sm:text-xs shrink-0">
-            <span id="currentLessonIndexBadge">0 / 0</span>
+          <!-- Bộ đếm 2 / 2 tích hợp click mở ô nhảy số bài trực tiếp (bỏ ô 'Tới' riêng) -->
+          <div id="indexJumpContainer" class="relative flex items-center shrink-0">
+            <button id="btnIndexJumpTrigger" type="button" class="touch-target px-2.5 py-1 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-semibold font-mono text-xs sm:text-[13px] border border-transparent hover:border-indigo-400/50 transition cursor-pointer flex items-center gap-1 shadow-2xs whitespace-nowrap" title="Bấm để nhập số bài và nhảy tới nhanh">
+              <span id="currentLessonIndexBadge">0 / 0</span>
+              <svg class="w-2.5 h-2.5 opacity-50 shrink-0"><use href="#icon-chevron-down"></use></svg>
+            </button>
+            <input 
+              id="jumpLessonInput" 
+              type="number" 
+              min="1" 
+              class="hidden w-16 h-8 px-1 py-0.5 rounded-lg border-2 border-indigo-500 bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-semibold text-xs sm:text-[13px] shadow-sm focus:outline-none" 
+              aria-label="Nhập số bài để tới" 
+              placeholder="#" 
+            />
           </div>
 
-          <button id="btnNextLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài sau">
+          <button id="btnNextLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài sau" title="Bài sau (→)">
             <span class="hidden sm:inline">Sau</span>
             <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-chevron-right"></use></svg>
           </button>
-
-          <div class="hidden sm:flex items-center gap-1 ml-1 text-[#6E6B65] dark:text-[#979DA8] shrink-0">
-            <span>Tới:</span>
-            <input id="jumpLessonInput" type="number" min="1" class="w-11 px-1.5 py-1 rounded-md border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs focus:border-indigo-500" aria-label="Nhập số bài để tới" />
-          </div>
         </div>
 
         <!-- VẠCH NGĂN CÁCH 1 -->
-        <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block"></div>
+        <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block mx-0.5"></div>
 
         <!-- NHÓM 2: HIỂN THỊ ĐỘ RỘNG (Segmented Pill Switcher) -->
-        <div class="hidden md:flex items-center bg-[#F2F0EB] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-pill p-0.5 text-[11px] shrink-0" title="Độ rộng khung đọc bài">
-          <button data-width-opt="compact" class="width-tab px-2.5 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
+        <div class="hidden md:flex items-center bg-[#F2F0EB] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-pill p-0.5 text-xs shrink-0" title="Độ rộng khung đọc bài">
+          <button data-width-opt="compact" class="width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
             Vừa
           </button>
-          <button data-width-opt="wide" class="width-tab px-2.5 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
+          <button data-width-opt="wide" class="width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
             Rộng
           </button>
-          <button data-width-opt="full" class="width-tab px-2.5 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition">
+          <button data-width-opt="full" class="width-tab px-3 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition">
             Toàn màn
           </button>
         </div>
 
         <!-- VẠCH NGĂN CÁCH 2 -->
-        <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block"></div>
+        <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block mx-0.5"></div>
 
-        <!-- NHÓM 3: HÀNH ĐỘNG (Đã học, Yêu thích hiện trực tiếp; Chia sẻ, Đổi tên, In trong menu "Thêm") -->
-        <div class="flex items-center gap-1.5 shrink-0 flex-nowrap">
+        <!-- NHÓM 3: HÀNH ĐỘNG (Đã học là Nút chính, Yêu thích, Nghe, Tập trung, menu ⋯) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap ml-auto md:ml-0">
           
-          <!-- // FEATURE-2: Nút Đọc thành tiếng (Text-to-Speech) -->
-          <button id="btnTextToSpeech" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 transition shadow-2xs font-medium shrink-0" title="Đọc bài thành tiếng (Text-to-Speech)" aria-label="Đọc bài thành tiếng">
-            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-volume-2"></use></svg>
-            <span class="hidden xl:inline">Nghe</span>
+          <!-- Nút Đã học (DẠNG NÚT CHÍNH NỔI BẬT) -->
+          <button id="btnToggleLearned" class="touch-target px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shadow-2xs border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] hover:border-emerald-400 active:scale-95 shrink-0" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
+            <svg id="learnedIcon" class="w-4 h-4 text-gray-400 shrink-0"><use href="#icon-circle"></use></svg>
+            <span id="learnedLabel" class="inline">Đã học</span>
           </button>
 
-          <!-- // FEATURE-1: Nút Bật Chế độ tập trung & Pomodoro -->
-          <button id="btnToggleFocusMode" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 transition shadow-2xs font-medium shrink-0" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro (Phím tắt: Esc để thoát)" aria-label="Chế độ tập trung">
-            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0"><use href="#icon-focus"></use></svg>
-            <span class="hidden xl:inline">Tập trung</span>
-          </button>
-
-          <!-- Đã học (Luôn hiển thị ra ngoài, không bị giấu vào menu) -->
-          <button id="btnToggleLearned" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 transition shadow-2xs font-medium shrink-0" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
-            <svg id="learnedIcon" class="w-3.5 h-3.5 text-gray-400 shrink-0"><use href="#icon-circle"></use></svg>
-            <span class="inline text-xs" id="learnedLabel">Đã học</span>
-          </button>
-
-          <!-- Yêu thích -->
+          <!-- Nút Yêu thích (icon) -->
           <button id="btnToggleFavorite" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-center transition shadow-2xs shrink-0" title="Đánh dấu yêu thích" aria-label="Đánh dấu yêu thích">
             <svg id="favIcon" class="w-4 h-4 text-gray-400 fill-none shrink-0"><use href="#icon-star"></use></svg>
           </button>
 
-          <!-- Nút Menu "Thêm" (Gom Chia sẻ, Đổi tên, In, Giữ màu gốc) -->
+          <!-- Nút Nghe (icon kèm tooltip) -->
+          <button id="btnTextToSpeech" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition shadow-2xs font-medium shrink-0" title="Đọc bài thành tiếng (Text-to-Speech)" aria-label="Đọc bài thành tiếng">
+            <svg class="w-4 h-4 shrink-0"><use href="#icon-volume-2"></use></svg>
+          </button>
+
+          <!-- Nút Tập trung (icon kèm tooltip) -->
+          <button id="btnToggleFocusMode" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center transition shadow-2xs font-medium shrink-0" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro" aria-label="Chế độ tập trung">
+            <svg class="w-4 h-4 text-rose-500 shrink-0"><use href="#icon-focus"></use></svg>
+          </button>
+
+          <!-- Menu "⋯" Thao tác phụ -->
           <div class="relative shrink-0">
             <button id="btnReaderMoreActions" aria-label="Thao tác khác cho bài học" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition shadow-2xs" title="Thao tác khác">
               <svg class="w-4 h-4 shrink-0"><use href="#icon-more-vertical"></use></svg>
@@ -1943,20 +1948,19 @@
                 <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-link"></use></svg>
                 <span>Link đã chia sẻ</span>
               </button>
-
-
               <button id="btnRenameCurrent" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
                 <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-pencil"></use></svg>
                 <span>Đổi tên bài học</span>
               </button>
-
               <button id="btnPrintCurrent" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
                 <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-printer"></use></svg>
                 <span>In / Xuất PDF</span>
               </button>
-
+              <button id="btnMenuToggleSpacedReview" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
+                <svg class="w-3.5 h-3.5 text-amber-500"><use href="#icon-calendar-clock"></use></svg>
+                <span>Sắp xếp lịch ôn</span>
+              </button>
               <div class="border-t border-[#E7E5DF] dark:border-[#262C36] my-1"></div>
-
               <label class="flex items-center justify-between px-3 py-1.5 cursor-pointer text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-[11px]" title="Bật: giữ nguyên màu sắc gốc của file">
                 <span>Giữ màu sắc gốc</span>
                 <input type="checkbox" id="togglePreserveOriginalTheme" checked class="rounded text-indigo-600 focus:ring-0">
@@ -1964,23 +1968,14 @@
             </div>
           </div>
 
+          <!-- Hidden inputs for backward compatibility -->
+          <input type="range" id="lessonSlider" min="0" max="0" value="0" class="sr-only" aria-hidden="true" />
+          <span id="sliderValueTooltip" class="sr-only" aria-hidden="true">0/0</span>
         </div>
-      </div>
 
-      <!-- THANH TRƯỢT TIẾN ĐỘ BÀI HỌC (SLIM TRACK) -->
-      <div class="px-3 sm:px-8 pt-2 pb-1 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60">
-        <div class="flex items-center gap-3">
-          <span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] whitespace-nowrap">Tiến độ bài:</span>
-          <input 
-            type="range" 
-            id="lessonSlider" 
-            min="0" 
-            max="0" 
-            value="0" 
-            class="w-full h-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-            title="Kéo để nhảy nhanh đến bài"
-          />
-          <span id="sliderValueTooltip" class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 whitespace-nowrap min-w-[45px] text-right font-mono">0/0</span>
+        <!-- THANH TIẾN ĐỘ GỘP VÀO ĐÁY THANH CÔNG CỤ (3PX) -->
+        <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white/5 overflow-hidden pointer-events-none">
+          <div id="readerHeaderProgressBar" class="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-300" style="width: 0%;"></div>
         </div>
       </div>
 
@@ -2076,88 +2071,112 @@
               </div>
             </div>
 
-            <div class="mb-4 sm:mb-6">
-              <div class="flex items-start justify-between gap-3 group">
+            <!-- // REDESIGN: KHU TIÊU ĐỀ BÀI VÀ CÁC CHIP THÔNG TIN MỘT HÀNG GỌN GÀNG -->
+            <div id="lessonTitleSection" class="mb-2 pt-0">
+              <!-- Tiêu đề bài lớn & Nút cây bút đặt ngay cạnh cuối tiêu đề -->
+              <div class="flex items-center gap-2 group flex-wrap">
                 <h1 
                   id="displayLessonTitle" 
-                  class="text-2xl sm:text-3xl md:text-4xl font-serif font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] hover:text-indigo-600 cursor-pointer transition select-text leading-tight break-words"
+                  class="text-lg sm:text-xl md:text-2xl font-serif font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] hover:text-indigo-600 cursor-pointer transition select-text leading-tight break-words inline line-clamp-2 sm:line-clamp-none"
                   title="Nhấp đúp hoặc bấm icon bút để đổi tên"
                 >
                   Tiêu đề bài học
                 </h1>
-                <button id="btnInlineRename" class="opacity-60 hover:opacity-100 touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đổi tên hiển thị">
-                  <svg class="w-4 h-4"><use href="#icon-pencil"></use></svg>
+                <button 
+                  id="btnInlineRename" 
+                  class="inline-flex items-center justify-center p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition shrink-0" 
+                  title="Đổi tên hiển thị" 
+                  aria-label="Đổi tên bài học"
+                >
+                  <svg class="w-3.5 h-3.5"><use href="#icon-pencil"></use></svg>
                 </button>
               </div>
 
-              <!-- Hàng Meta thông tin: file tag, trạng thái, thời gian -->
-              <div class="flex flex-wrap items-center gap-2 text-xs text-[#6E6B65] dark:text-[#979DA8] mt-2">
-                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px]">
-                  <svg class="w-3 h-3"><use href="#icon-file-text"></use></svg>
-                  <span id="originalFileNameTag" class="truncate max-w-[200px]">lesson.html</span>
-                </div>
-                <span class="text-gray-300 dark:text-gray-700">•</span>
-                <span class="text-[11px]">Định dạng HTML thuần</span>
-
-                <span class="text-gray-300 dark:text-gray-700">•</span>
-                <!-- // FEATURE-3: Badge thông tin ôn tập ngắt quãng -->
-                <div id="spacedReviewMetaBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
-                  <svg class="w-3 h-3 text-amber-500"><use href="#icon-calendar-clock"></use></svg>
-                  <span id="spacedReviewMetaText">Chưa đặt lịch ôn</span>
-                  <button id="btnToggleSpacedReview" class="ml-1 text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline">Tắt</button>
+              <!-- Dòng thông tin ngay dưới tiêu đề: gom thành các chip gọn cuộn ngang 1 hàng trên mobile -->
+              <div class="flex items-center gap-1.5 sm:gap-2 flex-nowrap sm:flex-wrap text-xs text-[#6E6B65] dark:text-[#979DA8] mt-1.5 overflow-x-auto no-scrollbar py-0.5 w-full">
+                <!-- Chip Tên file -->
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shrink-0" title="File gốc">
+                  <svg class="w-3.5 h-3.5 text-indigo-500 shrink-0"><use href="#icon-file-text"></use></svg>
+                  <span id="originalFileNameTag" class="truncate max-w-[160px] sm:max-w-[220px]">lesson.html</span>
                 </div>
 
+                <!-- Chip Định dạng -->
+                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium shrink-0">
+                  <span>HTML thuần</span>
+                </div>
+
+                <!-- Chip Lịch ôn tập -->
+                <div id="spacedReviewMetaBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0 hover:border-amber-300 dark:hover:border-amber-800 transition">
+                  <svg class="w-3.5 h-3.5 text-amber-500 shrink-0"><use href="#icon-calendar-clock"></use></svg>
+                  <span id="spacedReviewMetaText">Chưa bật nhắc ôn</span>
+                  <button id="btnToggleSpacedReview" class="ml-1 text-[11px] font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Bật</button>
+                </div>
+
+                <!-- Danh sách Nhãn bài học -->
+                <div id="articleTagsList" class="flex items-center gap-1.5 shrink-0"></div>
+
+                <!-- Nút + Nhãn nằm cuối hàng chip -->
+                <button id="btnArticleManageTags" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition shadow-2xs shrink-0" title="Gắn hoặc quản lý nhãn">
+                  <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
+                  <span>+ Nhãn</span>
+                </button>
               </div>
             </div>
 
-            <!-- // REDESIGN: KHỐI GHI CHÚ & CÂU HỎI TRỌNG TÂM (EDITORIAL CALLOUT VỚI NÚT SỬA NỔI BẬT) -->
-            <div id="descriptionBox" class="mb-6 bg-[#FAF9F5] dark:bg-[#16191F] border border-[#E7E5DF] dark:border-[#262C36] border-l-4 border-l-indigo-600 dark:border-l-indigo-400 rounded-r-xl rounded-l-md p-4 sm:p-5 transition-all shadow-2xs">
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2">
-                  <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-book-open"></use></svg>
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">Ghi chú &amp; Câu hỏi trọng tâm</span>
-                </div>
+            <!-- // REDESIGN: KHỐI GHI CHÚ & CÂU HỎI TRỌNG TÂM (THU GỌN / MỞ RỘNG, NHỚ TRẠNG THÁI THEO BÀI) -->
+            <div id="descriptionBox" class="mb-2.5 bg-[#FAF9F5] dark:bg-[#16191F] border border-[#E7E5DF] dark:border-[#262C36] border-l-4 border-l-indigo-600 dark:border-l-indigo-400 rounded-r-xl rounded-l-md p-2 sm:px-3 sm:py-2 transition-all duration-200 shadow-2xs">
+              <div class="flex items-center justify-between gap-2 select-none">
+                <button id="btnToggleNotesAccordion" type="button" class="flex items-center gap-1.5 text-left group cursor-pointer focus:outline-none min-w-0" aria-expanded="true" title="Bấm để thu gọn hoặc mở rộng ghi chú">
+                  <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-book-open"></use></svg>
+                  <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 truncate">
+                    <span class="inline sm:hidden">Ghi chú</span>
+                    <span class="hidden sm:inline">Ghi chú &amp; Câu hỏi trọng tâm</span>
+                  </span>
+                  <svg id="notesAccordionChevron" class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8] transition-transform duration-200 shrink-0"><use href="#icon-chevron-down"></use></svg>
+                </button>
                 
-                <!-- // FEATURE-4: Nút Tự kiểm tra Flashcards cho bài học -->
-                <button id="btnStudyLessonFlashcards" class="touch-target px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-medium text-indigo-700 dark:text-indigo-300 flex items-center gap-1 shadow-2xs hover:bg-indigo-100 transition mr-1" title="Tự kiểm tra các câu hỏi trọng tâm của bài này">
-                  <svg class="w-3 h-3"><use href="#icon-cards"></use></svg>
-                  <span>Tự kiểm tra</span>
-                </button>
+                <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                  <!-- Nút Tự kiểm tra Flashcards cho bài học -->
+                  <button id="btnStudyLessonFlashcards" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] sm:text-xs font-semibold text-indigo-700 dark:text-indigo-300 shadow-2xs hover:bg-indigo-100 transition shrink-0" title="Tự kiểm tra các câu hỏi trọng tâm của bài này">
+                    <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-cards"></use></svg>
+                    <span class="hidden sm:inline">Tự kiểm tra</span>
+                    <span class="inline sm:hidden">Kiểm tra</span>
+                  </button>
 
-                <button id="btnEditDescription" class="touch-target px-2.5 py-1 rounded-md bg-white dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-xs font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1 shadow-2xs transition">
-                  <svg class="w-3 h-3"><use href="#icon-pencil"></use></svg>
-                  <span>Sửa ghi chú</span>
-                </button>
+                  <!-- Nút Sửa ghi chú -->
+                  <button id="btnEditDescription" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-white dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-[11px] sm:text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition shrink-0" title="Chỉnh sửa ghi chú">
+                    <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-pencil"></use></svg>
+                    <span class="hidden sm:inline">Sửa ghi chú</span>
+                    <span class="inline sm:hidden">Sửa</span>
+                  </button>
+                </div>
               </div>
               
-                        <!-- // FEATURE-6: Danh sách Nhãn gắn trên bài đọc -->
-          <div id="articleTagsList" class="flex items-center gap-1.5 flex-wrap my-1"></div>
-          <button id="btnArticleManageTags" class="touch-target inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 transition" title="Gắn hoặc quản lý nhãn">
-            <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
-            <span>+ Nhãn</span>
-          </button>
-          <div id="descriptionContentWrapper" class="relative">
-                <p id="descriptionText" class="font-serif text-sm sm:text-[15px] text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line line-clamp-3 transition-all">
-                  Chưa có mô tả cho bài học này. Nhấp vào đây để thêm câu hỏi ôn tập hoặc ghi chú.
-                </p>
-                <button id="btnToggleDescExpand" class="hidden text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-2 hover:underline">
-                  Xem thêm
-                </button>
-              </div>
+              <!-- Thân nội dung ghi chú (thu gọn / mở rộng) -->
+              <div id="notesBodyContainer" class="mt-1.5 transition-all duration-200">
+                <div id="descriptionContentWrapper" class="relative">
+                  <p id="descriptionText" class="font-serif text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line line-clamp-3 transition-all cursor-pointer" title="Bấm để chỉnh sửa ghi chú">
+                    Chưa có mô tả cho bài học này. Nhấp vào đây để thêm câu hỏi ôn tập hoặc ghi chú.
+                  </p>
+                  <button id="btnToggleDescExpand" class="hidden text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-1 hover:underline">
+                    Xem thêm
+                  </button>
+                </div>
 
-              <div id="descriptionEditor" class="hidden mt-3">
-                <textarea 
-                  id="descriptionTextarea" 
-                  rows="4" 
-                  maxlength="2000" 
-                  class="w-full text-sm font-serif p-3 rounded-lg bg-white dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 leading-relaxed focus:ring-1 focus:ring-indigo-500" 
-                  placeholder="Nhập mô tả hoặc câu hỏi ôn tập..."
-                ></textarea>
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2 text-xs">
-                  <span class="text-[#6E6B65] dark:text-[#979DA8] hidden sm:inline">Phím tắt: Ctrl + Enter để lưu, Esc để hủy</span>
-                  <div class="flex items-center gap-2 self-end sm:self-auto">
-                    <button id="btnCancelDesc" class="px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
-                    <button id="btnSaveDesc" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-2xs transition">Lưu ghi chú</button>
+                <div id="descriptionEditor" class="hidden mt-3">
+                  <textarea 
+                    id="descriptionTextarea" 
+                    rows="4" 
+                    maxlength="2000" 
+                    class="w-full text-xs sm:text-sm font-serif p-3 rounded-lg bg-white dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 leading-relaxed focus:ring-1 focus:ring-indigo-500" 
+                    placeholder="Nhập mô tả hoặc câu hỏi ôn tập..."
+                  ></textarea>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2 text-xs">
+                    <span class="text-[#6E6B65] dark:text-[#979DA8] hidden sm:inline">Phím tắt: Ctrl + Enter để lưu, Esc để hủy</span>
+                    <div class="flex items-center gap-2 self-end sm:self-auto">
+                      <button id="btnCancelDesc" class="px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
+                      <button id="btnSaveDesc" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-2xs transition">Lưu ghi chú</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2349,7 +2368,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v3.9.0 - build 08/10/2026 21:15
+      Thư viện Sách HTML v3.9.5 - build 08/10/2026 22:30
     </div>
   </div>
 
@@ -7474,6 +7493,8 @@
         slider.value = 0;
         slider.max = 0;
         sliderTooltip.innerText = "0/0";
+        const headerProgBar = document.getElementById('readerHeaderProgressBar');
+        if (headerProgBar) headerProgBar.style.width = '0%';
         btnPrev.disabled = true;
         btnNext.disabled = true;
         btnBottomPrev.disabled = true;
@@ -7540,11 +7561,11 @@
       if (learnedIcon) {
         const useEl = learnedIcon.querySelector('use');
         if (currentLesson.isCompleted) {
-          learnedIcon.setAttribute('class', "w-4 h-4 text-[#16A34A] icon-pop-animated");
-          learnedLabel.innerText = "Đã học xong";
+          learnedIcon.setAttribute('class', "w-4 h-4 text-white icon-pop-animated shrink-0");
+          learnedLabel.innerText = "Đã xong";
           if (useEl) useEl.setAttribute('href', '#icon-check-circle-2');
         } else {
-          learnedIcon.setAttribute('class', "w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]");
+          learnedIcon.setAttribute('class', "w-4 h-4 text-white/90 shrink-0");
           learnedLabel.innerText = "Đã học";
           if (useEl) useEl.setAttribute('href', '#icon-circle');
         }
@@ -7566,6 +7587,8 @@
         slider.max = 0;
         slider.value = 0;
         sliderTooltip.innerText = "1/1";
+        const headerProgBar = document.getElementById('readerHeaderProgressBar');
+        if (headerProgBar) headerProgBar.style.width = '100%';
         btnPrev.disabled = true;
         btnNext.disabled = true;
         btnBottomPrev.disabled = true;
@@ -7598,12 +7621,38 @@
         slider.value = Math.max(0, currentIndex);
         sliderTooltip.innerText = `${currentIndex + 1}/${totalInCat}`;
 
+        const headerProgBar = document.getElementById('readerHeaderProgressBar');
+        if (headerProgBar) {
+          const pct = totalInCat > 0 ? Math.round(((currentIndex + 1) / totalInCat) * 100) : 0;
+          headerProgBar.style.width = `${pct}%`;
+        }
+
         btnPrev.disabled = currentIndex <= 0;
         btnNext.disabled = currentIndex >= totalInCat - 1;
         btnBottomPrev.disabled = currentIndex <= 0;
         btnBottomNext.disabled = currentIndex >= totalInCat - 1;
       }
       // // FIX: Đóng khối else tính thứ tự bài học
+
+      // REDESIGN: Quản lý trạng thái accordion của khối Ghi chú theo từng bài
+      const notesBody = document.getElementById('notesBodyContainer');
+      const notesChevron = document.getElementById('notesAccordionChevron');
+      const btnToggleAccordion = document.getElementById('btnToggleNotesAccordion');
+      if (notesBody && currentLesson) {
+        const savedState = localStorage.getItem('cfg_notes_collapsed_' + currentLesson.id);
+        const hasDesc = Boolean(currentLesson.description && currentLesson.description.trim().length > 0);
+        const isMobile = window.innerWidth <= 640;
+        const isCollapsed = savedState !== null ? savedState === '1' : (isMobile || !hasDesc);
+        if (isCollapsed) {
+          notesBody.classList.add('hidden');
+          if (notesChevron) notesChevron.classList.add('-rotate-90');
+          if (btnToggleAccordion) btnToggleAccordion.setAttribute('aria-expanded', 'false');
+        } else {
+          notesBody.classList.remove('hidden');
+          if (notesChevron) notesChevron.classList.remove('-rotate-90');
+          if (btnToggleAccordion) btnToggleAccordion.setAttribute('aria-expanded', 'true');
+        }
+      }
 
       // FIX-1 (Req 4): Ẩn các thao tác chỉ dành cho chủ bài học khi người nhận đang xem bài chia sẻ
       const isOwner = !state.isSharedMode || Boolean(
@@ -7629,9 +7678,9 @@
           btnToggleLearned.classList.remove('hidden');
           btnToggleLearned.style.transition = 'all var(--dur-base) var(--ease-out)';
           if (currentLesson.isCompleted) {
-            btnToggleLearned.classList.add('bg-emerald-50', 'dark:bg-emerald-950/40', 'text-emerald-700', 'dark:text-emerald-300', 'border-emerald-200', 'dark:border-emerald-800');
+            btnToggleLearned.className = 'touch-target px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-[13px] border transition shadow-2xs flex items-center gap-1.5 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 active:scale-95';
           } else {
-            btnToggleLearned.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/40', 'text-emerald-700', 'dark:text-emerald-300', 'border-emerald-200', 'dark:border-emerald-800');
+            btnToggleLearned.className = 'touch-target px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-[13px] border transition shadow-2xs flex items-center gap-1.5 shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 active:scale-95';
           }
         }
         if (btnToggleFav) btnToggleFav.classList.remove('hidden');
@@ -7645,11 +7694,11 @@
       const titleEl = document.getElementById('displayLessonTitle');
       const descText = document.getElementById('descriptionText');
       if (titleEl) {
-        const baseTitle = window.innerWidth < 640 ? 20 : 28;
+        const baseTitle = window.innerWidth < 640 ? 18 : 22;
         titleEl.style.fontSize = `${baseTitle + (state.fontSizeOffset * 2)}px`;
       }
       if (descText) {
-        const baseDesc = window.innerWidth < 640 ? 13.5 : 15;
+        const baseDesc = window.innerWidth < 640 ? 12.5 : 13.5;
         descText.style.fontSize = `${baseDesc + (state.fontSizeOffset * 1.5)}px`;
       }
     }
@@ -9200,11 +9249,44 @@
     document.getElementById('btnEditDescription').addEventListener('click', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (!cur) return;
+      const notesBody = document.getElementById('notesBodyContainer');
+      const notesChevron = document.getElementById('notesAccordionChevron');
+      const btnToggleAccordion = document.getElementById('btnToggleNotesAccordion');
+      if (notesBody && notesBody.classList.contains('hidden')) {
+        notesBody.classList.remove('hidden');
+        if (notesChevron) notesChevron.classList.remove('-rotate-90');
+        if (btnToggleAccordion) btnToggleAccordion.setAttribute('aria-expanded', 'true');
+      }
       descTextarea.value = cur.description || '';
       descTextWrapper.classList.add('hidden');
       descEditor.classList.remove('hidden');
       descTextarea.focus();
     });
+
+    if (descText) {
+      descText.addEventListener('click', () => {
+        const btnEdit = document.getElementById('btnEditDescription');
+        if (btnEdit) btnEdit.click();
+      });
+    }
+
+    const btnToggleNotesAccordion = document.getElementById('btnToggleNotesAccordion');
+    if (btnToggleNotesAccordion) {
+      btnToggleNotesAccordion.addEventListener('click', () => {
+        const notesBody = document.getElementById('notesBodyContainer');
+        const notesChevron = document.getElementById('notesAccordionChevron');
+        if (!notesBody) return;
+        const isNowHidden = notesBody.classList.toggle('hidden');
+        if (notesChevron) {
+          if (isNowHidden) notesChevron.classList.add('-rotate-90');
+          else notesChevron.classList.remove('-rotate-90');
+        }
+        btnToggleNotesAccordion.setAttribute('aria-expanded', isNowHidden ? 'false' : 'true');
+        if (state.activeLessonId) {
+          localStorage.setItem('cfg_notes_collapsed_' + state.activeLessonId, isNowHidden ? '1' : '0');
+        }
+      });
+    }
 
     document.getElementById('btnCancelDesc').addEventListener('click', () => {
       descEditor.classList.add('hidden');
@@ -9287,24 +9369,52 @@
     slider.addEventListener('input', (e) => handleSliderChange(parseInt(e.target.value, 10)));
     fsSlider.addEventListener('input', (e) => handleSliderChange(parseInt(e.target.value, 10)));
 
-    document.getElementById('jumpLessonInput').addEventListener('change', (e) => {
-      if (state.isSharedMode) return;
-      const num = parseInt(e.target.value, 10);
-      const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
-      if (!currentLesson) return;
-      // FIX: Nhảy bài theo nhóm danh mục hoặc bài chưa phân loại
-      let catLessons = [];
-      if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
-        catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
-      } else {
-        catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
-      }
-      if (catLessons.length === 0) catLessons = state.lessons;
+    const btnIndexJumpTrigger = document.getElementById('btnIndexJumpTrigger');
+    const jumpLessonInput = document.getElementById('jumpLessonInput');
+    if (btnIndexJumpTrigger && jumpLessonInput) {
+      btnIndexJumpTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        btnIndexJumpTrigger.classList.add('hidden');
+        jumpLessonInput.classList.remove('hidden');
+        jumpLessonInput.focus();
+        jumpLessonInput.select();
+      });
 
-      if (num >= 1 && num <= catLessons.length) {
-        selectLesson(catLessons[num - 1].id);
-      }
-    });
+      jumpLessonInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          jumpLessonInput.blur();
+        } else if (e.key === 'Escape') {
+          jumpLessonInput.classList.add('hidden');
+          btnIndexJumpTrigger.classList.remove('hidden');
+        }
+      });
+
+      jumpLessonInput.addEventListener('blur', () => {
+        jumpLessonInput.classList.add('hidden');
+        btnIndexJumpTrigger.classList.remove('hidden');
+      });
+    }
+
+    if (jumpLessonInput) {
+      jumpLessonInput.addEventListener('change', (e) => {
+        if (state.isSharedMode) return;
+        const num = parseInt(e.target.value, 10);
+        const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
+        if (!currentLesson) return;
+        // FIX: Nhảy bài theo nhóm danh mục hoặc bài chưa phân loại
+        let catLessons = [];
+        if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
+          catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
+        } else {
+          catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+        }
+        if (catLessons.length === 0) catLessons = state.lessons;
+
+        if (num >= 1 && num <= catLessons.length) {
+          selectLesson(catLessons[num - 1].id);
+        }
+      });
+    }
 
     document.getElementById('btnPrevLesson').addEventListener('click', () => stepLesson(-1));
     document.getElementById('btnNextLesson').addEventListener('click', () => stepLesson(1));
@@ -11518,7 +11628,7 @@
       if (sched) {
         if (metaBadge) metaBadge.classList.remove('hidden');
         if (metaText) {
-          metaText.innerText = sched.enabled === false ? "Đã tắt ôn" : `Ôn: ${sched.nextReviewDate} (Lần ${sched.reviewCount || 1})`;
+          metaText.innerText = sched.enabled === false ? "Chưa bật nhắc ôn" : `Ôn tiếp: ${sched.nextReviewDate} • Lần ${sched.reviewCount || 1}`;
         }
         if (toggleBtn) {
           toggleBtn.innerText = sched.enabled === false ? "Bật" : "Tắt";
@@ -11535,7 +11645,7 @@
       } else {
         if (banner) banner.classList.add('hidden');
         if (metaBadge) metaBadge.classList.remove('hidden');
-        if (metaText) metaText.innerText = "Chưa đặt lịch ôn";
+        if (metaText) metaText.innerText = "Chưa bật nhắc ôn";
         if (toggleBtn) toggleBtn.innerText = "Bật";
       }
     }
@@ -11552,6 +11662,25 @@
         }
         saveLearningData();
         updateSpacedReviewDueUI();
+      });
+    }
+
+    const spacedReviewMetaBadge = document.getElementById('spacedReviewMetaBadge');
+    if (spacedReviewMetaBadge) {
+      spacedReviewMetaBadge.style.cursor = 'pointer';
+      spacedReviewMetaBadge.addEventListener('click', (e) => {
+        if (e.target !== btnToggleSpacedReview && !btnToggleSpacedReview.contains(e.target)) {
+          if (btnToggleSpacedReview) btnToggleSpacedReview.click();
+        }
+      });
+    }
+
+    const btnMenuToggleSpacedReview = document.getElementById('btnMenuToggleSpacedReview');
+    if (btnMenuToggleSpacedReview) {
+      btnMenuToggleSpacedReview.addEventListener('click', () => {
+        if (btnToggleSpacedReview) btnToggleSpacedReview.click();
+        const readerMoreMenu = document.getElementById('readerMoreMenuDropdown');
+        if (readerMoreMenu) readerMoreMenu.classList.add('hidden');
       });
     }
 
@@ -13873,7 +14002,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v3.9.0 - build 08/10/2026 21:15 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v3.9.5 - build 08/10/2026 22:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
