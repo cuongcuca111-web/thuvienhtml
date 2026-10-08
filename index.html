@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thư viện Sách HTML - Đọc & Ôn tập Chuyên sâu</title>
 
+  <!-- Favicon SVG đồng bộ nhận diện logo (Hiển thị ngay trên tab trình duyệt thay cho quả cầu mặc định) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%238696FB'/%3E%3Cg transform='translate(4, 4)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/%3E%3C/g%3E%3C/svg%3E">
+
   <!-- Chặn cảnh báo vô hại ResizeObserver trước khi nạp tài nguyên -->
   <script>
     window.addEventListener('error', function (e) {
@@ -155,18 +158,19 @@
 <body class="h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100">
 
   <header class="h-14 fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/80 dark:bg-[#0F1115]/85 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between px-3 md:px-5 transition-colors">
-    <!-- Khu vực logo & nút bật sidebar -->
+    <!-- Khu vực logo & nút bật sidebar theo thiết kế hình ảnh mẫu -->
     <div class="flex items-center gap-2.5">
       <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên" title="Thu gọn / Mở rộng thanh bên" class="p-2 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center">
         <i data-lucide="panel-left" class="w-[18px] h-[18px]"></i>
       </button>
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-card bg-[#4F46E5] dark:bg-[#818CF8] text-white flex items-center justify-center shadow-sm">
-          <i data-lucide="book-open" class="w-4 h-4"></i>
+      <div class="flex items-center gap-3">
+        <!-- Khối Squircle màu xanh tím pastel dịu mắt -->
+        <div class="w-9 h-9 rounded-[11px] bg-[#8696FB] text-white flex items-center justify-center shadow-sm shrink-0">
+          <i data-lucide="book-open" class="w-5 h-5 text-white" stroke-width="2"></i>
         </div>
-        <div class="flex flex-col">
-          <span class="text-sm font-semibold tracking-tight text-[#1A1A1A] dark:text-[#ECEEF2] hidden sm:inline-block">Thư viện Sách HTML</span>
-          <span class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] -mt-0.5 hidden sm:inline-block">Editorial v2.5 • Cloud Sync</span>
+        <div class="flex flex-col justify-center">
+          <span class="text-[15px] font-bold tracking-tight text-[#1A1A1A] dark:text-white leading-tight">Thư viện Sách HTML</span>
+          <span class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] leading-tight mt-0.5 font-normal">Editorial v2.5 • Cloud Sync</span>
         </div>
       </div>
     </div>
@@ -1170,7 +1174,6 @@
             await signInAnonymously(auth);
           } catch (anonErr) {
             console.warn("signInAnonymously thất bại (có thể chưa bật trong Firebase Console):", anonErr);
-            // Nếu chưa bật Anonymous trong console, tạo pseudo-user cục bộ để không treo app
             setupLocalGuestUser();
             return;
           }
@@ -1388,7 +1391,7 @@
         case 'auth/network-request-failed':
           return 'Lỗi mạng! Vui lòng kiểm tra lại kết nối Internet của bạn.';
         case 'auth/operation-not-allowed':
-          return 'Phương thức đăng nhập này chưa được kích hoạt trên Firebase Console (Vào tab Authentication -> Sign-in method để bật).';
+          return 'Phương thức đăng nhập này chưa được kích hoạt trên Firebase Console.';
         case 'auth/unauthorized-domain':
           return 'Tên miền trang web này chưa được cấp phép trong Firebase (Vào Authentication -> Settings -> Authorized domains để thêm).';
         default:
