@@ -361,6 +361,38 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
+    /* // FIX: Anchored Popover Menu ⋯ (Hiệu ứng mở fade + scale 160ms tại vị trí nút, hỗ trợ prefers-reduced-motion) */
+    @keyframes menuPopoverIn {
+      from {
+        opacity: 0;
+        transform: scale(0.94);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .action-menu-card {
+      animation: menuPopoverIn 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      transform-origin: var(--menu-transform-origin, top right);
+      will-change: transform, opacity;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .action-menu-card {
+        animation: none !important;
+      }
+    }
+
+    /* // FIX: Trạng thái active nổi bật cho nút ⋯ khi popover đang mở */
+    [data-open-lesson-menu].is-menu-active,
+    [data-open-cat-menu].is-menu-active,
+    #btnReaderMoreActions.is-menu-active {
+      background-color: rgba(99, 102, 241, 0.16) !important;
+      color: rgb(99, 102, 241) !important;
+      border-color: rgba(99, 102, 241, 0.4) !important;
+    }
+
     /* // ANIM: Hiệu ứng popup/dropdown tìm kiếm & Popover Hiển thị */
     #searchResultsDropdown:not(.hidden), #mobileSearchResultsDropdown:not(.hidden), #displaySettingsPopover:not(.hidden), #readerMoreMenuDropdown:not(.hidden) {
       animation: dropdownSlideFade var(--anim-dur-fast) var(--anim-ease) both;
@@ -2391,10 +2423,9 @@
     </div>
   </div>
 
-  <!-- // FIX-2: Modal Menu Thao Tác Bài Học (Bottom Sheet trên Mobile, Popover trên Desktop) -->
-  <div id="lessonActionMenuModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 sm:bg-black/20 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-    <div class="action-menu-card bg-white dark:bg-[#181B20] w-full sm:w-[260px] rounded-t-2xl sm:rounded-2xl p-3 sm:p-2.5 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col max-h-[88vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-2.5">
-      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mb-2"></div>
+  <!-- // FIX: Menu Thao Tác Bài Học (Anchored Popover ngay cạnh nút ⋯, không căn giữa, không bottom sheet, lớp phủ trong suốt) -->
+  <div id="lessonActionMenuModal" class="fixed inset-0 z-50 hidden bg-transparent pointer-events-auto">
+    <div class="action-menu-card bg-white dark:bg-[#181B20] w-[260px] max-w-[calc(100vw-16px)] rounded-2xl p-2.5 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col">
       <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
         <div class="min-w-0 pr-2">
           <h3 id="lessonActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn bài học</h3>
@@ -2465,10 +2496,9 @@
     </div>
   </div>
 
-  <!-- // FIX-2: Modal Menu Thao Tác Cho Mục Bài Học -->
-  <div id="categoryActionMenuModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 sm:bg-black/20 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-    <div class="action-menu-card bg-white dark:bg-[#181B20] w-full sm:w-[240px] rounded-t-2xl sm:rounded-2xl p-3 sm:p-2.5 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col max-h-[88vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-2.5">
-      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mb-2"></div>
+  <!-- // FIX: Menu Thao Tác Cho Mục Bài Học (Anchored Popover ngay cạnh nút ⋯, không căn giữa, không bottom sheet, lớp phủ trong suốt) -->
+  <div id="categoryActionMenuModal" class="fixed inset-0 z-50 hidden bg-transparent pointer-events-auto">
+    <div class="action-menu-card bg-white dark:bg-[#181B20] w-[240px] max-w-[calc(100vw-16px)] rounded-2xl p-2.5 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col">
       <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
         <div class="min-w-0 pr-2">
           <h3 id="catActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn mục</h3>
@@ -4939,75 +4969,127 @@
     if (btnCloseBatchMove) btnCloseBatchMove.addEventListener('click', () => { singleLessonMoveCatId = null; hideModalAnimated(batchMoveCatModal); });
 
     // =========================================================================
-// // FIX-2 & FIX-3: MENU THAO TÁC BÀI HỌC VÀ DANH MỤC (POPOVER TRÊN PC, BOTTOM SHEET TRÊN MOBILE)
+    // // FIX: MENU THAO TÁC BÀI HỌC VÀ DANH MỤC (ANCHORED POPOVER NGAY CẠNH NÚT ⋯)
     // =========================================================================
     let currentMenuLessonId = null;
     let currentMenuCatId = null;
+    let activeMenuModal = null;
+    let activeMenuTrigger = null;
 
-    // // FIX-2: Hàm định vị popover tự thích ứng (tự lật lên/xuống, dịch trái/phải kẹp trong màn hình)
-    function positionMenuPopover(cardEl, triggerEl) {
-      if (!cardEl) return;
-      if (window.innerWidth < 640 || !triggerEl) {
-        cardEl.style.position = '';
-        cardEl.style.top = '';
-        cardEl.style.left = '';
-        cardEl.style.width = '';
-        cardEl.style.margin = '';
-        cardEl.style.transform = '';
-        return;
+    // // FIX: Đóng menu popover đang mở và gỡ trạng thái active của nút
+    function closeActiveMenu() {
+      if (activeMenuTrigger) {
+        activeMenuTrigger.classList.remove('is-menu-active', 'bg-black/10', 'dark:bg-white/10', 'text-indigo-600', 'dark:text-indigo-400');
+        activeMenuTrigger.removeAttribute('aria-expanded');
+        activeMenuTrigger = null;
       }
+      if (activeMenuModal) {
+        activeMenuModal.classList.add('hidden');
+        activeMenuModal = null;
+      }
+      // Đóng luôn dropdown menu Thêm trên thanh công cụ bài đọc nếu đang mở
+      const rMenu = document.getElementById('readerMoreMenuDropdown');
+      if (rMenu && !rMenu.classList.contains('hidden')) {
+        rMenu.classList.add('hidden');
+        const rBtn = document.getElementById('btnReaderMoreActions');
+        if (rBtn) {
+          rBtn.classList.remove('is-menu-active');
+          rBtn.removeAttribute('aria-expanded');
+        }
+      }
+    }
+
+    // // FIX: Hàm định vị popover neo ngay cạnh nút ⋯ (anchored popover, tự lật lên/xuống, dịch trái/phải, lề >= 8px)
+    function positionMenuPopover(cardEl, triggerEl) {
+      if (!cardEl || !triggerEl) return;
 
       const rect = triggerEl.getBoundingClientRect();
-      const cardWidth = Math.min(270, window.innerWidth - 20);
-      cardEl.style.position = 'fixed';
-      cardEl.style.margin = '0';
-      cardEl.style.transform = 'none';
-      cardEl.style.width = cardWidth + 'px';
+      const MARGIN = 8;
+      const GAP = 6;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
 
-      // Tính tọa độ ngang (left): căn lề phải với mép phải nút bấm hoặc kẹp trong màn hình
-      let left = rect.right - cardWidth;
-      if (left < 10) left = rect.left;
-      if (left + cardWidth > window.innerWidth - 10) {
-        left = window.innerWidth - cardWidth - 10;
+      // Chiều rộng menu tối đa 260px và không vượt quá màn hình
+      const menuWidth = Math.min(260, Math.max(200, viewportWidth - (MARGIN * 2)));
+      cardEl.style.width = `${Math.round(menuWidth)}px`;
+
+      // Đo chiều cao thực tế của card
+      const menuHeight = cardEl.scrollHeight || cardEl.offsetHeight || 300;
+
+      // 1. Tính toán toạ độ ngang (left):
+      // Mặc định căn lề phải của menu thẳng hàng với mép phải của nút trigger
+      let left = rect.right - menuWidth;
+
+      // Nếu tràn mép trái (< MARGIN), căn lề trái của menu với mép trái nút
+      if (left < MARGIN) {
+        left = rect.left;
       }
-      if (left < 10) left = 10;
+      // Nếu tràn mép phải, dịch sang trái
+      if (left + menuWidth > viewportWidth - MARGIN) {
+        left = viewportWidth - menuWidth - MARGIN;
+      }
+      // Luôn đảm bảo chừa lề tối thiểu 8px so với mép màn hình
+      if (left < MARGIN) {
+        left = MARGIN;
+      }
 
-      // Tính tọa độ dọc (top): tự động lật lên hoặc xuống
-      const cardHeight = cardEl.offsetHeight || 330;
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
+      // 2. Tính toán toạ độ dọc (top) và tự động lật lên trên nếu không đủ chỗ bên dưới:
+      const spaceBelow = viewportHeight - rect.bottom - GAP - MARGIN;
+      const spaceAbove = rect.top - GAP - MARGIN;
 
       let top;
-      if (spaceBelow >= cardHeight + 8 || spaceBelow >= spaceAbove) {
-        // Đủ chỗ bên dưới hoặc không gian bên dưới rộng hơn
-        top = rect.bottom + 6;
-        if (top + cardHeight > window.innerHeight - 10) {
-          top = Math.max(10, window.innerHeight - cardHeight - 10);
-        }
+      let originY = 'top';
+      let maxHeight;
+
+      // Nếu đủ chỗ bên dưới HOẶC khoảng trống bên dưới lớn hơn khoảng trống bên trên:
+      if (spaceBelow >= menuHeight || spaceBelow >= spaceAbove) {
+        top = rect.bottom + GAP;
+        maxHeight = Math.max(140, spaceBelow);
+        originY = 'top';
       } else {
-        // Lật lên trên nút bấm
-        top = rect.top - cardHeight - 6;
-        if (top < 10) top = 10;
+        // Không đủ chỗ bên dưới -> lật lên trên nút bấm
+        maxHeight = Math.max(140, spaceAbove);
+        const actualH = Math.min(menuHeight, maxHeight);
+        top = rect.top - GAP - actualH;
+        originY = 'bottom';
       }
 
+      // Kẹp top trong giới hạn an toàn [MARGIN, viewportHeight - MARGIN - 40]
+      if (top < MARGIN) top = MARGIN;
+      if (top + maxHeight > viewportHeight - MARGIN) {
+        maxHeight = viewportHeight - top - MARGIN;
+      }
+
+      // Thiết lập transform-origin theo vị trí nút để hiệu ứng scale bắt đầu ngay từ nút
+      const originX = (rect.left + rect.width / 2 > left + menuWidth / 2) ? 'right' : 'left';
+      cardEl.style.setProperty('--menu-transform-origin', `${originY} ${originX}`);
+
+      // Định vị position: fixed trực tiếp gắn theo toạ độ viewport
+      cardEl.style.position = 'fixed';
       cardEl.style.left = `${Math.round(left)}px`;
       cardEl.style.top = `${Math.round(top)}px`;
-      cardEl.style.bottom = 'auto';
-      cardEl.style.right = 'auto';
+      cardEl.style.maxHeight = `${Math.round(maxHeight)}px`;
+      cardEl.style.overflowY = 'auto';
+      cardEl.style.zIndex = '9999';
     }
 
     function openLessonActionMenu(lessonId, triggerEl = null) {
+      // Đóng menu trước đó (chỉ mở một menu tại một thời điểm)
+      closeActiveMenu();
+
       currentMenuLessonId = lessonId;
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (!lesson) return;
 
       const modal = document.getElementById('lessonActionMenuModal');
+      if (!modal) return;
+      const card = modal.querySelector('.action-menu-card');
+
       const titleEl = document.getElementById('lessonActionMenuTitle');
       const subEl = document.getElementById('lessonActionMenuSub');
       const favText = document.getElementById('actionMenuFavText');
       const favIcon = document.getElementById('actionMenuFavIcon');
       const learnedText = document.getElementById('actionMenuLearnedText');
-      const card = modal?.querySelector('.action-menu-card');
 
       if (titleEl) titleEl.innerText = lesson.title || 'Bài học';
       let catName = 'Chưa phân loại';
@@ -5028,33 +5110,64 @@
 
       if (learnedText) learnedText.innerText = lesson.isCompleted ? 'Đánh dấu chưa học' : 'Đánh dấu đã học';
 
-      showModalAnimated(modal);
-      if (card) {
-        requestAnimationFrame(() => {
-          positionMenuPopover(card, triggerEl);
-        });
+      // Tìm triggerEl nếu chưa được truyền
+      if (!triggerEl) {
+        triggerEl = document.querySelector(`[data-open-lesson-menu="${lessonId}"]`);
+      }
+
+      // Tô trạng thái active cho nút trigger
+      if (triggerEl) {
+        triggerEl.classList.add('is-menu-active');
+        triggerEl.setAttribute('aria-expanded', 'true');
+        activeMenuTrigger = triggerEl;
+      }
+
+      // Mở menu và định vị ngay cạnh nút
+      modal.classList.remove('hidden');
+      activeMenuModal = modal;
+
+      if (card && triggerEl) {
+        positionMenuPopover(card, triggerEl);
       }
     }
 
     function openCategoryActionMenu(catId, triggerEl = null) {
+      // Đóng menu trước đó
+      closeActiveMenu();
+
       currentMenuCatId = catId;
       const cat = state.categories.find(c => c.id === catId);
       if (!cat) return;
 
       const modal = document.getElementById('categoryActionMenuModal');
+      if (!modal) return;
+      const card = modal.querySelector('.action-menu-card');
+
       const titleEl = document.getElementById('catActionMenuTitle');
       const subEl = document.getElementById('catActionMenuSub');
-      const card = modal?.querySelector('.action-menu-card');
 
       if (titleEl) titleEl.innerText = cat.title || 'Mục bài học';
       const count = state.lessons.filter(l => l.categoryId === cat.id).length;
       if (subEl) subEl.innerText = `${count} bài học trong mục`;
 
-      showModalAnimated(modal);
-      if (card) {
-        requestAnimationFrame(() => {
-          positionMenuPopover(card, triggerEl);
-        });
+      // Tìm triggerEl nếu chưa được truyền
+      if (!triggerEl) {
+        triggerEl = document.querySelector(`[data-open-cat-menu="${catId}"]`);
+      }
+
+      // Tô trạng thái active cho nút trigger
+      if (triggerEl) {
+        triggerEl.classList.add('is-menu-active');
+        triggerEl.setAttribute('aria-expanded', 'true');
+        activeMenuTrigger = triggerEl;
+      }
+
+      // Mở menu và định vị ngay cạnh nút
+      modal.classList.remove('hidden');
+      activeMenuModal = modal;
+
+      if (card && triggerEl) {
+        positionMenuPopover(card, triggerEl);
       }
     }
 
@@ -5071,27 +5184,55 @@
       showToast(lesson.isFavorite ? 'Đã thêm vào mục Yêu thích' : 'Đã bỏ khỏi mục Yêu thích');
     }
 
-    // Gắn sự kiện đóng modal menu
+    // // FIX: Gắn sự kiện đóng menu khi click nút đóng ✕ hoặc click ngoài lớp phủ trong suốt
     const btnCloseLessonActionMenu = document.getElementById('btnCloseLessonActionMenu');
     if (btnCloseLessonActionMenu) {
-      btnCloseLessonActionMenu.addEventListener('click', () => {
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
-      });
+      btnCloseLessonActionMenu.addEventListener('click', closeActiveMenu);
     }
 
     const btnCloseCatActionMenu = document.getElementById('btnCloseCatActionMenu');
     if (btnCloseCatActionMenu) {
-      btnCloseCatActionMenu.addEventListener('click', () => {
-        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+      btnCloseCatActionMenu.addEventListener('click', closeActiveMenu);
+    }
+
+    const lessonMenuModalEl = document.getElementById('lessonActionMenuModal');
+    if (lessonMenuModalEl) {
+      lessonMenuModalEl.addEventListener('click', (e) => {
+        if (e.target === lessonMenuModalEl) closeActiveMenu();
       });
     }
+
+    const catMenuModalEl = document.getElementById('categoryActionMenuModal');
+    if (catMenuModalEl) {
+      catMenuModalEl.addEventListener('click', (e) => {
+        if (e.target === catMenuModalEl) closeActiveMenu();
+      });
+    }
+
+    // // FIX: Đóng menu khi cuộn danh sách (scroll với capture: true), resize hoặc nhấn Esc
+    window.addEventListener('scroll', (e) => {
+      if (activeMenuModal && !activeMenuModal.classList.contains('hidden')) {
+        const card = activeMenuModal.querySelector('.action-menu-card');
+        if (card && e.target && (e.target instanceof Node) && card.contains(e.target)) return; // Cho phép cuộn bên trong menu nếu danh sách mục dài
+        closeActiveMenu();
+      }
+    }, { capture: true, passive: true });
+
+    window.addEventListener('resize', closeActiveMenu, { passive: true });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && activeMenuModal && !activeMenuModal.classList.contains('hidden')) {
+        e.stopPropagation();
+        closeActiveMenu();
+      }
+    });
 
     // Các nút trong Menu Bài học
     const btnActionMenuTag = document.getElementById('btnActionMenuTag');
     if (btnActionMenuTag) {
       btnActionMenuTag.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) setTimeout(() => openTagManageModal(lId), 150);
       });
     }
@@ -5100,7 +5241,7 @@
     if (btnActionMenuFavorite) {
       btnActionMenuFavorite.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) toggleFavoriteLesson(lId);
       });
     }
@@ -5109,7 +5250,7 @@
     if (btnActionMenuLearned) {
       btnActionMenuLearned.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) {
           const lesson = state.lessons.find(l => l.id === lId);
           if (lesson) updateLessonField(lesson.id, { isCompleted: !lesson.isCompleted });
@@ -5121,7 +5262,7 @@
     if (btnActionMenuRename) {
       btnActionMenuRename.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         const lesson = state.lessons.find(l => l.id === lId);
         if (lesson) setTimeout(() => openRenameLessonModal(lesson), 150);
       });
@@ -5131,7 +5272,7 @@
     if (btnActionMenuShare) {
       btnActionMenuShare.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         const lesson = state.lessons.find(l => l.id === lId);
         if (lesson) setTimeout(() => openQuickShareModal(lesson), 150);
       });
@@ -5141,7 +5282,7 @@
     if (btnActionMenuMoveCat) {
       btnActionMenuMoveCat.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) setTimeout(() => openMoveCatModalForLesson(lId), 150);
       });
     }
@@ -5150,7 +5291,7 @@
     if (btnActionMenuMoveUp) {
       btnActionMenuMoveUp.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) moveLessonOrder(lId, -1);
       });
     }
@@ -5159,7 +5300,7 @@
     if (btnActionMenuMoveDown) {
       btnActionMenuMoveDown.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) moveLessonOrder(lId, 1);
       });
     }
@@ -5169,7 +5310,7 @@
     if (btnActionMenuDelete) {
       btnActionMenuDelete.addEventListener('click', () => {
         const lId = currentMenuLessonId;
-        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        closeActiveMenu();
         if (lId) {
           moveLessonToTrash(lId);
         }
@@ -5181,7 +5322,7 @@
     if (btnCatMenuRename) {
       btnCatMenuRename.addEventListener('click', () => {
         const cId = currentMenuCatId;
-        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        closeActiveMenu();
         const cat = state.categories.find(c => c.id === cId);
         if (cat) setTimeout(() => openCategoryModal(cat), 150);
       });
@@ -5191,7 +5332,7 @@
     if (btnCatMenuAddLesson) {
       btnCatMenuAddLesson.addEventListener('click', () => {
         const cId = currentMenuCatId;
-        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        closeActiveMenu();
         state.activeCategoryId = cId;
         openUploadModal();
       });
@@ -5201,7 +5342,7 @@
     if (btnCatMenuMoveUp) {
       btnCatMenuMoveUp.addEventListener('click', () => {
         const cId = currentMenuCatId;
-        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        closeActiveMenu();
         if (cId) moveCategoryOrder(cId, -1);
       });
     }
@@ -5210,7 +5351,7 @@
     if (btnCatMenuMoveDown) {
       btnCatMenuMoveDown.addEventListener('click', () => {
         const cId = currentMenuCatId;
-        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        closeActiveMenu();
         if (cId) moveCategoryOrder(cId, 1);
       });
     }
@@ -5219,14 +5360,14 @@
     if (btnCatMenuDelete) {
       btnCatMenuDelete.addEventListener('click', () => {
         const cId = currentMenuCatId;
-        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        closeActiveMenu();
         if (cId) {
           moveCategoryToTrash(cId);
         }
       });
     }
 
-    // // FIX-2: EVENT DELEGATION BẮT TẤT CẢ CÁC NÚT MENU ⋯ TRONG DANH SÁCH VÀ DRAWER
+    // // FIX: EVENT DELEGATION BẮT TẤT CẢ CÁC NÚT MENU ⋯ TRONG DANH SÁCH VÀ DRAWER
     document.addEventListener('click', (e) => {
       // 1. Menu Bài học
       const lessonMenuBtn = e.target.closest('[data-open-lesson-menu]');
@@ -5234,6 +5375,11 @@
         e.preventDefault();
         e.stopPropagation();
         const lessonId = lessonMenuBtn.getAttribute('data-open-lesson-menu');
+        // Nếu nút này đang active và menu đang mở -> bấm lại thì đóng toggle
+        if (activeMenuTrigger === lessonMenuBtn && activeMenuModal && !activeMenuModal.classList.contains('hidden')) {
+          closeActiveMenu();
+          return;
+        }
         openLessonActionMenu(lessonId, lessonMenuBtn);
         return;
       }
@@ -5244,8 +5390,21 @@
         e.preventDefault();
         e.stopPropagation();
         const catId = catMenuBtn.getAttribute('data-open-cat-menu');
+        // Nếu nút này đang active và menu đang mở -> bấm lại thì đóng toggle
+        if (activeMenuTrigger === catMenuBtn && activeMenuModal && !activeMenuModal.classList.contains('hidden')) {
+          closeActiveMenu();
+          return;
+        }
         openCategoryActionMenu(catId, catMenuBtn);
         return;
+      }
+
+      // 3. Click bất kỳ đâu ra ngoài popover -> tự đóng
+      if (activeMenuModal && !activeMenuModal.classList.contains('hidden')) {
+        const card = activeMenuModal.querySelector('.action-menu-card');
+        if (card && e.target && (e.target instanceof Node) && !card.contains(e.target)) {
+          closeActiveMenu();
+        }
       }
     });
 
@@ -6210,11 +6369,16 @@
       container.innerHTML = html;
       refreshIcons(container);
 
-      // Gắn sự kiện click mở menu tùy chọn bài ⋯
+      // // FIX: Sự kiện mở menu bài học ⋯ luôn truyền đầy đủ triggerEl để định vị anchored popover
       container.querySelectorAll('[data-open-lesson-menu]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          openLessonActionMenu(el.getAttribute('data-open-lesson-menu'));
+          const lId = el.getAttribute('data-open-lesson-menu');
+          if (activeMenuTrigger === el && activeMenuModal && !activeMenuModal.classList.contains('hidden')) {
+            closeActiveMenu();
+            return;
+          }
+          openLessonActionMenu(lId, el);
         });
       });
 
@@ -10643,14 +10807,19 @@
     if (btnReaderMoreActions && readerMoreMenuDropdown) {
       btnReaderMoreActions.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeActiveMenu(); // Đóng menu bài học / danh mục nếu đang mở
         readerMoreMenuDropdown.classList.toggle('hidden');
         if (!readerMoreMenuDropdown.classList.contains('hidden')) {
+          btnReaderMoreActions.classList.add('is-menu-active');
           refreshIcons(readerMoreMenuDropdown);
+        } else {
+          btnReaderMoreActions.classList.remove('is-menu-active');
         }
       });
       document.addEventListener('click', (e) => {
         if (!readerMoreMenuDropdown.contains(e.target) && !btnReaderMoreActions.contains(e.target)) {
           readerMoreMenuDropdown.classList.add('hidden');
+          btnReaderMoreActions.classList.remove('is-menu-active');
         }
       });
     }
