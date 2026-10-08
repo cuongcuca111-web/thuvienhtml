@@ -1341,37 +1341,32 @@
           <span id="authErrorText">Đã có lỗi xảy ra.</span>
         </div>
 
-        <div id="authNameGroup" class="hidden">
-          <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Họ và tên</label>
+        <!-- // FIX: Trường Tên đăng nhập (thay thế cả Họ tên và Email; chỉ cho phép 3-20 ký tự chữ số không dấu và ., _, -) -->
+        <div id="authUsernameGroup">
+          <label id="authEmailLabel" class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Tên đăng nhập hoặc Email</label>
           <div class="relative">
             <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-user"></use></svg>
             <input 
-              id="authNameInput" 
-              type="text" 
-              placeholder="Nguyễn Văn A" 
-              class="w-full text-base sm:text-sm pl-9 pr-3 py-2.5 rounded-card bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-[#4F46E5]"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Địa chỉ Email</label>
-          <div class="relative">
-            <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-mail"></use></svg>
-            <input 
               id="authEmailInput" 
-              type="email" 
+              type="text" 
               required 
-              placeholder="tenban@domain.com" 
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+              placeholder="Nhập tên đăng nhập hoặc email" 
               class="w-full text-base sm:text-sm pl-9 pr-3 py-2.5 rounded-card bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-[#4F46E5]"
             />
           </div>
+          <p id="usernameHelperText" class="hidden text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-1 leading-snug">
+            3–20 ký tự (chữ cái không dấu, chữ số, dấu chấm, gạch dưới, gạch ngang).
+          </p>
         </div>
 
+        <!-- // FIX: Trường Mật khẩu -->
         <div id="authPasswordGroup">
           <div class="flex items-center justify-between mb-1">
             <label class="text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Mật khẩu</label>
-            <button type="button" id="btnForgotPass" class="text-xs text-[#4F46E5] dark:text-[#818CF8] hover:underline py-1">
+            <button type="button" id="btnForgotPass" class="hidden text-xs text-[#4F46E5] dark:text-[#818CF8] hover:underline py-1">
               Quên mật khẩu?
             </button>
           </div>
@@ -1380,6 +1375,7 @@
             <input 
               id="authPasswordInput" 
               type="password" 
+              required
               minlength="6" 
               placeholder="Tối thiểu 6 ký tự" 
               class="w-full text-base sm:text-sm pl-9 pr-3 py-2.5 rounded-card bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-[#4F46E5]"
@@ -1387,8 +1383,9 @@
           </div>
         </div>
 
+        <!-- // FIX: Trường Nhập lại mật khẩu (chỉ hiển thị khi Đăng ký mới) -->
         <div id="authConfirmPasswordGroup" class="hidden">
-          <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Xác nhận mật khẩu</label>
+          <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Nhập lại mật khẩu</label>
           <div class="relative">
             <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-check-check"></use></svg>
             <input 
@@ -1399,6 +1396,12 @@
               class="w-full text-base sm:text-sm pl-9 pr-3 py-2.5 rounded-card bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-[#4F46E5]"
             />
           </div>
+        </div>
+
+        <!-- // FIX: Dòng gợi ý bảo toàn mật khẩu và sao lưu dữ liệu (.json) -->
+        <div id="authPasswordNotice" class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2] flex items-start gap-1.5 p-2.5 rounded-lg bg-[#FAF9F5] dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] leading-relaxed">
+          <svg class="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" aria-hidden="true"><use href="#icon-info"></use></svg>
+          <span><strong>Gợi ý:</strong> Hãy ghi nhớ mật khẩu và thường xuyên dùng tính năng <em>Xuất sao lưu (.json)</em> để an toàn dữ liệu.</span>
         </div>
 
         <button 
@@ -1880,7 +1883,12 @@
 
           if (!user.isAnonymous) {
             localStorage.setItem('has_authenticated_account', 'true');
-            localStorage.setItem('last_auth_user_email', user.email || '');
+            // // FIX: Không lưu email ảo vào LocalStorage
+            if (user.email && !user.email.endsWith('@thuvienhtml.local')) {
+              localStorage.setItem('last_auth_user_email', user.email);
+            } else {
+              localStorage.removeItem('last_auth_user_email');
+            }
             localStorage.setItem('last_auth_user_name', user.displayName || user.email?.split('@')[0] || '');
           } else {
             // FIX: Khi là khách, nạp ngay dữ liệu LocalStorage vào trước để không bị mất khi F5
@@ -1987,11 +1995,18 @@
         if (btnLogout) btnLogout.classList.add('hidden');
         if (logoutDivider) logoutDivider.classList.add('hidden');
       } else {
+        // // FIX: Tên hiển thị lấy từ displayName hoặc tên đăng nhập (trước @)
         const displayName = user.displayName || user.email?.split('@')[0] || "Thành viên";
         initialEl.innerText = (displayName[0] || "U").toUpperCase();
         headerLabel.innerText = displayName;
         nameEl.innerText = displayName;
-        emailEl.innerText = user.email || "Đã xác thực";
+
+        // // FIX: Không bao giờ hiển thị email ảo @thuvienhtml.local ra giao diện
+        if (user.email && user.email.endsWith('@thuvienhtml.local')) {
+          emailEl.innerText = `@${displayName}`;
+        } else {
+          emailEl.innerText = user.email || "Đã xác thực";
+        }
         uidEl.innerText = `UID: ${(user.uid || '').substring(0, 12)}...`;
 
         badgeType.innerText = user.providerData && user.providerData[0]?.providerId === 'google.com' ? "Google" : "Đã đồng bộ";
@@ -2036,9 +2051,11 @@
     const tabBtnRegister = document.getElementById('tabBtnRegister');
     const authModalTitle = document.getElementById('authModalTitle');
     const authModalSubtitle = document.getElementById('authModalSubtitle');
-    const authNameGroup = document.getElementById('authNameGroup');
+    const authEmailLabel = document.getElementById('authEmailLabel');
+    const usernameHelperText = document.getElementById('usernameHelperText');
     const authPasswordGroup = document.getElementById('authPasswordGroup');
     const authConfirmPasswordGroup = document.getElementById('authConfirmPasswordGroup');
+    const authPasswordNotice = document.getElementById('authPasswordNotice');
     const btnSubmitAuthText = document.getElementById('btnSubmitAuthText');
     const authSpinner = document.getElementById('authSpinner');
     const authErrorMessage = document.getElementById('authErrorMessage');
@@ -2046,7 +2063,60 @@
     const authEmailInput = document.getElementById('authEmailInput');
     const authPasswordInput = document.getElementById('authPasswordInput');
     const authConfirmPasswordInput = document.getElementById('authConfirmPasswordInput');
-    const authNameInput = document.getElementById('authNameInput');
+    const btnForgotPass = document.getElementById('btnForgotPass');
+
+    // // FIX: Hàm kiểm tra tính hợp lệ của Tên đăng nhập (3–20 ký tự, chữ cái không dấu, số, ., _, -)
+    function validateUsername(raw, isTyping = false) {
+      const val = (raw || '').trim().toLowerCase();
+      if (!val) {
+        return isTyping ? null : 'Vui lòng nhập tên đăng nhập.';
+      }
+      if (val.length < 3 || val.length > 20) {
+        return 'Tên đăng nhập phải dài từ 3 đến 20 ký tự.';
+      }
+      if (!/^[a-z0-9._-]+$/.test(val)) {
+        return 'Tên đăng nhập chỉ gồm chữ cái không dấu, số, dấu chấm (.), gạch dưới (_) và gạch ngang (-).';
+      }
+      return null;
+    }
+
+    // // FIX: Xử lý email ảo nội bộ cho hệ thống Firebase Auth
+    const VIRTUAL_EMAIL_DOMAIN = 'thuvienhtml.local';
+    function usernameToVirtualEmail(username) {
+      return `${(username || '').trim().toLowerCase()}@${VIRTUAL_EMAIL_DOMAIN}`;
+    }
+
+    function resolveLoginEmail(raw) {
+      const trimmed = (raw || '').trim();
+      if (trimmed.includes('@')) {
+        return trimmed.toLowerCase();
+      }
+      return usernameToVirtualEmail(trimmed);
+    }
+
+    // // FIX: Hàm đồng bộ dữ liệu chế độ khách lên tài khoản mới
+    async function syncGuestDataToAccount(userId, fallbackCats, fallbackLessons) {
+      if (!db || !userId) return;
+      try {
+        const catsToSync = (fallbackCats && fallbackCats.length > 0) ? fallbackCats : state.categories;
+        const lessonsToSync = (fallbackLessons && fallbackLessons.length > 0) ? fallbackLessons : state.lessons;
+
+        if (lessonsToSync && lessonsToSync.length > 0) {
+          for (const cat of catsToSync) {
+            if (cat && cat.id) {
+              await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'categories', cat.id), cat, { merge: true });
+            }
+          }
+          for (const lesson of lessonsToSync) {
+            if (lesson && lesson.id) {
+              await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'lessons', lesson.id), lesson, { merge: true });
+            }
+          }
+        }
+      } catch (syncErr) {
+        console.warn("Lỗi đồng bộ dữ liệu khách sang tài khoản mới:", syncErr);
+      }
+    }
 
     function setAuthError(msg) {
       if (msg) {
@@ -2066,27 +2136,38 @@
         tabBtnRegister.className = "py-2 font-medium rounded text-[#6B6B66] dark:text-[#9AA3B2] transition";
         authModalTitle.innerText = "Đăng nhập";
         authModalSubtitle.innerText = "Đồng bộ và khôi phục sách học của bạn";
-        authNameGroup.classList.add('hidden');
+        if (authEmailLabel) authEmailLabel.innerText = "Tên đăng nhập hoặc Email";
+        authEmailInput.placeholder = "Nhập tên đăng nhập hoặc email";
+        if (usernameHelperText) usernameHelperText.classList.add('hidden');
         authPasswordGroup.classList.remove('hidden');
         authConfirmPasswordGroup.classList.add('hidden');
+        if (btnForgotPass) btnForgotPass.classList.add('hidden');
+        if (authPasswordNotice) authPasswordNotice.classList.remove('hidden');
         btnSubmitAuthText.innerText = "Đăng nhập ngay";
       } else if (mode === 'register') {
         tabBtnRegister.className = "py-2 font-medium rounded transition bg-white dark:bg-[#161A20] text-[#1A1A1A] dark:text-[#ECEEF2] shadow-sm";
         tabBtnLogin.className = "py-2 font-medium rounded text-[#6B6B66] dark:text-[#9AA3B2] transition";
         authModalTitle.innerText = "Tạo tài khoản mới";
-        authModalSubtitle.innerText = "Lưu trữ tài liệu vĩnh viễn trên đám mây";
-        authNameGroup.classList.remove('hidden');
+        authModalSubtitle.innerText = "Chỉ cần Tên đăng nhập và Mật khẩu";
+        if (authEmailLabel) authEmailLabel.innerText = "Tên đăng nhập";
+        authEmailInput.placeholder = "3–20 ký tự (chữ, số, ., _, -)";
+        if (usernameHelperText) usernameHelperText.classList.remove('hidden');
         authPasswordGroup.classList.remove('hidden');
         authConfirmPasswordGroup.classList.remove('hidden');
+        if (btnForgotPass) btnForgotPass.classList.add('hidden');
+        if (authPasswordNotice) authPasswordNotice.classList.remove('hidden');
         btnSubmitAuthText.innerText = "Đăng ký tài khoản";
       } else if (mode === 'forgot') {
         tabBtnLogin.className = "py-2 font-medium rounded text-[#6B6B66]";
         tabBtnRegister.className = "py-2 font-medium rounded text-[#6B6B66]";
         authModalTitle.innerText = "Khôi phục mật khẩu";
         authModalSubtitle.innerText = "Nhập email để nhận liên kết đặt lại";
-        authNameGroup.classList.add('hidden');
+        if (authEmailLabel) authEmailLabel.innerText = "Địa chỉ Email";
+        authEmailInput.placeholder = "tenban@domain.com";
+        if (usernameHelperText) usernameHelperText.classList.add('hidden');
         authPasswordGroup.classList.add('hidden');
         authConfirmPasswordGroup.classList.add('hidden');
+        if (authPasswordNotice) authPasswordNotice.classList.add('hidden');
         btnSubmitAuthText.innerText = "Gửi email khôi phục";
       }
       refreshIcons();
@@ -2100,7 +2181,9 @@
 
     tabBtnLogin.addEventListener('click', () => switchAuthTab('login'));
     tabBtnRegister.addEventListener('click', () => switchAuthTab('register'));
-    document.getElementById('btnForgotPass').addEventListener('click', () => switchAuthTab('forgot'));
+    if (btnForgotPass) {
+      btnForgotPass.addEventListener('click', () => switchAuthTab('forgot'));
+    }
     document.getElementById('btnCloseAuthModal').addEventListener('click', () => hideModalAnimated(authModal));
 
     document.getElementById('btnSwitchAccount').addEventListener('click', () => {
@@ -2108,18 +2191,61 @@
       openAuthModal('login');
     });
 
+    // // FIX: Kiểm tra tính hợp lệ của Tên đăng nhập và mật khẩu ngay khi gõ
+    authEmailInput.addEventListener('input', () => {
+      if (state.authMode === 'register') {
+        const val = authEmailInput.value;
+        if (!val) {
+          setAuthError(null);
+          return;
+        }
+        const err = validateUsername(val, true);
+        if (err) {
+          setAuthError(err);
+        } else {
+          if (authErrorText.innerText.includes('Tên đăng nhập') || authErrorText.innerText.includes('ký tự')) {
+            setAuthError(null);
+          }
+        }
+      }
+    });
+
+    authPasswordInput.addEventListener('input', () => {
+      if (state.authMode === 'register' && authPasswordInput.value) {
+        if (authPasswordInput.value.length < 6) {
+          setAuthError('Mật khẩu tối thiểu 6 ký tự.');
+        } else {
+          if (authErrorText.innerText.includes('Mật khẩu tối thiểu 6 ký tự')) {
+            setAuthError(null);
+          }
+        }
+      }
+    });
+
+    authConfirmPasswordInput.addEventListener('input', () => {
+      if (state.authMode === 'register' && authConfirmPasswordInput.value) {
+        if (authPasswordInput.value !== authConfirmPasswordInput.value) {
+          setAuthError('Mật khẩu nhập lại không khớp.');
+        } else {
+          if (authErrorText.innerText.includes('Mật khẩu nhập lại không khớp')) {
+            setAuthError(null);
+          }
+        }
+      }
+    });
+
     function translateFirebaseError(errorCode) {
       switch (errorCode) {
         case 'auth/invalid-email':
-          return 'Địa chỉ email không đúng định dạng.';
+          return 'Tên đăng nhập hoặc địa chỉ email không đúng định dạng.';
         case 'auth/user-disabled':
           return 'Tài khoản này đã bị khóa.';
         case 'auth/user-not-found':
         case 'auth/wrong-password':
         case 'auth/invalid-credential':
-          return 'Email hoặc mật khẩu không chính xác.';
+          return 'Tên đăng nhập/email hoặc mật khẩu không chính xác.';
         case 'auth/email-already-in-use':
-          return 'Email này đã được sử dụng bởi một tài khoản khác.';
+          return 'Tên đăng nhập này đã tồn tại. Vui lòng chọn tên khác.';
         case 'auth/weak-password':
           return 'Mật khẩu quá yếu! Tối thiểu 6 ký tự.';
         case 'auth/popup-closed-by-user':
@@ -2136,55 +2262,117 @@
       e.preventDefault();
       setAuthError(null);
 
-      const email = authEmailInput.value.trim();
+      const rawIdentifier = authEmailInput.value.trim();
       const password = authPasswordInput.value;
       const confirmPass = authConfirmPasswordInput.value;
-      const name = authNameInput.value.trim();
-
-      if (!email) {
-        setAuthError('Vui lòng nhập địa chỉ email.');
-        return;
-      }
 
       if (state.authMode === 'register') {
+        // // FIX: Kiểm tra điều kiện Tên đăng nhập & Mật khẩu
+        const uErr = validateUsername(rawIdentifier, false);
+        if (uErr) {
+          setAuthError(uErr);
+          authEmailInput.focus();
+          return;
+        }
+
         if (!password || password.length < 6) {
           setAuthError('Mật khẩu tối thiểu 6 ký tự.');
+          authPasswordInput.focus();
           return;
         }
         if (password !== confirmPass) {
-          setAuthError('Mật khẩu xác nhận không khớp.');
+          setAuthError('Mật khẩu nhập lại không khớp.');
+          authConfirmPasswordInput.focus();
           return;
         }
-      }
 
-      authSpinner.classList.remove('hidden');
-      document.getElementById('btnSubmitAuth').disabled = true;
+        const normalizedUsername = rawIdentifier.toLowerCase();
+        const virtualEmail = usernameToVirtualEmail(normalizedUsername);
 
-      try {
-        if (state.authMode === 'login') {
-          await signInWithEmailAndPassword(auth, email, password);
-          localStorage.setItem('has_authenticated_account', 'true');
-          showToast('Đăng nhập thành công!');
-          hideModalAnimated(authModal);
-        } else if (state.authMode === 'register') {
-          const cred = await createUserWithEmailAndPassword(auth, email, password);
-          if (name && cred.user) {
-            await updateProfile(cred.user, { displayName: name });
+        authSpinner.classList.remove('hidden');
+        document.getElementById('btnSubmitAuth').disabled = true;
+
+        try {
+          // Lưu snapshot dữ liệu khách trước khi tạo tài khoản
+          const guestCats = JSON.parse(JSON.stringify(state.categories || []));
+          const guestLessons = JSON.parse(JSON.stringify(state.lessons || []));
+
+          const cred = await createUserWithEmailAndPassword(auth, virtualEmail, password);
+          if (cred.user) {
+            await updateProfile(cred.user, { displayName: normalizedUsername });
+            // Đồng bộ dữ liệu chế độ khách lên tài khoản mới
+            await syncGuestDataToAccount(cred.user.uid, guestCats, guestLessons);
           }
           localStorage.setItem('has_authenticated_account', 'true');
+          localStorage.setItem('last_auth_user_name', normalizedUsername);
           showToast('Đăng ký tài khoản thành công!');
           hideModalAnimated(authModal);
-        } else if (state.authMode === 'forgot') {
-          await sendPasswordResetEmail(auth, email);
+        } catch (err) {
+          console.error("Đăng ký lỗi:", err);
+          if (err.code === 'auth/email-already-in-use') {
+            setAuthError('Tên đăng nhập này đã tồn tại. Vui lòng chọn tên khác.');
+          } else {
+            setAuthError(translateFirebaseError(err.code));
+          }
+        } finally {
+          authSpinner.classList.add('hidden');
+          document.getElementById('btnSubmitAuth').disabled = false;
+        }
+      } else if (state.authMode === 'login') {
+        if (!rawIdentifier) {
+          setAuthError('Vui lòng nhập tên đăng nhập hoặc email.');
+          authEmailInput.focus();
+          return;
+        }
+        if (!password) {
+          setAuthError('Vui lòng nhập mật khẩu.');
+          authPasswordInput.focus();
+          return;
+        }
+
+        // // FIX: Hỗ trợ cả đăng nhập bằng email cũ và tên đăng nhập mới
+        const loginEmail = resolveLoginEmail(rawIdentifier);
+
+        authSpinner.classList.remove('hidden');
+        document.getElementById('btnSubmitAuth').disabled = true;
+
+        try {
+          const guestCats = JSON.parse(JSON.stringify(state.categories || []));
+          const guestLessons = JSON.parse(JSON.stringify(state.lessons || []));
+
+          const cred = await signInWithEmailAndPassword(auth, loginEmail, password);
+          localStorage.setItem('has_authenticated_account', 'true');
+
+          if (guestLessons.length > 0 && cred.user) {
+            await syncGuestDataToAccount(cred.user.uid, guestCats, guestLessons);
+          }
+
+          showToast('Đăng nhập thành công!');
+          hideModalAnimated(authModal);
+        } catch (err) {
+          console.error("Đăng nhập lỗi:", err);
+          setAuthError(translateFirebaseError(err.code));
+        } finally {
+          authSpinner.classList.add('hidden');
+          document.getElementById('btnSubmitAuth').disabled = false;
+        }
+      } else if (state.authMode === 'forgot') {
+        if (!rawIdentifier || !rawIdentifier.includes('@')) {
+          setAuthError('Vui lòng nhập địa chỉ email đã dùng để đăng ký.');
+          return;
+        }
+        authSpinner.classList.remove('hidden');
+        document.getElementById('btnSubmitAuth').disabled = true;
+        try {
+          await sendPasswordResetEmail(auth, rawIdentifier.toLowerCase());
           showToast('Đã gửi email khôi phục mật khẩu.');
           switchAuthTab('login');
+        } catch (err) {
+          setAuthError(translateFirebaseError(err.code));
+        } finally {
+          authSpinner.classList.add('hidden');
+          document.getElementById('btnSubmitAuth').disabled = false;
         }
-      } catch (err) {
-        console.error("Auth error:", err);
-        setAuthError(translateFirebaseError(err.code));
-      } finally {
-        authSpinner.classList.add('hidden');
-        document.getElementById('btnSubmitAuth').disabled = false;
       }
     });
 
@@ -2332,14 +2520,20 @@
           loadedCats.push({ id: docSnap.id, ...docSnap.data() });
         });
         loadedCats.sort((a, b) => (a.order || 0) - (b.order || 0));
-        // FIX: Nếu là khách và Firestore trả về rỗng nhưng LocalStorage có dữ liệu, không ghi đè xóa mất dữ liệu
-        if (loadedCats.length > 0 || !(!state.user || state.user.isAnonymous)) {
+        // FIX: Nếu là khách hoặc vừa đăng ký tài khoản mới và Firestore chưa có dữ liệu, không ghi đè xóa mất dữ liệu
+        if (loadedCats.length > 0) {
           state.categories = loadedCats;
         } else if (state.categories.length === 0) {
           try {
             const stored = localStorage.getItem('local_cats');
             if (stored) state.categories = JSON.parse(stored);
           } catch (_) {}
+        } else if (state.user && !state.user.isAnonymous && state.categories.length > 0) {
+          // Giữ lại state.categories hiện có từ chế độ khách
+        } else if (!state.user || state.user.isAnonymous) {
+          // Không xóa nếu là khách
+        } else {
+          state.categories = [];
         }
         renderCategoriesAndLessons();
       }, (error) => {
@@ -2352,14 +2546,20 @@
           loadedLessons.push({ id: docSnap.id, ...docSnap.data() });
         });
         loadedLessons.sort((a, b) => (a.order || 0) - (b.order || 0));
-        // FIX: Nếu là khách và Firestore trả về rỗng nhưng LocalStorage có dữ liệu, không ghi đè xóa mất dữ liệu
-        if (loadedLessons.length > 0 || !(!state.user || state.user.isAnonymous)) {
+        // FIX: Nếu là khách hoặc vừa đăng ký tài khoản mới và Firestore chưa có dữ liệu, không ghi đè xóa mất dữ liệu
+        if (loadedLessons.length > 0) {
           state.lessons = loadedLessons;
         } else if (state.lessons.length === 0) {
           try {
             const stored = localStorage.getItem('local_lessons');
             if (stored) state.lessons = JSON.parse(stored);
           } catch (_) {}
+        } else if (state.user && !state.user.isAnonymous && state.lessons.length > 0) {
+          // Giữ lại state.lessons hiện có từ chế độ khách
+        } else if (!state.user || state.user.isAnonymous) {
+          // Không xóa nếu là khách
+        } else {
+          state.lessons = [];
         }
 
         if (!state.isSharedMode) {
