@@ -47,9 +47,49 @@
       document.getElementById('pwaManifestLink').setAttribute('href', manifestUrl);
     })();
 
+    // // FIX-1 & FIX-2: Khai báo toàn cục các hàm tiện ích escapeHtml, escapeAttr, sanitizeHtml, formatDate
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+    function sanitizeHtml(str) {
+      return escapeHtml(str);
+    }
+    function formatDate(val, options) {
+      if (!val) return '';
+      try {
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return '';
+        return d.toLocaleDateString('vi-VN', options || { day: '2-digit', month: '2-digit', year: 'numeric' });
+      } catch (_) {
+        return '';
+      }
+    }
+    window.escapeHtml = escapeHtml;
+    window.escapeAttr = escapeAttr;
+    window.sanitizeHtml = sanitizeHtml;
+    window.formatDate = formatDate;
+
     // // FIX: Cơ chế Crash Watchdog tự báo lỗi nhẹ và hỗ trợ người dùng xóa cache thoát kẹt
     window.__showAppCrashBanner = function(message) {
       try {
+        // Không hiện thanh lỗi hệ thống đối với các thông báo lỗi đã được xử lý thân thiện trong nội dung
+        if (typeof message === 'string' && (
+          message.includes('Liên kết không còn khả dụng') ||
+          message.includes('Link đã hết hạn') ||
+          message.includes('thu hồi') ||
+          message.includes('Không tìm thấy link')
+        )) {
+          return;
+        }
         const banner = document.getElementById('appCrashBanner');
         if (banner) {
           banner.classList.remove('hidden');
@@ -602,7 +642,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
+        navigator.serviceWorker.register('./sw.js?v=3.7', { scope: './' })
           .then(reg => {
             reg.addEventListener('updatefound', () => {
               const newWorker = reg.installing;
@@ -918,15 +958,15 @@
     <div id="sharedLessonBanner" class="hidden w-full bg-indigo-600 text-white px-3 sm:px-6 py-2 text-xs shadow-xs flex items-center justify-between gap-2 transition-all">
       <div class="flex items-center gap-2 overflow-hidden min-w-0">
         <svg class="w-4 h-4 shrink-0 text-indigo-200"><use href="#icon-share-2"></use></svg>
-        <span class="truncate">Đang xem: <strong id="sharedBannerTitle">Bài học</strong> <span id="sharedBannerExpiry" class="text-[11px] text-indigo-200 font-normal"></span></span>
+        <span class="truncate">Bạn đang xem bài chia sẻ trực tiếp: <strong id="sharedBannerTitle">Bài học</strong> <span id="sharedBannerExpiry" class="text-[11px] text-indigo-200 font-normal"></span></span>
       </div>
       <div class="flex items-center gap-2 shrink-0">
-        <button id="btnSaveSharedToMyLib" class="touch-target px-3 py-1 rounded-lg bg-white text-indigo-700 hover:bg-indigo-50 font-semibold transition text-xs shadow-xs flex items-center gap-1.5">
+        <button id="btnSaveSharedToMyLib" class="touch-target px-3 py-1 rounded-lg bg-white text-indigo-700 hover:bg-indigo-50 font-semibold transition text-xs shadow-xs flex items-center gap-1.5" title="Lưu vào thư viện của tôi">
           <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
-          <span class="hidden sm:inline">Lưu thư viện</span>
+          <span class="hidden sm:inline">Lưu vào thư viện của tôi</span>
         </button>
-        <button id="btnExitShareView" class="touch-target px-2.5 py-1 rounded-lg bg-indigo-700 hover:bg-indigo-800 text-white font-medium transition text-xs" title="Thoát bài chia sẻ">
-          <span class="hidden sm:inline">Về thư viện</span>
+        <button id="btnExitShareView" class="touch-target px-2.5 py-1 rounded-lg bg-indigo-700 hover:bg-indigo-800 text-white font-medium transition text-xs" title="Về thư viện chính">
+          <span class="hidden sm:inline">Về thư viện chính</span>
           <svg class="w-3.5 h-3.5 sm:hidden"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -1489,6 +1529,9 @@
 
       <div id="readingContentContainer" class="w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col transition-all duration-150">
           
+          <!-- // FIX-1: Hộp thông báo trạng thái liên kết chia sẻ (hết hạn, thu hồi, không tìm thấy, mất mạng) -->
+          <div id="sharedNoticeBox" class="hidden w-full max-w-md mx-auto my-auto"></div>
+
           <!-- // REDESIGN: MÀN HÌNH TRỐNG (EDITORIAL EMPTY STATE VỚI MINH HỌA SÁCH THANH NHÃ) -->
           <div id="emptyLessonState" class="flex-1 flex flex-col items-center justify-center p-6 text-center my-auto min-h-[420px]">
             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4 shadow-xs border border-indigo-100 dark:border-indigo-900/40">
@@ -3058,6 +3101,18 @@
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'thuvienhtml';
+
+    // // FIX-1 & FIX-2: Đảm bảo các hàm tiện ích escapeHtml, escapeAttr, sanitizeHtml, formatDate luôn sẵn sàng trong module scope
+    const escapeHtml = window.escapeHtml || function(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+    const escapeAttr = window.escapeAttr || escapeHtml;
+    const sanitizeHtml = window.sanitizeHtml || escapeHtml;
+    const formatDate = window.formatDate || function(v, o) {
+      if (!v) return '';
+      try { const d = new Date(v); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN', o || { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch(_) { return ''; }
+    };
     let firebaseConfig = {
       apiKey: "AIzaSyAUBpYV3-03LxqFffabtEqIUzQ7JFn4-fo",
       authDomain: "thuvienhtml.firebaseapp.com",
@@ -6181,6 +6236,23 @@
       }
     });
 
+    // // FIX: Khai báo hàm openFlashcardStudyModal an toàn để tránh lỗi ReferenceError khi bấm phím C
+    function openFlashcardStudyModal() {
+      const btnHeaderFc = document.getElementById('btnHeaderFlashcards');
+      if (btnHeaderFc) {
+        btnHeaderFc.click();
+      } else {
+        const cur = state.lessons.find(l => l.id === state.activeLessonId);
+        const cards = cur ? extractFlashcardsFromDescription(cur) : [];
+        if (cards.length > 0) {
+          startFlashcardSession(cards, `Tự kiểm tra: ${cur.title}`);
+        } else {
+          showToast("Chưa có thẻ flashcard nào trong bài học này", "info");
+        }
+      }
+    }
+    window.openFlashcardStudyModal = openFlashcardStudyModal;
+
     // =========================================================================
     // // FEATURE-11: QUẢN LÝ NGOẠI TUYẾN (OFFLINE), ĐỒNG BỘ VÀ CẬP NHẬT PHIÊN BẢN
     // =========================================================================
@@ -6860,6 +6932,28 @@
         btnNext.disabled = currentIndex >= totalInCat - 1;
         btnBottomPrev.disabled = currentIndex <= 0;
         btnBottomNext.disabled = currentIndex >= totalInCat - 1;
+      // // FIX-1 (Req 4): Ẩn các thao tác chỉ dành cho chủ bài học khi người nhận đang xem bài chia sẻ
+      const isOwner = !state.isSharedMode || Boolean(
+        state.sharedLessonData && state.userId && state.sharedLessonData.authorId && (state.sharedLessonData.authorId === state.userId)
+      );
+      const btnShareCurrent = document.getElementById('btnShareCurrentLesson');
+      const btnReaderShared = document.getElementById('btnReaderSharedLinks');
+      const btnRenameCurrent = document.getElementById('btnRenameCurrent');
+      const btnToggleLearned = document.getElementById('btnToggleLearned');
+      const btnToggleFav = document.getElementById('btnToggleFavorite');
+
+      if (!isOwner) {
+        if (btnShareCurrent) btnShareCurrent.classList.add('hidden');
+        if (btnReaderShared) btnReaderShared.classList.add('hidden');
+        if (btnRenameCurrent) btnRenameCurrent.classList.add('hidden');
+        if (btnToggleLearned) btnToggleLearned.classList.add('hidden');
+        if (btnToggleFav) btnToggleFav.classList.add('hidden');
+      } else {
+        if (btnShareCurrent) btnShareCurrent.classList.remove('hidden');
+        if (btnReaderShared) btnReaderShared.classList.remove('hidden');
+        if (btnRenameCurrent) btnRenameCurrent.classList.remove('hidden');
+        if (btnToggleLearned) btnToggleLearned.classList.remove('hidden');
+        if (btnToggleFav) btnToggleFav.classList.remove('hidden');
       }
 
       loadHtmlIntoIframe(currentLesson.htmlContent || '<p>Nội dung rỗng.</p>');
@@ -7408,18 +7502,37 @@
       setTimeout(() => { copyBtnLabel.innerText = "Sao chép"; }, 2000);
     });
 
-    // // FIX-1: Trang thông báo lỗi phân biệt riêng biệt từng trường hợp
+    // // FIX-1 & FIX-2: Trang thông báo lỗi phân biệt riêng biệt từng trường hợp
     function showSharedLinkUnavailableNotice(errorType = 'not_found', detailMsg = '') {
       state.isSharedMode = false;
       state.sharedLessonData = null;
+
       const banner = document.getElementById('sharedLessonBanner');
       if (banner) banner.classList.add('hidden');
-      const emptyState = document.getElementById('emptyState');
-      if (emptyState) emptyState.classList.add('hidden');
-      const container = document.getElementById('readingContentContainer');
-      if (!container) return;
 
-      container.classList.remove('hidden');
+      const emptyState = document.getElementById('emptyLessonState');
+      if (emptyState) emptyState.classList.add('hidden');
+
+      const activeContentBox = document.getElementById('activeLessonContentBox');
+      if (activeContentBox) activeContentBox.classList.add('hidden');
+
+      // Ẩn thanh lỗi crash chung nếu có vì đây là trạng thái lỗi dự đoán trước
+      const crashBanner = document.getElementById('appCrashBanner');
+      if (crashBanner) crashBanner.classList.add('hidden');
+
+      let noticeBox = document.getElementById('sharedNoticeBox');
+      if (!noticeBox) {
+        const container = document.getElementById('readingContentContainer');
+        if (container) {
+          noticeBox = document.createElement('div');
+          noticeBox.id = 'sharedNoticeBox';
+          noticeBox.className = 'w-full max-w-md mx-auto my-auto';
+          container.prepend(noticeBox);
+        }
+      }
+      if (!noticeBox) return;
+
+      noticeBox.classList.remove('hidden');
 
       let title = "Liên kết không còn khả dụng";
       let desc = detailMsg || "Không thể tải được bài học từ liên kết này.";
@@ -7455,7 +7568,7 @@
           break;
       }
 
-      container.innerHTML = `
+      noticeBox.innerHTML = `
         <div class="py-12 px-6 text-center max-w-md mx-auto my-12 bg-white dark:bg-[#181B20] rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl transition-all animate-fade-in">
           <div class="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center ${iconColor}">
             ${iconSvg}
@@ -7489,28 +7602,41 @@
         }
       }
 
-      refreshIcons(container);
+      refreshIcons(noticeBox);
     }
 
-    // // FIX-1: Luồng nạp link chia sẻ hỗ trợ khách ẩn danh và tương thích ngược link cũ
+    // // FIX-1 (Req 4 & 7): Luồng nạp link chia sẻ hỗ trợ khách ẩn danh, tương thích ngược, bọc try/catch từng bước
     async function loadSharedLesson(shareId, directCloudUrl, fallbackTitle) {
       setSyncStatus(true, "Đang nạp bài chia sẻ...");
       try {
         let lessonData = null;
-        const urlParams = new URLSearchParams(window.location.search);
-        const sid = urlParams.get('sid') || shareId;
+        let sid = '';
 
-        if (!sid && !directCloudUrl) {
-          showSharedLinkUnavailableNotice('not_found', 'Thiếu mã định danh bài học chia sẻ trong liên kết.');
+        // BƯỚC 1: Đọc tham số URL
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          sid = urlParams.get('sid') || urlParams.get('share') || shareId;
+          if (!sid && !directCloudUrl) {
+            showSharedLinkUnavailableNotice('not_found', 'Thiếu mã định danh bài học chia sẻ trong liên kết.');
+            return;
+          }
+        } catch (paramErr) {
+          console.error("Lỗi đọc tham số URL chia sẻ:", paramErr);
+          showSharedLinkUnavailableNotice('not_found', 'Địa chỉ liên kết chia sẻ không đúng định dạng.');
           return;
         }
 
-        // Đảm bảo khách ẩn danh được xác thực trước khi đọc Firestore
-        await ensureUserAuth();
+        // BƯỚC 2: Xác thực ẩn danh nếu chưa đăng nhập
+        try {
+          await ensureUserAuth();
+        } catch (authErr) {
+          console.warn("Lỗi xác thực người dùng xem link:", authErr);
+        }
 
         let fsReadFailed = false;
         let fsErrorMessage = '';
 
+        // BƯỚC 3: Đọc dữ liệu từ Firestore public_shares
         if (sid && db) {
           try {
             const shareRef = doc(db, 'artifacts', appId, 'public_shares', sid);
@@ -7525,17 +7651,19 @@
           }
         }
 
-        // Fallback kiểm tra localStorage (nếu cùng thiết bị với người tạo)
+        // BƯỚC 4: Fallback kiểm tra localStorage (nếu cùng thiết bị)
         if (!lessonData && sid) {
-          const localStr = localStorage.getItem('local_share_' + sid);
-          if (localStr) {
-            try {
+          try {
+            const localStr = localStorage.getItem('local_share_' + sid);
+            if (localStr) {
               lessonData = JSON.parse(localStr);
-            } catch (_) {}
+            }
+          } catch (localErr) {
+            console.warn("Lỗi đọc local share fallback:", localErr);
           }
         }
 
-        // Fallback đọc trực tiếp từ directCloudUrl nếu có
+        // BƯỚC 5: Fallback đọc directCloudUrl nếu có
         if (!lessonData && directCloudUrl) {
           try {
             const actualUrl = decodeURIComponent(directCloudUrl);
@@ -7558,7 +7686,7 @@
           }
         }
 
-        // Xử lý các trường hợp lỗi dữ liệu
+        // BƯỚC 6: Kiểm tra tính khả dụng của bài học
         if (!lessonData) {
           if (!navigator.onLine) {
             showSharedLinkUnavailableNotice('network_error', 'Mất kết nối Internet khi tải bài chia sẻ.');
@@ -7576,14 +7704,14 @@
           return;
         }
 
-        // 1. Kiểm tra cờ thu hồi (revoked)
+        // 6.1. Kiểm tra cờ thu hồi (revoked)
         const isRevoked = lessonData.revoked === true || lessonData.revoked === 'true';
         if (isRevoked) {
           showSharedLinkUnavailableNotice('revoked', 'Người chia sẻ đã chủ động thu hồi quyền truy cập bài học này.');
           return;
         }
 
-        // 2. Kiểm tra thời hạn hết hạn (tương thích ngược: link cũ mặc định 7 ngày kể từ lúc tạo)
+        // 6.2. Kiểm tra thời hạn hết hạn
         const now = Date.now();
         const effectiveExpiresAt = lessonData.expiresAt || (lessonData.createdAt ? (lessonData.createdAt + 7 * 24 * 60 * 60 * 1000) : (now + 7 * 24 * 60 * 60 * 1000));
         if (now > effectiveExpiresAt) {
@@ -7591,23 +7719,40 @@
           return;
         }
 
-        // 3. Kiểm tra nội dung bài
+        // 6.3. Kiểm tra nội dung bài
         if (!lessonData.htmlContent) {
           showSharedLinkUnavailableNotice('not_found', 'Nội dung bài học không khả dụng.');
           return;
         }
 
-        // HỢP LỆ: Hiển thị bài chia sẻ
-        state.isSharedMode = true;
-        state.sharedLessonData = lessonData;
-        sharedLessonBanner.classList.remove('hidden');
-        sharedBannerTitle.innerText = lessonData.title || 'Bài học chia sẻ';
+        // BƯỚC 7: Dựng giao diện bài học công khai (Hiển thị trọn vẹn)
+        try {
+          state.isSharedMode = true;
+          state.sharedLessonData = lessonData;
 
-        const diffDays = Math.ceil((effectiveExpiresAt - now) / (24 * 60 * 60 * 1000));
-        sharedBannerExpiry.innerText = diffDays > 0 ? `(Còn ~${diffDays} ngày)` : `(Sắp hết hạn hôm nay)`;
+          const noticeBox = document.getElementById('sharedNoticeBox');
+          if (noticeBox) noticeBox.classList.add('hidden');
 
-        renderActiveLesson();
-        showToast(`Đang xem bài chia sẻ: "${lessonData.title}"`);
+          const emptyState = document.getElementById('emptyLessonState');
+          if (emptyState) emptyState.classList.add('hidden');
+
+          const activeContentBox = document.getElementById('activeLessonContentBox');
+          if (activeContentBox) activeContentBox.classList.remove('hidden');
+
+          if (sharedLessonBanner) sharedLessonBanner.classList.remove('hidden');
+          if (sharedBannerTitle) sharedBannerTitle.innerText = lessonData.title || 'Bài học chia sẻ';
+
+          const diffDays = Math.ceil((effectiveExpiresAt - now) / (24 * 60 * 60 * 1000));
+          if (sharedBannerExpiry) {
+            sharedBannerExpiry.innerText = diffDays > 0 ? `(Còn ~${diffDays} ngày)` : `(Sắp hết hạn hôm nay)`;
+          }
+
+          renderActiveLesson();
+          showToast(`Đang xem bài chia sẻ: "${lessonData.title}"`);
+        } catch (renderErr) {
+          console.error("Lỗi dựng giao diện bài học chia sẻ:", renderErr);
+          showSharedLinkUnavailableNotice('network_error', 'Không thể dựng giao diện bài học: ' + (renderErr.message || ''));
+        }
       } catch (err) {
         console.error("Lỗi nạp bài chia sẻ:", err);
         showSharedLinkUnavailableNotice('network_error', err.message || 'Không thể tải bài học.');
@@ -7619,7 +7764,9 @@
     function exitShareMode() {
       state.isSharedMode = false;
       state.sharedLessonData = null;
-      sharedLessonBanner.classList.add('hidden');
+      if (sharedLessonBanner) sharedLessonBanner.classList.add('hidden');
+      const noticeBox = document.getElementById('sharedNoticeBox');
+      if (noticeBox) noticeBox.classList.add('hidden');
       const cleanUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
       renderActiveLesson();
@@ -12560,36 +12707,109 @@
       showToast("Đã thu hồi link chia sẻ thành công! Liên kết này đã kết thúc, bạn có thể tạo link mới cho tài liệu này.", "success");
     }
 
-    // // FIX-2 (Req 6): Gia hạn link đang hoạt động (không tạo link mới)
+    // // FIX-2 (Req 5): Gia hạn link đang hoạt động (không tạo link mới, kiểm tra máy chủ, tối đa 30 ngày)
     async function extendShareLink(shareId, extraDays = 7) {
       const link = state.sharedLinks.find(l => l.id === shareId);
       if (!link) return;
 
-      const baseTime = (link.expiresAt && link.expiresAt > Date.now()) ? link.expiresAt : Date.now();
-      link.expiresAt = baseTime + extraDays * 24 * 60 * 60 * 1000;
-      link.revoked = false;
-      saveSharedLinks();
-
-      if (db) {
-        try {
-          const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
-          await setDoc(shareRef, { expiresAt: link.expiresAt, revoked: false }, { merge: true });
-        } catch (_) {}
+      const btnModal = document.getElementById('btnExtendActiveShareLink');
+      let originalBtnHtml = '';
+      if (btnModal) {
+        originalBtnHtml = btnModal.innerHTML;
+        btnModal.disabled = true;
+        btnModal.classList.add('opacity-50', 'cursor-not-allowed');
+        btnModal.innerHTML = `
+          <svg class="w-3.5 h-3.5 animate-spin"><use href="#icon-rotate-cw"></use></svg>
+          <span>Đang gia hạn liên kết...</span>
+        `;
       }
 
-      try {
-        const localDocStr = localStorage.getItem('local_share_' + shareId);
-        if (localDocStr) {
-          const docData = JSON.parse(localDocStr);
-          docData.expiresAt = link.expiresAt;
-          docData.revoked = false;
-          localStorage.setItem('local_share_' + shareId, JSON.stringify(docData));
-        }
-      } catch (_) {}
+      const prevExpiresAt = link.expiresAt;
+      const prevRevoked = link.revoked;
 
-      displayExistingActiveShareLinkUI(link);
-      renderSharedLinksList();
-      showToast(`Đã gia hạn link thêm ${extraDays} ngày!`, "success");
+      try {
+        const now = Date.now();
+        const maxExpiry = now + 30 * 24 * 60 * 60 * 1000; // Tối đa 30 ngày tính từ hiện tại
+        const baseTime = Math.max(Number(link.expiresAt) || 0, now);
+
+        if (baseTime >= maxExpiry) {
+          showToast("Liên kết này đã đạt thời hạn tối đa cho phép (30 ngày tính từ hiện tại).", "info");
+          return;
+        }
+
+        let newExpiresAt = baseTime + extraDays * 24 * 60 * 60 * 1000;
+        if (newExpiresAt > maxExpiry) {
+          newExpiresAt = maxExpiry;
+        }
+
+        // 1. Cập nhật lên máy chủ Firestore trước nếu có kết nối
+        if (db) {
+          try {
+            const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
+            await setDoc(shareRef, { expiresAt: newExpiresAt, revoked: false }, { merge: true });
+            const checkSnap = await getDoc(shareRef);
+            if (!checkSnap.exists()) {
+              throw new Error("Không thể xác nhận việc cập nhật thời hạn trên máy chủ đám mây.");
+            }
+          } catch (serverErr) {
+            console.error("Lỗi cập nhật Firestore khi gia hạn:", serverErr);
+            throw serverErr;
+          }
+        }
+
+        // 2. Khi máy chủ ghi thành công, cập nhật state và localStorage
+        link.expiresAt = newExpiresAt;
+        link.revoked = false;
+        saveSharedLinks();
+
+        try {
+          const localDocStr = localStorage.getItem('local_share_' + shareId);
+          if (localDocStr) {
+            const docData = JSON.parse(localDocStr);
+            docData.expiresAt = newExpiresAt;
+            docData.revoked = false;
+            localStorage.setItem('local_share_' + shareId, JSON.stringify(docData));
+          }
+        } catch (_) {}
+
+        // 3. Cập nhật hiển thị giao diện tại chỗ
+        displayExistingActiveShareLinkUI(link);
+        try {
+          renderSharedLinksList();
+        } catch (renderErr) {
+          console.warn("Lỗi render danh sách link sau khi gia hạn:", renderErr);
+        }
+
+        const expDate = new Date(newExpiresAt);
+        const expHours = String(expDate.getHours()).padStart(2, '0');
+        const expMins = String(expDate.getMinutes()).padStart(2, '0');
+        const expD = String(expDate.getDate()).padStart(2, '0');
+        const expM = String(expDate.getMonth() + 1).padStart(2, '0');
+        const expY = expDate.getFullYear();
+        const formattedDate = `${expHours}:${expMins} ngày ${expD}/${expM}/${expY}`;
+
+        showToast(`Đã gia hạn đến ${formattedDate}`, "success");
+      } catch (err) {
+        console.error("Lỗi gia hạn liên kết:", err);
+        // Hoàn tác dữ liệu nếu ghi thất bại
+        link.expiresAt = prevExpiresAt;
+        link.revoked = prevRevoked;
+        let errMsg = err.message || "Không thể gia hạn liên kết";
+        if (errMsg.includes("permission") || errMsg.includes("PERMISSION_DENIED")) {
+          errMsg = "Quyền ghi Firestore bị từ chối (Kiểm tra Firestore Security Rules cho public_shares).";
+        }
+        showToast(`Gia hạn thất bại: ${errMsg}`, "error");
+      } finally {
+        if (btnModal) {
+          btnModal.disabled = false;
+          btnModal.classList.remove('opacity-50', 'cursor-not-allowed');
+          btnModal.innerHTML = originalBtnHtml || `
+            <svg class="w-3.5 h-3.5"><use href="#icon-rotate-cw"></use></svg>
+            <span>Gia hạn liên kết (+7 ngày)</span>
+          `;
+          refreshIcons(btnModal);
+        }
+      }
     }
 
     // Gắn sự kiện mở Shared Links Modal
