@@ -476,6 +476,94 @@
       50% { outline: 3px solid #6366F1; box-shadow: 0 0 12px rgba(99, 102, 241, 0.6); }
     }
 
+  
+    /* // FEATURE-1: CHẾ ĐỘ TẬP TRUNG (FOCUS MODE) */
+    body.is-focus-mode #unifiedTopBar,
+    body.is-focus-mode #mainSidebar,
+    body.is-focus-mode #sidebarMobileDrawer,
+    body.is-focus-mode #stickyReaderHeader,
+    body.is-focus-mode #sharedLessonBanner,
+    body.is-focus-mode #bannerBottomPwa,
+    body.is-focus-mode #mobileBottomNav,
+    body.is-focus-mode .sidebar-backdrop,
+    body.is-focus-mode footer {
+      display: none !important;
+    }
+
+    body.is-focus-mode #readingArea {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      z-index: 40 !important;
+      padding-top: max(2rem, env(safe-area-inset-top, 2rem)) !important;
+      padding-bottom: max(3.5rem, env(safe-area-inset-bottom, 3.5rem)) !important;
+      background-color: var(--reading-bg, #FAF9F5);
+    }
+
+    .dark body.is-focus-mode #readingArea {
+      background-color: var(--reading-bg-dark, #111317);
+    }
+
+    #focusProgressBar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, #4F46E5, #818CF8, #F43F5E);
+      z-index: 60;
+      pointer-events: none;
+      transition: width 0.1s linear;
+    }
+
+    #focusTimerWidget {
+      position: fixed;
+      top: max(1rem, env(safe-area-inset-top, 1rem));
+      right: max(1rem, env(safe-area-inset-right, 1rem));
+      z-index: 55;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+  
+    /* // FEATURE-2: STYLES CHO ĐỌC THÀNH TIẾNG (TEXT-TO-SPEECH) */
+    .tts-active-highlight {
+      background-color: rgba(79, 70, 229, 0.18) !important;
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.35);
+      transition: background-color 0.2s ease;
+    }
+    .dark .tts-active-highlight {
+      background-color: rgba(129, 140, 248, 0.25) !important;
+      box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.45);
+    }
+    .tts-clickable-sentence {
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background-color 0.15s;
+    }
+    .tts-clickable-sentence:hover {
+      background-color: rgba(79, 70, 229, 0.08);
+    }
+    .dark .tts-clickable-sentence:hover {
+      background-color: rgba(129, 140, 248, 0.12);
+    }
+
+    /* // FEATURE-4: STYLES CHO THẺ GẦN ĐÂY */
+    .recent-lesson-card {
+      min-width: 180px;
+      max-width: 210px;
+      flex-shrink: 0;
+      cursor: pointer;
+      border-radius: 0.75rem;
+      padding: 0.625rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .recent-lesson-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
   </style>
   <!-- // FEATURE-11: Đăng ký Service Worker và PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -745,6 +833,43 @@
       <polygon points="6 3 20 12 6 21 6 3"/>
     </symbol>
 
+      <!-- // FEATURE-1 & FEATURE-2 ICONS -->
+    <symbol id="icon-focus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+    </symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>
+    </symbol>
+    <symbol id="icon-square" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="5" width="14" height="14" rx="2"/>
+    </symbol>
+    <symbol id="icon-skip-forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/>
+    </symbol>
+    <symbol id="icon-skip-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/>
+    </symbol>
+    <symbol id="icon-volume-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>
+    </symbol>
+    <symbol id="icon-volume-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>
+    </symbol>
+    <symbol id="icon-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/><line x1="14" y1="2" x2="14" y2="5"/>
+    </symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>
+    </symbol>
+    <symbol id="icon-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+    </symbol>
+    <symbol id="icon-bell-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/><path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><line x1="1" y1="1" x2="23" y2="23"/>
+    </symbol>
+    <symbol id="icon-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="10" y1="2" x2="14" y2="2"/><line x1="12" y1="14" x2="15" y2="11"/><circle cx="12" cy="14" r="8"/>
+    </symbol>
   </svg>
   <!-- // REDESIGN: TOÀN BỘ KHU VỰC ĐỈNH - HEADER TINH GỌN 1 HÀNG, BANNER MẢNH, THANH TIẾN ĐỘ DÍNH -->
   <div id="unifiedTopBar" class="w-full shrink-0 z-40 bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md pt-[env(safe-area-inset-top,0px)] transition-colors">
@@ -932,6 +1057,18 @@
                 <input id="toggleSwipeGesture" type="checkbox" class="sr-only peer" checked>
                 <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
               </label>
+            </div>
+
+            <!-- // FEATURE-1: Chế độ tập trung (Pomodoro) -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Chế độ tập trung</div>
+                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Ẩn giao diện, hẹn giờ Pomodoro</div>
+              </div>
+              <button id="btnDisplaySettingsFocus" class="touch-target px-2.5 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold transition text-xs hover:bg-rose-100">
+                <svg class="w-3.5 h-3.5"><use href="#icon-focus"></use></svg>
+                <span>Bật</span>
+              </button>
             </div>
 
           </div>
@@ -1176,6 +1313,18 @@
         <!-- NHÓM 3: HÀNH ĐỘNG (Đã học, Yêu thích hiện trực tiếp; Chia sẻ, Đổi tên, In trong menu "Thêm") -->
         <div class="flex items-center gap-1.5 shrink-0">
           
+          <!-- // FEATURE-2: Nút Đọc thành tiếng (Text-to-Speech) -->
+          <button id="btnTextToSpeech" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 transition shadow-2xs font-medium" title="Đọc bài thành tiếng (Text-to-Speech)">
+            <svg class="w-3.5 h-3.5"><use href="#icon-volume-2"></use></svg>
+            <span class="hidden sm:inline">Nghe</span>
+          </button>
+
+          <!-- // FEATURE-1: Nút Bật Chế độ tập trung & Pomodoro -->
+          <button id="btnToggleFocusMode" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 transition shadow-2xs font-medium" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro (Phím tắt: Esc để thoát)">
+            <svg class="w-3.5 h-3.5 text-rose-500"><use href="#icon-focus"></use></svg>
+            <span class="hidden sm:inline">Tập trung</span>
+          </button>
+
           <!-- Đã học -->
           <button id="btnToggleLearned" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 transition shadow-2xs font-medium" title="Đánh dấu đã học bài">
             <svg id="learnedIcon" class="w-3.5 h-3.5 text-gray-400"><use href="#icon-circle"></use></svg>
@@ -1199,6 +1348,11 @@
                 <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-share-2"></use></svg>
                 <span>Chia sẻ link (7 ngày)</span>
               </button>
+              <button id="btnReaderSharedLinks" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
+                <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-link"></use></svg>
+                <span>Link đã chia sẻ</span>
+              </button>
+
 
               <button id="btnRenameCurrent" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
                 <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-pencil"></use></svg>
@@ -1262,7 +1416,23 @@
 
       <!-- CONTAINER NỘI DUNG ĐỌC SÁCH -->
       <div id="readingContainerWrapper" class="w-full flex-1 flex flex-col items-center">
-        <div id="readingContentContainer" class="w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col transition-all duration-150">
+        <!-- // FEATURE-4: KHU VỰC BÀI GẦN ĐÂY Ở ĐẦU MÀN HÌNH CHÍNH -->
+      <div id="recentLessonsBar" class="hidden px-3 sm:px-6 pt-3 pb-1 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60 bg-white/40 dark:bg-[#111317]/40 backdrop-blur-xs shrink-0 transition-colors">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-history"></use></svg>
+            <span class="font-serif font-bold text-xs text-[#1C1917] dark:text-[#EDECE8]">Mở gần đây</span>
+          </div>
+          <button id="btnClearRecentLessons" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] hover:text-rose-600 transition cursor-pointer" title="Xóa lịch sử mở gần đây">
+            Xóa lịch sử
+          </button>
+        </div>
+        <div id="recentLessonsList" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-2 pt-0.5">
+          <!-- Dynamic cards rendered here -->
+        </div>
+      </div>
+
+      <div id="readingContentContainer" class="w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col transition-all duration-150">
           
           <!-- // REDESIGN: MÀN HÌNH TRỐNG (EDITORIAL EMPTY STATE VỚI MINH HỌA SÁCH THANH NHÃ) -->
           <div id="emptyLessonState" class="flex-1 flex flex-col items-center justify-center p-6 text-center my-auto min-h-[420px]">
@@ -1519,6 +1689,11 @@
     </div>
 
     <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
+    <button id="btnOpenSharedLinksModal" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-1 transition">
+      <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-share-2"></use></svg>
+      <span>Link đã chia sẻ</span>
+    </button>
+
     <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-2">
       <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-link"></use></svg>
       <span>Tạo link chia sẻ 7 ngày</span>
@@ -2521,6 +2696,226 @@
     <button id="btnReloadAppUpdate" class="px-2.5 py-1.5 rounded-lg bg-white text-indigo-900 font-bold hover:bg-indigo-50 transition cursor-pointer text-[11px] shrink-0">Cập nhật ngay</button>
   </div>
 
+    <!-- // FEATURE-1: Thanh tiến độ cuộn bài siêu mảnh trong Chế độ tập trung -->
+  <div id="focusProgressBar" class="hidden"></div>
+
+  <!-- // FEATURE-1: Widget Đồng hồ Pomodoro nổi trong Chế độ tập trung -->
+  <div id="focusTimerWidget" class="hidden select-none">
+    <div class="bg-white/95 dark:bg-[#181B20]/95 backdrop-blur-md border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl shadow-2xl p-3 w-[240px] sm:w-[260px] text-xs transition-all">
+      <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span id="pomoModeBadge" class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 truncate">
+            🍅 Học tập
+          </span>
+          <span id="pomoCycleBadge" class="text-[10px] font-mono text-[#6E6B65] dark:text-[#979DA8]">#1/4</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button id="btnPomoSettings" class="p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Cài đặt Pomodoro">
+            <svg class="w-3.5 h-3.5"><use href="#icon-sliders"></use></svg>
+          </button>
+          <button id="btnExitFocusMode" class="p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-black/5 dark:hover:bg-white/5 transition" title="Thoát chế độ tập trung (Esc)">
+            <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Đồng hồ số to rõ -->
+      <div class="py-2.5 text-center">
+        <div id="pomoTimeDisplay" class="font-mono font-bold text-3xl sm:text-4xl text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">
+          25:00
+        </div>
+        <div id="pomoStatusText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-0.5 truncate">
+          Sẵn sàng bắt đầu
+        </div>
+      </div>
+
+      <!-- Hàng nút điều khiển -->
+      <div class="flex items-center justify-center gap-1.5 pt-1 border-t border-[#E7E5DF] dark:border-[#262C36]">
+        <button id="btnPomoReset" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đặt lại phiên">
+          <svg class="w-4 h-4"><use href="#icon-rotate-ccw"></use></svg>
+        </button>
+        <button id="btnPomoTogglePlay" class="touch-target px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-1.5 transition shadow-xs flex-1">
+          <svg id="pomoPlayIcon" class="w-4 h-4 fill-white"><use href="#icon-play"></use></svg>
+          <span id="pomoPlayLabel">Bắt đầu</span>
+        </button>
+        <button id="btnPomoSkip" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Bỏ qua phiên này">
+          <svg class="w-4 h-4"><use href="#icon-skip-forward"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-1: Modal Cài đặt Pomodoro -->
+  <div id="pomodoroSettingsModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-5">
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mb-2"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+            <svg class="w-4 h-4"><use href="#icon-timer"></use></svg>
+          </div>
+          <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Cài đặt Pomodoro</h3>
+        </div>
+        <button id="btnClosePomoSettings" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="py-3 space-y-3.5 text-xs">
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] mb-1">Học (phút)</label>
+            <input type="number" id="pomoInputWork" min="1" max="90" value="25" class="w-full px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-semibold text-center text-sm text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] mb-1">Nghỉ ngắn</label>
+            <input type="number" id="pomoInputShort" min="1" max="30" value="5" class="w-full px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-semibold text-center text-sm text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] mb-1">Nghỉ dài</label>
+            <input type="number" id="pomoInputLong" min="1" max="60" value="15" class="w-full px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-semibold text-center text-sm text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500" />
+          </div>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
+          <label class="flex items-center justify-between cursor-pointer py-1">
+            <div>
+              <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Tự động chuyển phiên</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Tự bắt đầu đếm khi hết phiên học/nghỉ</div>
+            </div>
+            <input type="checkbox" id="pomoCheckAutoSwitch" class="rounded text-indigo-600 focus:ring-0">
+          </label>
+          <label class="flex items-center justify-between cursor-pointer py-1">
+            <div>
+              <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Âm báo hết giờ (Web Audio)</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Phát chuông nhẹ nhàng không cần tải file</div>
+            </div>
+            <input type="checkbox" id="pomoCheckSound" checked class="rounded text-indigo-600 focus:ring-0">
+          </label>
+          <label class="flex items-center justify-between cursor-pointer py-1">
+            <div>
+              <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Rung nhẹ trên điện thoại</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Rung thông báo khi hết giờ</div>
+            </div>
+            <input type="checkbox" id="pomoCheckVibrate" checked class="rounded text-indigo-600 focus:ring-0">
+          </label>
+          <label class="flex items-center justify-between cursor-pointer py-1">
+            <div>
+              <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Thông báo hệ thống (Notification)</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Hiện thông báo khi chuyển tab</div>
+            </div>
+            <input type="checkbox" id="pomoCheckNotification" class="rounded text-indigo-600 focus:ring-0">
+          </label>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E7E5DF] dark:border-[#262C36]">
+        <button id="btnSavePomoSettings" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition">
+          Lưu cài đặt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-2: Thanh điều khiển Đọc thành tiếng (Text-to-Speech) nổi ở đáy -->
+  <div id="ttsFloatingBar" class="hidden fixed left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-xl bg-white/95 dark:bg-[#181B20]/95 backdrop-blur-md border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl shadow-2xl p-2.5 sm:p-3 text-xs transition-all bottom-[max(1rem,env(safe-area-inset-bottom,1rem))]">
+    <div class="flex items-center justify-between gap-2">
+      <!-- Info đoạn đang đọc -->
+      <div class="flex items-center gap-2 min-w-0 flex-1">
+        <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+          <svg class="w-4 h-4"><use href="#icon-volume-2"></use></svg>
+        </div>
+        <div class="min-w-0 pr-1">
+          <div class="flex items-center gap-1.5">
+            <span class="font-semibold text-[#1C1917] dark:text-[#EDECE8]">Đang đọc</span>
+            <span id="ttsProgressBadge" class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">0/0</span>
+          </div>
+          <p id="ttsCurrentSentenceText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate max-w-[160px] sm:max-w-xs">Chọn bài để đọc</p>
+        </div>
+      </div>
+
+      <!-- Nhóm điều khiển phát -->
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="btnTtsPrev" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đoạn trước">
+          <svg class="w-4 h-4"><use href="#icon-skip-back"></use></svg>
+        </button>
+        <button id="btnTtsTogglePlay" class="touch-target px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition flex items-center gap-1 shadow-2xs">
+          <svg id="ttsPlayIcon" class="w-3.5 h-3.5 fill-white"><use href="#icon-play"></use></svg>
+          <span id="ttsPlayLabel" class="hidden sm:inline">Đọc</span>
+        </button>
+        <button id="btnTtsNext" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đoạn sau">
+          <svg class="w-4 h-4"><use href="#icon-skip-forward"></use></svg>
+        </button>
+        <button id="btnTtsStop" class="touch-target p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition" title="Dừng đọc">
+          <svg class="w-4 h-4"><use href="#icon-square"></use></svg>
+        </button>
+      </div>
+
+      <!-- Chọn tốc độ & Giọng đọc & Đóng -->
+      <div class="flex items-center gap-1 shrink-0 pl-1 border-l border-[#E7E5DF] dark:border-[#262C36]">
+        <button id="btnTtsSpeed" class="touch-target px-2 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-mono font-semibold text-[11px] hover:bg-black/10 dark:hover:bg-white/10 transition" title="Đổi tốc độ đọc">
+          1x
+        </button>
+        <button id="btnTtsVoiceMenu" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Chọn giọng đọc">
+          <svg class="w-4 h-4"><use href="#icon-sliders"></use></svg>
+        </button>
+        <button id="btnCloseTtsBar" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng thanh nghe">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-2: Modal Chọn Giọng Đọc (TTS Voice Selector Modal) -->
+  <div id="ttsVoiceSelectModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl p-4 sm:p-5 flex flex-col max-h-[80vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-5">
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mb-2"></div>
+      <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <svg class="w-4 h-4"><use href="#icon-volume-2"></use></svg>
+          </div>
+          <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Chọn giọng đọc</h3>
+        </div>
+        <button id="btnCloseTtsVoiceModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+      <div id="ttsVoiceListContainer" class="py-3 flex-1 overflow-y-auto space-y-1.5 text-xs max-h-64">
+        <!-- Voice radio options dynamically rendered -->
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-3: Modal Quản lý Link Đã Chia Sẻ (Shared Links Management Modal) -->
+  <div id="sharedLinksModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-xl rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[85vh] flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-0 overflow-hidden">
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mt-2.5 mb-1"></div>
+      <div class="flex items-center justify-between p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-share-2"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Link đã chia sẻ</h3>
+            <p id="sharedLinksSubtitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">Quản lý và thu hồi liên kết bài học</p>
+          </div>
+        </div>
+        <button id="btnCloseSharedLinksModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <div id="sharedLinksListContainer" class="p-3.5 sm:p-4 flex-1 overflow-y-auto space-y-2 text-xs">
+        <!-- Rendered list of created shared links -->
+      </div>
+      
+      <div class="p-3 bg-[#FAF9F5] dark:bg-[#111317] border-t border-[#E7E5DF] dark:border-[#262C36] text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
+        💡 Đăng ký tài khoản giúp bạn quản lý và thu hồi liên kết trên mọi thiết bị.
+      </div>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
@@ -2786,6 +3181,32 @@
       trash: [], // // FEATURE-8: Thùng rác [{ id, type, item, deletedAt, expiresAt, relatedData }]
       swipeEnabled: true, // // FEATURE-9: Bật/tắt vuốt ngang chuyển bài
       offlineSyncQueue: [], // // FEATURE-11: Hàng đợi đồng bộ khi có mạng lại
+      focusMode: false,
+      pomodoro: {
+        isRunning: false,
+        mode: 'work', // 'work' | 'shortBreak' | 'longBreak'
+        workMinutes: 25,
+        shortBreakMinutes: 5,
+        longBreakMinutes: 15,
+        cycleCount: 0,
+        targetTimestamp: null,
+        remainingMs: 25 * 60 * 1000,
+        autoSwitch: true,
+        soundEnabled: true,
+        timerInterval: null,
+        wakeLockSentinel: null
+      },
+      tts: {
+        speaking: false,
+        paused: false,
+        rate: 1.0,
+        voiceURI: null,
+        currentIndex: 0,
+        chunks: [],
+        selectedText: ''
+      },
+      sharedLinks: [],
+      recentLessons: [],
 
     };
 
@@ -6429,7 +6850,9 @@
 
     function selectLesson(lessonId) {
       if (!lessonId) return;
+      if (typeof stopTTS === 'function') stopTTS();
       state.activeLessonId = lessonId;
+      if (typeof recordRecentLesson === 'function') recordRecentLesson(lessonId);
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (lesson) {
         state.activeCategoryId = lesson.categoryId;
@@ -6690,70 +7113,6 @@
       return directUrl.trim();
     }
 
-    async function createShareLinkFromLesson(lesson) {
-      document.getElementById('shareStatusNote').innerText = "Đang tạo link 7 ngày...";
-      shareGeneratedUrlInput.value = "Đang khởi tạo...";
-
-      await ensureUserAuth();
-
-      const now = Date.now();
-      const expiresAt = now + SEVEN_DAYS_MS;
-      const shareId = 's_' + now.toString(36) + '_' + Math.random().toString(36).substr(2, 6);
-
-      const shareDocData = {
-        id: shareId,
-        title: lesson.title,
-        description: lesson.description || '',
-        originalFileName: lesson.originalFileName || 'lesson.html',
-        htmlContent: lesson.htmlContent,
-        createdAt: now,
-        expiresAt: expiresAt
-      };
-
-      const approxSize = new Blob([lesson.htmlContent || '']).size;
-      let shareUrl = '';
-      let saveCloudSuccess = false;
-
-      if (db && approxSize < 750000) {
-        try {
-          const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
-          await setDoc(shareRef, shareDocData);
-          shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
-          saveCloudSuccess = true;
-        } catch (err) {
-          console.warn("Firestore share error, fallback cloud storage:", err);
-        }
-      }
-
-      if (!saveCloudSuccess) {
-        try {
-          const directFileUrl = await uploadTo7DayCloud(lesson.htmlContent, lesson.originalFileName || 'lesson.html');
-          const encodedCloudUrl = encodeURIComponent(directFileUrl);
-          const encodedTitle = encodeURIComponent(lesson.title || 'Bài học');
-          shareUrl = `${window.location.origin}${window.location.pathname}?share_url=${encodedCloudUrl}&stitle=${encodedTitle}`;
-          saveCloudSuccess = true;
-        } catch (cloudErr) {
-          console.warn("Litterbox error:", cloudErr);
-          shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
-          localStorage.setItem('local_share_' + shareId, JSON.stringify(shareDocData));
-        }
-      }
-
-      try {
-        localStorage.setItem('local_share_' + shareId, JSON.stringify(shareDocData));
-      } catch (_) {}
-
-      shareGeneratedUrlInput.value = shareUrl;
-      document.getElementById('shareStatusNote').innerText = "Đã tạo link! Hết hạn sau 7 ngày.";
-
-      btnTestOpenShareUrl.onclick = () => {
-        window.open(shareUrl, '_blank');
-      };
-
-      try {
-        document.execCommand('copy');
-      } catch (_) {}
-    }
 
     btnCopyShareUrl.addEventListener('click', () => {
       const url = shareGeneratedUrlInput.value;
@@ -6771,45 +7130,49 @@
       setTimeout(() => { copyBtnLabel.innerText = "Sao chép"; }, 2000);
     });
 
+        function showSharedLinkUnavailableNotice(reason = "Link này đã hết hạn hoặc đã bị thu hồi bởi người chia sẻ.") {
+      state.isSharedMode = false;
+      state.sharedLessonData = null;
+      const banner = document.getElementById('sharedLessonBanner');
+      if (banner) banner.classList.add('hidden');
+      const emptyState = document.getElementById('emptyState');
+      if (emptyState) emptyState.classList.add('hidden');
+      const container = document.getElementById('readingContentContainer');
+      if (container) {
+        container.classList.remove('hidden');
+        container.innerHTML = `
+          <div class="py-12 px-6 text-center max-w-md mx-auto my-12 bg-white dark:bg-[#181B20] rounded-2xl border border-red-200 dark:border-red-900/50 shadow-lg">
+            <div class="w-14 h-14 mx-auto mb-4 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center">
+              <svg class="w-7 h-7"><use href="#icon-alert-triangle"></use></svg>
+            </div>
+            <h3 class="text-base font-bold text-gray-900 dark:text-gray-100 mb-2">Liên kết không còn khả dụng</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">${reason}</p>
+            <button onclick="window.location.href = window.location.pathname" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow transition">
+              Về Thư viện bài học
+            </button>
+          </div>
+        `;
+        refreshIcons(container);
+      }
+    }
+
     async function loadSharedLesson(shareId, directCloudUrl, fallbackTitle) {
       setSyncStatus(true, "Đang nạp bài chia sẻ...");
       try {
         let lessonData = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const sid = urlParams.get('sid') || shareId;
 
-        if (directCloudUrl) {
-          const actualUrl = decodeURIComponent(directCloudUrl);
-          const decodedTitle = decodeURIComponent(fallbackTitle || 'Bài học được chia sẻ');
-          
-          const response = await fetch(actualUrl);
-          if (!response.ok) {
-            if (response.status === 404) {
-              showToast("Liên kết này đã hết hạn sau 7 ngày.", "error");
-              return;
-            }
-            throw new Error("Không thể tải file từ cloud");
-          }
-          const htmlText = await response.text();
-
-          lessonData = {
-            id: 'shared_' + Date.now(),
-            title: decodedTitle,
-            description: 'Bài học được chia sẻ (tự hủy sau 7 ngày).',
-            originalFileName: decodedTitle + '.html',
-            htmlContent: htmlText,
-            expiresAt: Date.now() + SEVEN_DAYS_MS
-          };
-        } else if (shareId) {
-          await ensureUserAuth();
-
+        // Kiểm tra xem ID bài chia sẻ này có bị thu hồi hoặc hết hạn trong Firestore / localStorage không
+        if (sid) {
           if (db) {
             try {
-              const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
+              const shareRef = doc(db, 'artifacts', appId, 'public_shares', sid);
               const snap = await getDoc(shareRef);
               if (snap.exists()) {
                 const data = snap.data();
-                if (data.expiresAt && Date.now() > data.expiresAt) {
-                  try { await deleteDoc(shareRef); } catch (_) {}
-                  showToast("Liên kết chia sẻ này đã hết hạn sau 7 ngày.", "error");
+                if (data.revoked || (data.expiresAt && Date.now() > data.expiresAt)) {
+                  showSharedLinkUnavailableNotice("Link này đã hết hạn hoặc đã bị thu hồi bởi người chia sẻ.");
                   return;
                 }
                 lessonData = data;
@@ -6820,12 +7183,11 @@
           }
 
           if (!lessonData) {
-            const localStr = localStorage.getItem('local_share_' + shareId);
+            const localStr = localStorage.getItem('local_share_' + sid);
             if (localStr) {
               const lData = JSON.parse(localStr);
-              if (lData.expiresAt && Date.now() > lData.expiresAt) {
-                localStorage.removeItem('local_share_' + shareId);
-                showToast("Liên kết chia sẻ này đã hết hạn sau 7 ngày.", "error");
+              if (lData.revoked || (lData.expiresAt && Date.now() > lData.expiresAt)) {
+                showSharedLinkUnavailableNotice("Link này đã hết hạn hoặc đã bị thu hồi bởi người chia sẻ.");
                 return;
               }
               lessonData = lData;
@@ -6833,7 +7195,33 @@
           }
         }
 
+        if (directCloudUrl && !lessonData) {
+          const actualUrl = decodeURIComponent(directCloudUrl);
+          const decodedTitle = decodeURIComponent(fallbackTitle || 'Bài học được chia sẻ');
+          
+          const response = await fetch(actualUrl);
+          if (!response.ok) {
+            showSharedLinkUnavailableNotice("Link này đã hết hạn hoặc đã bị thu hồi bởi người chia sẻ.");
+            return;
+          }
+          const htmlText = await response.text();
+
+          lessonData = {
+            id: 'shared_' + Date.now(),
+            title: decodedTitle,
+            description: 'Bài học được chia sẻ.',
+            originalFileName: decodedTitle + '.html',
+            htmlContent: htmlText,
+            expiresAt: Date.now() + SEVEN_DAYS_MS
+          };
+        }
+
         if (lessonData && lessonData.htmlContent) {
+          if (lessonData.revoked || (lessonData.expiresAt && Date.now() > lessonData.expiresAt)) {
+            showSharedLinkUnavailableNotice("Link này đã hết hạn hoặc đã bị thu hồi bởi người chia sẻ.");
+            return;
+          }
+
           state.isSharedMode = true;
           state.sharedLessonData = lessonData;
           sharedLessonBanner.classList.remove('hidden');
@@ -6843,17 +7231,17 @@
             const diffDays = Math.ceil((lessonData.expiresAt - Date.now()) / (24 * 60 * 60 * 1000));
             sharedBannerExpiry.innerText = diffDays > 0 ? `(Còn ~${diffDays} ngày)` : `(Sắp hết hạn)`;
           } else {
-            sharedBannerExpiry.innerText = `(Hạn 7 ngày)`;
+            sharedBannerExpiry.innerText = `(Hạn ${lessonData.durationDays || 7} ngày)`;
           }
 
           renderActiveLesson();
           showToast(`Đang xem bài chia sẻ: "${lessonData.title}"`);
         } else {
-          showToast("Không tìm thấy bài học hoặc liên kết đã hết hạn (sau 7 ngày).", "error");
+          showSharedLinkUnavailableNotice("Link này đã hết hạn hoặc đã bị thu hồi bởi người chia sẻ.");
         }
       } catch (err) {
         console.error("Lỗi nạp bài chia sẻ:", err);
-        showToast("Không thể tải bài học từ link chia sẻ này.", "error");
+        showSharedLinkUnavailableNotice("Không thể tải bài học từ link chia sẻ này.");
       } finally {
         setSyncStatus(false);
       }
@@ -8114,6 +8502,23 @@
         }
         if (data.settings && data.settings.sortOrder) {
           state.sortOrder = data.settings.sortOrder;
+        }
+        if (data.sharedLinks && Array.isArray(data.sharedLinks)) {
+          state.sharedLinks = data.sharedLinks;
+          saveSharedLinks();
+        }
+        if (data.recentLessons && Array.isArray(data.recentLessons)) {
+          state.recentLessons = data.recentLessons;
+          saveRecentLessons();
+          renderRecentLessonsBar();
+        }
+        if (data.settings && data.settings.pomodoro) {
+          state.pomodoro.workMinutes = data.settings.pomodoro.workMinutes || 25;
+          state.pomodoro.shortBreakMinutes = data.settings.pomodoro.shortBreakMinutes || 5;
+          state.pomodoro.longBreakMinutes = data.settings.pomodoro.longBreakMinutes || 15;
+          state.pomodoro.autoSwitch = data.settings.pomodoro.autoSwitch !== false;
+          state.pomodoro.soundEnabled = data.settings.pomodoro.soundEnabled !== false;
+          savePomodoroSettings();
         }
 
         if (!state.useLocalFallback && db && state.userId) {
@@ -10149,7 +10554,7 @@
       const goalPctEl = document.getElementById('analyticsGoalPercent');
       const goalBarEl = document.getElementById('analyticsGoalBar');
 
-      if (goalTextEl) goalTextEl.innerText = `${todayAct.lessonsCompleted || 0} / ${goal.lessons} bài (${todayMinutes}p)`;
+      if (goalTextEl) { const pCount = todayAct.pomodoroSessions || 0; goalTextEl.innerText = `${todayAct.lessonsCompleted || 0} / ${goal.lessons} bài (${todayMinutes}p${pCount > 0 ? ` • ${pCount} Pomodoro` : ''})`; }
       if (goalPctEl) goalPctEl.innerText = `${pctLessons}%`;
       if (goalBarEl) goalBarEl.style.width = `${pctLessons}%`;
 
@@ -10249,6 +10654,1442 @@
         }
       });
     }
+
+    // =========================================================================
+    // TÍNH NĂNG 1: CHẾ ĐỘ TẬP TRUNG VÀ HẸN GIỜ POMODORO
+    // =========================================================================
+
+    // Khởi tạo AudioContext cho âm thanh thông báo Pomodoro bằng Web Audio (không dùng file ngoài)
+    let pomodoroAudioCtx = null;
+    function getAudioContext() {
+      if (!pomodoroAudioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) pomodoroAudioCtx = new AudioCtx();
+      }
+      if (pomodoroAudioCtx && pomodoroAudioCtx.state === 'suspended') {
+        pomodoroAudioCtx.resume();
+      }
+      return pomodoroAudioCtx;
+    }
+
+    function playPomodoroChime(isBreak = false) {
+      if (!state.pomodoro.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        // Âm thanh chuông thư thái đa nốt (Sine wave chime)
+        const notes = isBreak ? [523.25, 659.25, 783.99] : [783.99, 659.25, 523.25, 659.25];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.18);
+          gain.gain.setValueAtTime(0, now + idx * 0.18);
+          gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.18 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.18 + 0.6);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.18);
+          osc.stop(now + idx * 0.18 + 0.65);
+        });
+      } catch (e) {
+        console.warn("Lỗi phát âm báo Pomodoro:", e);
+      }
+    }
+
+    // Screen Wake Lock API để giữ màn hình sáng khi tập trung
+    async function requestScreenWakeLock() {
+      if ('wakeLock' in navigator && !state.pomodoro.wakeLockSentinel) {
+        try {
+          state.pomodoro.wakeLockSentinel = await navigator.wakeLock.request('screen');
+          state.pomodoro.wakeLockSentinel.addEventListener('release', () => {
+            state.pomodoro.wakeLockSentinel = null;
+          });
+        } catch (_) {}
+      }
+    }
+
+    function releaseScreenWakeLock() {
+      if (state.pomodoro.wakeLockSentinel) {
+        try {
+          state.pomodoro.wakeLockSentinel.release();
+        } catch (_) {}
+        state.pomodoro.wakeLockSentinel = null;
+      }
+    }
+
+    // Chế độ tập trung (Focus Mode)
+    function toggleFocusMode(forceState = null) {
+      const willBeFocus = forceState !== null ? forceState : !state.focusMode;
+      state.focusMode = willBeFocus;
+
+      if (willBeFocus) {
+        document.body.classList.add('is-focus-mode');
+        showToast("Đã bật Chế độ tập trung (Nhấn Esc để thoát)");
+        if (state.pomodoro.isRunning) requestScreenWakeLock();
+      } else {
+        document.body.classList.remove('is-focus-mode');
+        releaseScreenWakeLock();
+      }
+
+      // Cập nhật thanh tiến độ đọc mỏng trong Focus Mode
+      updateFocusProgressBar();
+    }
+
+    function updateFocusProgressBar() {
+      const readingArea = document.getElementById('readingArea');
+      const focusProgressBar = document.getElementById('focusProgressBar');
+      if (!readingArea || !focusProgressBar) return;
+      const sTop = readingArea.scrollTop;
+      const sHeight = readingArea.scrollHeight - readingArea.clientHeight;
+      const pct = sHeight > 0 ? Math.min(100, Math.max(0, (sTop / sHeight) * 100)) : 0;
+      focusProgressBar.style.width = `${pct}%`;
+    }
+
+    // Pomodoro Timer Engine (Đếm chính xác theo timestamp + xử lý tab nền)
+    function loadPomodoroSettings() {
+      try {
+        const saved = localStorage.getItem('local_pomodoro_settings');
+        if (saved) {
+          const cfg = JSON.parse(saved);
+          state.pomodoro.workMinutes = cfg.workMinutes || 25;
+          state.pomodoro.shortBreakMinutes = cfg.shortBreakMinutes || 5;
+          state.pomodoro.longBreakMinutes = cfg.longBreakMinutes || 15;
+          state.pomodoro.autoSwitch = cfg.autoSwitch !== false;
+          state.pomodoro.soundEnabled = cfg.soundEnabled !== false;
+        }
+
+        const savedState = localStorage.getItem('local_pomodoro_state');
+        if (savedState) {
+          const st = JSON.parse(savedState);
+          state.pomodoro.mode = st.mode || 'work';
+          state.pomodoro.cycleCount = st.cycleCount || 0;
+          if (st.isRunning && st.targetTimestamp) {
+            const rem = st.targetTimestamp - Date.now();
+            if (rem > 0) {
+              state.pomodoro.remainingMs = rem;
+              state.pomodoro.targetTimestamp = st.targetTimestamp;
+              startPomodoroTimer(false);
+            } else {
+              handlePomodoroComplete();
+            }
+          } else if (typeof st.remainingMs === 'number') {
+            state.pomodoro.remainingMs = st.remainingMs;
+          }
+        } else {
+          state.pomodoro.remainingMs = state.pomodoro.workMinutes * 60 * 1000;
+        }
+      } catch (e) {
+        console.warn("Lỗi loadPomodoroSettings:", e);
+      }
+      renderPomodoroDisplay();
+    }
+
+    function savePomodoroSettings() {
+      try {
+        localStorage.setItem('local_pomodoro_settings', JSON.stringify({
+          workMinutes: state.pomodoro.workMinutes,
+          shortBreakMinutes: state.pomodoro.shortBreakMinutes,
+          longBreakMinutes: state.pomodoro.longBreakMinutes,
+          autoSwitch: state.pomodoro.autoSwitch,
+          soundEnabled: state.pomodoro.soundEnabled
+        }));
+      } catch (_) {}
+    }
+
+    function savePomodoroState() {
+      try {
+        localStorage.setItem('local_pomodoro_state', JSON.stringify({
+          isRunning: state.pomodoro.isRunning,
+          mode: state.pomodoro.mode,
+          cycleCount: state.pomodoro.cycleCount,
+          targetTimestamp: state.pomodoro.targetTimestamp,
+          remainingMs: state.pomodoro.remainingMs
+        }));
+      } catch (_) {}
+    }
+
+    function getModeTotalMs(mode) {
+      if (mode === 'shortBreak') return state.pomodoro.shortBreakMinutes * 60 * 1000;
+      if (mode === 'longBreak') return state.pomodoro.longBreakMinutes * 60 * 1000;
+      return state.pomodoro.workMinutes * 60 * 1000;
+    }
+
+    function renderPomodoroDisplay() {
+      const modeLabel = document.getElementById('focusTimerModeLabel') || document.getElementById('pomoModeBadge');
+      const timeDisplay = document.getElementById('focusTimerDisplay') || document.getElementById('pomoTimeDisplay');
+      const cycleText = document.getElementById('focusTimerCycleText') || document.getElementById('pomoCycleBadge');
+      const btnToggle = document.getElementById('btnFocusTimerToggle') || document.getElementById('btnPomoTogglePlay');
+      const iconUse = btnToggle ? btnToggle.querySelector('use') : null;
+
+      const totalSec = Math.max(0, Math.ceil(state.pomodoro.remainingMs / 1000));
+      const mins = Math.floor(totalSec / 60);
+      const secs = totalSec % 60;
+      const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      if (timeDisplay) timeDisplay.innerText = timeStr;
+
+      if (modeLabel) {
+        if (state.pomodoro.mode === 'work') modeLabel.innerText = "Tập trung";
+        else if (state.pomodoro.mode === 'shortBreak') modeLabel.innerText = "Nghỉ ngắn";
+        else modeLabel.innerText = "Nghỉ dài";
+      }
+
+      if (cycleText) {
+        if (state.pomodoro.mode === 'work') {
+          cycleText.innerText = `Phiên ${(state.pomodoro.cycleCount % 4) + 1}/4`;
+        } else {
+          cycleText.innerText = state.pomodoro.mode === 'shortBreak' ? "Thư giãn 5p" : "Thư giãn 15p";
+        }
+      }
+
+      if (iconUse) {
+        iconUse.setAttribute('href', state.pomodoro.isRunning ? '#icon-pause' : '#icon-play');
+      }
+    }
+
+    function startPomodoroTimer(setNewTarget = true) {
+      if (setNewTarget) {
+        state.pomodoro.targetTimestamp = Date.now() + state.pomodoro.remainingMs;
+      }
+      state.pomodoro.isRunning = true;
+      if (state.focusMode) requestScreenWakeLock();
+
+      if (state.pomodoro.timerInterval) clearInterval(state.pomodoro.timerInterval);
+      state.pomodoro.timerInterval = setInterval(tickPomodoro, 500);
+      renderPomodoroDisplay();
+      savePomodoroState();
+    }
+
+    function pausePomodoroTimer() {
+      if (state.pomodoro.isRunning && state.pomodoro.targetTimestamp) {
+        state.pomodoro.remainingMs = Math.max(0, state.pomodoro.targetTimestamp - Date.now());
+      }
+      state.pomodoro.isRunning = false;
+      state.pomodoro.targetTimestamp = null;
+      if (state.pomodoro.timerInterval) {
+        clearInterval(state.pomodoro.timerInterval);
+        state.pomodoro.timerInterval = null;
+      }
+      releaseScreenWakeLock();
+      renderPomodoroDisplay();
+      savePomodoroState();
+    }
+
+    function togglePomodoroTimer() {
+      if (state.pomodoro.isRunning) {
+        pausePomodoroTimer();
+      } else {
+        startPomodoroTimer(true);
+      }
+    }
+
+    function resetPomodoroTimer() {
+      pausePomodoroTimer();
+      state.pomodoro.remainingMs = getModeTotalMs(state.pomodoro.mode);
+      renderPomodoroDisplay();
+      savePomodoroState();
+    }
+
+    function skipPomodoroTimer() {
+      pausePomodoroTimer();
+      switchPomodoroMode();
+    }
+
+    function tickPomodoro() {
+      if (!state.pomodoro.isRunning || !state.pomodoro.targetTimestamp) return;
+      const now = Date.now();
+      const rem = state.pomodoro.targetTimestamp - now;
+
+      if (rem <= 0) {
+        state.pomodoro.remainingMs = 0;
+        renderPomodoroDisplay();
+        handlePomodoroComplete();
+      } else {
+        state.pomodoro.remainingMs = rem;
+        renderPomodoroDisplay();
+      }
+    }
+
+    function handlePomodoroComplete() {
+      pausePomodoroTimer();
+      const currentMode = state.pomodoro.mode;
+
+      // 1. Dừng TTS nếu đang đọc
+      if (typeof stopTTS === 'function') stopTTS();
+
+      // 2. Âm thanh chuông & Rung
+      playPomodoroChime(currentMode !== 'work');
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([250, 100, 250, 100, 250]); } catch (_) {}
+      }
+
+      // 3. Thông báo hệ thống Notification
+      let noticeTitle = '';
+      let noticeBody = '';
+
+      if (currentMode === 'work') {
+        state.pomodoro.cycleCount = (state.pomodoro.cycleCount || 0) + 1;
+        noticeTitle = "Hoàn thành phiên tập trung!";
+        noticeBody = `Bạn đã học liên tục ${state.pomodoro.workMinutes} phút. Hãy nghỉ ngơi một chút nhé!`;
+
+        // Cộng vào Thống kê học tập hôm nay
+        try {
+          const today = getTodayDateStr();
+          if (!state.learningData.analytics.dailyActivity[today]) {
+            state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0, pomodoroSessions: 0 };
+          }
+          const act = state.learningData.analytics.dailyActivity[today];
+          act.minutes = (act.minutes || 0) + state.pomodoro.workMinutes;
+          act.pomodoroSessions = (act.pomodoroSessions || 0) + 1;
+          saveLearningData();
+        } catch (e) {
+          console.warn("Lỗi cập nhật analytics pomodoro:", e);
+        }
+      } else {
+        noticeTitle = "Hết giờ nghỉ!";
+        noticeBody = "Thời gian nghỉ ngơi đã kết thúc. Hãy sẵn sàng cho phiên tập trung tiếp theo!";
+      }
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(noticeTitle, {
+            body: noticeBody,
+            icon: './icon-192.png'
+          });
+        } catch (_) {}
+      }
+
+      showToast(`${noticeTitle} ${noticeBody}`, "success");
+
+      // 4. Chuyển phiên tiếp theo
+      switchPomodoroMode(state.pomodoro.autoSwitch);
+    }
+
+    function switchPomodoroMode(autoStart = false) {
+      if (state.pomodoro.mode === 'work') {
+        if (state.pomodoro.cycleCount % 4 === 0 && state.pomodoro.cycleCount > 0) {
+          state.pomodoro.mode = 'longBreak';
+        } else {
+          state.pomodoro.mode = 'shortBreak';
+        }
+      } else {
+        state.pomodoro.mode = 'work';
+      }
+
+      state.pomodoro.remainingMs = getModeTotalMs(state.pomodoro.mode);
+      renderPomodoroDisplay();
+      savePomodoroState();
+
+      if (autoStart) {
+        startPomodoroTimer(true);
+      }
+    }
+
+    // Sự kiện visibilitychange để tính giờ chính xác khi tab ẩn hoặc điện thoại khóa màn hình
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && state.pomodoro.isRunning && state.pomodoro.targetTimestamp) {
+        tickPomodoro();
+      }
+    });
+
+    // Sự kiện cuộn để cập nhật thanh tiến độ mỏng trong Focus Mode
+    const readingAreaForFocus = document.getElementById('readingArea');
+    if (readingAreaForFocus) {
+      readingAreaForFocus.addEventListener('scroll', () => {
+        if (state.focusMode) updateFocusProgressBar();
+      }, { passive: true });
+    }
+
+    // Phím tắt Esc để thoát Focus Mode
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && state.focusMode) {
+        const pomodoroModal = document.getElementById('pomodoroSettingsModal');
+        if (pomodoroModal && !pomodoroModal.classList.contains('hidden')) {
+          hideModalAnimated(pomodoroModal);
+          return;
+        }
+        toggleFocusMode(false);
+      }
+    });
+
+    // Gắn sự kiện giao diện cho Chế độ tập trung & Pomodoro
+    const btnFocusModeReader = document.getElementById('btnFocusModeReader') || document.getElementById('btnToggleFocusMode');
+    if (btnFocusModeReader) {
+      btnFocusModeReader.addEventListener('click', () => toggleFocusMode());
+    }
+
+    const btnToggleFocusModeInDisplay = document.getElementById('btnToggleFocusModeInDisplay') || document.getElementById('btnDisplaySettingsFocus');
+    if (btnToggleFocusModeInDisplay) {
+      btnToggleFocusModeInDisplay.addEventListener('click', () => {
+        const popover = document.getElementById('displaySettingsPopover');
+        if (popover) popover.classList.add('hidden');
+        toggleFocusMode();
+      });
+    }
+
+    const btnExitFocusMode = document.getElementById('btnExitFocusMode');
+    if (btnExitFocusMode) {
+      btnExitFocusMode.addEventListener('click', () => toggleFocusMode(false));
+    }
+
+    const btnFocusTimerToggle = document.getElementById('btnFocusTimerToggle') || document.getElementById('btnPomoTogglePlay');
+    if (btnFocusTimerToggle) {
+      btnFocusTimerToggle.addEventListener('click', togglePomodoroTimer);
+    }
+
+    const btnFocusTimerSkip = document.getElementById('btnFocusTimerSkip') || document.getElementById('btnPomoSkip');
+    if (btnFocusTimerSkip) {
+      btnFocusTimerSkip.addEventListener('click', skipPomodoroTimer);
+    }
+
+    const btnFocusTimerReset = document.getElementById('btnFocusTimerReset') || document.getElementById('btnPomoReset');
+    if (btnFocusTimerReset) {
+      btnFocusTimerReset.addEventListener('click', resetPomodoroTimer);
+    }
+
+    // Modal Cài đặt Pomodoro
+    const pomodoroSettingsModal = document.getElementById('pomodoroSettingsModal');
+    const btnOpenPomodoroSettings = document.getElementById('btnOpenPomodoroSettings') || document.getElementById('btnPomoSettings');
+    const btnClosePomodoroSettings = document.getElementById('btnClosePomodoroSettings') || document.getElementById('btnClosePomoSettings');
+    const btnSavePomodoroSettings = document.getElementById('btnSavePomodoroSettings') || document.getElementById('btnSavePomoSettings');
+    const pomodoroWorkInput = document.getElementById('pomodoroWorkInput') || document.getElementById('pomoInputWork');
+    const pomodoroShortBreakInput = document.getElementById('pomodoroShortBreakInput') || document.getElementById('pomoInputShort');
+    const pomodoroLongBreakInput = document.getElementById('pomodoroLongBreakInput') || document.getElementById('pomoInputLong');
+    const pomodoroAutoSwitchCheck = document.getElementById('pomodoroAutoSwitchCheck') || document.getElementById('pomoCheckAutoSwitch');
+    const pomodoroSoundCheck = document.getElementById('pomodoroSoundCheck') || document.getElementById('pomoCheckSound');
+    const btnRequestNotificationPermission = document.getElementById('btnRequestNotificationPermission');
+
+    if (btnOpenPomodoroSettings && pomodoroSettingsModal) {
+      btnOpenPomodoroSettings.addEventListener('click', () => {
+        if (pomodoroWorkInput) pomodoroWorkInput.value = state.pomodoro.workMinutes;
+        if (pomodoroShortBreakInput) pomodoroShortBreakInput.value = state.pomodoro.shortBreakMinutes;
+        if (pomodoroLongBreakInput) pomodoroLongBreakInput.value = state.pomodoro.longBreakMinutes;
+        if (pomodoroAutoSwitchCheck) pomodoroAutoSwitchCheck.checked = state.pomodoro.autoSwitch;
+        if (pomodoroSoundCheck) pomodoroSoundCheck.checked = state.pomodoro.soundEnabled;
+        showModalAnimated(pomodoroSettingsModal);
+      });
+    }
+
+    if (btnClosePomodoroSettings && pomodoroSettingsModal) {
+      btnClosePomodoroSettings.addEventListener('click', () => hideModalAnimated(pomodoroSettingsModal));
+    }
+
+    if (btnSavePomodoroSettings) {
+      btnSavePomodoroSettings.addEventListener('click', () => {
+        const w = parseInt(pomodoroWorkInput ? pomodoroWorkInput.value : 25, 10);
+        const sb = parseInt(pomodoroShortBreakInput ? pomodoroShortBreakInput.value : 5, 10);
+        const lb = parseInt(pomodoroLongBreakInput ? pomodoroLongBreakInput.value : 15, 10);
+        if (w > 0) state.pomodoro.workMinutes = w;
+        if (sb > 0) state.pomodoro.shortBreakMinutes = sb;
+        if (lb > 0) state.pomodoro.longBreakMinutes = lb;
+        if (pomodoroAutoSwitchCheck) state.pomodoro.autoSwitch = pomodoroAutoSwitchCheck.checked;
+        if (pomodoroSoundCheck) state.pomodoro.soundEnabled = pomodoroSoundCheck.checked;
+
+        savePomodoroSettings();
+        if (!state.pomodoro.isRunning) {
+          state.pomodoro.remainingMs = getModeTotalMs(state.pomodoro.mode);
+        }
+        renderPomodoroDisplay();
+        hideModalAnimated(pomodoroSettingsModal);
+        showToast("Đã lưu cài đặt Pomodoro", "success");
+      });
+    }
+
+    if (btnRequestNotificationPermission) {
+      btnRequestNotificationPermission.addEventListener('click', async () => {
+        if ('Notification' in window) {
+          const perm = await Notification.requestPermission();
+          if (perm === 'granted') {
+            showToast("Đã bật thông báo hệ thống!", "success");
+          } else {
+            showToast("Bạn đã từ chối quyền thông báo", "info");
+          }
+        } else {
+          showToast("Trình duyệt không hỗ trợ thông báo", "error");
+        }
+      });
+    }
+
+
+    // =========================================================================
+    // TÍNH NĂNG 2: ĐỌC THÀNH TIẾNG (TEXT-TO-SPEECH)
+    // =========================================================================
+    let ttsAvailableVoices = [];
+    let currentSpeechUtterance = null;
+
+    function initTTS() {
+      if (!('speechSynthesis' in window)) {
+        const btnTTS = document.getElementById('btnTextToSpeech');
+        if (btnTTS) btnTTS.classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+      }
+
+      function loadVoices() {
+        ttsAvailableVoices = window.speechSynthesis.getVoices() || [];
+        // Lấy voice đã lưu hoặc ưu tiên tiếng Việt
+        const savedVoiceURI = localStorage.getItem('local_tts_voice');
+        if (savedVoiceURI) {
+          state.tts.voiceURI = savedVoiceURI;
+        } else {
+          const viVoice = ttsAvailableVoices.find(v => v.lang.startsWith('vi') || v.name.includes('Vietnamese') || v.name.includes('HoaiMy') || v.name.includes('Linh'));
+          if (viVoice) state.tts.voiceURI = viVoice.voiceURI;
+        }
+
+        const savedRate = localStorage.getItem('local_tts_rate');
+        if (savedRate) {
+          state.tts.rate = parseFloat(savedRate) || 1.0;
+          const rateSelect = document.getElementById('ttsRateSelect');
+          if (rateSelect) rateSelect.value = state.tts.rate.toString();
+        }
+      }
+
+      loadVoices();
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    }
+
+    // Tách văn bản bài học thành các đoạn/câu ngắn 50-150 ký tự
+    function extractReadableChunks() {
+      const chunks = [];
+      const readingContainer = document.getElementById('readingContentContainer');
+      const lessonIframe = document.getElementById('lessonIframe');
+
+      let rootDoc = document;
+      let rootEl = readingContainer;
+
+      if (lessonIframe && !lessonIframe.classList.contains('hidden') && lessonIframe.contentDocument) {
+        try {
+          rootDoc = lessonIframe.contentDocument;
+          rootEl = lessonIframe.contentDocument.body;
+        } catch (_) {}
+      }
+
+      if (!rootEl) return [];
+
+      // Kiểm tra xem người dùng có đang bôi đen một đoạn văn bản hay không
+      const windowSel = window.getSelection().toString().trim();
+      let iframeSel = '';
+      try {
+        if (rootDoc.getSelection) iframeSel = rootDoc.getSelection().toString().trim();
+      } catch (_) {}
+
+      const selectedText = windowSel || iframeSel;
+      if (selectedText && selectedText.length > 2) {
+        // Tách câu từ đoạn bôi đen
+        const sentences = splitIntoSentences(selectedText);
+        sentences.forEach((sText, idx) => {
+          chunks.push({
+            id: `sel_${idx}`,
+            text: sText,
+            element: null,
+            isSelection: true
+          });
+        });
+        state.tts.selectedText = selectedText;
+        return chunks;
+      }
+
+      state.tts.selectedText = '';
+
+      // Trích xuất các thẻ chứa nội dung đọc
+      const blocks = rootEl.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, blockquote, dt, dd');
+      if (blocks.length > 0) {
+        blocks.forEach((el, bIdx) => {
+          // Bỏ qua các phần tử ẩn hoặc script/style
+          if (el.closest('script, style, button, nav, .hidden, #ttsFloatingBar')) return;
+          const rawText = el.innerText ? el.innerText.trim() : '';
+          if (!rawText || rawText.length < 2) return;
+
+          const sentences = splitIntoSentences(rawText);
+          sentences.forEach((sText, sIdx) => {
+            chunks.push({
+              id: `chunk_${bIdx}_${sIdx}`,
+              text: sText,
+              element: el,
+              isSelection: false
+            });
+          });
+
+          // Gán listener để bấm vào đoạn nào đọc từ đoạn đó
+          if (!el.dataset.ttsBound) {
+            el.dataset.ttsBound = 'true';
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', (e) => {
+              if (state.tts.speaking || !document.getElementById('ttsFloatingBar').classList.contains('hidden')) {
+                e.stopPropagation();
+                jumpToElementChunk(el);
+              }
+            });
+          }
+        });
+      } else {
+        // Fallback: toàn bộ text
+        const allText = rootEl.innerText ? rootEl.innerText.trim() : '';
+        if (allText) {
+          const sentences = splitIntoSentences(allText);
+          sentences.forEach((sText, idx) => {
+            chunks.push({ id: `fallback_${idx}`, text: sText, element: null, isSelection: false });
+          });
+        }
+      }
+
+      return chunks;
+    }
+
+    function splitIntoSentences(text) {
+      if (!text) return [];
+      // Tách theo dấu chấm, hỏi, than, chấm phẩy hoặc xuống dòng
+      const rawSentences = text.match(/[^.!?\r\n]+[.!?\r\n]+|[^.!?\r\n]+$/g) || [text];
+      const results = [];
+
+      rawSentences.forEach(s => {
+        const trimmed = s.trim();
+        if (!trimmed) return;
+        // Nếu câu quá dài (> 150 ký tự), tách thêm theo dấu phẩy để tránh timeout của SpeechSynthesis
+        if (trimmed.length > 150) {
+          const subParts = trimmed.match(/[^,]+,+|[^,]+$/g) || [trimmed];
+          subParts.forEach(sub => {
+            const subTrimmed = sub.trim();
+            if (subTrimmed) results.push(subTrimmed);
+          });
+        } else {
+          results.push(trimmed);
+        }
+      });
+
+      return results.filter(r => r.length > 0);
+    }
+
+    function jumpToElementChunk(el) {
+      if (!state.tts.chunks || state.tts.chunks.length === 0) {
+        state.tts.chunks = extractReadableChunks();
+      }
+      const foundIdx = state.tts.chunks.findIndex(c => c.element === el);
+      if (foundIdx !== -1) {
+        state.tts.currentIndex = foundIdx;
+        speakCurrentChunk();
+      }
+    }
+
+    function clearTTSHighlights() {
+      document.querySelectorAll('.tts-active-highlight').forEach(el => el.classList.remove('tts-active-highlight'));
+      const lessonIframe = document.getElementById('lessonIframe');
+      if (lessonIframe && lessonIframe.contentDocument) {
+        try {
+          lessonIframe.contentDocument.querySelectorAll('.tts-active-highlight').forEach(el => el.classList.remove('tts-active-highlight'));
+        } catch (_) {}
+      }
+    }
+
+    function highlightCurrentChunk(chunk) {
+      clearTTSHighlights();
+      if (chunk && chunk.element) {
+        chunk.element.classList.add('tts-active-highlight');
+        chunk.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function speakCurrentChunk() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      if (!state.tts.chunks || state.tts.chunks.length === 0) {
+        state.tts.chunks = extractReadableChunks();
+      }
+
+      if (state.tts.chunks.length === 0) {
+        showToast("Không tìm thấy nội dung để đọc", "info");
+        stopTTS();
+        return;
+      }
+
+      if (state.tts.currentIndex >= state.tts.chunks.length) {
+        // Đã đọc hết bài
+        stopTTS();
+        showToast("Đã đọc xong bài học!", "success");
+        return;
+      }
+
+      const chunk = state.tts.chunks[state.tts.currentIndex];
+      highlightCurrentChunk(chunk);
+
+      // Cập nhật text preview
+      const previewEl = document.getElementById('ttsCurrentTextPreview') || document.getElementById('ttsCurrentSentenceText');
+      if (previewEl) previewEl.innerText = chunk.text;
+
+      const utterance = new SpeechSynthesisUtterance(chunk.text);
+      utterance.rate = state.tts.rate || 1.0;
+
+      // Gán giọng đọc
+      if (state.tts.voiceURI && ttsAvailableVoices.length > 0) {
+        const selectedVoice = ttsAvailableVoices.find(v => v.voiceURI === state.tts.voiceURI);
+        if (selectedVoice) utterance.voice = selectedVoice;
+      } else if (ttsAvailableVoices.length > 0) {
+        const viVoice = ttsAvailableVoices.find(v => v.lang.startsWith('vi'));
+        if (viVoice) utterance.voice = viVoice;
+      }
+
+      utterance.onend = () => {
+        if (state.tts.speaking && !state.tts.paused) {
+          state.tts.currentIndex++;
+          speakCurrentChunk();
+        }
+      };
+
+      utterance.onerror = (e) => {
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          console.warn("TTS Error:", e);
+          if (state.tts.speaking && !state.tts.paused) {
+            state.tts.currentIndex++;
+            speakCurrentChunk();
+          }
+        }
+      };
+
+      currentSpeechUtterance = utterance;
+      state.tts.speaking = true;
+      state.tts.paused = false;
+      updateTtsPlayButtonUI(true);
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleTtsPlayPause() {
+      if (!('speechSynthesis' in window)) {
+        showToast("Trình duyệt không hỗ trợ Text-to-Speech", "error");
+        return;
+      }
+
+      if (!state.tts.speaking) {
+        state.tts.chunks = extractReadableChunks();
+        state.tts.currentIndex = 0;
+        speakCurrentChunk();
+      } else if (state.tts.paused) {
+        window.speechSynthesis.resume();
+        state.tts.paused = false;
+        updateTtsPlayButtonUI(true);
+      } else {
+        window.speechSynthesis.pause();
+        state.tts.paused = true;
+        updateTtsPlayButtonUI(false);
+      }
+    }
+
+    function stopTTS() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      state.tts.speaking = false;
+      state.tts.paused = false;
+      state.tts.currentIndex = 0;
+      clearTTSHighlights();
+      updateTtsPlayButtonUI(false);
+      const previewEl = document.getElementById('ttsCurrentTextPreview') || document.getElementById('ttsCurrentSentenceText');
+      if (previewEl) previewEl.innerText = "Sẵn sàng đọc";
+    }
+
+    function stepTtsChunk(delta) {
+      if (!state.tts.chunks || state.tts.chunks.length === 0) {
+        state.tts.chunks = extractReadableChunks();
+      }
+      const newIdx = state.tts.currentIndex + delta;
+      if (newIdx >= 0 && newIdx < state.tts.chunks.length) {
+        state.tts.currentIndex = newIdx;
+        speakCurrentChunk();
+      }
+    }
+
+    function updateTtsPlayButtonUI(isPlaying) {
+      const btnPlay = document.getElementById('btnTtsPlayPause') || document.getElementById('btnTtsTogglePlay');
+      if (!btnPlay) return;
+      const use = btnPlay.querySelector('use');
+      if (use) {
+        use.setAttribute('href', isPlaying ? '#icon-pause' : '#icon-play');
+      }
+    }
+
+    function toggleTtsFloatingBar() {
+      const bar = document.getElementById('ttsFloatingBar');
+      if (!bar) return;
+      bar.classList.toggle('hidden');
+      if (!bar.classList.contains('hidden')) {
+        if (!state.tts.speaking) {
+          const previewEl = document.getElementById('ttsCurrentTextPreview') || document.getElementById('ttsCurrentSentenceText');
+          if (previewEl) previewEl.innerText = "Bấm Phát để bắt đầu nghe đọc bài học";
+        }
+      } else {
+        stopTTS();
+      }
+    }
+
+    // Voice selection modal
+    function openTtsVoiceModal() {
+      const modal = document.getElementById('ttsVoiceSelectModal');
+      const listContainer = document.getElementById('ttsVoiceList') || document.getElementById('ttsVoiceListContainer');
+      if (!modal || !listContainer) return;
+
+      ttsAvailableVoices = window.speechSynthesis.getVoices() || [];
+      listContainer.innerHTML = '';
+
+      if (ttsAvailableVoices.length === 0) {
+        listContainer.innerHTML = '<p class="text-xs text-gray-500 py-3 text-center">Không tìm thấy danh sách giọng đọc của hệ thống.</p>';
+        showModalAnimated(modal);
+        return;
+      }
+
+      // Chia thành giọng tiếng Việt và giọng ngôn ngữ khác
+      const viVoices = ttsAvailableVoices.filter(v => v.lang.startsWith('vi') || v.name.includes('Vietnamese') || v.name.includes('HoaiMy') || v.name.includes('Linh'));
+      const otherVoices = ttsAvailableVoices.filter(v => !viVoices.includes(v));
+
+      if (viVoices.length > 0) {
+        const header = document.createElement('div');
+        header.className = 'text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider px-2 py-1';
+        header.innerText = 'Giọng đọc Tiếng Việt (Khuyên dùng)';
+        listContainer.appendChild(header);
+
+        viVoices.forEach(voice => {
+          listContainer.appendChild(createVoiceItemEl(voice));
+        });
+      }
+
+      if (otherVoices.length > 0) {
+        const header = document.createElement('div');
+        header.className = 'text-[11px] font-bold text-gray-400 uppercase tracking-wider px-2 py-1 mt-3';
+        header.innerText = 'Các giọng đọc khác';
+        listContainer.appendChild(header);
+
+        otherVoices.slice(0, 20).forEach(voice => {
+          listContainer.appendChild(createVoiceItemEl(voice));
+        });
+      }
+
+      showModalAnimated(modal);
+    }
+
+    function createVoiceItemEl(voice) {
+      const isSelected = state.tts.voiceURI === voice.voiceURI;
+      const item = document.createElement('button');
+      item.className = `w-full text-left p-2.5 rounded-xl border text-xs flex items-center justify-between transition ${
+        isSelected ? 'bg-indigo-50 border-indigo-500 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-medium' : 'border-gray-200 dark:border-gray-700 hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-200'
+      }`;
+      item.innerHTML = `
+        <div class="truncate mr-2">
+          <div class="font-medium">${voice.name}</div>
+          <div class="text-[10px] opacity-70">${voice.lang} ${voice.default ? ' (Mặc định)' : ''}</div>
+        </div>
+        ${isSelected ? '<span class="text-indigo-600 dark:text-indigo-400 font-bold text-sm">✓</span>' : ''}
+      `;
+      item.addEventListener('click', () => {
+        state.tts.voiceURI = voice.voiceURI;
+        localStorage.setItem('local_tts_voice', voice.voiceURI);
+        hideModalAnimated(document.getElementById('ttsVoiceSelectModal'));
+        showToast(`Đã chọn giọng: ${voice.name}`, "success");
+        if (state.tts.speaking) {
+          speakCurrentChunk();
+        }
+      });
+      return item;
+    }
+
+    // Gắn sự kiện TTS
+    const btnTextToSpeech = document.getElementById('btnTextToSpeech');
+    if (btnTextToSpeech) {
+      btnTextToSpeech.addEventListener('click', toggleTtsFloatingBar);
+    }
+
+    const btnTtsPlayPause = document.getElementById('btnTtsPlayPause') || document.getElementById('btnTtsTogglePlay');
+    if (btnTtsPlayPause) {
+      btnTtsPlayPause.addEventListener('click', toggleTtsPlayPause);
+    }
+
+    const btnTtsPrev = document.getElementById('btnTtsPrev');
+    if (btnTtsPrev) {
+      btnTtsPrev.addEventListener('click', () => stepTtsChunk(-1));
+    }
+
+    const btnTtsNext = document.getElementById('btnTtsNext');
+    if (btnTtsNext) {
+      btnTtsNext.addEventListener('click', () => stepTtsChunk(1));
+    }
+
+    const btnTtsStop = document.getElementById('btnTtsStop');
+    if (btnTtsStop) {
+      btnTtsStop.addEventListener('click', stopTTS);
+    }
+
+    const ttsRateSelect = document.getElementById('ttsRateSelect');
+    if (ttsRateSelect) {
+      ttsRateSelect.addEventListener('change', (e) => {
+        state.tts.rate = parseFloat(e.target.value) || 1.0;
+        localStorage.setItem('local_tts_rate', state.tts.rate.toString());
+        if (state.tts.speaking && !state.tts.paused) {
+          speakCurrentChunk();
+        }
+      });
+    }
+
+    const btnOpenTtsVoiceModal = document.getElementById('btnOpenTtsVoiceModal') || document.getElementById('btnTtsVoiceMenu');
+    if (btnOpenTtsVoiceModal) {
+      btnOpenTtsVoiceModal.addEventListener('click', openTtsVoiceModal);
+    }
+
+    const btnCloseTtsVoiceModal = document.getElementById('btnCloseTtsVoiceModal');
+    if (btnCloseTtsVoiceModal) {
+      btnCloseTtsVoiceModal.addEventListener('click', () => hideModalAnimated(document.getElementById('ttsVoiceSelectModal')));
+    }
+
+    const btnTtsToggleCollapse = document.getElementById('btnTtsToggleCollapse');
+    if (btnTtsToggleCollapse) {
+      btnTtsToggleCollapse.addEventListener('click', () => {
+        const bar = document.getElementById('ttsFloatingBar');
+        if (bar) bar.classList.toggle('tts-collapsed');
+      });
+    }
+
+    
+    const btnTtsSpeed = document.getElementById('btnTtsSpeed');
+    if (btnTtsSpeed) {
+      btnTtsSpeed.addEventListener('click', () => {
+        const rates = [0.75, 1.0, 1.25, 1.5, 2.0];
+        const curIdx = rates.indexOf(state.tts.rate);
+        const nextRate = rates[(curIdx + 1) % rates.length];
+        state.tts.rate = nextRate;
+        localStorage.setItem('local_tts_rate', nextRate.toString());
+        btnTtsSpeed.innerText = nextRate + 'x';
+        if (state.tts.speaking && !state.tts.paused) {
+          speakCurrentChunk();
+        }
+      });
+    }
+
+    const btnCloseTtsBar = document.getElementById('btnCloseTtsBar');
+    if (btnCloseTtsBar) {
+      btnCloseTtsBar.addEventListener('click', () => {
+        toggleTtsFloatingBar();
+      });
+    }
+
+    initTTS();
+
+
+    // =========================================================================
+    // TÍNH NĂNG 3: LINK CHIA SẺ TUỲ CHỌN THỜI HẠN VÀ THU HỒI LINK
+    // =========================================================================
+
+    function loadSharedLinks() {
+      try {
+        const saved = localStorage.getItem('local_shared_links');
+        if (saved) {
+          state.sharedLinks = JSON.parse(saved) || [];
+        }
+      } catch (e) {
+        console.warn("Lỗi loadSharedLinks:", e);
+      }
+    }
+
+    function saveSharedLinks() {
+      try {
+        localStorage.setItem('local_shared_links', JSON.stringify(state.sharedLinks));
+      } catch (_) {}
+
+      if (state.userId && !state.useLocalFallback && db) {
+        try {
+          const ref = doc(db, 'artifacts', appId, 'users', state.userId, 'shared_links_meta', 'data');
+          setDoc(ref, { data: JSON.stringify(state.sharedLinks) }, { merge: true }).catch(() => {});
+        } catch (_) {}
+      }
+    }
+
+    // Cập nhật xem trước thời gian hết hạn trong Hộp thoại Tạo link
+    const quickShareExpirySelect = document.getElementById('quickShareExpirySelect');
+    const quickShareExpiryPreview = document.getElementById('quickShareExpiryPreview');
+
+    function updateExpiryPreview() {
+      if (!quickShareExpirySelect || !quickShareExpiryPreview) return;
+      const days = parseInt(quickShareExpirySelect.value, 10) || 7;
+      const expDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+      const hours = String(expDate.getHours()).padStart(2, '0');
+      const mins = String(expDate.getMinutes()).padStart(2, '0');
+      const d = String(expDate.getDate()).padStart(2, '0');
+      const m = String(expDate.getMonth() + 1).padStart(2, '0');
+      const y = expDate.getFullYear();
+      quickShareExpiryPreview.innerText = `Hết hạn lúc ${hours}:${mins} ngày ${d}/${m}/${y}`;
+    }
+
+    if (quickShareExpirySelect) {
+      quickShareExpirySelect.addEventListener('change', updateExpiryPreview);
+      updateExpiryPreview();
+    }
+
+    // Ghi đè hàm uploadTo7DayCloud để hỗ trợ chọn thời hạn (24h, 168h, 720h)
+    async function uploadWithCustomTTL(htmlContent, fileName = 'lesson.html', durationDays = 7) {
+      const ttlMap = { 1: '24h', 7: '168h', 30: '720h' };
+      const timeVal = ttlMap[durationDays] || '168h';
+
+      const formData = new FormData();
+      formData.append('reqtype', 'fileupload');
+      formData.append('time', timeVal);
+      const fileBlob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      formData.append('fileToUpload', fileBlob, fileName);
+
+      const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error(`Upload fail status: ${res.status}`);
+      const directUrl = await res.text();
+      if (!directUrl || !directUrl.startsWith('http')) throw new Error('Invalid URL');
+      return directUrl.trim();
+    }
+
+    // Nâng cấp createShareLinkFromLesson để lưu danh sách và tôn trọng thời hạn
+    async function createShareLinkFromLesson(lesson) {
+      const daysSelect = document.getElementById('quickShareExpirySelect');
+      const durationDays = daysSelect ? (parseInt(daysSelect.value, 10) || 7) : 7;
+
+      document.getElementById('shareStatusNote').innerText = `Đang tạo link (${durationDays} ngày)...`;
+      shareGeneratedUrlInput.value = "Đang khởi tạo...";
+
+      await ensureUserAuth();
+
+      const now = Date.now();
+      const expiresAt = now + durationDays * 24 * 60 * 60 * 1000;
+      const shareId = 's_' + now.toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+
+      const shareDocData = {
+        id: shareId,
+        lessonId: lesson.id || null,
+        title: lesson.title,
+        description: lesson.description || '',
+        originalFileName: lesson.originalFileName || 'lesson.html',
+        htmlContent: lesson.htmlContent,
+        createdAt: now,
+        expiresAt: expiresAt,
+        durationDays: durationDays,
+        revoked: false
+      };
+
+      const approxSize = new Blob([lesson.htmlContent || '']).size;
+      let shareUrl = '';
+      let saveCloudSuccess = false;
+
+      if (db && approxSize < 750000) {
+        try {
+          const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
+          await setDoc(shareRef, shareDocData);
+          shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+          saveCloudSuccess = true;
+        } catch (err) {
+          console.warn("Firestore share error, fallback cloud storage:", err);
+        }
+      }
+
+      if (!saveCloudSuccess) {
+        try {
+          const directFileUrl = await uploadWithCustomTTL(lesson.htmlContent, lesson.originalFileName || 'lesson.html', durationDays);
+          const encodedCloudUrl = encodeURIComponent(directFileUrl);
+          const encodedTitle = encodeURIComponent(lesson.title || 'Bài học');
+          shareUrl = `${window.location.origin}${window.location.pathname}?share_url=${encodedCloudUrl}&stitle=${encodedTitle}&sid=${shareId}`;
+          saveCloudSuccess = true;
+        } catch (cloudErr) {
+          console.warn("Litterbox error:", cloudErr);
+          shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+        }
+      }
+
+      // Lưu trữ bền bản ghi chia sẻ
+      try {
+        localStorage.setItem('local_share_' + shareId, JSON.stringify(shareDocData));
+      } catch (_) {}
+
+      // Thêm vào danh sách quản lý shareLinks
+      const existingIdx = state.sharedLinks.findIndex(l => l.id === shareId);
+      const linkEntry = {
+        id: shareId,
+        lessonId: lesson.id || null,
+        title: lesson.title,
+        url: shareUrl,
+        createdAt: now,
+        expiresAt: expiresAt,
+        durationDays: durationDays,
+        revoked: false
+      };
+
+      if (existingIdx !== -1) {
+        state.sharedLinks[existingIdx] = linkEntry;
+      } else {
+        state.sharedLinks.unshift(linkEntry);
+      }
+      saveSharedLinks();
+
+      shareGeneratedUrlInput.value = shareUrl;
+      document.getElementById('shareStatusNote').innerText = `Đã tạo link! Hết hạn sau ${durationDays} ngày.`;
+
+      btnTestOpenShareUrl.onclick = () => {
+        window.open(shareUrl, '_blank');
+      };
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast("Đã sao chép link chia sẻ vào clipboard!");
+      } catch (_) {}
+    }
+
+    // Modal Quản lý Link đã chia sẻ
+    function openSharedLinksModal() {
+      const modal = document.getElementById('sharedLinksModal');
+      if (!modal) return;
+      closeUserMenu();
+      const readerMenu = document.getElementById('readerMoreMenuDropdown');
+      if (readerMenu) readerMenu.classList.add('hidden');
+
+      renderSharedLinksList();
+      showModalAnimated(modal);
+      refreshIcons(modal);
+    }
+
+    function renderSharedLinksList() {
+      const listContainer = document.getElementById('sharedLinksListContainer');
+      const emptyState = document.getElementById('sharedLinksEmptyState');
+      if (!listContainer || !emptyState) return;
+
+      listContainer.innerHTML = '';
+      if (!state.sharedLinks || state.sharedLinks.length === 0) {
+        emptyState.classList.remove('hidden');
+        listContainer.classList.add('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      listContainer.classList.remove('hidden');
+
+      const now = Date.now();
+      state.sharedLinks.forEach(link => {
+        const isRevoked = link.revoked === true;
+        const isExpired = !isRevoked && (link.expiresAt && now > link.expiresAt);
+        const isActive = !isRevoked && !isExpired;
+
+        let statusBadge = '';
+        let remainingText = '';
+
+        if (isRevoked) {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400">Đã thu hồi</span>';
+          remainingText = 'Đã bị thu hồi';
+        } else if (isExpired) {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">Đã hết hạn</span>';
+          remainingText = 'Đã hết thời hạn';
+        } else {
+          const diffDays = Math.ceil((link.expiresAt - now) / (24 * 60 * 60 * 1000));
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">Đang hoạt động</span>';
+          remainingText = diffDays > 0 ? `Còn ~${diffDays} ngày` : 'Hết hạn hôm nay';
+        }
+
+        const createdDateStr = new Date(link.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const expDateStr = link.expiresAt ? new Date(link.expiresAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 bg-gray-50/70 dark:bg-[#181B20] border border-gray-200 dark:border-gray-800 rounded-xl space-y-2.5 transition";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <h4 class="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate" title="${link.title}">${link.title}</h4>
+              <div class="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-0.5 flex-wrap">
+                <span>Tạo: ${createdDateStr}</span>
+                <span>•</span>
+                <span>Hết hạn: ${expDateStr}</span>
+                <span>•</span>
+                <span class="font-medium text-indigo-600 dark:text-indigo-400">${remainingText}</span>
+              </div>
+            </div>
+            <div>${statusBadge}</div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1 border-t border-gray-200/60 dark:border-gray-800 flex-wrap">
+            <button data-action="copy" data-url="${link.url}" class="px-2.5 py-1 text-[11px] rounded-lg bg-white dark:bg-[#20242C] border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 transition flex items-center gap-1">
+              <svg class="w-3 h-3"><use href="#icon-copy"></use></svg>
+              <span>Sao chép link</span>
+            </button>
+
+            ${isActive ? `
+            <button data-action="revoke" data-id="${link.id}" class="px-2.5 py-1 text-[11px] rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 hover:bg-red-100 text-red-700 dark:text-red-300 font-medium transition flex items-center gap-1">
+              <svg class="w-3 h-3"><use href="#icon-alert-triangle"></use></svg>
+              <span>Thu hồi</span>
+            </button>
+            ` : ''}
+
+            <button data-action="extend" data-id="${link.id}" class="px-2.5 py-1 text-[11px] rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-medium transition flex items-center gap-1">
+              <svg class="w-3 h-3"><use href="#icon-rotate-cw"></use></svg>
+              <span>Gia hạn (+7 ngày)</span>
+            </button>
+
+            <button data-action="delete" data-id="${link.id}" class="px-2 py-1 text-[11px] rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition ml-auto" title="Xóa khỏi danh sách">
+              <svg class="w-3 h-3"><use href="#icon-trash-2"></use></svg>
+            </button>
+          </div>
+        `;
+
+        listContainer.appendChild(card);
+      });
+
+      // Gắn sự kiện delegation cho list
+      listContainer.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const action = btn.dataset.action;
+          const id = btn.dataset.id;
+          const url = btn.dataset.url;
+
+          if (action === 'copy' && url) {
+            try {
+              await navigator.clipboard.writeText(url);
+              showToast("Đã sao chép liên kết vào clipboard!", "success");
+            } catch (_) {}
+          } else if (action === 'revoke' && id) {
+            if (confirm("Bạn có chắc muốn thu hồi link chia sẻ này ngay lập tức? Người nhận sẽ không thể truy cập bài học nữa.")) {
+              revokeShareLink(id);
+            }
+          } else if (action === 'extend' && id) {
+            extendShareLink(id, 7);
+          } else if (action === 'delete' && id) {
+            state.sharedLinks = state.sharedLinks.filter(l => l.id !== id);
+            saveSharedLinks();
+            renderSharedLinksList();
+            showToast("Đã xóa khỏi danh sách quản lý link");
+          }
+        });
+      });
+    }
+
+    async function revokeShareLink(shareId) {
+      const link = state.sharedLinks.find(l => l.id === shareId);
+      if (link) {
+        link.revoked = true;
+        link.expiresAt = Date.now();
+        saveSharedLinks();
+      }
+
+      // Vô hiệu hóa trên Firestore nếu có
+      if (db) {
+        try {
+          const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
+          await setDoc(shareRef, { revoked: true, expiresAt: 0 }, { merge: true });
+        } catch (_) {}
+      }
+
+      // Cập nhật local_share_
+      try {
+        const localDocStr = localStorage.getItem('local_share_' + shareId);
+        if (localDocStr) {
+          const docData = JSON.parse(localDocStr);
+          docData.revoked = true;
+          docData.expiresAt = 0;
+          localStorage.setItem('local_share_' + shareId, JSON.stringify(docData));
+        }
+      } catch (_) {}
+
+      renderSharedLinksList();
+      showToast("Đã thu hồi link chia sẻ thành công!", "success");
+    }
+
+    async function extendShareLink(shareId, extraDays = 7) {
+      const link = state.sharedLinks.find(l => l.id === shareId);
+      if (!link) return;
+
+      const baseTime = (link.expiresAt && link.expiresAt > Date.now()) ? link.expiresAt : Date.now();
+      link.expiresAt = baseTime + extraDays * 24 * 60 * 60 * 1000;
+      link.revoked = false;
+      saveSharedLinks();
+
+      // Cập nhật Firestore
+      if (db) {
+        try {
+          const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
+          await setDoc(shareRef, { expiresAt: link.expiresAt, revoked: false }, { merge: true });
+        } catch (_) {}
+      }
+
+      // Cập nhật localStorage
+      try {
+        const localDocStr = localStorage.getItem('local_share_' + shareId);
+        if (localDocStr) {
+          const docData = JSON.parse(localDocStr);
+          docData.expiresAt = link.expiresAt;
+          docData.revoked = false;
+          localStorage.setItem('local_share_' + shareId, JSON.stringify(docData));
+        }
+      } catch (_) {}
+
+      renderSharedLinksList();
+      showToast(`Đã gia hạn link thêm ${extraDays} ngày!`, "success");
+    }
+
+    // Gắn sự kiện mở Shared Links Modal
+    const btnOpenSharedLinksModal = document.getElementById('btnOpenSharedLinksModal');
+    if (btnOpenSharedLinksModal) {
+      btnOpenSharedLinksModal.addEventListener('click', openSharedLinksModal);
+    }
+
+    const btnReaderSharedLinks = document.getElementById('btnReaderSharedLinks');
+    if (btnReaderSharedLinks) {
+      btnReaderSharedLinks.addEventListener('click', openSharedLinksModal);
+    }
+
+    const btnCloseSharedLinksModal = document.getElementById('btnCloseSharedLinksModal');
+    if (btnCloseSharedLinksModal) {
+      btnCloseSharedLinksModal.addEventListener('click', () => hideModalAnimated(document.getElementById('sharedLinksModal')));
+    }
+
+    loadSharedLinks();
+
+
+    // =========================================================================
+    // TÍNH NĂNG 4: MỞ NHANH BÀI GẦN ĐÂY Ở ĐẦU MÀN HÌNH CHÍNH
+    // =========================================================================
+
+    function loadRecentLessons() {
+      try {
+        const saved = localStorage.getItem('local_recent_lessons');
+        if (saved) {
+          state.recentLessons = JSON.parse(saved) || [];
+        }
+      } catch (e) {
+        console.warn("Lỗi loadRecentLessons:", e);
+      }
+      renderRecentLessonsBar();
+    }
+
+    function saveRecentLessons() {
+      try {
+        localStorage.setItem('local_recent_lessons', JSON.stringify(state.recentLessons));
+      } catch (_) {}
+    }
+
+    function recordRecentLesson(lessonId) {
+      if (!lessonId) return;
+      // Lọc bỏ nếu bài đã có trong danh sách
+      state.recentLessons = (state.recentLessons || []).filter(item => item.lessonId !== lessonId);
+      // Thêm bài mới nhất vào đầu
+      state.recentLessons.unshift({
+        lessonId: lessonId,
+        openedAt: Date.now()
+      });
+      // Giới hạn tối đa 8 bài
+      if (state.recentLessons.length > 8) {
+        state.recentLessons = state.recentLessons.slice(0, 8);
+      }
+      saveRecentLessons();
+      renderRecentLessonsBar();
+    }
+
+    function formatRelativeTime(timestamp) {
+      if (!timestamp) return 'Gần đây';
+      const diffSec = Math.floor((Date.now() - timestamp) / 1000);
+      if (diffSec < 60) return 'Vừa xong';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin} phút trước`;
+      const diffHour = Math.floor(diffMin / 60);
+      if (diffHour < 24) return `${diffHour} giờ trước`;
+      const diffDay = Math.floor(diffHour / 24);
+      if (diffDay === 1) return 'Hôm qua';
+      if (diffDay < 7) return `${diffDay} ngày trước`;
+      return new Date(timestamp).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+    }
+
+    function renderRecentLessonsBar() {
+      const bar = document.getElementById('recentLessonsBar');
+      const listContainer = document.getElementById('recentLessonsList');
+      if (!bar || !listContainer) return;
+
+      // Nếu không có bài nào trong thư viện hoặc không có lịch sử bài đọc: ẩn
+      if (!state.lessons || state.lessons.length === 0 || !state.recentLessons || state.recentLessons.length === 0) {
+        bar.classList.add('hidden');
+        return;
+      }
+
+      // Lọc các bài thực sự còn tồn tại trong state.lessons (không nằm trong thùng rác)
+      const validItems = [];
+      state.recentLessons.forEach(item => {
+        const lesson = state.lessons.find(l => l.id === item.lessonId);
+        if (lesson) validItems.push({ ...item, lesson });
+      });
+
+      if (validItems.length === 0) {
+        bar.classList.add('hidden');
+        return;
+      }
+
+      bar.classList.remove('hidden');
+      listContainer.innerHTML = '';
+
+      // Thẻ đầu tiên là "Tiếp tục học" (bài mở gần nhất / đang học dở)
+      validItems.forEach((item, idx) => {
+        const lesson = item.lesson;
+        const cat = state.categories.find(c => c.id === lesson.categoryId);
+        const catTitle = cat ? cat.title : 'Chưa phân loại';
+
+        const progObj = state.learningData && state.learningData.readingProgress ? state.learningData.readingProgress[lesson.id] : null;
+        const progressPct = progObj && typeof progObj.percent === 'number' ? Math.round(progObj.percent) : (lesson.isCompleted ? 100 : 0);
+        const timeAgo = formatRelativeTime(item.openedAt);
+
+        const isContinueCard = idx === 0;
+
+        const card = document.createElement('div');
+        card.className = `flex-shrink-0 w-52 sm:w-60 p-3 rounded-xl border cursor-pointer select-none transition group ${
+          isContinueCard 
+            ? 'bg-gradient-to-br from-indigo-50/90 to-purple-50/50 dark:from-indigo-950/40 dark:to-purple-950/20 border-indigo-200 dark:border-indigo-800/60 shadow-sm hover:shadow hover:border-indigo-400' 
+            : 'bg-white dark:bg-[#181B20] border-gray-200/80 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 shadow-2xs hover:shadow-xs'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-1 mb-1.5">
+            ${isContinueCard 
+              ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 bg-indigo-100/80 dark:bg-indigo-900/60 px-1.5 py-0.5 rounded-md">★ Tiếp tục học</span>'
+              : `<span class="text-[10px] text-gray-500 dark:text-gray-400 truncate max-w-[110px]">${catTitle}</span>`
+            }
+            <span class="text-[10px] text-gray-400 dark:text-gray-500">${timeAgo}</span>
+          </div>
+
+          <h4 class="text-xs font-semibold text-gray-900 dark:text-gray-100 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition" title="${lesson.title}">
+            ${lesson.title}
+          </h4>
+
+          <div class="mt-2.5 flex items-center justify-between gap-2">
+            <div class="flex-1 bg-gray-200/80 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+              <div class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all" style="width: ${progressPct}%"></div>
+            </div>
+            <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400">${progressPct}%</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          selectLesson(lesson.id);
+          restoreReadingPosition(lesson.id);
+        });
+
+        listContainer.appendChild(card);
+      });
+    }
+
+    // Nút xóa lịch sử gần đây
+    const btnClearRecentHistory = document.getElementById('btnClearRecentHistory') || document.getElementById('btnClearRecentLessons');
+    if (btnClearRecentHistory) {
+      btnClearRecentHistory.addEventListener('click', () => {
+        if (confirm("Bạn có muốn xóa lịch sử các bài đã mở gần đây không?")) {
+          state.recentLessons = [];
+          saveRecentLessons();
+          renderRecentLessonsBar();
+          showToast("Đã xóa lịch sử mở bài gần đây");
+        }
+      });
+    }
+
+    loadRecentLessons();
+    loadPomodoroSettings();
+
   </script>
 </body>
 </html>
