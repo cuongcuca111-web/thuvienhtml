@@ -138,6 +138,14 @@
       --highlight: #78350F;
     }
 
+    /* // ANIM: Hệ thống CSS Variables chuyển động thống nhất cho toàn bộ web */
+    :root {
+      --anim-dur-fast: 150ms;
+      --anim-dur-mid: 250ms;
+      --anim-dur-slow: 350ms;
+      --anim-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -147,10 +155,217 @@
       background-color: var(--bg-app);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: background-color var(--anim-dur-mid) var(--anim-ease), color var(--anim-dur-mid) var(--anim-ease);
       touch-action: manipulation;
       min-height: 100dvh;
       overflow-x: hidden;
+    }
+
+    /* // ANIM: Chuyển màu nền & viền mượt mà giữa Dark và Light mode */
+    #unifiedTopBar, #stickyReaderHeader, #readingArea, #mainSidebar, #readingContentContainer, aside, header, #userDropdown, #mobileBottomBar {
+      transition: background-color var(--anim-dur-mid) var(--anim-ease), border-color var(--anim-dur-mid) var(--anim-ease), color var(--anim-dur-mid) var(--anim-ease);
+    }
+
+    /* // ANIM: Hiệu ứng co nhẹ 0.97 khi bấm nút & hover đổi màu tinh tế */
+    button, .touch-target, [role="button"], input[type="button"], input[type="submit"] {
+      transition: transform var(--anim-dur-fast) var(--anim-ease), background-color var(--anim-dur-fast) var(--anim-ease), border-color var(--anim-dur-fast) var(--anim-ease), color var(--anim-dur-fast) var(--anim-ease), box-shadow var(--anim-dur-fast) var(--anim-ease);
+      will-change: transform;
+    }
+    button:active, .touch-target:active {
+      transform: scale(0.97);
+    }
+
+    /* // ANIM: Chuyển chế độ độ rộng khung đọc mượt mà */
+    #readingContentContainer {
+      transition: max-width var(--anim-dur-mid) var(--anim-ease), padding var(--anim-dur-mid) var(--anim-ease);
+      will-change: max-width;
+    }
+
+    /* // ANIM: Hiệu ứng chuyển động mượt mà cho Modal & Bottom Sheet */
+    .modal-animated {
+      opacity: 0;
+      transition: opacity var(--anim-dur-mid) var(--anim-ease);
+      pointer-events: none;
+    }
+    .modal-animated.modal-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-animated > div {
+      transform: translateY(12px) scale(0.97);
+      opacity: 0;
+      transition: transform var(--anim-dur-mid) var(--anim-ease), opacity var(--anim-dur-mid) var(--anim-ease);
+      will-change: transform, opacity;
+    }
+    .modal-animated.modal-active > div {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    .modal-animated.modal-closing {
+      opacity: 0;
+    }
+    .modal-animated.modal-closing > div {
+      transform: translateY(10px) scale(0.97);
+      opacity: 0;
+    }
+
+    @media (max-width: 640px) {
+      .modal-animated.is-bottom-sheet > div {
+        transform: translateY(100%);
+        opacity: 1;
+      }
+      .modal-animated.is-bottom-sheet.modal-active > div {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .modal-animated.is-bottom-sheet.modal-closing > div {
+        transform: translateY(100%);
+        opacity: 1;
+      }
+    }
+
+    /* // ANIM: Hiệu ứng mở Bottom Sheet / Dropdown cho Menu Tài khoản & Sidebar Drawer */
+    #userDropdownBackdrop, #sidebarBackdrop {
+      opacity: 0;
+      transition: opacity var(--anim-dur-mid) var(--anim-ease);
+      pointer-events: none;
+    }
+    #userDropdownBackdrop.backdrop-active, #sidebarBackdrop.backdrop-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #mainSidebar {
+      transition: transform var(--anim-dur-mid) var(--anim-ease), margin-left var(--anim-dur-mid) var(--anim-ease), background-color var(--anim-dur-mid) var(--anim-ease), border-color var(--anim-dur-mid) var(--anim-ease);
+      will-change: transform;
+    }
+    #userDropdown {
+      transition: transform var(--anim-dur-mid) var(--anim-ease), opacity var(--anim-dur-mid) var(--anim-ease);
+      will-change: transform, opacity;
+    }
+    @media (max-width: 767px) {
+      #userDropdown {
+        transform: translateY(100%);
+      }
+      #userDropdown.user-menu-active {
+        transform: translateY(0);
+      }
+      #userDropdown.user-menu-closing {
+        transform: translateY(100%);
+      }
+    }
+    @media (min-width: 768px) {
+      #userDropdown {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+      }
+      #userDropdown.user-menu-active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      #userDropdown.user-menu-closing {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+      }
+    }
+
+    /* // ANIM: Hiệu ứng chuyển bài đọc mượt mà theo hướng */
+    .lesson-enter-next {
+      animation: lessonEnterNext var(--anim-dur-mid) var(--anim-ease) both;
+      will-change: transform, opacity;
+    }
+    .lesson-enter-prev {
+      animation: lessonEnterPrev var(--anim-dur-mid) var(--anim-ease) both;
+      will-change: transform, opacity;
+    }
+    .lesson-enter {
+      animation: lessonEnterDirect var(--anim-dur-mid) var(--anim-ease) both;
+      will-change: transform, opacity;
+    }
+    @keyframes lessonEnterNext {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes lessonEnterPrev {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes lessonEnterDirect {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* // ANIM: Hiệu ứng xuất hiện mượt mà của thẻ bài học trong sidebar */
+    .lesson-item-stagger {
+      animation: itemStaggerIn var(--anim-dur-mid) var(--anim-ease) both;
+      will-change: transform, opacity;
+    }
+    @keyframes itemStaggerIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* // ANIM: Hiệu ứng xuất hiện êm ái cho màn hình trống */
+    #emptyLessonState {
+      animation: emptyStateFadeIn var(--anim-dur-slow) var(--anim-ease) both;
+      will-change: transform, opacity;
+    }
+    @keyframes emptyStateFadeIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0); scale(1); }
+    }
+
+    /* // ANIM: Hiệu ứng popup/dropdown tìm kiếm */
+    #searchResultsDropdown:not(.hidden), #mobileSearchResultsDropdown:not(.hidden) {
+      animation: dropdownSlideFade var(--anim-dur-fast) var(--anim-ease) both;
+      transform-origin: top center;
+      will-change: transform, opacity;
+    }
+    @keyframes dropdownSlideFade {
+      from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* // ANIM: Hiệu ứng tactile nảy nhẹ cho icon trạng thái (yêu thích, đã học, theme) */
+    .icon-pop-animated {
+      animation: iconPopScale var(--anim-dur-mid) var(--anim-ease) both;
+      will-change: transform;
+    }
+    @keyframes iconPopScale {
+      0% { transform: scale(0.85); }
+      50% { transform: scale(1.16); }
+      100% { transform: scale(1); }
+    }
+
+    /* // ANIM: Hiệu ứng thu gọn êm ái cho Banner Khách */
+    #guestWarningBanner {
+      transition: max-height var(--anim-dur-mid) var(--anim-ease), opacity var(--anim-dur-mid) var(--anim-ease), padding var(--anim-dur-mid) var(--anim-ease);
+      max-height: 80px;
+      overflow: hidden;
+    }
+    #guestWarningBanner.banner-collapsing {
+      max-height: 0 !important;
+      opacity: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      border-width: 0 !important;
+    }
+
+    /* // ANIM: Thanh tiến độ mượt mà */
+    #readingProgressBar {
+      transition: width var(--anim-dur-fast) linear;
+      will-change: width;
+    }
+
+    /* // ANIM: Tôn trọng prefers-reduced-motion của người dùng */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
 
     /* Đảm bảo iOS không tự động zoom in khi focus các input */
@@ -806,7 +1021,7 @@
   </div>
 
   <!-- MODAL: TẠO LINK CHIA SẺ NHANH (LƯU 7 NGÀY) -->
-  <div id="quickShareModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
+  <div id="quickShareModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-lg max-h-[85dvh] sm:max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="flex items-center justify-between pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3">
         <div class="flex items-center gap-2">
@@ -875,7 +1090,7 @@
   </div>
 
   <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ (BOTTOM SHEET TRÊN MOBILE) -->
-  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="authModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[85dvh] sm:max-h-[92dvh] overflow-y-auto overscroll-contain shadow-2xl flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="p-4 sm:p-5 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
@@ -1009,7 +1224,7 @@
   </div>
 
   <!-- MODAL: TẢI FILE VÀO THƯ VIỆN (BOTTOM SHEET TRÊN MOBILE) -->
-  <div id="uploadModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="uploadModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-2xl max-h-[85dvh] sm:max-h-[90dvh] overflow-y-auto overscroll-contain flex flex-col shadow-2xl pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="p-4 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
@@ -1045,7 +1260,7 @@
   </div>
 
   <!-- MODAL: MỤC MỚI / ĐỔI TÊN MỤC -->
-  <div id="categoryModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="categoryModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <h3 id="categoryModalTitle" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-3">Tạo mục bài học mới</h3>
       <input 
@@ -1063,7 +1278,7 @@
   </div>
 
   <!-- MODAL: ĐỔI TÊN BÀI HỌC -->
-  <div id="renameLessonModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="renameLessonModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Đổi tên bài học</h3>
       <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mb-3">Tên này sẽ hiển thị ở danh sách bài và kết quả tìm kiếm.</p>
@@ -1091,7 +1306,7 @@
   </div>
 
   <!-- MODAL XÁC NHẬN XÓA -->
-  <div id="confirmDeleteModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+  <div id="confirmDeleteModal" class="modal-animated fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center" style="-webkit-overflow-scrolling: touch;">
       <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3">
         <i data-lucide="trash-2" class="w-6 h-6"></i>
@@ -1106,7 +1321,7 @@
   </div>
 
   <!-- MODAL HƯỚNG DẪN CÀI PWA CHO IOS (SAFARI) -->
-  <div id="pwaIosModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="pwaIosModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="w-12 h-12 rounded-[14px] bg-[#8696FB] text-white flex items-center justify-center mx-auto mb-3 shadow-md">
         <i data-lucide="book-open" class="w-6 h-6"></i>
@@ -1246,7 +1461,8 @@
       unsubscribeLessons: null,
       useLocalFallback: false,
       isSharedMode: false,
-      sharedLessonData: null
+      sharedLessonData: null,
+      transitionDirection: 0 // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp
     };
 
     function refreshIcons() {
@@ -1254,6 +1470,39 @@
         window.lucide.createIcons();
       }
     }
+
+    // // ANIM: Tiện ích hiệu ứng hiển thị & ẩn mượt mà cho Modal / Bottom Sheet
+    function showModalAnimated(target) {
+      const el = typeof target === 'string' ? document.getElementById(target) : target;
+      if (!el) return;
+      el.classList.remove('hidden', 'modal-closing');
+      void el.offsetWidth;
+      el.classList.add('modal-active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideModalAnimated(target) {
+      const el = typeof target === 'string' ? document.getElementById(target) : target;
+      if (!el || el.classList.contains('hidden')) return;
+      el.classList.remove('modal-active');
+      el.classList.add('modal-closing');
+      setTimeout(() => {
+        el.classList.add('hidden');
+        el.classList.remove('modal-closing');
+        const anyActive = document.querySelector('.modal-animated.modal-active');
+        const userMenuOpen = document.getElementById('userDropdownBackdrop')?.classList.contains('backdrop-active');
+        if (!anyActive && !userMenuOpen) {
+          document.body.style.overflow = '';
+        }
+      }, 250);
+    }
+
+    // // ANIM: Tự động đóng modal mượt mà khi người dùng chạm vào lớp nền mờ
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.classList && e.target.classList.contains('modal-animated') && e.target.classList.contains('modal-active')) {
+        hideModalAnimated(e.target);
+      }
+    });
 
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
@@ -1520,7 +1769,13 @@
     }
 
     document.getElementById('btnDismissGuestBanner').addEventListener('click', () => {
-      document.getElementById('guestWarningBanner').classList.add('hidden');
+      // // ANIM: Thu gọn banner êm ái trước khi ẩn
+      const banner = document.getElementById('guestWarningBanner');
+      banner.classList.add('banner-collapsing');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+        banner.classList.remove('banner-collapsing');
+      }, 250);
       sessionStorage.setItem('dismissed_guest_banner', 'true');
     });
 
@@ -1596,14 +1851,14 @@
 
     function openAuthModal(mode = 'login') {
       switchAuthTab(mode);
-      authModal.classList.remove('hidden');
+      showModalAnimated(authModal);
       authEmailInput.focus();
     }
 
     tabBtnLogin.addEventListener('click', () => switchAuthTab('login'));
     tabBtnRegister.addEventListener('click', () => switchAuthTab('register'));
     document.getElementById('btnForgotPass').addEventListener('click', () => switchAuthTab('forgot'));
-    document.getElementById('btnCloseAuthModal').addEventListener('click', () => authModal.classList.add('hidden'));
+    document.getElementById('btnCloseAuthModal').addEventListener('click', () => hideModalAnimated(authModal));
 
     document.getElementById('btnSwitchAccount').addEventListener('click', () => {
       closeUserMenu();
@@ -1667,7 +1922,7 @@
           await signInWithEmailAndPassword(auth, email, password);
           localStorage.setItem('has_authenticated_account', 'true');
           showToast('Đăng nhập thành công!');
-          authModal.classList.add('hidden');
+          hideModalAnimated(authModal);
         } else if (state.authMode === 'register') {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           if (name && cred.user) {
@@ -1675,7 +1930,7 @@
           }
           localStorage.setItem('has_authenticated_account', 'true');
           showToast('Đăng ký tài khoản thành công!');
-          authModal.classList.add('hidden');
+          hideModalAnimated(authModal);
         } else if (state.authMode === 'forgot') {
           await sendPasswordResetEmail(auth, email);
           showToast('Đã gửi email khôi phục mật khẩu.');
@@ -1697,7 +1952,7 @@
         await signInWithPopup(auth, provider);
         localStorage.setItem('has_authenticated_account', 'true');
         showToast('Đăng nhập bằng Google thành công!');
-        authModal.classList.add('hidden');
+        hideModalAnimated(authModal);
       } catch (err) {
         console.error("Google Auth error:", err);
         setAuthError(translateFirebaseError(err.code));
@@ -1714,11 +1969,11 @@
           await signInAnonymously(auth);
         }
         showToast('Đang ở Chế độ Khách');
-        authModal.classList.add('hidden');
+        hideModalAnimated(authModal);
       } catch (err) {
         setupLocalGuestUser();
         showToast('Đã chuyển sang chế độ Khách cục bộ');
-        authModal.classList.add('hidden');
+        hideModalAnimated(authModal);
       }
     });
 
@@ -1948,15 +2203,16 @@
               <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredLessons.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Mục này chưa có bài học.</p>
-                ` : filteredLessons.map(lesson => {
+                ` : filteredLessons.map((lesson, idx) => {
                   const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
                   return `
                     <div 
-                      class="group/item flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
+                      class="group/item lesson-item-stagger flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
                         isActive 
                           ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
                           : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
                       }"
+                      style="animation-delay: ${Math.min(idx * 25, 200)}ms;"
                       data-select-lesson="${lesson.id}"
                     >
                       <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
@@ -2035,15 +2291,16 @@
               <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredUncat.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Không có bài học phù hợp bộ lọc.</p>
-                ` : filteredUncat.map(lesson => {
+                ` : filteredUncat.map((lesson, idx) => {
                   const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
                   return `
                     <div 
-                      class="group/item flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
+                      class="group/item lesson-item-stagger flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
                         isActive 
                           ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
                           : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
                       }"
+                      style="animation-delay: ${Math.min(idx * 25, 200)}ms;"
                       data-select-lesson="${lesson.id}"
                     >
                       <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
@@ -2231,6 +2488,18 @@
       emptyState.classList.add('hidden');
       activeContentBox.classList.remove('hidden');
 
+      // // ANIM: Kích hoạt hiệu ứng chuyển bài mượt mà theo hướng
+      activeContentBox.classList.remove('lesson-enter-next', 'lesson-enter-prev', 'lesson-enter');
+      void activeContentBox.offsetWidth;
+      if (state.transitionDirection === 1) {
+        activeContentBox.classList.add('lesson-enter-next');
+      } else if (state.transitionDirection === -1) {
+        activeContentBox.classList.add('lesson-enter-prev');
+      } else {
+        activeContentBox.classList.add('lesson-enter');
+      }
+      state.transitionDirection = 0;
+
       titleEl.innerText = currentLesson.title;
       originalFileEl.innerText = currentLesson.originalFileName || 'lesson.html';
 
@@ -2253,7 +2522,7 @@
 
       if (learnedIcon) {
         if (currentLesson.isCompleted) {
-          learnedIcon.setAttribute('class', "w-4 h-4 text-[#16A34A]");
+          learnedIcon.setAttribute('class', "w-4 h-4 text-[#16A34A] icon-pop-animated");
           learnedLabel.innerText = "Đã học xong";
         } else {
           learnedIcon.setAttribute('class', "w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]");
@@ -2263,7 +2532,7 @@
 
       if (favIcon) {
         if (currentLesson.isFavorite) {
-          favIcon.setAttribute('class', "w-4 h-4 text-[#F59E0B] fill-[#F59E0B]");
+          favIcon.setAttribute('class', "w-4 h-4 text-[#F59E0B] fill-[#F59E0B] icon-pop-animated");
         } else {
           favIcon.setAttribute('class', "w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2] fill-none");
         }
@@ -2548,6 +2817,7 @@
       const targetIndex = currentIndex + direction;
 
       if (targetIndex >= 0 && targetIndex < catLessons.length) {
+        state.transitionDirection = direction; // // ANIM: Đặt hướng trượt mượt mà (1 hoặc -1)
         selectLesson(catLessons[targetIndex].id);
       }
     }
@@ -2663,7 +2933,7 @@
     const sharedBannerExpiry = document.getElementById('sharedBannerExpiry');
 
     function openQuickShareModal(initialLesson = null) {
-      quickShareModal.classList.remove('hidden');
+      showModalAnimated(quickShareModal);
       refreshIcons();
 
       if (initialLesson) {
@@ -2705,7 +2975,7 @@
     });
 
     document.getElementById('btnCloseShareModal').addEventListener('click', () => {
-      quickShareModal.classList.add('hidden');
+      hideModalAnimated(quickShareModal);
     });
 
     shareDropZone.addEventListener('click', () => shareFileInput.click());
@@ -3184,12 +3454,12 @@
       stagedList.innerHTML = '';
       stagedContainer.classList.add('hidden');
       btnConfirmUpload.disabled = true;
-      uploadModal.classList.remove('hidden');
+      showModalAnimated(uploadModal);
       refreshIcons();
     }
 
-    document.getElementById('btnCloseUploadModal').addEventListener('click', () => uploadModal.classList.add('hidden'));
-    document.getElementById('btnCancelUpload').addEventListener('click', () => uploadModal.classList.add('hidden'));
+    document.getElementById('btnCloseUploadModal').addEventListener('click', () => hideModalAnimated(uploadModal));
+    document.getElementById('btnCancelUpload').addEventListener('click', () => hideModalAnimated(uploadModal));
     document.getElementById('btnEmptyAddLesson').addEventListener('click', openUploadModal);
     document.getElementById('btnSidebarQuickUpload').addEventListener('click', openUploadModal);
 
@@ -3391,7 +3661,7 @@
         renderActiveLesson();
 
         showToast(`Đã thêm ${state.stagedUploadFiles.length} bài học`);
-        uploadModal.classList.add('hidden');
+        hideModalAnimated(uploadModal);
         setSyncStatus(false);
       } catch (err) {
         console.error("Lỗi khi thêm bài:", err);
@@ -3416,12 +3686,12 @@
         categoryModalTitle.innerText = "Tạo mục bài học mới";
         categoryNameInput.value = "";
       }
-      categoryModal.classList.remove('hidden');
+      showModalAnimated(categoryModal);
       categoryNameInput.focus();
     }
 
     document.getElementById('btnNewCategory').addEventListener('click', () => openCategoryModal());
-    document.getElementById('btnCancelCategoryModal').addEventListener('click', () => categoryModal.classList.add('hidden'));
+    document.getElementById('btnCancelCategoryModal').addEventListener('click', () => hideModalAnimated(categoryModal));
 
     document.getElementById('btnSaveCategoryModal').addEventListener('click', async () => {
       const name = normalizeNFC(categoryNameInput.value.trim());
@@ -3464,7 +3734,7 @@
           }
           showToast("Đã tạo mục mới");
         }
-        categoryModal.classList.add('hidden');
+        hideModalAnimated(categoryModal);
         setSyncStatus(false);
       } catch (err) {
         console.error("Lỗi lưu mục:", err);
@@ -3482,7 +3752,7 @@
       renamingLessonTarget = lesson;
       renameInput.value = lesson.title;
       renameCounter.innerText = `${lesson.title.length}/300`;
-      renameModal.classList.remove('hidden');
+      showModalAnimated(renameModal);
       renameInput.focus();
       renameInput.select();
     }
@@ -3491,7 +3761,7 @@
       renameCounter.innerText = `${e.target.value.length}/300`;
     });
 
-    document.getElementById('btnCancelRenameModal').addEventListener('click', () => renameModal.classList.add('hidden'));
+    document.getElementById('btnCancelRenameModal').addEventListener('click', () => hideModalAnimated(renameModal));
     document.getElementById('btnRenameCurrent').addEventListener('click', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) openRenameLessonModal(cur);
@@ -3522,7 +3792,7 @@
 
       await updateLessonField(renamingLessonTarget.id, { title: newTitle });
       showToast("Đã cập nhật tên bài");
-      renameModal.classList.add('hidden');
+      hideModalAnimated(renameModal);
     });
 
     const descTextWrapper = document.getElementById('descriptionContentWrapper');
@@ -3580,11 +3850,11 @@
     function askConfirmDelete(message, onConfirm) {
       confirmMsg.innerText = message;
       state.lastDeleteAction = onConfirm;
-      confirmModal.classList.remove('hidden');
+      showModalAnimated(confirmModal);
     }
 
     document.getElementById('btnCancelConfirmDelete').addEventListener('click', () => {
-      confirmModal.classList.add('hidden');
+      hideModalAnimated(confirmModal);
       state.lastDeleteAction = null;
     });
 
@@ -3592,7 +3862,7 @@
       if (state.lastDeleteAction) {
         await state.lastDeleteAction();
       }
-      confirmModal.classList.add('hidden');
+      hideModalAnimated(confirmModal);
       state.lastDeleteAction = null;
     });
 
@@ -3918,14 +4188,19 @@
       state.mobileSidebarOpen = true;
       sidebar.classList.remove('-translate-x-full');
       backdrop.classList.remove('hidden');
+      void backdrop.offsetWidth;
+      backdrop.classList.add('backdrop-active');
       document.body.style.overflow = 'hidden';
     }
 
     function closeMobileSidebar() {
       state.mobileSidebarOpen = false;
       sidebar.classList.add('-translate-x-full');
-      backdrop.classList.add('hidden');
-      document.body.style.overflow = '';
+      backdrop.classList.remove('backdrop-active');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 250);
     }
 
     document.getElementById('btnToggleSidebar').addEventListener('click', () => {
@@ -3956,8 +4231,11 @@
     function toggleUserMenu() {
       const isHidden = userDropdown.classList.contains('hidden');
       if (isHidden) {
-        userDropdown.classList.remove('hidden');
+        userDropdown.classList.remove('hidden', 'user-menu-closing');
         userDropdownBackdrop.classList.remove('hidden');
+        void userDropdown.offsetWidth;
+        userDropdown.classList.add('user-menu-active');
+        userDropdownBackdrop.classList.add('backdrop-active');
         if (window.innerWidth < 768) {
           document.body.style.overflow = 'hidden'; // FIX: Khóa cuộn nền khi mở menu trên mobile
         }
@@ -3967,9 +4245,16 @@
     }
 
     function closeUserMenu() {
-      userDropdown.classList.add('hidden');
-      userDropdownBackdrop.classList.add('hidden');
-      document.body.style.overflow = ''; // FIX: Khôi phục cuộn nền
+      if (userDropdown.classList.contains('hidden')) return;
+      userDropdown.classList.remove('user-menu-active');
+      userDropdown.classList.add('user-menu-closing');
+      userDropdownBackdrop.classList.remove('backdrop-active');
+      setTimeout(() => {
+        userDropdown.classList.add('hidden');
+        userDropdown.classList.remove('user-menu-closing');
+        userDropdownBackdrop.classList.add('hidden');
+        document.body.style.overflow = ''; // FIX: Khôi phục cuộn nền
+      }, 250);
     }
 
     btnUserMenu.addEventListener('click', toggleUserMenu);
@@ -4081,7 +4366,7 @@
           deferredInstallPrompt = null;
         });
       } else if (isIos()) {
-        pwaIosModal.classList.remove('hidden');
+        showModalAnimated(pwaIosModal);
       } else {
         showToast("Bấm Menu trình duyệt (⋮) -> Cài đặt ứng dụng", "success");
       }
@@ -4099,7 +4384,7 @@
 
     if (btnCloseIosModal) {
       btnCloseIosModal.addEventListener('click', () => {
-        pwaIosModal.classList.add('hidden');
+        hideModalAnimated(pwaIosModal);
       });
     }
 
