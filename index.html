@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v3.8.2';
+    const CURRENT_APP_VERSION = 'v3.8.3';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -709,7 +709,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.8.2', { scope: './' })
+        navigator.serviceWorker.register('./sw.js?v=3.8.3', { scope: './' })
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
@@ -1447,7 +1447,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v3.8.2 - build 08/10/2026 19:30
+        Thư viện Sách HTML v3.8.3 - build 08/10/2026 19:45
       </div>
     </aside>
 
@@ -1930,7 +1930,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v3.8.2 - build 08/10/2026 19:30
+      Thư viện Sách HTML v3.8.3 - build 08/10/2026 19:45
     </div>
   </div>
 
@@ -7007,7 +7007,10 @@
         btnNext.disabled = currentIndex >= totalInCat - 1;
         btnBottomPrev.disabled = currentIndex <= 0;
         btnBottomNext.disabled = currentIndex >= totalInCat - 1;
-      // // FIX-1 (Req 4): Ẩn các thao tác chỉ dành cho chủ bài học khi người nhận đang xem bài chia sẻ
+      }
+      // // FIX: Đóng khối else tính thứ tự bài học
+
+      // FIX-1 (Req 4): Ẩn các thao tác chỉ dành cho chủ bài học khi người nhận đang xem bài chia sẻ
       const isOwner = !state.isSharedMode || Boolean(
         state.sharedLessonData && state.userId && state.sharedLessonData.authorId && (state.sharedLessonData.authorId === state.userId)
       );
@@ -9201,7 +9204,7 @@
     // // FIX: Đăng ký Service Worker tệp sw.js (v3.4) chuẩn, hỗ trợ bắt sự kiện updatefound
     function registerPwaServiceWorker() {
       if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-        navigator.serviceWorker.register('./sw.js?v=3.8.2', { scope: './' }).then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=3.8.3', { scope: './' }).then((reg) => {
           console.debug("PWA Service Worker đã sẵn sàng.", reg);
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
@@ -12201,6 +12204,8 @@
     }
     window.calculateContentHash = calculateContentHash;
     window.hashContent = calculateContentHash;
+    window.openQuickShareModal = openQuickShareModal;
+    window.renderActiveLesson = renderActiveLesson;
 
     // // FIX-2: Tìm link đang còn hoạt động cho một tài liệu (theo khóa docKey hoặc lessonId)
     function findActiveShareLink(docKey) {
@@ -13114,7 +13119,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v3.8.2 - build 08/10/2026 19:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v3.8.3 - build 08/10/2026 19:45 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
