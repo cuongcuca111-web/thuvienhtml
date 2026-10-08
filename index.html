@@ -556,22 +556,137 @@
       100% { transform: scale(1.6); opacity: 0; }
     }
 
-    /* Gạch ngang tên bài mờ mượt mà từ trái sang phải */
+    /* // PHẦN B: THIẾT KẾ ĐA TẦNG TINH TẾ CHO BÀI "ĐÃ HỌC" */
+    /* 1. Nền thẻ bài khi đã học: xanh lá rất nhạt */
+    .lesson-item-row.is-completed {
+      background-color: rgba(16, 185, 129, 0.06);
+    }
+    .dark .lesson-item-row.is-completed {
+      background-color: rgba(16, 185, 129, 0.10);
+    }
+    /* Khi VỪA đang chọn VỪA đã học: giữ nguyên nền tím đặc trưng */
+    .lesson-item-row.is-active.is-completed {
+      background-color: rgba(79, 70, 229, 0.10) !important;
+    }
+    .dark .lesson-item-row.is-active.is-completed {
+      background-color: rgba(129, 140, 248, 0.15) !important;
+    }
+
+    /* 2. Vạch dọc 3px màu xanh lá bên trái khi đã học */
+    .lesson-learned-indicator {
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background-color: #10B981;
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform var(--dur-base) var(--ease-spring), opacity var(--dur-fast) var(--ease-out);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .lesson-item-row.is-completed:not(.is-active) .lesson-learned-indicator {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+
+    /* 3. Chấm xanh nhỏ 4px cạnh vạch trái khi VỪA chọn VỪA đã học */
+    .lesson-learned-dot {
+      position: absolute;
+      left: 7px;
+      top: 50%;
+      transform: translateY(-50%) scale(0);
+      width: 4px;
+      height: 4px;
+      border-radius: 9999px;
+      background-color: #10B981;
+      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.8);
+      transition: transform var(--dur-base) var(--ease-spring);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .dark .lesson-learned-dot {
+      box-shadow: 0 0 0 1.5px rgba(22, 26, 32, 0.8);
+    }
+    .lesson-item-row.is-active.is-completed .lesson-learned-dot {
+      transform: translateY(-50%) scale(1);
+    }
+
+    /* 4. Tiêu đề bài: KHÔNG gạch ngang mặc định, làm mờ dịu mắt, clamp 2 dòng */
     .lesson-title-text {
-      position: relative;
-      display: inline;
-      background-image: linear-gradient(currentColor, currentColor);
-      background-position: 0 50%;
-      background-repeat: no-repeat;
-      background-size: 0% 1px;
-      transition: background-size var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+      transition: color var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .lesson-item-row.is-completed .lesson-title-text {
       opacity: 0.65;
-      background-size: 100% 1px;
+      color: #4B5563;
     }
-    body.no-strike-learned .lesson-item-row.is-completed .lesson-title-text {
-      background-size: 0% 1px !important;
+    .dark .lesson-item-row.is-completed .lesson-title-text {
+      opacity: 0.65;
+      color: #9CA3AF;
+    }
+
+    /* Tùy chọn gạch ngang nhẹ nếu người dùng chọn trong menu Hiển thị */
+    body.strike-learned-mode .lesson-item-row.is-completed .lesson-title-text {
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(107, 107, 102, 0.45);
+      text-decoration-skip-ink: auto;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    /* 5. Dòng tên file phụ monospace: mờ hơn khi đã học */
+    .lesson-item-row.is-completed .lesson-sub-filename {
+      opacity: 0.55 !important;
+      transition: opacity var(--dur-base) var(--ease-out);
+    }
+
+    /* 6. Huy hiệu nhỏ "Đã học" bên phải tên file (tùy chọn bật/tắt) */
+    .lesson-learned-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      line-height: 1;
+      padding: 1.5px 5px;
+      border-radius: 9999px;
+      font-weight: 500;
+      background-color: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      transition: opacity var(--dur-base) var(--ease-out);
+    }
+    .dark .lesson-learned-badge {
+      background-color: rgba(16, 185, 129, 0.20);
+      color: #34D399;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    body.hide-learned-badge .lesson-learned-badge {
+      display: none !important;
+    }
+
+    /* 7. Thanh tiến độ nhóm danh mục mảnh 2px */
+    .category-progress-bar {
+      height: 2px;
+      background-color: rgba(230, 230, 225, 0.6);
+      width: 100%;
+      overflow: hidden;
+    }
+    .dark .category-progress-bar {
+      background-color: rgba(38, 44, 54, 0.6);
+    }
+    .category-progress-fill {
+      height: 100%;
+      background-color: #10B981;
+      transition: width var(--dur-slow) var(--ease-out);
     }
 
     /* Cross-fade nhãn nút trên toolbar */
@@ -634,8 +749,57 @@
     #mainSidebar {
       transition: transform var(--dur-base) var(--ease-out), margin-left var(--dur-base) var(--ease-out);
     }
+    /* Header 1 hàng duy nhất chuẩn Editorial */
+    header.editorial-header {
+      display: flex !important;
+      align-items: center !important;
+      flex-wrap: nowrap !important;
+      gap: 12px !important;
+      height: 58px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .header-divider-v {
+      width: 1px;
+      height: 24px;
+      background-color: #E7E5DF;
+      flex-shrink: 0;
+    }
+    .dark .header-divider-v {
+      background-color: #262C36;
+    }
+
     #userDropdown {
-      transition: transform var(--dur-base) var(--ease-spring), opacity var(--dur-fast) var(--ease-out);
+      transition: transform 200ms var(--ease-out), opacity 180ms var(--ease-out);
+      transform-origin: top right;
+    }
+    @media (min-width: 640px) {
+      #userDropdown {
+        position: fixed;
+        top: 60px;
+        right: 16px;
+        width: 280px;
+        max-width: calc(100vw - 24px);
+        border-radius: 14px;
+        box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.18), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+      }
+      #userDropdown.user-menu-active {
+        animation: userDropdownIn 200ms var(--ease-out) both;
+      }
+      #userDropdown.user-menu-closing {
+        animation: userDropdownOut 180ms var(--ease-out) forwards;
+      }
+    }
+    @keyframes userDropdownIn {
+      from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes userDropdownOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-6px) scale(0.96); }
     }
 
     /* Toast Notification slide in spring */
@@ -1223,7 +1387,7 @@
     </div>
 
     <!-- // REDESIGN: HEADER 1 HÀNG GỌN GÀNG, CHUẨN EDITORIAL (TIÊU ĐỀ SERIF, TRÁI - GIỮA - PHẢI CÂN ĐỐI) -->
-    <header class="h-14 sm:h-15 px-3 sm:px-6 flex items-center justify-between gap-3">
+    <header class="editorial-header h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-3 flex-nowrap shrink-0 sticky top-0 z-40 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36]">
       
       <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif -->
       <div class="flex items-center gap-2.5 min-w-0 shrink-0">
@@ -1243,7 +1407,7 @@
       </div>
 
       <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (với phím tắt Ctrl K) -->
-      <div class="hidden md:block relative flex-1 max-w-md mx-2">
+      <div class="hidden min-[900px]:block relative flex-1 min-w-0 max-w-[560px] mx-2">
         <div class="relative flex items-center">
           <svg class="w-4 h-4 absolute left-3.5 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
           <input 
@@ -1259,66 +1423,60 @@
         <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 text-sm"></div>
       </div>
 
-      <!-- CỤM PHẢI: Nút Tạo link (Primary), Đồng bộ, Menu Hiển thị (Popover), Avatar Tài khoản -->
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0) -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
         
-        <!-- Nút Tìm kiếm trên Mobile -->
-                <!-- // FIX-1: Lối vào Tiếp tục học trên Mobile khi Sidebar đang đóng -->
-        <button id="btnMobileResumeHeader" class="md:hidden hidden items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold border border-indigo-200/80 dark:border-indigo-800/80 shadow-2xs transition active:scale-95" title="Mở nhanh bài đang học">
+        <!-- Nút Tiếp tục học & Tìm kiếm khi màn hình nhỏ (< 900px) -->
+        <button id="btnMobileResumeHeader" class="md:hidden hidden items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold border border-indigo-200/80 dark:border-indigo-800/80 shadow-2xs transition active:scale-95 shrink-0" title="Mở nhanh bài đang học">
           <svg class="w-3 h-3 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-play"></use></svg>
           <span id="mobileResumeHeaderText" class="max-w-[75px] truncate">Tiếp tục</span>
         </button>
-        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="md:hidden touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">
+        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[900px]:hidden touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0">
           <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
         </button>
 
-        <!-- // REDESIGN: Nút Chính Nổi Bật: "Tạo link nhanh" -->
-        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)">
-          <svg class="w-3.5 h-3.5"><use href="#icon-link"></use></svg>
-          <span>Tạo link nhanh</span>
+        <!-- Nút Tạo link nhanh (>= 1200px hiện chữ, 900-1199px thu icon) -->
+        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
+          <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-link"></use></svg>
+          <span class="hidden min-[1200px]:inline">Tạo link nhanh</span>
         </button>
 
-        <!-- Trạng thái đồng bộ (Chấm nhỏ trang nhã có tooltip) -->
-        <div id="syncBadge" class="flex items-center gap-1.5 text-[11px] text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition cursor-default" title="Trạng thái lưu trữ đám mây">
+        <!-- Chấm trạng thái đồng bộ (>= 1200px hiện chữ, < 1200px chấm tròn + tooltip) -->
+        <div id="syncBadge" class="flex items-center gap-1.5 text-[11px] text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition cursor-default shrink-0" title="Trạng thái lưu trữ đám mây">
           <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-          <span id="syncText" class="hidden xl:inline">Đã đồng bộ</span>
+          <span id="syncText" class="hidden min-[1200px]:inline">Đã đồng bộ</span>
         </div>
 
         <!-- Cài App PWA (Nếu hỗ trợ) -->
-        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition" title="Cài đặt ứng dụng">
+        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition shrink-0" title="Cài đặt ứng dụng" aria-label="Cài đặt ứng dụng">
           <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
-          <span class="hidden sm:inline">Cài App</span>
+          <span class="hidden min-[1200px]:inline">Cài App</span>
         </button>
 
-        
-        <!-- // FEATURE-2: Nút mở Tất cả Ghi chú & Highlight -->
-        <button id="btnHeaderNotes" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Tất cả Ghi chú & Highlight toàn thư viện">
+        <!-- Icon công cụ phụ: Ghi chú, Flashcards, Thống kê (hiển thị khi >= 900px) -->
+        <button id="btnHeaderNotes" class="hidden min-[900px]:flex touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Tất cả Ghi chú & Highlight toàn thư viện" aria-label="Ghi chú và Highlight">
           <svg class="w-4 h-4"><use href="#icon-highlighter"></use></svg>
         </button>
-
-        <!-- // FEATURE-4: Nút mở Ôn tập Flashcards -->
-        <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Ôn tập Flashcard tự kiểm tra">
+        <button id="btnHeaderFlashcards" class="hidden min-[900px]:flex touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
           <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
         </button>
-
-        <!-- // FEATURE-5: Nút mở Thống kê học tập -->
-        <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Thống kê học tập & Chuỗi ngày học">
+        <button id="btnHeaderAnalytics" class="hidden min-[900px]:flex touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
           <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
         </button>
 
-        <!-- // REDESIGN: Menu "Hiển thị" gom Cỡ chữ, Sáng/Tối, Toàn màn vào một Popover gọn gàng -->
-        <div class="relative">
-          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs">
-            <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-sliders"></use></svg>
-            <span class="hidden sm:inline">Hiển thị</span>
-            <svg class="w-3 h-3 opacity-60"><use href="#icon-chevron-down"></use></svg>
+        <!-- Menu Hiển thị (icon sliders + Popover phong cách đồng bộ) -->
+        <div class="relative shrink-0">
+          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs">
+            <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-sliders"></use></svg>
+            <span class="hidden min-[1200px]:inline">Hiển thị</span>
+            <svg class="w-3 h-3 opacity-60 hidden min-[1200px]:inline"><use href="#icon-chevron-down"></use></svg>
           </button>
 
           <!-- Popover Tùy Chọn Hiển Thị (Display Settings Popover) -->
           <div id="displaySettingsPopover" class="hidden absolute top-full right-0 mt-2 z-50 w-72 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-3.5 space-y-3.5 text-xs">
             <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
               <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Tùy chọn hiển thị</span>
-              <button id="btnCloseDisplaySettings" class="text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] p-1 rounded-md hover:bg-black/5">
+              <button id="btnCloseDisplaySettings" class="text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] p-1 rounded-md hover:bg-black/5" aria-label="Đóng tùy chọn hiển thị">
                 <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
               </button>
             </div>
@@ -1376,7 +1534,7 @@
               </label>
             </div>
 
-            <!-- // FEATURE-1: Chế độ tập trung (Pomodoro) -->
+            <!-- Nhóm 5: Chế độ tập trung (Pomodoro) -->
             <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
               <div>
                 <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Chế độ tập trung</div>
@@ -1386,28 +1544,50 @@
                 <svg class="w-3.5 h-3.5"><use href="#icon-focus"></use></svg>
                 <span>Bật</span>
               </button>
-            <!-- // FEATURE-3: Tùy chọn gạch tên bài đã học -->
+            </div>
+
+            <!-- Nhóm 6: PHẦN B - Kiểu hiển thị bài đã học (Làm mờ vs Gạch ngang) -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
+              <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] mb-1">Kiểu bài đã học</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] mb-2">Chọn cách thể hiện tiêu đề bài đã hoàn thành</div>
+              <div class="grid grid-cols-2 gap-1.5 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36]">
+                <button id="btnStyleDim" type="button" class="py-1 px-2 rounded-md text-[11px] font-medium text-center transition flex items-center justify-center gap-1 bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs">
+                  <span>Làm mờ</span>
+                  <span class="text-[9px] opacity-75">(Chuẩn)</span>
+                </button>
+                <button id="btnStyleStrike" type="button" class="py-1 px-2 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-1">
+                  <span>Gạch ngang</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Nhóm 7: PHẦN B - Huy hiệu "✓ Đã học" -->
             <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
               <div>
-                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Gạch tên bài đã học</div>
-                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Hiển thị vạch gạch ngang mờ khi đã học</div>
+                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Huy hiệu "✓ Đã học"</div>
+                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Hiện pill xanh nhỏ bên cạnh tên file</div>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input id="toggleStrikeLearned" type="checkbox" class="sr-only peer" checked>
-                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <input id="toggleLearnedBadge" type="checkbox" class="sr-only peer" checked>
+                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
               </label>
             </div>
 
           </div>
         </div>
 
-        <!-- Avatar Nút Tài Khoản -->
-        <div class="relative">
-          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target h-8 sm:h-9 px-2 sm:px-2.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold text-xs flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800/60 hover:ring-2 hover:ring-indigo-500/20 transition">
-            <span id="userInitial">U</span>
-            <span id="headerAccountLabel" class="hidden sm:inline font-normal max-w-[85px] truncate text-[11px]">Tài khoản</span>
-            <svg class="w-3 h-3 hidden sm:inline opacity-60"><use href="#icon-chevron-down"></use></svg>
-            <svg class="w-3.5 h-3.5 sm:hidden"><use href="#icon-more-vertical"></use></svg>
+        <!-- Đường phân cách dọc 1px cao 24px phân tách nhóm công cụ và tài khoản -->
+        <div class="header-divider-v mx-0.5 sm:mx-1 hidden sm:block"></div>
+
+        <!-- Avatar Nút Tài Khoản (tròn 36px kèm chấm trạng thái góc dưới phải) -->
+        <div class="relative shrink-0">
+          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 px-1 xl:px-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shrink-0" title="Tài khoản và tùy chọn">
+            <div class="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
+              <span id="userInitial">U</span>
+              <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
+            </div>
+            <span id="headerAccountLabel" class="hidden min-[1200px]:inline-block font-medium max-w-[110px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
+            <svg class="w-3 h-3 hidden min-[1200px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-chevron-down"></use></svg>
           </button>
         </div>
 
@@ -1625,27 +1805,27 @@
     <main id="readingArea" class="flex-1 overflow-y-auto flex flex-col relative scroll-smooth focus:outline-none min-w-0 pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] md:pb-6">
       
       <!-- // REDESIGN: THANH CÔNG CỤ BÀI ĐỌC (3 NHÓM RÕ RÀNG: ĐIỀU HƯỚNG | HIỂN THỊ | HÀNH ĐỘNG) -->
-      <div id="stickyReaderHeader" class="sticky top-0 z-20 backdrop-blur-md bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-3 text-xs overflow-x-auto no-scrollbar transition-colors">
+      <div id="stickyReaderHeader" class="sticky top-0 z-20 backdrop-blur-md bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-2 sm:gap-3 text-xs flex-nowrap overflow-x-auto no-scrollbar transition-colors">
         
         <!-- NHÓM 1: ĐIỀU HƯỚNG (Trước / Bộ đếm / Sau / Ô Tới) -->
-        <div class="flex items-center gap-1.5 shrink-0">
-          <button id="btnPrevLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none">
-            <svg class="w-3.5 h-3.5"><use href="#icon-chevron-left"></use></svg>
+        <div class="flex items-center gap-1.5 shrink-0 flex-nowrap">
+          <button id="btnPrevLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài trước">
+            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-chevron-left"></use></svg>
             <span class="hidden sm:inline">Trước</span>
           </button>
 
-          <div class="px-2.5 py-1 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] font-medium whitespace-nowrap text-[11px] sm:text-xs">
+          <div class="px-2.5 py-1 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] font-medium whitespace-nowrap text-[11px] sm:text-xs shrink-0">
             <span id="currentLessonIndexBadge">0 / 0</span>
           </div>
 
-          <button id="btnNextLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none">
+          <button id="btnNextLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài sau">
             <span class="hidden sm:inline">Sau</span>
-            <svg class="w-3.5 h-3.5"><use href="#icon-chevron-right"></use></svg>
+            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-chevron-right"></use></svg>
           </button>
 
-          <div class="hidden sm:flex items-center gap-1 ml-1 text-[#6E6B65] dark:text-[#979DA8]">
+          <div class="hidden sm:flex items-center gap-1 ml-1 text-[#6E6B65] dark:text-[#979DA8] shrink-0">
             <span>Tới:</span>
-            <input id="jumpLessonInput" type="number" min="1" class="w-11 px-1.5 py-1 rounded-md border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs focus:border-indigo-500" />
+            <input id="jumpLessonInput" type="number" min="1" class="w-11 px-1.5 py-1 rounded-md border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs focus:border-indigo-500" aria-label="Nhập số bài để tới" />
           </div>
         </div>
 
@@ -1669,35 +1849,35 @@
         <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block"></div>
 
         <!-- NHÓM 3: HÀNH ĐỘNG (Đã học, Yêu thích hiện trực tiếp; Chia sẻ, Đổi tên, In trong menu "Thêm") -->
-        <div class="flex items-center gap-1.5 shrink-0">
+        <div class="flex items-center gap-1.5 shrink-0 flex-nowrap">
           
           <!-- // FEATURE-2: Nút Đọc thành tiếng (Text-to-Speech) -->
-          <button id="btnTextToSpeech" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 transition shadow-2xs font-medium" title="Đọc bài thành tiếng (Text-to-Speech)">
-            <svg class="w-3.5 h-3.5"><use href="#icon-volume-2"></use></svg>
-            <span class="hidden sm:inline">Nghe</span>
+          <button id="btnTextToSpeech" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 transition shadow-2xs font-medium shrink-0" title="Đọc bài thành tiếng (Text-to-Speech)" aria-label="Đọc bài thành tiếng">
+            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-volume-2"></use></svg>
+            <span class="hidden xl:inline">Nghe</span>
           </button>
 
           <!-- // FEATURE-1: Nút Bật Chế độ tập trung & Pomodoro -->
-          <button id="btnToggleFocusMode" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 transition shadow-2xs font-medium" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro (Phím tắt: Esc để thoát)">
-            <svg class="w-3.5 h-3.5 text-rose-500"><use href="#icon-focus"></use></svg>
-            <span class="hidden sm:inline">Tập trung</span>
+          <button id="btnToggleFocusMode" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 transition shadow-2xs font-medium shrink-0" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro (Phím tắt: Esc để thoát)" aria-label="Chế độ tập trung">
+            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0"><use href="#icon-focus"></use></svg>
+            <span class="hidden xl:inline">Tập trung</span>
           </button>
 
-          <!-- Đã học -->
-          <button id="btnToggleLearned" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 transition shadow-2xs font-medium" title="Đánh dấu đã học bài">
-            <svg id="learnedIcon" class="w-3.5 h-3.5 text-gray-400"><use href="#icon-circle"></use></svg>
-            <span class="hidden lg:inline" id="learnedLabel">Đã học</span>
+          <!-- Đã học (Luôn hiển thị ra ngoài, không bị giấu vào menu) -->
+          <button id="btnToggleLearned" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 transition shadow-2xs font-medium shrink-0" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
+            <svg id="learnedIcon" class="w-3.5 h-3.5 text-gray-400 shrink-0"><use href="#icon-circle"></use></svg>
+            <span class="inline text-xs" id="learnedLabel">Đã học</span>
           </button>
 
           <!-- Yêu thích -->
-          <button id="btnToggleFavorite" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 transition shadow-2xs" title="Đánh dấu yêu thích">
-            <svg id="favIcon" class="w-4 h-4 text-gray-400 fill-none"><use href="#icon-star"></use></svg>
+          <button id="btnToggleFavorite" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-center transition shadow-2xs shrink-0" title="Đánh dấu yêu thích" aria-label="Đánh dấu yêu thích">
+            <svg id="favIcon" class="w-4 h-4 text-gray-400 fill-none shrink-0"><use href="#icon-star"></use></svg>
           </button>
 
           <!-- Nút Menu "Thêm" (Gom Chia sẻ, Đổi tên, In, Giữ màu gốc) -->
-          <div class="relative">
-            <button id="btnReaderMoreActions" aria-label="Thao tác khác cho bài học" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1 transition shadow-2xs" title="Thao tác khác">
-              <svg class="w-4 h-4"><use href="#icon-more-vertical"></use></svg>
+          <div class="relative shrink-0">
+            <button id="btnReaderMoreActions" aria-label="Thao tác khác cho bài học" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition shadow-2xs" title="Thao tác khác">
+              <svg class="w-4 h-4 shrink-0"><use href="#icon-more-vertical"></use></svg>
             </button>
 
             <!-- Dropdown Menu Thao Tác Khác -->
@@ -2023,38 +2203,49 @@
   </div>
 <!-- MODAL / BOTTOM SHEET MENU TÀI KHOẢN (FIX: Tách khỏi header để không bị backdrop-blur tạo containing block làm cắt menu trên iOS) -->
   <div id="userDropdownBackdrop" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity"></div>
-  <div id="userDropdown" class="hidden fixed bottom-0 md:bottom-auto md:top-14 right-0 md:right-4 left-0 md:left-auto z-[65] w-full md:w-72 max-h-[85dvh] overflow-y-auto overscroll-contain bg-white dark:bg-[#161A20] border-t md:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl md:rounded-card shadow-2xl p-4 md:p-3 text-xs pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] md:pb-3" style="-webkit-overflow-scrolling: touch;">
+  <div id="userDropdown" class="hidden fixed bottom-0 sm:bottom-auto sm:top-14 right-0 sm:right-4 left-0 sm:left-auto z-[65] w-full sm:w-[280px] max-h-[85dvh] overflow-y-auto overscroll-contain bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-[14px] shadow-2xl p-3.5 text-xs pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-3.5" style="-webkit-overflow-scrolling: touch;">
     <!-- Handle bar & Header cho Bottom sheet trên mobile -->
-    <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E6E6E1] dark:border-[#262C36] md:hidden">
+    <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E6E6E1] dark:border-[#262C36] sm:hidden">
       <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto"></div>
       <button id="btnCloseUserMenuMobile" class="touch-target p-1 text-[#6B6B66] dark:text-[#9AA3B2] absolute right-3 top-2.5" aria-label="Đóng menu tài khoản">
         <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
       </button>
     </div>
 
-    <!-- Thông tin người dùng -->
-    <div class="px-2 py-2 border-b border-[#E6E6E1] dark:border-[#262C36] mb-2">
-      <div class="flex items-center justify-between mb-0.5">
-        <span class="font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-sm md:text-xs" id="userNameDisplay">Người dùng</span>
-        <span id="userBadgeType" class="text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">Đã đăng nhập</span>
+    <!-- Thông tin người dùng (Avatar lớn 40px, tên, email, nhãn) -->
+    <div class="px-1 py-1.5 border-b border-[#E6E6E1] dark:border-[#262C36] mb-2 flex items-center gap-2.5">
+      <div id="userDropdownAvatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+        <span id="userDropdownInitial">U</span>
       </div>
-      <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate" id="userEmailDisplay">loading...</p>
-      <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-1 mb-0.5">
+          <span class="font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-xs" id="userNameDisplay">Người dùng</span>
+          <span id="userBadgeType" class="text-[9px] px-1.5 py-0.2 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 shrink-0">Đã đăng nhập</span>
+        </div>
+        <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate" id="userEmailDisplay">loading...</p>
+        <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
+      </div>
     </div>
 
+    <!-- Mục Hồ sơ & Thống kê học tập -->
+    <button id="btnUserProfile" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition">
+      <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-bar-chart"></use></svg>
+      <span>Hồ sơ &amp; Thống kê</span>
+    </button>
+
     <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
-    <button id="btnOpenSharedLinksModal" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-1 transition">
+    <button id="btnOpenSharedLinksModal" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition">
       <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-share-2"></use></svg>
       <span>Link đã chia sẻ</span>
     </button>
 
-    <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-2">
+    <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-1.5">
       <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-link"></use></svg>
       <span>Tạo link chia sẻ 7 ngày</span>
     </button>
 
     <!-- Cụm chỉnh cỡ chữ thu nhỏ trong Menu cho mobile -->
-    <div class="sm:hidden flex items-center justify-between px-3 py-2 bg-[#F7F7F5] dark:bg-[#0F1115] rounded-card border border-[#E6E6E1] dark:border-[#262C36] mb-2">
+    <div class="sm:hidden flex items-center justify-between px-2.5 py-2 bg-[#F7F7F5] dark:bg-[#0F1115] rounded-lg border border-[#E6E6E1] dark:border-[#262C36] mb-2">
       <span class="text-[#6B6B66] dark:text-[#9AA3B2] font-medium">Cỡ chữ văn bản:</span>
       <div class="flex items-center gap-1">
         <button id="btnMenuFontDec" class="w-7 h-7 rounded border border-gray-300 dark:border-gray-700 font-bold flex items-center justify-center">A-</button>
@@ -2063,43 +2254,42 @@
       </div>
     </div>
 
-    <!-- Khối nâng cấp dành riêng cho Chế độ Khách -->
-    <div id="guestUpgradeBlock" class="hidden p-3 mb-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-card border border-indigo-100 dark:border-indigo-900/50">
+    <!-- Khối nâng cấp nổi bật dành riêng cho Chế độ Khách -->
+    <div id="guestUpgradeBlock" class="hidden p-3 mb-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
       <p class="text-xs text-indigo-900 dark:text-indigo-200 font-semibold mb-1">Bạn đang dùng chế độ Khách</p>
       <p class="text-[11px] text-indigo-700 dark:text-indigo-300 mb-2 leading-relaxed">Đăng ký để dữ liệu được lưu vĩnh viễn và đồng bộ trên mọi thiết bị.</p>
-      <button id="btnOpenAuthFromGuest" class="w-full py-2.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-xs text-center transition shadow-sm">
-        Đăng ký / Đăng nhập
+      <button id="btnOpenAuthFromGuest" class="w-full py-2 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-xs text-center transition shadow-xs">
+        Đăng ký / Đăng nhập để lưu vĩnh viễn
       </button>
     </div>
 
+    <!-- Xuất & Nhập sao lưu (.json) -->
+    <button id="btnExportData" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
+      <svg class="w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-download"></use></svg>
+      <span>Xuất sao lưu (.json)</span>
+    </button>
+    <label class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
+      <svg class="w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-upload"></use></svg>
+      <span>Nhập sao lưu (.json)</span>
+      <input type="file" id="importBackupInput" accept=".json" class="hidden" />
+    </label>
+
     <!-- Nút đổi tài khoản (chỉ hiện khi đã đăng nhập) -->
-    <button id="btnSwitchAccount" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
+    <button id="btnSwitchAccount" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
       <svg class="w-4 h-4 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-log-in"></use></svg>
       <span id="btnSwitchAccountLabel">Đăng nhập tài khoản khác</span>
     </button>
 
     <!-- Cài đặt app PWA trên mobile -->
-    <button id="btnMenuPwaInstall" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
+    <button id="btnMenuPwaInstall" class="sm:hidden w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
       <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-download"></use></svg>
       <span>Cài app lên màn hình chính</span>
     </button>
 
-    <div class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
-
-    <button id="btnExportData" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-download"></use></svg>
-      <span>Xuất sao lưu (.json)</span>
-    </button>
-    <label class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-upload"></use></svg>
-      <span>Nhập sao lưu (.json)</span>
-      <input type="file" id="importBackupInput" accept=".json" class="hidden" />
-    </label>
-
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
 
-    <!-- Nút Đăng xuất (FIX: Ẩn khi ở chế độ Khách, chỉ hiện khi đã đăng nhập) -->
-    <button id="btnLogout" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
+    <!-- Nút Đăng xuất màu đỏ nhạt, đặt cuối (Ẩn khi ở Chế độ Khách) -->
+    <button id="btnLogout" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium transition">
       <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-log-out"></use></svg>
       <span>Đăng xuất</span>
     </button>
@@ -4250,13 +4440,21 @@
       const btnLogout = document.getElementById('btnLogout');
       const logoutDivider = document.getElementById('logoutDivider');
 
+      const statusDot = document.getElementById('userStatusDot');
+      const dropdownInitial = document.getElementById('userDropdownInitial');
+
       if (isAnonymous) {
         initialEl.innerText = "K";
+        if (dropdownInitial) dropdownInitial.innerText = "K";
         headerLabel.innerText = "Khách";
         nameEl.innerText = "Khách (Chưa tạo tài khoản)";
         emailEl.innerText = "Chưa liên kết email";
         uidEl.innerText = `UID: ${(user.uid || '').substring(0, 12)}...`;
         
+        if (statusDot) {
+          statusDot.className = "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-gray-400";
+        }
+
         badgeType.innerText = "Chế độ Khách";
         badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300");
         
@@ -4269,9 +4467,15 @@
       } else {
         // // FIX: Tên hiển thị lấy từ displayName hoặc tên đăng nhập (trước @)
         const displayName = user.displayName || user.email?.split('@')[0] || "Thành viên";
-        initialEl.innerText = (displayName[0] || "U").toUpperCase();
+        const initialChar = (displayName[0] || "U").toUpperCase();
+        initialEl.innerText = initialChar;
+        if (dropdownInitial) dropdownInitial.innerText = initialChar;
         headerLabel.innerText = displayName;
         nameEl.innerText = displayName;
+
+        if (statusDot) {
+          statusDot.className = "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500";
+        }
 
         // // FIX: Không bao giờ hiển thị email ảo @thuvienhtml.local ra giao diện
         if (user.email && user.email.endsWith('@thuvienhtml.local')) {
@@ -4752,14 +4956,17 @@
         console.warn("Lỗi đọc Firestore settings:", e);
       }
       try {
-        const strikePref = localStorage.getItem('cfg_strike_learned');
-        const cbStrike = document.getElementById('toggleStrikeLearned');
-        if (strikePref === 'false') {
-          document.body.classList.add('no-strike-learned');
-          if (cbStrike) cbStrike.checked = false;
+        const learnedStyle = localStorage.getItem('cfg_learned_style') || 'dim';
+        updateLearnedStyleUI(learnedStyle);
+
+        const hideBadge = localStorage.getItem('cfg_hide_learned_badge') === 'true';
+        const cbBadge = document.getElementById('toggleLearnedBadge');
+        if (hideBadge) {
+          document.body.classList.add('hide-learned-badge');
+          if (cbBadge) cbBadge.checked = false;
         } else {
-          document.body.classList.remove('no-strike-learned');
-          if (cbStrike) cbStrike.checked = true;
+          document.body.classList.remove('hide-learned-badge');
+          if (cbBadge) cbBadge.checked = true;
         }
       } catch (_) {}
       updateFontSizeDisplay();
@@ -6722,6 +6929,12 @@
               isActive ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
             }"></span>
 
+            <!-- Vạch dọc mảnh 3px màu xanh lá khi bài đã học (chỉ hiện khi không active) -->
+            <span class="lesson-learned-indicator"></span>
+
+            <!-- Chấm xanh 4px cạnh vạch trái khi VỪA chọn VỪA đã học -->
+            <span class="lesson-learned-dot"></span>
+
             <!-- Checkbox chọn nhiều bài hoặc tay cầm kéo thả -->
             ${state.isBatchSelectingLessons ? `
               <input type="checkbox" class="lesson-batch-cb rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
@@ -6750,9 +6963,12 @@
               </p>
               <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
                 ${lesson.originalFileName ? `
-                  <span class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] truncate max-w-[130px] font-mono opacity-80" title="File gốc: ${lesson.originalFileName}">
+                  <span class="lesson-sub-filename text-[10px] text-[#6E6B65] dark:text-[#9AA3B2] truncate max-w-[130px] font-mono opacity-80" title="File gốc: ${lesson.originalFileName}">
                     ${lesson.originalFileName}
                   </span>
+                ` : ''}
+                ${lesson.isCompleted ? `
+                  <span class="lesson-learned-badge">✓ Đã học</span>
                 ` : ''}
                 ${tagChips ? `<div class="flex items-center gap-1 flex-wrap">${tagChips}</div>` : ''}
               </div>
@@ -6798,12 +7014,12 @@
               </div>
 
               <div class="flex items-center gap-1 shrink-0">
-                <span class="cat-count-badge text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
+                <span class="cat-count-badge text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
                   progressPercent === 100 && totalCount > 0
-                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 font-semibold'
-                    : 'text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36]'
+                    ? 'bg-emerald-600 text-white border-emerald-600 font-semibold shadow-2xs'
+                    : 'text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36] font-medium'
                 }">
-                  ${completedCount}/${totalCount}${progressPercent === 100 && totalCount > 0 ? ' ✓' : ''}
+                  ${progressPercent === 100 && totalCount > 0 ? '✓ ' : ''}${completedCount}/${totalCount}
                 </span>
 
                 <!-- // FIX-2: Nút menu ⋯ cho mục -->
@@ -6813,8 +7029,9 @@
               </div>
             </div>
 
-            <div class="w-full bg-[#E6E6E1]/50 dark:bg-[#262C36]/50 h-1">
-              <div class="bg-[#16A34A] h-full transition-all duration-400" style="width: ${progressPercent}%;"></div>
+            <!-- Viền dưới của header nhóm là thanh tiến độ xanh mảnh 2px -->
+            <div class="category-progress-bar">
+              <div class="category-progress-fill" style="width: ${progressPercent}%;"></div>
             </div>
 
             <div class="category-lessons-grid ${isExpanded ? 'is-expanded' : ''}" data-cat-grid="${cat.id}">
@@ -6853,14 +7070,18 @@
                 </span>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
-                <span class="cat-count-badge text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
+                <span class="cat-count-badge text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
                   completedUncat === totalUncat && totalUncat > 0
-                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 font-semibold'
-                    : 'text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36]'
+                    ? 'bg-emerald-600 text-white border-emerald-600 font-semibold shadow-2xs'
+                    : 'text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36] font-medium'
                 }">
-                  ${completedUncat}/${totalUncat}${completedUncat === totalUncat && totalUncat > 0 ? ' ✓' : ''}
+                  ${completedUncat === totalUncat && totalUncat > 0 ? '✓ ' : ''}${completedUncat}/${totalUncat}
                 </span>
               </div>
+            </div>
+
+            <div class="category-progress-bar">
+              <div class="category-progress-fill" style="width: ${totalUncat > 0 ? Math.round((completedUncat / totalUncat) * 100) : 0}%;"></div>
             </div>
 
             <div class="category-lessons-grid ${isUncatExpanded ? 'is-expanded' : ''}" data-cat-grid="__uncategorized__">
@@ -7014,7 +7235,6 @@
           const targetState = !lesson.isCompleted;
           if (targetState) {
             el.classList.add('is-checked', 'anim-pop');
-            shootMicroConfetti(el);
             if (navigator.vibrate) {
               try { navigator.vibrate(10); } catch (_) {}
             }
@@ -9093,15 +9313,54 @@
       saveUserSettings();
     });
 
-    const toggleStrikeLearnedEl = document.getElementById('toggleStrikeLearned');
-    if (toggleStrikeLearnedEl) {
-      toggleStrikeLearnedEl.addEventListener('change', (e) => {
+    function updateLearnedStyleUI(mode) {
+      const btnDim = document.getElementById('btnStyleDim');
+      const btnStrike = document.getElementById('btnStyleStrike');
+      if (mode === 'strike') {
+        document.body.classList.add('strike-learned-mode');
+        if (btnStrike) {
+          btnStrike.className = 'py-1 px-2 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-1 bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs';
+        }
+        if (btnDim) {
+          btnDim.className = 'py-1 px-2 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-1';
+        }
+      } else {
+        document.body.classList.remove('strike-learned-mode');
+        if (btnDim) {
+          btnDim.className = 'py-1 px-2 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-1 bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs';
+        }
+        if (btnStrike) {
+          btnStrike.className = 'py-1 px-2 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-1';
+        }
+      }
+    }
+    window.updateLearnedStyleUI = updateLearnedStyleUI;
+
+    const btnStyleDimEl = document.getElementById('btnStyleDim');
+    if (btnStyleDimEl) {
+      btnStyleDimEl.addEventListener('click', () => {
+        updateLearnedStyleUI('dim');
+        localStorage.setItem('cfg_learned_style', 'dim');
+      });
+    }
+
+    const btnStyleStrikeEl = document.getElementById('btnStyleStrike');
+    if (btnStyleStrikeEl) {
+      btnStyleStrikeEl.addEventListener('click', () => {
+        updateLearnedStyleUI('strike');
+        localStorage.setItem('cfg_learned_style', 'strike');
+      });
+    }
+
+    const toggleLearnedBadgeEl = document.getElementById('toggleLearnedBadge');
+    if (toggleLearnedBadgeEl) {
+      toggleLearnedBadgeEl.addEventListener('change', (e) => {
         if (e.target.checked) {
-          document.body.classList.remove('no-strike-learned');
-          localStorage.setItem('cfg_strike_learned', 'true');
+          document.body.classList.remove('hide-learned-badge');
+          localStorage.setItem('cfg_hide_learned_badge', 'false');
         } else {
-          document.body.classList.add('no-strike-learned');
-          localStorage.setItem('cfg_strike_learned', 'false');
+          document.body.classList.add('hide-learned-badge');
+          localStorage.setItem('cfg_hide_learned_badge', 'true');
         }
       });
     }
@@ -9427,10 +9686,25 @@
     }
 
     document.addEventListener('click', (e) => {
-      if (window.innerWidth >= 768 && !btnUserMenu.contains(e.target) && !userDropdown.contains(e.target)) {
+      if (!btnUserMenu.contains(e.target) && !userDropdown.contains(e.target)) {
         closeUserMenu();
       }
     });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !userDropdown.classList.contains('hidden')) {
+        closeUserMenu();
+      }
+    });
+
+    const btnUserProfile = document.getElementById('btnUserProfile');
+    if (btnUserProfile) {
+      btnUserProfile.addEventListener('click', () => {
+        closeUserMenu();
+        const btnAnalytics = document.getElementById('btnHeaderAnalytics');
+        if (btnAnalytics) btnAnalytics.click();
+      });
+    }
 
     document.getElementById('btnExportData').addEventListener('click', () => {
       const exportObject = {
