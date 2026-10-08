@@ -419,6 +419,31 @@
         min-width: 44px;
       }
     }
+  
+    /* // FEATURE: CSS cho 3D Flashcards & Highlights */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-preserve-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    .card-flipped { transform: rotateY(180deg); }
+    
+    .custom-highlight {
+      border-radius: 3px;
+      padding: 1px 3px;
+      cursor: pointer;
+      transition: filter 0.15s ease;
+    }
+    .custom-highlight:hover {
+      filter: brightness(0.92);
+    }
+    .custom-highlight-flash {
+      animation: highlightFlash 1.5s ease-in-out;
+    }
+    @keyframes highlightFlash {
+      0%, 100% { outline: 0; }
+      50% { outline: 3px solid #6366F1; box-shadow: 0 0 12px rgba(99, 102, 241, 0.6); }
+    }
+
   </style>
 </head>
 <body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
@@ -598,6 +623,36 @@
     <symbol id="icon-type" viewBox="0 0 24 24">
       <path d="M4 7V4H20V7M9 20H15M12 4V20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+  
+    <!-- // FEATURE: Bộ icon SVG nội bộ cho 5 tính năng học tập mới -->
+    <symbol id="icon-highlighter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m9 11-6 6v3h3l6-6"/>
+      <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
+    </symbol>
+    <symbol id="icon-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="13" height="17" x="2" y="5" rx="2"/>
+      <path d="M7 2h12a2 2 0 0 1 2 2v14"/>
+      <path d="M6 10h5M6 14h3"/>
+    </symbol>
+    <symbol id="icon-bar-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" x2="12" y1="20" y2="10"/>
+      <line x1="18" x2="18" y1="20" y2="4"/>
+      <line x1="6" x2="6" y1="20" y2="16"/>
+      <line x1="3" x2="21" y1="20" y2="20"/>
+    </symbol>
+    <symbol id="icon-calendar-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+      <circle cx="16" cy="16" r="5"/>
+      <polyline points="16 13.5 16 16 17.5 17.5"/>
+    </symbol>
+    <symbol id="icon-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+    </symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="6 3 20 12 6 21 6 3"/>
+    </symbol>
+
   </svg>
   <!-- // REDESIGN: TOÀN BỘ KHU VỰC ĐỈNH - HEADER TINH GỌN 1 HÀNG, BANNER MẢNH, THANH TIẾN ĐỘ DÍNH -->
   <div id="unifiedTopBar" class="w-full shrink-0 z-40 bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md pt-[env(safe-area-inset-top,0px)] transition-colors">
@@ -694,6 +749,22 @@
         <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition" title="Cài đặt ứng dụng">
           <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
           <span class="hidden sm:inline">Cài App</span>
+        </button>
+
+        
+        <!-- // FEATURE-2: Nút mở Tất cả Ghi chú & Highlight -->
+        <button id="btnHeaderNotes" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Tất cả Ghi chú & Highlight toàn thư viện">
+          <svg class="w-4 h-4"><use href="#icon-highlighter"></use></svg>
+        </button>
+
+        <!-- // FEATURE-4: Nút mở Ôn tập Flashcards -->
+        <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Ôn tập Flashcard tự kiểm tra">
+          <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
+        </button>
+
+        <!-- // FEATURE-5: Nút mở Thống kê học tập -->
+        <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Thống kê học tập & Chuỗi ngày học">
+          <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
         </button>
 
         <!-- // REDESIGN: Menu "Hiển thị" gom Cỡ chữ, Sáng/Tối, Toàn màn vào một Popover gọn gàng -->
@@ -829,6 +900,36 @@
           <button data-filter="unread" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8]">
             Chưa đọc
           </button>
+        </div>
+      </div>
+
+      
+      <!-- // FEATURE-1: Thẻ Tiếp tục học ở đầu Sidebar -->
+      <div id="sidebarContinueLearningBox" class="hidden mx-3 mt-3 p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
+        <div class="flex items-center justify-between text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold mb-1">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5"><use href="#icon-play"></use></svg>
+            <span>Tiếp tục học</span>
+          </span>
+          <span id="sidebarContinuePercent">0%</span>
+        </div>
+        <p id="sidebarContinueTitle" class="font-serif text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate mb-2">Tên bài học</p>
+        <div class="w-full h-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/60 overflow-hidden mb-2">
+          <div id="sidebarContinueBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <button id="btnSidebarResume" class="w-full py-1 text-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-medium transition shadow-xs">
+          Đọc tiếp ngay
+        </button>
+      </div>
+
+      <!-- // FEATURE-3: Thẻ Cần ôn hôm nay ở Sidebar -->
+      <div id="sidebarReviewDueBox" class="hidden mx-3 mt-2 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 shadow-2xs cursor-pointer hover:bg-amber-100/70 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-xs font-medium text-amber-900 dark:text-amber-200">
+            <svg class="w-4 h-4 text-amber-600 dark:text-amber-400"><use href="#icon-calendar-clock"></use></svg>
+            <span>Cần ôn hôm nay</span>
+          </div>
+          <span id="sidebarReviewDueBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100">0 bài</span>
         </div>
       </div>
 
@@ -992,6 +1093,25 @@
             <p class="text-xs sm:text-sm text-[#6E6B65] dark:text-[#979DA8] max-w-sm mb-6 leading-relaxed font-serif">
               Tải lên các file bài học HTML để lưu vào thư viện ôn tập chuyên sâu, hoặc dùng <strong>Tạo link nhanh</strong> để xem trực tiếp (lưu 7 ngày).
             </p>
+            
+            <!-- // FEATURE-1: Thẻ Tiếp tục học tại Màn hình trống -->
+            <div id="emptyContinueLearningBox" class="hidden w-full max-w-sm p-3.5 mb-5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-left shadow-xs">
+              <div class="flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-300 font-medium mb-1">
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5"><use href="#icon-play"></use></svg>
+                  <span>Tiếp tục bài đang học dở</span>
+                </span>
+                <span id="emptyContinuePercent" class="font-bold">0%</span>
+              </div>
+              <h4 id="emptyContinueTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate mb-2">Tên bài học</h4>
+              <div class="w-full h-1.5 rounded-full bg-indigo-200 dark:bg-indigo-900 overflow-hidden mb-2.5">
+                <div id="emptyContinueBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <button id="btnEmptyResume" class="w-full py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">
+                Mở bài đang học dở
+              </button>
+            </div>
+
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-xs">
               <button id="btnEmptyAddLesson" class="touch-target px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 shadow-xs w-full">
                 <svg class="w-4 h-4"><use href="#icon-upload"></use></svg>
@@ -1008,6 +1128,23 @@
           <div id="activeLessonContentBox" class="hidden flex-1 flex flex-col w-full">
             
             <!-- Tiêu đề lớn & Meta row -->
+            
+            <!-- // FEATURE-3: Banner nhắc ôn tập bài học khi đến hạn -->
+            <div id="spacedReviewBanner" class="hidden mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-medium">
+                <svg class="w-4 h-4 text-amber-600 shrink-0"><use href="#icon-calendar-clock"></use></svg>
+                <span>Bài này đến hạn ôn lại hôm nay (<span id="spacedReviewStageLabel">Mốc 1 ngày</span>)</span>
+              </div>
+              <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                <button id="btnSpacedReviewForgot" class="touch-target px-2.5 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 text-amber-900 dark:text-amber-100 font-medium transition">
+                  Chưa nhớ
+                </button>
+                <button id="btnSpacedReviewRemember" class="touch-target px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs transition">
+                  Nhớ rồi
+                </button>
+              </div>
+            </div>
+
             <div class="mb-4 sm:mb-6">
               <div class="flex items-start justify-between gap-3 group">
                 <h1 
@@ -1030,6 +1167,15 @@
                 </div>
                 <span class="text-gray-300 dark:text-gray-700">•</span>
                 <span class="text-[11px]">Định dạng HTML thuần</span>
+
+                <span class="text-gray-300 dark:text-gray-700">•</span>
+                <!-- // FEATURE-3: Badge thông tin ôn tập ngắt quãng -->
+                <div id="spacedReviewMetaBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
+                  <svg class="w-3 h-3 text-amber-500"><use href="#icon-calendar-clock"></use></svg>
+                  <span id="spacedReviewMetaText">Chưa đặt lịch ôn</span>
+                  <button id="btnToggleSpacedReview" class="ml-1 text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline">Tắt</button>
+                </div>
+
               </div>
             </div>
 
@@ -1040,6 +1186,13 @@
                   <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-book-open"></use></svg>
                   <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">Ghi chú &amp; Câu hỏi trọng tâm</span>
                 </div>
+                
+                <!-- // FEATURE-4: Nút Tự kiểm tra Flashcards cho bài học -->
+                <button id="btnStudyLessonFlashcards" class="touch-target px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-medium text-indigo-700 dark:text-indigo-300 flex items-center gap-1 shadow-2xs hover:bg-indigo-100 transition mr-1" title="Tự kiểm tra các câu hỏi trọng tâm của bài này">
+                  <svg class="w-3 h-3"><use href="#icon-cards"></use></svg>
+                  <span>Tự kiểm tra</span>
+                </button>
+
                 <button id="btnEditDescription" class="touch-target px-2.5 py-1 rounded-md bg-white dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-xs font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1 shadow-2xs transition">
                   <svg class="w-3 h-3"><use href="#icon-pencil"></use></svg>
                   <span>Sửa ghi chú</span>
@@ -1302,6 +1455,284 @@
           <span>Xem thử</span>
           <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#icon-external-link"></use></svg>
         </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- // FEATURE-1: Thông báo nhỏ đã quay lại vị trí đọc -->
+  <div id="resumePositionPill" class="hidden fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 px-3.5 py-2 rounded-full bg-[#1C1917]/90 dark:bg-[#EDECE8]/90 text-white dark:text-[#1C1917] text-xs font-medium shadow-lg backdrop-blur-md flex items-center gap-2.5 transition-all duration-200">
+    <svg class="w-3.5 h-3.5 text-indigo-400 dark:text-indigo-600"><use href="#icon-clock"></use></svg>
+    <span id="resumePositionText">Đã quay lại vị trí đang đọc</span>
+    <button id="btnScrollToTop" class="underline hover:opacity-80 text-[11px] font-bold ml-1">Về đầu bài</button>
+    <button id="btnCloseResumePill" class="opacity-60 hover:opacity-100 p-0.5 ml-1">
+      <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+    </button>
+  </div>
+
+  <!-- // FEATURE-2: Floating Toolbar cho Highlight & Ghi chú trên bài đọc -->
+  <div id="highlightFloatingToolbar" class="hidden fixed z-50 bg-[#1C1917] dark:bg-[#EDECE8] text-white dark:text-[#1C1917] rounded-xl shadow-xl p-1.5 flex items-center gap-1 text-xs transition-opacity duration-150">
+    <!-- 4 màu tô highlight -->
+    <div class="flex items-center gap-1 px-1 border-r border-white/20 dark:border-black/20">
+      <button class="hl-color-btn w-5 h-5 rounded-full bg-yellow-300 border border-black/20 hover:scale-110 transition" data-color="yellow" title="Tô màu Vàng"></button>
+      <button class="hl-color-btn w-5 h-5 rounded-full bg-emerald-300 border border-black/20 hover:scale-110 transition" data-color="green" title="Tô màu Xanh"></button>
+      <button class="hl-color-btn w-5 h-5 rounded-full bg-pink-300 border border-black/20 hover:scale-110 transition" data-color="pink" title="Tô màu Hồng"></button>
+      <button class="hl-color-btn w-5 h-5 rounded-full bg-purple-300 border border-black/20 hover:scale-110 transition" data-color="purple" title="Tô màu Tím"></button>
+    </div>
+    <button id="btnHlAddNote" class="touch-target p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-md flex items-center gap-1" title="Thêm ghi chú cho đoạn này">
+      <svg class="w-3.5 h-3.5"><use href="#icon-pencil"></use></svg>
+      <span class="text-[11px] hidden sm:inline">Ghi chú</span>
+    </button>
+    <button id="btnHlMakeCard" class="touch-target p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-md flex items-center gap-1" title="Tạo thẻ Flashcard từ đoạn này">
+      <svg class="w-3.5 h-3.5"><use href="#icon-cards"></use></svg>
+      <span class="text-[11px] hidden sm:inline">Flashcard</span>
+    </button>
+    <button id="btnHlCopy" class="touch-target p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-md" title="Sao chép văn bản">
+      <svg class="w-3.5 h-3.5"><use href="#icon-copy"></use></svg>
+    </button>
+    <button id="btnHlDelete" class="hidden touch-target p-1.5 hover:bg-red-500/20 text-red-300 dark:text-red-600 rounded-md" title="Xóa highlight">
+      <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+    </button>
+  </div>
+
+  <!-- // FEATURE-2: Modal Chi tiết & Sửa Ghi Chú Highlight -->
+  <div id="highlightDetailModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-md p-4 sm:p-5 shadow-2xl flex flex-col space-y-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-indigo-600"><use href="#icon-highlighter"></use></svg>
+          <h3 class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Ghi chú cho đoạn đã chọn</h3>
+        </div>
+        <button id="btnCloseHlDetail" class="p-1 rounded-md text-[#6E6B65] hover:bg-black/5">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+      <blockquote id="hlSelectedTextPreview" class="text-xs italic p-2.5 rounded-lg bg-[#F7F7F5] dark:bg-[#0F1115] border-l-2 border-indigo-500 text-[#6E6B65] dark:text-[#979DA8] line-clamp-3"></blockquote>
+      <div>
+        <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Nội dung ghi chú:</label>
+        <textarea id="hlNoteInput" rows="3" class="w-full text-xs p-2.5 rounded-lg bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-indigo-600 focus:outline-none" placeholder="Nhập ghi chú hoặc suy ngẫm của bạn..."></textarea>
+      </div>
+      <div class="flex items-center justify-between pt-2">
+        <button id="btnDeleteCurrentHighlight" class="text-xs text-red-600 hover:underline flex items-center gap-1">
+          <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+          <span>Xóa highlight</span>
+        </button>
+        <button id="btnSaveCurrentHighlightNote" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs">
+          Lưu ghi chú
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-2: Modal Tất Cả Ghi Chú & Highlight Toàn Thư Viện -->
+  <div id="allNotesModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Header modal -->
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <svg class="w-4 h-4"><use href="#icon-highlighter"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tất cả Ghi chú &amp; Highlight</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]" id="allNotesCountLabel">0 ghi chú trong thư viện</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="btnExportNotesMarkdown" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1" title="Xuất toàn bộ ghi chú ra file Markdown (.md)">
+            <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
+            <span class="hidden sm:inline">Xuất .md</span>
+          </button>
+          <button id="btnPrintNotes" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1" title="In hoặc lưu PDF">
+            <svg class="w-3.5 h-3.5"><use href="#icon-printer"></use></svg>
+            <span class="hidden sm:inline">In/PDF</span>
+          </button>
+          <button id="btnCloseAllNotesModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5">
+            <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Color Filter -->
+      <div class="p-3 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] flex flex-col sm:flex-row gap-2 shrink-0">
+        <div class="relative flex-1">
+          <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#6E6B65]"><use href="#icon-search"></use></svg>
+          <input id="searchNotesInput" type="text" placeholder="Tìm kiếm ghi chú, trích dẫn..." class="w-full text-xs pl-8 pr-3 py-2 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
+        </div>
+        <div class="flex items-center gap-1 shrink-0 overflow-x-auto no-scrollbar">
+          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-indigo-600 text-white" data-color="all">Tất cả</button>
+          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200" data-color="yellow">Vàng</button>
+          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" data-color="green">Xanh</button>
+          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200" data-color="pink">Hồng</button>
+          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200" data-color="purple">Tím</button>
+        </div>
+      </div>
+
+      <!-- Danh sách ghi chú scrollable -->
+      <div id="allNotesListContainer" class="p-4 overflow-y-auto flex-1 space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-4: Modal Ôn Tập Flashcard Tự Kiểm Tra -->
+  <div id="flashcardStudyModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
+            <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]" id="fcSessionTitle">Ôn tập Flashcard</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]" id="fcSessionSubtitle">Thẻ 1 / 5</p>
+          </div>
+        </div>
+        <button id="btnCloseFcModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Body Card Area -->
+      <div id="fcActiveCardView" class="p-4 sm:p-6 flex-1 flex flex-col items-center justify-center min-h-[320px]">
+        <!-- 3D Flippable Card -->
+        <div id="fcFlippableCard" class="w-full max-w-md min-h-[220px] sm:min-h-[260px] perspective-1000 cursor-pointer select-none">
+          <div id="fcCardInner" class="relative w-full h-full min-h-[220px] sm:min-h-[260px] transition-transform duration-500 transform-style-preserve-3d rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-md bg-[#FAF9F5] dark:bg-[#111317]">
+            <!-- Mặt trước (Câu hỏi) -->
+            <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between rounded-2xl">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">MẶT TRƯỚC • CÂU HỎI</span>
+              <div class="my-auto text-center">
+                <p id="fcCardFrontText" class="font-serif text-lg sm:text-xl font-bold text-[#1C1917] dark:text-[#EDECE8] leading-relaxed"></p>
+              </div>
+              <span class="text-[11px] text-center text-[#6E6B65] dark:text-[#9AA3B2]">Chạm hoặc bấm Phím cách để lật đáp án</span>
+            </div>
+            <!-- Mặt sau (Đáp án) -->
+            <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between rounded-2xl bg-indigo-50/40 dark:bg-indigo-950/30">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">MẶT SAU • ĐÁP ÁN</span>
+              <div class="my-auto text-center">
+                <p id="fcCardBackText" class="font-serif text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line"></p>
+              </div>
+              <span class="text-[11px] text-center text-[#6E6B65] dark:text-[#9AA3B2]">Bạn đã nhớ câu hỏi này chưa?</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút thao tác dưới thẻ -->
+        <div class="flex items-center justify-center gap-3 w-full max-w-md mt-6">
+          <button id="btnFcForgot" class="flex-1 touch-target py-2.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs">
+            <span>← Chưa nhớ</span>
+          </button>
+          <button id="btnFcFlip" class="touch-target py-2.5 px-4 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] text-xs sm:text-sm font-semibold transition hover:bg-black/5 shadow-2xs">
+            <span>Lật thẻ</span>
+          </button>
+          <button id="btnFcRemembered" class="flex-1 touch-target py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-xs">
+            <span>Nhớ rồi →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Kết quả phiên học (Hiện khi xong tất cả thẻ) -->
+      <div id="fcSessionSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs">
+          <svg class="w-8 h-8"><use href="#icon-check-check"></use></svg>
+        </div>
+        <h4 class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8]">Hoàn thành phiên kiểm tra!</h4>
+        <p id="fcSummaryStats" class="text-sm text-[#6E6B65] dark:text-[#9AA3B2]">Bạn đã nhớ 4 / 5 câu hỏi (80%)</p>
+        <div class="flex items-center gap-3 pt-2">
+          <button id="btnFcRetryUnknown" class="touch-target px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-50">
+            Ôn lại thẻ chưa nhớ
+          </button>
+          <button id="btnFcFinish" class="touch-target px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs">
+            Hoàn tất
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-5: Modal Thống Kê Học Tập -->
+  <div id="analyticsModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
+            <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Thống kê Học tập</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]">Hành trình tích lũy tri thức của bạn</p>
+          </div>
+        </div>
+        <button id="btnCloseAnalyticsModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Body Content (Scrollable) -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-5">
+        <!-- Hàng 1: Chuỗi ngày học liên tiếp & Mục tiêu hôm nay -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Streak Card -->
+          <div class="p-4 rounded-xl bg-orange-50/70 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-xl bg-orange-500 text-white flex items-center justify-center shadow-xs shrink-0">
+              <svg class="w-6 h-6"><use href="#icon-flame"></use></svg>
+            </div>
+            <div>
+              <span class="text-xs font-semibold text-orange-900 dark:text-orange-200 uppercase tracking-wider text-[10px]">Chuỗi liên tiếp</span>
+              <div class="flex items-baseline gap-1">
+                <span id="analyticsStreakCount" class="font-serif text-2xl font-bold text-[#1C1917] dark:text-[#EDECE8]">0</span>
+                <span class="text-xs text-[#6E6B65] dark:text-[#9AA3B2]">ngày liên tục</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily Goal Card -->
+          <div class="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/40 flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
+              <svg class="w-6 h-6"><use href="#icon-book-open"></use></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-xs font-semibold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider text-[10px]">Mục tiêu hôm nay</span>
+              <div class="flex items-baseline justify-between">
+                <span id="analyticsTodayGoalText" class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">0 / 2 bài</span>
+                <span id="analyticsGoalPercent" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-indigo-200 dark:bg-indigo-900/60 overflow-hidden mt-1.5">
+                <div id="analyticsGoalBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hàng 2: Biểu đồ cột SVG 7 ngày gần nhất -->
+        <div class="p-4 rounded-xl bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Thời gian học 7 ngày qua</span>
+            <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Đơn vị: phút</span>
+          </div>
+          <!-- Khung biểu đồ SVG -->
+          <div id="analyticsChartWrapper" class="w-full h-44 flex items-end justify-between gap-2 pt-4 px-2"></div>
+        </div>
+
+        <!-- Hàng 3: 4 Chỉ số Tổng quan Thư viện -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+          <div class="p-3 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36]">
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mb-0.5">Thời gian đọc</span>
+            <span id="analyticsTotalReadTime" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">0 phút</span>
+          </div>
+          <div class="p-3 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36]">
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mb-0.5">Bài đã học</span>
+            <span id="analyticsCompletedLessons" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">0</span>
+          </div>
+          <div class="p-3 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36]">
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mb-0.5">Ghi chú &amp; Highlight</span>
+            <span id="analyticsTotalHighlights" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">0</span>
+          </div>
+          <div class="p-3 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36]">
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mb-0.5">Flashcard</span>
+            <span id="analyticsTotalFlashcards" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">0</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2111,6 +2542,9 @@
             if (lesson && lesson.id) {
               await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'lessons', lesson.id), lesson, { merge: true });
             }
+          }
+          if (state.learningData) {
+            await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'learning_bundle', 'data'), { data: JSON.stringify(state.learningData) }, { merge: true });
           }
         }
       } catch (syncErr) {
@@ -3140,7 +3574,32 @@
               }
               img { max-width: 100%; height: auto; }
               ${injectedThemeCss}
-            </style>
+            
+    /* // FEATURE: CSS cho 3D Flashcards & Highlights */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-preserve-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    .card-flipped { transform: rotateY(180deg); }
+    
+    .custom-highlight {
+      border-radius: 3px;
+      padding: 1px 3px;
+      cursor: pointer;
+      transition: filter 0.15s ease;
+    }
+    .custom-highlight:hover {
+      filter: brightness(0.92);
+    }
+    .custom-highlight-flash {
+      animation: highlightFlash 1.5s ease-in-out;
+    }
+    @keyframes highlightFlash {
+      0%, 100% { outline: 0; }
+      50% { outline: 3px solid #6366F1; box-shadow: 0 0 12px rgba(99, 102, 241, 0.6); }
+    }
+
+  </style>
           </head>
           <body>
             ${rawHtml}
@@ -4724,7 +5183,8 @@
         settings: {
           fontSizeOffset: state.fontSizeOffset,
           isDarkMode: state.isDarkMode
-        }
+        },
+        learningData: state.learningData
       };
       const blob = new Blob([JSON.stringify(exportObject, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -4753,6 +5213,10 @@
         setSyncStatus(true, "Đang nạp sao lưu...");
         state.categories = data.categories;
         state.lessons = data.lessons;
+        if (data.learningData) {
+          state.learningData = data.learningData;
+          saveLearningData();
+        }
 
         if (!state.useLocalFallback && db && state.userId) {
           for (const cat of data.categories) {
@@ -4902,7 +5366,1275 @@
       });
     }
 
-    // // REDESIGN: Tương tác đóng/mở menu "Thêm" trên thanh công cụ bài đọc
+
+    // =========================================================================
+    // // FEATURE 1 -> 5: BỘ TÍNH NĂNG HỌC TẬP CHUYÊN SÂU
+    // =========================================================================
+
+    function getInitialLearningData() {
+      return {
+        readingProgress: {}, // lessonId -> { percent, scrollTop, updatedAt }
+        highlights: {},      // lessonId -> [ { id, text, color, note, createdAt } ]
+        reviewSchedule: {},  // lessonId -> { stage, nextReviewDate, reviewCount, enabled, lastReviewedAt }
+        flashcards: [],      // [ { id, lessonId, front, back, status, reviewCount, createdAt } ]
+        analytics: {
+          streak: 0,
+          lastActiveDate: '',
+          dailyActivity: {}, // 'YYYY-MM-DD' -> { minutes, lessonsCompleted, cardsReviewed, notesCount }
+          dailyGoal: { lessons: 2, minutes: 30 }
+        }
+      };
+    }
+
+    state.learningData = getInitialLearningData();
+
+    function getTodayDateStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function addDaysToDate(dateStr, days) {
+      const parts = dateStr.split('-');
+      const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      d.setDate(d.getDate() + days);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function checkAndUpdateStreak() {
+      const today = getTodayDateStr();
+      const a = state.learningData.analytics;
+      if (!a.dailyActivity[today]) {
+        a.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+      }
+      if (a.lastActiveDate === today) return;
+
+      const yesterday = addDaysToDate(today, -1);
+      if (a.lastActiveDate === yesterday) {
+        a.streak = (a.streak || 0) + 1;
+      } else if (!a.lastActiveDate) {
+        a.streak = 1;
+      } else {
+        a.streak = 1;
+      }
+      a.lastActiveDate = today;
+      saveLearningData();
+    }
+
+    function loadLearningData() {
+      try {
+        const saved = localStorage.getItem('local_learning_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state.learningData = {
+            ...getInitialLearningData(),
+            ...parsed,
+            analytics: {
+              ...getInitialLearningData().analytics,
+              ...(parsed.analytics || {})
+            }
+          };
+        }
+      } catch (e) {
+        console.warn("Lỗi loadLearningData:", e);
+      }
+      checkAndUpdateStreak();
+      updateContinueLearningCards();
+      updateSpacedReviewDueUI();
+    }
+
+    let saveLearningTimer = null;
+    function saveLearningData() {
+      try {
+        localStorage.setItem('local_learning_data', JSON.stringify(state.learningData));
+      } catch (_) {}
+
+      if (state.userId && !state.useLocalFallback && db) {
+        if (saveLearningTimer) clearTimeout(saveLearningTimer);
+        saveLearningTimer = setTimeout(async () => {
+          try {
+            const ref = doc(db, 'artifacts', appId, 'users', state.userId, 'learning_bundle', 'data');
+            await setDoc(ref, { data: JSON.stringify(state.learningData) }, { merge: true });
+          } catch (err) {
+            console.warn("Lỗi Firestore learningData:", err);
+          }
+        }, 600);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // // FEATURE-1: NHỚ VỊ TRÍ ĐỌC VÀ NÚT "TIẾP TỤC HỌC"
+    // -------------------------------------------------------------------------
+    let scrollSaveTimer = null;
+    const readingAreaEl = document.getElementById('readingArea');
+    const resumePillEl = document.getElementById('resumePositionPill');
+    const resumePillText = document.getElementById('resumePositionText');
+    const btnScrollToTop = document.getElementById('btnScrollToTop');
+    const btnCloseResumePill = document.getElementById('btnCloseResumePill');
+
+    if (readingAreaEl) {
+      readingAreaEl.addEventListener('scroll', () => {
+        if (!state.activeLessonId || state.isSharedMode) return;
+        const sTop = readingAreaEl.scrollTop;
+        const sHeight = readingAreaEl.scrollHeight - readingAreaEl.clientHeight;
+        const pct = sHeight > 0 ? Math.min(100, Math.max(0, (sTop / sHeight) * 100)) : 0;
+        const rounded = Math.round(pct);
+
+        const bar = document.getElementById('readingProgressBar');
+        if (bar) bar.style.width = `${pct}%`;
+
+        if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
+        scrollSaveTimer = setTimeout(() => {
+          state.learningData.readingProgress[state.activeLessonId] = {
+            percent: rounded,
+            scrollTop: sTop,
+            updatedAt: Date.now()
+          };
+          saveLearningData();
+          updateContinueLearningCards();
+        }, 150);
+      }, { passive: true });
+    }
+
+    if (btnScrollToTop) {
+      btnScrollToTop.addEventListener('click', () => {
+        if (readingAreaEl) {
+          readingAreaEl.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        if (state.activeLessonId) {
+          state.learningData.readingProgress[state.activeLessonId] = {
+            percent: 0,
+            scrollTop: 0,
+            updatedAt: Date.now()
+          };
+          saveLearningData();
+          updateContinueLearningCards();
+        }
+        if (resumePillEl) resumePillEl.classList.add('hidden');
+      });
+    }
+
+    if (btnCloseResumePill) {
+      btnCloseResumePill.addEventListener('click', () => {
+        if (resumePillEl) resumePillEl.classList.add('hidden');
+      });
+    }
+
+    let hidePillTimeout = null;
+    function restoreReadingPosition(lessonId) {
+      if (!readingAreaEl || !lessonId || state.isSharedMode) return;
+      const prog = state.learningData.readingProgress[lessonId];
+      if (!prog || prog.percent < 2) return;
+
+      setTimeout(() => {
+        const sHeight = readingAreaEl.scrollHeight - readingAreaEl.clientHeight;
+        if (sHeight > 0) {
+          const targetTop = (prog.percent / 100) * sHeight;
+          readingAreaEl.scrollTo({ top: targetTop, behavior: 'smooth' });
+
+          if (resumePillEl && resumePillText) {
+            resumePillText.innerText = `Đã quay lại vị trí đang đọc (${prog.percent}%)`;
+            resumePillEl.classList.remove('hidden');
+            if (hidePillTimeout) clearTimeout(hidePillTimeout);
+            hidePillTimeout = setTimeout(() => {
+              resumePillEl.classList.add('hidden');
+            }, 4500);
+          }
+        }
+      }, 250);
+    }
+
+    function getLatestInProgressLesson() {
+      if (!state.lessons || state.lessons.length === 0) return null;
+      let latest = null;
+      let maxTime = 0;
+
+      for (const les of state.lessons) {
+        const p = state.learningData.readingProgress[les.id];
+        if (p && p.percent > 0 && p.percent < 100 && (p.updatedAt || 0) > maxTime) {
+          maxTime = p.updatedAt;
+          latest = { lesson: les, percent: p.percent };
+        }
+      }
+      return latest;
+    }
+
+    function updateContinueLearningCards() {
+      const inProg = getLatestInProgressLesson();
+      const sidebarBox = document.getElementById('sidebarContinueLearningBox');
+      const sidebarTitle = document.getElementById('sidebarContinueTitle');
+      const sidebarPercent = document.getElementById('sidebarContinuePercent');
+      const sidebarBar = document.getElementById('sidebarContinueBar');
+
+      const emptyBox = document.getElementById('emptyContinueLearningBox');
+      const emptyTitle = document.getElementById('emptyContinueTitle');
+      const emptyPercent = document.getElementById('emptyContinuePercent');
+      const emptyBar = document.getElementById('emptyContinueBar');
+
+      if (inProg) {
+        if (sidebarBox && sidebarTitle && sidebarPercent && sidebarBar) {
+          sidebarBox.classList.remove('hidden');
+          sidebarTitle.innerText = inProg.lesson.title;
+          sidebarPercent.innerText = `${inProg.percent}%`;
+          sidebarBar.style.width = `${inProg.percent}%`;
+        }
+        if (emptyBox && emptyTitle && emptyPercent && emptyBar) {
+          emptyBox.classList.remove('hidden');
+          emptyTitle.innerText = inProg.lesson.title;
+          emptyPercent.innerText = `${inProg.percent}%`;
+          emptyBar.style.width = `${inProg.percent}%`;
+        }
+      } else {
+        if (sidebarBox) sidebarBox.classList.add('hidden');
+        if (emptyBox) emptyBox.classList.add('hidden');
+      }
+    }
+
+    const btnSidebarResume = document.getElementById('btnSidebarResume');
+    if (btnSidebarResume) {
+      btnSidebarResume.addEventListener('click', () => {
+        const inProg = getLatestInProgressLesson();
+        if (inProg) {
+          state.activeLessonId = inProg.lesson.id;
+          state.activeCategoryId = inProg.lesson.categoryId;
+          renderCategoriesAndLessons();
+          renderActiveLesson();
+        }
+      });
+    }
+
+    const btnEmptyResume = document.getElementById('btnEmptyResume');
+    if (btnEmptyResume) {
+      btnEmptyResume.addEventListener('click', () => {
+        const inProg = getLatestInProgressLesson();
+        if (inProg) {
+          state.activeLessonId = inProg.lesson.id;
+          state.activeCategoryId = inProg.lesson.categoryId;
+          renderCategoriesAndLessons();
+          renderActiveLesson();
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // // FEATURE-2: HIGHLIGHT VÀ GHI CHÚ TRONG BÀI
+    // -------------------------------------------------------------------------
+    const hlToolbar = document.getElementById('highlightFloatingToolbar');
+    const hlDetailModal = document.getElementById('highlightDetailModal');
+    const allNotesModal = document.getElementById('allNotesModal');
+    let currentSelectionInfo = null;
+    let activeHighlightItem = null;
+
+    const HIGHLIGHT_COLORS = {
+      yellow: '#FEF08A',
+      green: '#BBF7D0',
+      pink: '#FBCFE8',
+      purple: '#DDD6FE'
+    };
+
+    function attachIframeSelectionEvents(iframe) {
+      if (!iframe) return;
+      try {
+        const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+        if (!doc) return;
+
+        const handleSelection = () => {
+          setTimeout(() => {
+            const sel = doc.getSelection();
+            if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+              if (hlToolbar && !hlToolbar.matches(':hover')) {
+                hlToolbar.classList.add('hidden');
+              }
+              currentSelectionInfo = null;
+              return;
+            }
+
+            const text = sel.toString().trim();
+            if (text.length < 2) return;
+
+            const range = sel.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const ifRect = iframe.getBoundingClientRect();
+
+            currentSelectionInfo = { text, range };
+
+            if (hlToolbar) {
+              const topPos = ifRect.top + rect.top - 46;
+              const leftPos = Math.max(10, Math.min(window.innerWidth - 260, ifRect.left + rect.left + (rect.width / 2) - 130));
+              hlToolbar.style.top = `${topPos}px`;
+              hlToolbar.style.left = `${leftPos}px`;
+              hlToolbar.classList.remove('hidden');
+
+              const btnDel = document.getElementById('btnHlDelete');
+              if (btnDel) btnDel.classList.add('hidden');
+            }
+          }, 30);
+        };
+
+        doc.addEventListener('mouseup', handleSelection);
+        doc.addEventListener('touchend', handleSelection);
+        doc.addEventListener('keyup', handleSelection);
+
+        doc.addEventListener('click', (e) => {
+          const mark = e.target.closest('.custom-highlight');
+          if (mark) {
+            e.stopPropagation();
+            const hlId = mark.getAttribute('data-hl-id');
+            openHighlightDetail(hlId);
+          }
+        });
+      } catch (err) {
+        console.warn("Lỗi gắn sự kiện selection iframe:", err);
+      }
+    }
+
+    function applyHighlightToCurrentSelection(colorName) {
+      if (!currentSelectionInfo || !state.activeLessonId) return;
+      const iframe = document.getElementById('lessonIframe');
+      if (!iframe || !iframe.contentDocument) return;
+
+      const doc = iframe.contentDocument;
+      const { text, range } = currentSelectionInfo;
+      const colorHex = HIGHLIGHT_COLORS[colorName] || HIGHLIGHT_COLORS.yellow;
+      const hlId = 'hl_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+
+      try {
+        const mark = doc.createElement('mark');
+        mark.className = 'custom-highlight';
+        mark.setAttribute('data-hl-id', hlId);
+        mark.setAttribute('data-color', colorName);
+        mark.style.backgroundColor = colorHex;
+        mark.style.color = '#1A1A1A';
+
+        range.surroundContents(mark);
+        doc.getSelection().removeAllRanges();
+      } catch (err) {
+        // Fallback surround nếu range giao cắt tag
+        console.warn("surroundContents fallback:", err);
+      }
+
+      if (!state.learningData.highlights[state.activeLessonId]) {
+        state.learningData.highlights[state.activeLessonId] = [];
+      }
+
+      const newHl = {
+        id: hlId,
+        lessonId: state.activeLessonId,
+        text: text,
+        color: colorName,
+        note: '',
+        createdAt: Date.now()
+      };
+
+      state.learningData.highlights[state.activeLessonId].push(newHl);
+      saveLearningData();
+      showToast("Đã lưu highlight!");
+
+      if (hlToolbar) hlToolbar.classList.add('hidden');
+      currentSelectionInfo = null;
+      return newHl;
+    }
+
+    function restoreHighlightsForLesson(lessonId) {
+      const iframe = document.getElementById('lessonIframe');
+      if (!iframe || !iframe.contentDocument) return;
+      const doc = iframe.contentDocument;
+      const items = (state.learningData.highlights && state.learningData.highlights[lessonId]) || [];
+
+      if (!items || items.length === 0) return;
+
+      try {
+        const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        let node;
+        while ((node = walker.nextNode())) {
+          if (node.parentElement && !node.parentElement.classList.contains('custom-highlight')) {
+            textNodes.push(node);
+          }
+        }
+
+        for (const item of items) {
+          const needle = (item.text || '').trim();
+          if (!needle) continue;
+
+          for (const tNode of textNodes) {
+            const idx = tNode.nodeValue.indexOf(needle);
+            if (idx !== -1 && tNode.parentNode) {
+              try {
+                const mark = doc.createElement('mark');
+                mark.className = 'custom-highlight';
+                mark.setAttribute('data-hl-id', item.id);
+                mark.setAttribute('data-color', item.color || 'yellow');
+                mark.style.backgroundColor = HIGHLIGHT_COLORS[item.color] || HIGHLIGHT_COLORS.yellow;
+                mark.style.color = '#1A1A1A';
+
+                const targetRange = doc.createRange();
+                targetRange.setStart(tNode, idx);
+                targetRange.setEnd(tNode, idx + needle.length);
+                targetRange.surroundContents(mark);
+                break;
+              } catch (_) {}
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Lỗi restoreHighlightsForLesson:", err);
+      }
+    }
+
+    function openHighlightDetail(hlId) {
+      if (!state.activeLessonId) return;
+      const list = state.learningData.highlights[state.activeLessonId] || [];
+      const item = list.find(h => h.id === hlId);
+      if (!item) return;
+
+      activeHighlightItem = item;
+      const previewEl = document.getElementById('hlSelectedTextPreview');
+      const noteInput = document.getElementById('hlNoteInput');
+      if (previewEl) previewEl.innerText = `"${item.text}"`;
+      if (noteInput) noteInput.value = item.note || '';
+
+      showModalAnimated(hlDetailModal);
+    }
+
+    document.querySelectorAll('.hl-color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = btn.getAttribute('data-color') || 'yellow';
+        applyHighlightToCurrentSelection(color);
+      });
+    });
+
+    const btnHlAddNote = document.getElementById('btnHlAddNote');
+    if (btnHlAddNote) {
+      btnHlAddNote.addEventListener('click', () => {
+        const item = applyHighlightToCurrentSelection('yellow');
+        if (item) {
+          setTimeout(() => openHighlightDetail(item.id), 100);
+        }
+      });
+    }
+
+    const btnHlCopy = document.getElementById('btnHlCopy');
+    if (btnHlCopy) {
+      btnHlCopy.addEventListener('click', () => {
+        if (currentSelectionInfo && currentSelectionInfo.text) {
+          navigator.clipboard.writeText(currentSelectionInfo.text);
+          showToast("Đã sao chép văn bản!");
+          if (hlToolbar) hlToolbar.classList.add('hidden');
+        }
+      });
+    }
+
+    const btnHlMakeCard = document.getElementById('btnHlMakeCard');
+    if (btnHlMakeCard) {
+      btnHlMakeCard.addEventListener('click', () => {
+        if (currentSelectionInfo && currentSelectionInfo.text) {
+          const selText = currentSelectionInfo.text;
+          if (hlToolbar) hlToolbar.classList.add('hidden');
+          openCreateFlashcardQuick(selText);
+        }
+      });
+    }
+
+    const btnCloseHlDetail = document.getElementById('btnCloseHlDetail');
+    if (btnCloseHlDetail) {
+      btnCloseHlDetail.addEventListener('click', () => hideModalAnimated(hlDetailModal));
+    }
+
+    const btnSaveHlNote = document.getElementById('btnSaveCurrentHighlightNote');
+    if (btnSaveHlNote) {
+      btnSaveHlNote.addEventListener('click', () => {
+        if (activeHighlightItem) {
+          const noteInput = document.getElementById('hlNoteInput');
+          activeHighlightItem.note = (noteInput ? noteInput.value : '').trim();
+          saveLearningData();
+          showToast("Đã lưu ghi chú thành công!");
+          hideModalAnimated(hlDetailModal);
+        }
+      });
+    }
+
+    const btnDeleteHl = document.getElementById('btnDeleteCurrentHighlight');
+    if (btnDeleteHl) {
+      btnDeleteHl.addEventListener('click', () => {
+        if (activeHighlightItem && state.activeLessonId) {
+          const list = state.learningData.highlights[state.activeLessonId] || [];
+          state.learningData.highlights[state.activeLessonId] = list.filter(h => h.id !== activeHighlightItem.id);
+          saveLearningData();
+
+          const iframe = document.getElementById('lessonIframe');
+          if (iframe && iframe.contentDocument) {
+            const mark = iframe.contentDocument.querySelector(`[data-hl-id="${activeHighlightItem.id}"]`);
+            if (mark) {
+              const parent = mark.parentNode;
+              while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+              parent.removeChild(mark);
+            }
+          }
+
+          showToast("Đã xóa highlight");
+          hideModalAnimated(hlDetailModal);
+        }
+      });
+    }
+
+    // Modal Tất cả ghi chú
+    const btnHeaderNotes = document.getElementById('btnHeaderNotes');
+    if (btnHeaderNotes) {
+      btnHeaderNotes.addEventListener('click', () => {
+        renderAllNotesView();
+        showModalAnimated(allNotesModal);
+      });
+    }
+
+    const btnCloseAllNotes = document.getElementById('btnCloseAllNotesModal');
+    if (btnCloseAllNotes) {
+      btnCloseAllNotes.addEventListener('click', () => hideModalAnimated(allNotesModal));
+    }
+
+    let notesActiveColorFilter = 'all';
+    let notesSearchKeyword = '';
+
+    function renderAllNotesView() {
+      const container = document.getElementById('allNotesListContainer');
+      const countLabel = document.getElementById('allNotesCountLabel');
+      if (!container) return;
+
+      container.innerHTML = '';
+      let totalNotes = 0;
+      const allEntries = [];
+
+      for (const les of (state.lessons || [])) {
+        const list = state.learningData.highlights[les.id] || [];
+        for (const item of list) {
+          totalNotes++;
+          const matchColor = notesActiveColorFilter === 'all' || item.color === notesActiveColorFilter;
+          const matchKw = !notesSearchKeyword || 
+            (item.text && item.text.toLowerCase().includes(notesSearchKeyword)) || 
+            (item.note && item.note.toLowerCase().includes(notesSearchKeyword)) ||
+            (les.title && les.title.toLowerCase().includes(notesSearchKeyword));
+
+          if (matchColor && matchKw) {
+            allEntries.push({ lesson: les, highlight: item });
+          }
+        }
+      }
+
+      if (countLabel) countLabel.innerText = `${totalNotes} ghi chú trong thư viện`;
+
+      if (allEntries.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-[#6E6B65] dark:text-[#979DA8] text-xs">
+            <svg class="w-8 h-8 mx-auto mb-2 opacity-40"><use href="#icon-highlighter"></use></svg>
+            <p>Chưa có highlight hay ghi chú nào phù hợp.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Group by lesson
+      const grouped = {};
+      for (const entry of allEntries) {
+        if (!grouped[entry.lesson.id]) grouped[entry.lesson.id] = { lesson: entry.lesson, items: [] };
+        grouped[entry.lesson.id].items.push(entry.highlight);
+      }
+
+      for (const lesId in grouped) {
+        const group = grouped[lesId];
+        const groupEl = document.createElement('div');
+        groupEl.className = "p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] space-y-2.5";
+        
+        let itemsHtml = '';
+        for (const h of group.items) {
+          const colorHex = HIGHLIGHT_COLORS[h.color] || HIGHLIGHT_COLORS.yellow;
+          itemsHtml += `
+            <div class="p-2.5 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF]/70 dark:border-[#262C36]/70 hover:border-indigo-400 cursor-pointer transition note-item-card" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}">
+              <div class="flex items-start gap-2 mb-1">
+                <span class="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style="background-color: ${colorHex}"></span>
+                <p class="font-serif text-xs text-[#1C1917] dark:text-[#EDECE8] italic line-clamp-2 leading-relaxed">"${h.text}"</p>
+              </div>
+              ${h.note ? `<div class="pl-4 text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-sans border-l border-indigo-200 dark:border-indigo-800 ml-1.5 mt-1 leading-snug">${h.note}</div>` : ''}
+            </div>
+          `;
+        }
+
+        groupEl.innerHTML = `
+          <div class="flex items-center justify-between pb-1.5 border-b border-[#E7E5DF] dark:border-[#262C36]">
+            <h4 class="font-serif font-bold text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">${group.lesson.title}</h4>
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${group.items.length} mục</span>
+          </div>
+          <div class="space-y-2">${itemsHtml}</div>
+        `;
+        container.appendChild(groupEl);
+      }
+
+      container.querySelectorAll('.note-item-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const lId = card.getAttribute('data-lesson-id');
+          const hId = card.getAttribute('data-hl-id');
+          hideModalAnimated(allNotesModal);
+          jumpToHighlight(lId, hId);
+        });
+      });
+    }
+
+    function jumpToHighlight(lessonId, hlId) {
+      const les = (state.lessons || []).find(l => l.id === lessonId);
+      if (!les) return;
+
+      state.activeLessonId = les.id;
+      state.activeCategoryId = les.categoryId;
+      renderCategoriesAndLessons();
+      renderActiveLesson();
+
+      setTimeout(() => {
+        const iframe = document.getElementById('lessonIframe');
+        if (!iframe || !iframe.contentDocument) return;
+        const mark = iframe.contentDocument.querySelector(`[data-hl-id="${hlId}"]`);
+        if (mark) {
+          mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          mark.classList.add('custom-highlight-flash');
+          setTimeout(() => mark.classList.remove('custom-highlight-flash'), 2000);
+        }
+      }, 500);
+    }
+
+    const searchNotesInput = document.getElementById('searchNotesInput');
+    if (searchNotesInput) {
+      searchNotesInput.addEventListener('input', (e) => {
+        notesSearchKeyword = e.target.value.toLowerCase().trim();
+        renderAllNotesView();
+      });
+    }
+
+    document.querySelectorAll('.notes-color-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        notesActiveColorFilter = btn.getAttribute('data-color') || 'all';
+        document.querySelectorAll('.notes-color-filter').forEach(b => {
+          b.classList.remove('ring-2', 'ring-indigo-500');
+        });
+        btn.classList.add('ring-2', 'ring-indigo-500');
+        renderAllNotesView();
+      });
+    });
+
+    const btnExportMarkdown = document.getElementById('btnExportNotesMarkdown');
+    if (btnExportMarkdown) {
+      btnExportMarkdown.addEventListener('click', () => {
+        let md = `# Tất cả Ghi chú & Highlight - Thư viện Sách HTML\n`;
+        md += `*Xuất ngày: ${new Date().toLocaleString('vi-VN')}*\n\n`;
+
+        for (const les of (state.lessons || [])) {
+          const list = state.learningData.highlights[les.id] || [];
+          if (list.length > 0) {
+            md += `## ${les.title}\n\n`;
+            for (const h of list) {
+              md += `> ${h.text}\n\n`;
+              if (h.note) md += `- **Ghi chú:** ${h.note}\n\n`;
+            }
+          }
+        }
+
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ghi_chu_sach_html_${getTodayDateStr()}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Đã tải file Markdown ghi chú");
+      });
+    }
+
+    const btnPrintNotes = document.getElementById('btnPrintNotes');
+    if (btnPrintNotes) {
+      btnPrintNotes.addEventListener('click', () => {
+        const container = document.getElementById('allNotesListContainer');
+        if (!container) return;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Ghi chú Thư viện Sách HTML</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif; padding: 24px; line-height: 1.6; color: #111; }
+              h1 { border-bottom: 2px solid #333; padding-bottom: 8px; font-size: 20px; }
+              h2 { font-size: 16px; margin-top: 24px; border-bottom: 1px solid #ccc; }
+              blockquote { background: #f9f9f9; border-left: 3px solid #6366f1; margin: 8px 0; padding: 8px 12px; font-style: italic; }
+              .note { margin-left: 16px; color: #555; font-size: 13px; }
+            </style>
+          </head>
+          <body>
+            <h1>Tất cả Ghi chú & Highlight</h1>
+            ${container.innerHTML}
+            <script>window.onload = function() { window.print(); }<\/script>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // // FEATURE-3: ÔN TẬP NGẮT QUÃNG ("CẦN ÔN HÔM NAY")
+    // -------------------------------------------------------------------------
+    const REVIEW_INTERVALS = [1, 3, 7, 14, 30];
+
+    function scheduleSpacedRepetition(lessonId) {
+      if (!lessonId) return;
+      const today = getTodayDateStr();
+      const current = state.learningData.reviewSchedule[lessonId];
+
+      if (!current) {
+        state.learningData.reviewSchedule[lessonId] = {
+          stage: 0,
+          nextReviewDate: addDaysToDate(today, REVIEW_INTERVALS[0]),
+          reviewCount: 1,
+          enabled: true,
+          lastReviewedAt: Date.now()
+        };
+        saveLearningData();
+        showToast("Đã đặt lịch ôn lại vào ngày mai!");
+      }
+      updateSpacedReviewDueUI();
+    }
+
+    function getDueLessonsForToday() {
+      const today = getTodayDateStr();
+      const due = [];
+      for (const les of (state.lessons || [])) {
+        const s = state.learningData.reviewSchedule[les.id];
+        if (s && s.enabled !== false && s.nextReviewDate && s.nextReviewDate <= today) {
+          due.push(les);
+        }
+      }
+      return due;
+    }
+
+    function updateSpacedReviewDueUI() {
+      const due = getDueLessonsForToday();
+      const sidebarBox = document.getElementById('sidebarReviewDueBox');
+      const badge = document.getElementById('sidebarReviewDueBadge');
+
+      if (due.length > 0) {
+        if (sidebarBox) sidebarBox.classList.remove('hidden');
+        if (badge) badge.innerText = `${due.length} bài`;
+      } else {
+        if (sidebarBox) sidebarBox.classList.add('hidden');
+      }
+
+      // Banner ôn tập trong bài học đang xem
+      const banner = document.getElementById('spacedReviewBanner');
+      const metaBadge = document.getElementById('spacedReviewMetaBadge');
+      const metaText = document.getElementById('spacedReviewMetaText');
+      const toggleBtn = document.getElementById('btnToggleSpacedReview');
+      const stageLabel = document.getElementById('spacedReviewStageLabel');
+
+      if (!state.activeLessonId) {
+        if (banner) banner.classList.add('hidden');
+        if (metaBadge) metaBadge.classList.add('hidden');
+        return;
+      }
+
+      const sched = state.learningData.reviewSchedule[state.activeLessonId];
+      const today = getTodayDateStr();
+
+      if (sched) {
+        if (metaBadge) metaBadge.classList.remove('hidden');
+        if (metaText) {
+          metaText.innerText = sched.enabled === false ? "Đã tắt ôn" : `Ôn: ${sched.nextReviewDate} (Lần ${sched.reviewCount || 1})`;
+        }
+        if (toggleBtn) {
+          toggleBtn.innerText = sched.enabled === false ? "Bật" : "Tắt";
+        }
+
+        if (sched.enabled !== false && sched.nextReviewDate && sched.nextReviewDate <= today) {
+          if (banner) {
+            banner.classList.remove('hidden');
+            if (stageLabel) stageLabel.innerText = `Mốc ${REVIEW_INTERVALS[sched.stage || 0]} ngày`;
+          }
+        } else {
+          if (banner) banner.classList.add('hidden');
+        }
+      } else {
+        if (banner) banner.classList.add('hidden');
+        if (metaBadge) metaBadge.classList.remove('hidden');
+        if (metaText) metaText.innerText = "Chưa đặt lịch ôn";
+        if (toggleBtn) toggleBtn.innerText = "Bật";
+      }
+    }
+
+    const btnToggleSpacedReview = document.getElementById('btnToggleSpacedReview');
+    if (btnToggleSpacedReview) {
+      btnToggleSpacedReview.addEventListener('click', () => {
+        if (!state.activeLessonId) return;
+        const sched = state.learningData.reviewSchedule[state.activeLessonId];
+        if (sched) {
+          sched.enabled = sched.enabled === false ? true : false;
+        } else {
+          scheduleSpacedRepetition(state.activeLessonId);
+        }
+        saveLearningData();
+        updateSpacedReviewDueUI();
+      });
+    }
+
+    const btnReviewRemember = document.getElementById('btnSpacedReviewRemember');
+    if (btnReviewRemember) {
+      btnReviewRemember.addEventListener('click', () => {
+        if (!state.activeLessonId) return;
+        const sched = state.learningData.reviewSchedule[state.activeLessonId];
+        if (!sched) return;
+
+        const nextStage = Math.min((sched.stage || 0) + 1, REVIEW_INTERVALS.length - 1);
+        const days = REVIEW_INTERVALS[nextStage];
+        const nextDate = addDaysToDate(getTodayDateStr(), days);
+
+        sched.stage = nextStage;
+        sched.nextReviewDate = nextDate;
+        sched.reviewCount = (sched.reviewCount || 1) + 1;
+        sched.lastReviewedAt = Date.now();
+
+        saveLearningData();
+        showToast(`Tuyệt vời! Lần ôn kế tiếp sau ${days} ngày (${nextDate})`);
+        updateSpacedReviewDueUI();
+      });
+    }
+
+    const btnReviewForgot = document.getElementById('btnSpacedReviewForgot');
+    if (btnReviewForgot) {
+      btnReviewForgot.addEventListener('click', () => {
+        if (!state.activeLessonId) return;
+        const sched = state.learningData.reviewSchedule[state.activeLessonId];
+        if (!sched) return;
+
+        const nextDate = addDaysToDate(getTodayDateStr(), 1);
+        sched.stage = 0;
+        sched.nextReviewDate = nextDate;
+        sched.lastReviewedAt = Date.now();
+
+        saveLearningData();
+        showToast("Đã chuyển mốc ôn về ngày mai để ôn lại.");
+        updateSpacedReviewDueUI();
+      });
+    }
+
+    const sidebarReviewDueBox = document.getElementById('sidebarReviewDueBox');
+    if (sidebarReviewDueBox) {
+      sidebarReviewDueBox.addEventListener('click', () => {
+        const due = getDueLessonsForToday();
+        if (due.length > 0) {
+          state.activeLessonId = due[0].id;
+          state.activeCategoryId = due[0].categoryId;
+          renderCategoriesAndLessons();
+          renderActiveLesson();
+          showToast(`Đang hiển thị ${due.length} bài cần ôn hôm nay`);
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // // FEATURE-4: FLASHCARD TỰ KIỂM TRA
+    // -------------------------------------------------------------------------
+    const fcModal = document.getElementById('flashcardStudyModal');
+    const fcCardInner = document.getElementById('fcCardInner');
+    const fcFrontText = document.getElementById('fcCardFrontText');
+    const fcBackText = document.getElementById('fcCardBackText');
+    const fcSessionSubtitle = document.getElementById('fcSessionSubtitle');
+    const fcActiveView = document.getElementById('fcActiveCardView');
+    const fcSummaryView = document.getElementById('fcSessionSummaryView');
+    const fcSummaryStats = document.getElementById('fcSummaryStats');
+
+    let flashcardQueue = [];
+    let flashcardIndex = 0;
+    let fcKnownCount = 0;
+    let fcUnknownCount = 0;
+    let fcIsFlipped = false;
+    let fcUnknownQueue = [];
+
+    function extractFlashcardsFromDescription(lesson) {
+      if (!lesson || !lesson.description) return [];
+      const lines = lesson.description.split('\n').map(l => l.trim()).filter(Boolean);
+      const cards = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes('?') || line.startsWith('Hỏi:') || line.startsWith('Q:')) {
+          const front = line.replace(/^(Hỏi:|Q:|\d+\.|[-*])\s*/, '').trim();
+          let back = "Xem câu trả lời chi tiết trong bài học.";
+          if (i + 1 < lines.length && !lines[i + 1].includes('?')) {
+            back = lines[i + 1].replace(/^(Đáp:|A:|Trả lời:)\s*/, '').trim();
+          }
+          cards.push({ id: `fc_desc_${i}`, lessonId: lesson.id, front, back });
+        }
+      }
+      return cards;
+    }
+
+    function startFlashcardSession(cards, title = "Ôn tập Flashcard") {
+      if (!cards || cards.length === 0) {
+        showToast("Chưa có thẻ flashcard nào trong mục này.", "info");
+        return;
+      }
+
+      flashcardQueue = [...cards];
+      flashcardIndex = 0;
+      fcKnownCount = 0;
+      fcUnknownCount = 0;
+      fcUnknownQueue = [];
+      fcIsFlipped = false;
+
+      const titleEl = document.getElementById('fcSessionTitle');
+      if (titleEl) titleEl.innerText = title;
+
+      if (fcActiveView) fcActiveView.classList.remove('hidden');
+      if (fcSummaryView) fcSummaryView.classList.add('hidden');
+
+      renderCurrentFlashcard();
+      showModalAnimated(fcModal);
+    }
+
+    function renderCurrentFlashcard() {
+      if (!flashcardQueue || flashcardIndex >= flashcardQueue.length) {
+        showFlashcardSummary();
+        return;
+      }
+
+      const card = flashcardQueue[flashcardIndex];
+      fcIsFlipped = false;
+      if (fcCardInner) fcCardInner.classList.remove('card-flipped');
+
+      if (fcFrontText) fcFrontText.innerText = card.front;
+      if (fcBackText) fcBackText.innerText = card.back;
+      if (fcSessionSubtitle) {
+        fcSessionSubtitle.innerText = `Thẻ ${flashcardIndex + 1} / ${flashcardQueue.length}`;
+      }
+    }
+
+    function flipCurrentFlashcard() {
+      fcIsFlipped = !fcIsFlipped;
+      if (fcCardInner) {
+        if (fcIsFlipped) fcCardInner.classList.add('card-flipped');
+        else fcCardInner.classList.remove('card-flipped');
+      }
+    }
+
+    function answerFlashcard(isKnown) {
+      if (flashcardIndex >= flashcardQueue.length) return;
+      const card = flashcardQueue[flashcardIndex];
+
+      if (isKnown) {
+        fcKnownCount++;
+      } else {
+        fcUnknownCount++;
+        fcUnknownQueue.push(card);
+      }
+
+      // Record daily activity
+      const today = getTodayDateStr();
+      if (!state.learningData.analytics.dailyActivity[today]) {
+        state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+      }
+      state.learningData.analytics.dailyActivity[today].cardsReviewed = 
+        (state.learningData.analytics.dailyActivity[today].cardsReviewed || 0) + 1;
+      saveLearningData();
+
+      flashcardIndex++;
+      renderCurrentFlashcard();
+    }
+
+    function showFlashcardSummary() {
+      if (fcActiveView) fcActiveView.classList.add('hidden');
+      if (fcSummaryView) fcSummaryView.classList.remove('hidden');
+
+      const total = fcKnownCount + fcUnknownCount;
+      const pct = total > 0 ? Math.round((fcKnownCount / total) * 100) : 100;
+      if (fcSummaryStats) {
+        fcSummaryStats.innerText = `Bạn đã nhớ ${fcKnownCount} / ${total} câu hỏi (${pct}%).`;
+      }
+    }
+
+    const flippableCard = document.getElementById('fcFlippableCard');
+    if (flippableCard) flippableCard.addEventListener('click', flipCurrentFlashcard);
+
+    const btnFcFlip = document.getElementById('btnFcFlip');
+    if (btnFcFlip) btnFcFlip.addEventListener('click', flipCurrentFlashcard);
+
+    const btnFcRemembered = document.getElementById('btnFcRemembered');
+    if (btnFcRemembered) btnFcRemembered.addEventListener('click', () => answerFlashcard(true));
+
+    const btnFcForgot = document.getElementById('btnFcForgot');
+    if (btnFcForgot) btnFcForgot.addEventListener('click', () => answerFlashcard(false));
+
+    const btnCloseFc = document.getElementById('btnCloseFcModal');
+    if (btnCloseFc) btnCloseFc.addEventListener('click', () => hideModalAnimated(fcModal));
+
+    const btnFcFinish = document.getElementById('btnFcFinish');
+    if (btnFcFinish) btnFcFinish.addEventListener('click', () => hideModalAnimated(fcModal));
+
+    const btnFcRetryUnknown = document.getElementById('btnFcRetryUnknown');
+    if (btnFcRetryUnknown) {
+      btnFcRetryUnknown.addEventListener('click', () => {
+        if (fcUnknownQueue.length > 0) {
+          startFlashcardSession(fcUnknownQueue, "Ôn lại các thẻ chưa nhớ");
+        } else {
+          showToast("Bạn đã nhớ toàn bộ câu hỏi!");
+        }
+      });
+    }
+
+    // Keyboard navigation (Space, ArrowLeft, ArrowRight)
+    document.addEventListener('keydown', (e) => {
+      if (fcModal && !fcModal.classList.contains('hidden')) {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          flipCurrentFlashcard();
+        } else if (e.code === 'ArrowLeft') {
+          answerFlashcard(false);
+        } else if (e.code === 'ArrowRight') {
+          answerFlashcard(true);
+        }
+      }
+    });
+
+    // Touch swipe left / right for Flashcard
+    let fcTouchStartX = 0;
+    if (flippableCard) {
+      flippableCard.addEventListener('touchstart', (e) => {
+        fcTouchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      flippableCard.addEventListener('touchend', (e) => {
+        const diffX = e.changedTouches[0].screenX - fcTouchStartX;
+        if (diffX > 60) answerFlashcard(true);
+        else if (diffX < -60) answerFlashcard(false);
+      }, { passive: true });
+    }
+
+    // Nút Tự kiểm tra Flashcard từ thanh #descriptionBox
+    const btnStudyDesc = document.getElementById('btnStudyLessonFlashcards');
+    if (btnStudyDesc) {
+      btnStudyDesc.addEventListener('click', () => {
+        const cur = (state.lessons || []).find(l => l.id === state.activeLessonId);
+        if (!cur) return;
+        const cards = extractFlashcardsFromDescription(cur);
+        if (cards.length === 0) {
+          showToast("Chưa có câu hỏi trọng tâm (hãy thêm câu hỏi vào phần Mô tả).", "info");
+          return;
+        }
+        startFlashcardSession(cards, `Tự kiểm tra: ${cur.title}`);
+      });
+    }
+
+    // Nút Flashcard trên Header (ôn toàn thư viện)
+    const btnHeaderFc = document.getElementById('btnHeaderFlashcards');
+    if (btnHeaderFc) {
+      btnHeaderFc.addEventListener('click', () => {
+        const allCards = [];
+        for (const les of (state.lessons || [])) {
+          const fromDesc = extractFlashcardsFromDescription(les);
+          allCards.push(...fromDesc);
+        }
+        if (state.learningData.flashcards) {
+          allCards.push(...state.learningData.flashcards);
+        }
+        if (allCards.length === 0) {
+          showToast("Chưa có câu hỏi hoặc flashcard nào trong thư viện.", "info");
+          return;
+        }
+        // Shuffle cards
+        allCards.sort(() => Math.random() - 0.5);
+        startFlashcardSession(allCards, "Flashcard Toàn Thư Viện");
+      });
+    }
+
+    function openCreateFlashcardQuick(initialFront) {
+      const back = prompt("Nhập đáp án / giải thích cho thẻ này:");
+      if (!back || !back.trim()) return;
+
+      const newCard = {
+        id: 'fc_man_' + Date.now(),
+        lessonId: state.activeLessonId || '',
+        front: initialFront,
+        back: back.trim(),
+        createdAt: Date.now()
+      };
+
+      if (!state.learningData.flashcards) state.learningData.flashcards = [];
+      state.learningData.flashcards.push(newCard);
+      saveLearningData();
+      showToast("Đã tạo thẻ Flashcard mới!");
+    }
+
+    // -------------------------------------------------------------------------
+    // // FEATURE-5: THỐNG KÊ HỌC TẬP
+    // -------------------------------------------------------------------------
+    const analyticsModal = document.getElementById('analyticsModal');
+    let userActiveSeconds = 0;
+    let isUserEngaged = true;
+    let lastEngagementTime = Date.now();
+
+    function recordUserEngagement() {
+      isUserEngaged = true;
+      lastEngagementTime = Date.now();
+    }
+
+    ['scroll', 'click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, recordUserEngagement, { passive: true });
+    });
+
+    setInterval(() => {
+      if (document.hidden) return;
+      if (Date.now() - lastEngagementTime > 60000) return; // User inactive
+
+      userActiveSeconds += 5;
+      if (userActiveSeconds >= 60) {
+        userActiveSeconds = 0;
+        const today = getTodayDateStr();
+        if (!state.learningData.analytics.dailyActivity[today]) {
+          state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+        }
+        state.learningData.analytics.dailyActivity[today].minutes = 
+          (state.learningData.analytics.dailyActivity[today].minutes || 0) + 1;
+        saveLearningData();
+      }
+    }, 5000);
+
+    const btnHeaderAnalytics = document.getElementById('btnHeaderAnalytics');
+    if (btnHeaderAnalytics) {
+      btnHeaderAnalytics.addEventListener('click', () => {
+        renderAnalyticsModal();
+        showModalAnimated(analyticsModal);
+      });
+    }
+
+    const btnCloseAnalytics = document.getElementById('btnCloseAnalyticsModal');
+    if (btnCloseAnalytics) {
+      btnCloseAnalytics.addEventListener('click', () => hideModalAnimated(analyticsModal));
+    }
+
+    function renderAnalyticsModal() {
+      const a = state.learningData.analytics;
+      const today = getTodayDateStr();
+      const todayAct = a.dailyActivity[today] || { minutes: 0, lessonsCompleted: 0 };
+
+      // 1. Streak
+      const streakEl = document.getElementById('analyticsStreakCount');
+      if (streakEl) streakEl.innerText = a.streak || 1;
+
+      // 2. Goal
+      const goal = a.dailyGoal || { lessons: 2, minutes: 30 };
+      const completedToday = (state.lessons || []).filter(l => l.isCompleted).length;
+      const todayMinutes = todayAct.minutes || 0;
+
+      const pctLessons = Math.min(100, Math.round((todayAct.lessonsCompleted / goal.lessons) * 100));
+      const goalTextEl = document.getElementById('analyticsTodayGoalText');
+      const goalPctEl = document.getElementById('analyticsGoalPercent');
+      const goalBarEl = document.getElementById('analyticsGoalBar');
+
+      if (goalTextEl) goalTextEl.innerText = `${todayAct.lessonsCompleted || 0} / ${goal.lessons} bài (${todayMinutes}p)`;
+      if (goalPctEl) goalPctEl.innerText = `${pctLessons}%`;
+      if (goalBarEl) goalBarEl.style.width = `${pctLessons}%`;
+
+      // 3. 7-Day Chart (SVG)
+      const chartWrapper = document.getElementById('analyticsChartWrapper');
+      if (chartWrapper) {
+        chartWrapper.innerHTML = '';
+        const dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        const last7Days = [];
+        let maxMin = 30;
+
+        for (let i = 6; i >= 0; i--) {
+          const dStr = addDaysToDate(today, -i);
+          const act = a.dailyActivity[dStr] || { minutes: 0 };
+          const min = act.minutes || 0;
+          if (min > maxMin) maxMin = min;
+
+          const parts = dStr.split('-');
+          const dObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          const dayName = i === 0 ? 'Hôm nay' : dayLabels[dObj.getDay()];
+          last7Days.push({ date: dStr, minutes: min, label: dayName });
+        }
+
+        for (const item of last7Days) {
+          const colHeight = Math.max(8, Math.round((item.minutes / maxMin) * 110));
+          const colEl = document.createElement('div');
+          colEl.className = "flex-1 flex flex-col items-center justify-end h-full gap-1.5 group";
+          colEl.innerHTML = `
+            <span class="text-[9px] font-mono text-[#6E6B65] dark:text-[#979DA8] opacity-0 group-hover:opacity-100 transition">${item.minutes}p</span>
+            <div class="w-full max-w-[28px] bg-indigo-100 dark:bg-indigo-950/60 group-hover:bg-indigo-600 rounded-t-md transition-all flex items-end justify-center overflow-hidden" style="height: ${colHeight}px">
+              <div class="w-full bg-indigo-600 dark:bg-indigo-500 rounded-t-md" style="height: ${colHeight}px"></div>
+            </div>
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] whitespace-nowrap">${item.label}</span>
+          `;
+          chartWrapper.appendChild(colEl);
+        }
+      }
+
+      // 4. Summary metrics
+      let totalMins = 0;
+      for (const d in a.dailyActivity) totalMins += (a.dailyActivity[d].minutes || 0);
+
+      const totalTimeEl = document.getElementById('analyticsTotalReadTime');
+      const compLesEl = document.getElementById('analyticsCompletedLessons');
+      const totalHlEl = document.getElementById('analyticsTotalHighlights');
+      const totalFcEl = document.getElementById('analyticsTotalFlashcards');
+
+      if (totalTimeEl) totalTimeEl.innerText = totalMins >= 60 ? `${Math.floor(totalMins / 60)}h ${totalMins % 60}p` : `${totalMins} phút`;
+      if (compLesEl) compLesEl.innerText = (state.lessons || []).filter(l => l.isCompleted).length;
+
+      let hlCount = 0;
+      for (const lId in state.learningData.highlights) hlCount += (state.learningData.highlights[lId] || []).length;
+      if (totalHlEl) totalHlEl.innerText = hlCount;
+
+      let fcCount = (state.learningData.flashcards || []).length;
+      for (const les of (state.lessons || [])) fcCount += extractFlashcardsFromDescription(les).length;
+      if (totalFcEl) totalFcEl.innerText = fcCount;
+    }
+
+    // -------------------------------------------------------------------------
+    // TÍCH HỢP HÀM BỔ TRỢ VÀO CÁC SỰ KIỆN CHÍNH
+    // -------------------------------------------------------------------------
+    // Khởi động nạp learningData
+    loadLearningData();
+
+    // Hook vào iframe.onload
+    const origIframe = document.getElementById('lessonIframe');
+    if (origIframe) {
+      const prevOnload = origIframe.onload;
+      origIframe.addEventListener('load', () => {
+        attachIframeSelectionEvents(origIframe);
+        if (state.activeLessonId) {
+          restoreHighlightsForLesson(state.activeLessonId);
+          restoreReadingPosition(state.activeLessonId);
+        }
+      });
+    }
+
+    // Hook vào khi bấm "Đã học" (btnToggleLearned)
+    const btnToggleLearnedEl = document.getElementById('btnToggleLearned');
+    if (btnToggleLearnedEl) {
+      btnToggleLearnedEl.addEventListener('click', () => {
+        setTimeout(() => {
+          if (state.activeLessonId) {
+            const les = (state.lessons || []).find(l => l.id === state.activeLessonId);
+            if (les && les.isCompleted) {
+              scheduleSpacedRepetition(les.id);
+              const today = getTodayDateStr();
+              if (!state.learningData.analytics.dailyActivity[today]) {
+                state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+              }
+              state.learningData.analytics.dailyActivity[today].lessonsCompleted = 
+                (state.learningData.analytics.dailyActivity[today].lessonsCompleted || 0) + 1;
+              saveLearningData();
+            }
+          }
+        }, 100);
+      });
+    }
+
+
+        // // REDESIGN: Tương tác đóng/mở menu "Thêm" trên thanh công cụ bài đọc
     const btnReaderMoreActions = document.getElementById('btnReaderMoreActions');
     const readerMoreMenuDropdown = document.getElementById('readerMoreMenuDropdown');
 
