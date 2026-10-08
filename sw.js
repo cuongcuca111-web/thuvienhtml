@@ -1,7 +1,7 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v3.5)
+// Service Worker cho Ứng dụng Sách HTML (PWA v3.6)
 // FIX: Sử dụng chiến lược Mạng trước - Cache sau (Network-First) cho index.html để tránh bị kẹt bản cũ
 
-const CACHE_NAME = 'thuvienhtml-cache-v3.5';
+const CACHE_NAME = 'thuvienhtml-cache-v3.6';
 
 const PRECACHE_ASSETS = [
   './',
