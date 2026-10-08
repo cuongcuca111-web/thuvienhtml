@@ -2,7 +2,6 @@
 <html lang="vi" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <!-- Cho phép người dùng zoom hỗ trợ trợ năng, đồng thời giữ viewport-fit=cover cho màn hình tai thỏ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Thư viện Sách HTML - Đọc & Ôn tập Chuyên sâu</title>
 
@@ -11,19 +10,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Thư viện HTML">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#4F46E5" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0F1115" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#FAF9F5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)">
 
-  <!-- Favicon & Apple Touch Icon SVG đồng bộ nhận diện logo -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%238696FB'/%3E%3Cg transform='translate(4, 4)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/%3E%3C/g%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%238696FB'/%3E%3Cg transform='translate(24, 24) scale(6)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/%3E%3C/g%3E%3C/svg%3E">
+  <!-- // REDESIGN: Favicon & Apple Touch Icon SVG Logo Độc Bản -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234F46E5'/%3E%3Cpath d='M6.5 8.5C9 8 12.5 7.2 16 8.7C19.5 7.2 23 8 25.5 8.5V21.5C23 21 19.5 20.2 16 21.7C12.5 20.2 9 21 6.5 21.5V8.5Z' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 8.7V21.7' stroke='white' stroke-width='1.8'/%3E%3Ccircle cx='16' cy='5.8' r='1.3' fill='%23FBBF24'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%234F46E5'/%3E%3Cg transform='translate(24, 24) scale(6)' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z'/%3E%3Cpath d='M12 6.5V18.5'/%3E%3Ccircle cx='12' cy='3.8' r='1.2' fill='%23FBBF24'/></g%3E%3C/svg%3E">
 
   <!-- Web App Manifest inline -->
   <link rel="manifest" id="pwaManifestLink">
 
   <script>
     (function() {
-      const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='%238696FB'/><g transform='translate(24, 24) scale(6)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/></g></svg>`;
+      const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='44' fill='#4F46E5'/><g transform='translate(24, 24) scale(6)' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z'/><path d='M12 6.5V18.5'/><circle cx='12' cy='3.8' r='1.2' fill='#FBBF24'/></g></svg>`;
       const iconDataUri = "data:image/svg+xml," + encodeURIComponent(iconSvg);
       const manifest = {
         name: "Thư viện Sách HTML",
@@ -31,7 +30,7 @@
         description: "Ứng dụng lưu trữ và đọc sách học, câu hỏi ôn tập HTML chuyên sâu",
         start_url: "./",
         display: "standalone",
-        background_color: "#0F1115",
+        background_color: "#111317",
         theme_color: "#4F46E5",
         orientation: "any",
         icons: [
@@ -65,14 +64,13 @@
     };
   </script>
   
-  <!-- Phông chữ Google Fonts -->
+  <!-- // REDESIGN: Phông chữ Google Fonts chuẩn Editorial: Source Serif 4 (Tiêu đề sách), Newsreader, Inter (Thân bài) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS & Lucide Icons CDN -->
+  <!-- Tailwind CSS CDN (Đã gỡ bỏ Lucide Icons theo yêu cầu) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <script>
     tailwind.config = {
@@ -80,29 +78,35 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            serif: ['"Source Serif 4"', 'Newsreader', 'serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            serif: ['"Source Serif 4"', 'Newsreader', 'Georgia', 'serif'],
+            reading: ['"Source Serif 4"', 'Georgia', 'serif'],
           },
           colors: {
             app: {
-              light: '#F7F7F5',
-              dark: '#0F1115',
+              light: '#FAF9F5',
+              dark: '#111317',
               cardLight: '#FFFFFF',
-              cardDark: '#161A20',
-              borderLight: '#E6E6E1',
+              cardDark: '#181B20',
+              borderLight: '#E7E5DF',
               borderDark: '#262C36',
-              textMainLight: '#1A1A1A',
-              textMainDark: '#ECEEF2',
-              textSubLight: '#6B6B66',
-              textSubDark: '#9AA3B2',
+              textMainLight: '#1C1917',
+              textMainDark: '#EDECE8',
+              textSubLight: '#6E6B65',
+              textSubDark: '#979DA8',
               accentLight: '#4F46E5',
               accentDark: '#818CF8',
               highlightLight: '#FEF3C7',
               highlightDark: '#78350F',
             }
           },
+          boxShadow: {
+            '2xs': '0 1px 2px rgba(0, 0, 0, 0.03)',
+            'xs': '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)',
+            'card': '0 4px 12px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+          },
           borderRadius: {
-            'card': '10px',
+            'card': '12px',
             'pill': '999px',
           }
         }
@@ -111,12 +115,14 @@
   </script>
 
   <style>
+    /* // REDESIGN: Hệ thống Design Tokens phong cách Editorial Giấy Ấm (Warm Paper) */
     :root {
-      --bg-app: #F7F7F5;
+      --bg-app: #FAF9F5;
       --bg-card: #FFFFFF;
-      --border-color: #E6E6E1;
-      --text-main: #1A1A1A;
-      --text-sub: #6B6B66;
+      --bg-card-sub: #F4F2EB;
+      --border-color: #E7E5DF;
+      --text-main: #1C1917;
+      --text-sub: #6E6B65;
       --accent: #4F46E5;
       --accent-soft: rgba(79, 70, 229, 0.08);
       --highlight: #FEF3C7;
@@ -128,11 +134,12 @@
     }
 
     .dark {
-      --bg-app: #0F1115;
-      --bg-card: #161A20;
-      --border-color: #262C36;
-      --text-main: #ECEEF2;
-      --text-sub: #9AA3B2;
+      --bg-app: #111317;
+      --bg-card: #181B20;
+      --bg-card-sub: #1F232B;
+      --border-color: #252932;
+      --text-main: #EDECE8;
+      --text-sub: #979DA8;
       --accent: #818CF8;
       --accent-soft: rgba(129, 140, 248, 0.12);
       --highlight: #78350F;
@@ -173,6 +180,12 @@
     }
     button:active, .touch-target:active {
       transform: scale(0.97);
+    }
+
+    /* Focus-visible trợ năng đạt chuẩn WCAG */
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
     /* // ANIM: Chuyển chế độ độ rộng khung đọc mượt mà */
@@ -313,13 +326,13 @@
     }
     @keyframes emptyStateFadeIn {
       from { opacity: 0; transform: translateY(8px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0); scale(1); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* // ANIM: Hiệu ứng popup/dropdown tìm kiếm */
-    #searchResultsDropdown:not(.hidden), #mobileSearchResultsDropdown:not(.hidden) {
+    /* // ANIM: Hiệu ứng popup/dropdown tìm kiếm & Popover Hiển thị */
+    #searchResultsDropdown:not(.hidden), #mobileSearchResultsDropdown:not(.hidden), #displaySettingsPopover:not(.hidden), #readerMoreMenuDropdown:not(.hidden) {
       animation: dropdownSlideFade var(--anim-dur-fast) var(--anim-ease) both;
-      transform-origin: top center;
+      transform-origin: top right;
       will-change: transform, opacity;
     }
     @keyframes dropdownSlideFade {
@@ -368,14 +381,22 @@
       }
     }
 
-    /* Đảm bảo iOS không tự động zoom in khi focus các input */
-    @media (max-width: 768px) {
-      input, textarea, select {
-        font-size: 16px !important;
-      }
+    /* Tùy chỉnh thanh cuộn tinh tế */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D5D2CA;
+      border-radius: 999px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #2D333F;
     }
 
-    /* Cuộn ngang thanh công cụ mượt mà không hiện thanh cuộn xấu */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -384,263 +405,428 @@
       scrollbar-width: none;
     }
 
-    .font-reading {
-      font-family: 'Source Serif 4', 'Newsreader', Georgia, serif;
-    }
-
-    /* Vùng chạm chuẩn ≥ 44px trên thiết bị di động */
+    /* Hỗ trợ vùng bấm an toàn tối thiểu 36px/44px */
     .touch-target {
-      min-height: 44px;
-      min-width: 44px;
+      min-height: 36px;
+      min-width: 36px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
-
-    /* Scrollbar tinh tế */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(150, 150, 150, 0.25);
-      border-radius: 999px;
-    }
-
-    button:focus-visible, input:focus-visible, textarea:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
-    }
-
-    #lessonIframe {
-      background-color: transparent !important;
-      border: none !important;
-      display: block;
-      width: 100% !important;
-    }
-
-    .focus-mode-active {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 9999 !important;
-      width: 100vw !important;
-      height: 100dvh !important;
-      background: var(--bg-card) !important;
-    }
-
-    .line-clamp-3 {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    /* Hiệu ứng trượt Bottom Sheet trên di động */
-    .bottom-sheet {
-      transform: translateY(100%);
-      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .bottom-sheet.open {
-      transform: translateY(0);
-    }
-
-    /* Che phủ viền khi cuộn ngang thanh công cụ */
-    .scroll-edge-hint {
-      mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
-      -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    @media (max-width: 640px) {
+      .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+      }
     }
   </style>
 </head>
-<body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100">
-
-  <!-- TOÀN BỘ KHU VỰC ĐỈNH XẾP THEO LUỒNG TỰ NHIÊN (KHÔNG CHỒNG ĐÈ CỐ ĐỊNH NHAU) -->
-  <div id="unifiedTopBar" class="w-full shrink-0 z-40 bg-white/95 dark:bg-[#0F1115]/95 border-b border-[#E6E6E1] dark:border-[#262C36] backdrop-blur-md pt-[env(safe-area-inset-top,0px)] transition-colors">
+<body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
+  <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
+  <svg id="icon-sprite" style="display: none;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-logo" viewBox="0 0 24 24">
+      <path d="M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 6.5V18.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <circle cx="12" cy="3.8" r="1.2" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-book-open" viewBox="0 0 24 24">
+      <path d="M2 4.5C4.5 4 8 3.5 12 5C16 3.5 19.5 4 22 4.5V19.5C19.5 19 16 18.5 12 20C8 18.5 4.5 19 2 19.5V4.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 5V20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-panel-left" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 4V20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M5.5 8H6.5M5.5 12H6.5M5.5 16H6.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-list" viewBox="0 0 24 24">
+      <path d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24">
+      <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 20L15.5 15.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-link" viewBox="0 0 24 24">
+      <path d="M10 13A5 5 0 0 0 17.5 13.5L20 11A5 5 0 0 0 13 4L11.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 11A5 5 0 0 0 6.5 10.5L4 13A5 5 0 0 0 11 20L12.5 18.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-share-2" viewBox="0 0 24 24">
+      <circle cx="18" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <circle cx="6" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <circle cx="18" cy="19" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M8.6 13.5L15.4 17.5M15.4 6.5L8.6 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-share" viewBox="0 0 24 24">
+      <path d="M4 12V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16 6L12 2L8 6M12 2V15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24">
+      <path d="M15 18L9 12L15 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24">
+      <path d="M9 18L15 12L9 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24">
+      <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-check-circle-2" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M8 12L11 15L16 9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-check-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M8.5 12.5L11 15L15.5 9.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-check-check" viewBox="0 0 24 24">
+      <path d="M18 6L7 17L2 12M22 10L12 20L10.5 18.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <polygon points="12 2.5 15.1 8.8 22 9.8 17 14.6 18.2 21.5 12 18.3 5.8 21.5 7 14.6 2 9.8 8.9 8.8 12 2.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-pencil" viewBox="0 0 24 24">
+      <path d="M17 3A2.8 2.8 0 1 1 21 7L7.5 20.5L2 22L3.5 16.5L17 3Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-printer" viewBox="0 0 24 24">
+      <path d="M6 9V3H18V9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="4" y="9" width="16" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M6 18V21H18V18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="17" cy="12.5" r="0.75" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3A7 7 0 0 0 21 12.8Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M12 2V4M12 20V22M4.9 4.9L6.3 6.3M17.7 17.7L19.1 19.1M2 12H4M20 12H22M4.9 19.1L6.3 17.7M17.7 6.3L19.1 4.9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-maximize-2" viewBox="0 0 24 24">
+      <path d="M15 3H21V9M9 21H3V15M21 3L14 10M3 21L10 14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-minimize-2" viewBox="0 0 24 24">
+      <path d="M4 14H10V20M20 10H14V4M14 10L21 3M3 21L10 14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-more-vertical" viewBox="0 0 24 24">
+      <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
+      <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+      <circle cx="12" cy="19" r="1.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24">
+      <path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H9L11 6H18.5A2.5 2.5 0 0 1 21 8.5V17.5A2.5 2.5 0 0 1 18.5 20H5.5A2.5 2.5 0 0 1 3 17.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-folder-plus" viewBox="0 0 24 24">
+      <path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H9L11 6H18.5A2.5 2.5 0 0 1 21 8.5V17.5A2.5 2.5 0 0 1 18.5 20H5.5A2.5 2.5 0 0 1 3 17.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 10.5V16.5M9 13.5H15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-file-text" viewBox="0 0 24 24">
+      <path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8L14 2Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 2V8H20M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-file-plus" viewBox="0 0 24 24">
+      <path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8L14 2Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 2V8H20M12 12V18M9 15H15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24">
+      <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M17 8L12 3L7 8M12 3V15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-upload-cloud" viewBox="0 0 24 24">
+      <path d="M16 16L12 12L8 16M12 12V21M20.4 18.4A5 5 0 0 0 18 9H16.7A8 8 0 1 0 3 16.3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24">
+      <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-trash-2" viewBox="0 0 24 24">
+      <path d="M3 6H21M8 6V4A2 2 0 0 1 10 2H14A2 2 0 0 1 16 2V6M19 6V20A2 2 0 0 1 17 22H7A2 2 0 0 1 5 20V6M10 11V17M14 11V17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-rotate-ccw" viewBox="0 0 24 24">
+      <path d="M1 4V10H7M3.5 15A9 9 0 1 0 5.6 5.6L1 10" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24">
+      <rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M5 15H4A2 2 0 0 1 2 13V4A2 2 0 0 1 4 2H13A2 2 0 0 1 15 4V5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-external-link" viewBox="0 0 24 24">
+      <path d="M18 13V19A2 2 0 0 1 16 21H5A2 2 0 0 1 3 19V8A2 2 0 0 1 5 6H11M15 3H21V9M10 14L21 3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M12 7V12L15 14" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-shield-check" viewBox="0 0 24 24">
+      <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <path d="M20 21V19A4 4 0 0 0 16 15H8A4 4 0 0 0 4 19V21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/>
+    </symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M21 6L12 13L3 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24">
+      <rect x="4" y="11" width="16" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M7 11V7A5 5 0 0 1 17 7V11" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-log-in" viewBox="0 0 24 24">
+      <path d="M15 3H19A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H15M10 17L15 12L10 7M15 12H3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-log-out" viewBox="0 0 24 24">
+      <path d="M9 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H9M16 17L21 12L16 7M21 12H9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-send" viewBox="0 0 24 24">
+      <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-alert-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M12 8V12M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24">
+      <path d="M18 6L6 18M6 6L18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24">
+      <path d="M12 5V19M5 12H19" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-sliders" viewBox="0 0 24 24">
+      <path d="M4 21V14M4 10V3M12 21V12M12 8V3M20 21V16M20 12V3M1 14H7M9 8H15M17 16H23" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-type" viewBox="0 0 24 24">
+      <path d="M4 7V4H20V7M9 20H15M12 4V20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
+  <!-- // REDESIGN: TOÀN BỘ KHU VỰC ĐỈNH - HEADER TINH GỌN 1 HÀNG, BANNER MẢNH, THANH TIẾN ĐỘ DÍNH -->
+  <div id="unifiedTopBar" class="w-full shrink-0 z-40 bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md pt-[env(safe-area-inset-top,0px)] transition-colors">
     
     <!-- BANNER: BÀI CHIA SẺ TRỰC TIẾP (7 NGÀY) -->
-    <div id="sharedLessonBanner" class="hidden w-full bg-indigo-600 text-white px-3 sm:px-4 py-2 text-xs shadow-sm flex items-center justify-between gap-2 transition-all">
+    <div id="sharedLessonBanner" class="hidden w-full bg-indigo-600 text-white px-3 sm:px-6 py-2 text-xs shadow-xs flex items-center justify-between gap-2 transition-all">
       <div class="flex items-center gap-2 overflow-hidden min-w-0">
-        <i data-lucide="share-2" class="w-4 h-4 shrink-0 text-indigo-200"></i>
+        <svg class="w-4 h-4 shrink-0 text-indigo-200"><use href="#icon-share-2"></use></svg>
         <span class="truncate">Đang xem: <strong id="sharedBannerTitle">Bài học</strong> <span id="sharedBannerExpiry" class="text-[11px] text-indigo-200 font-normal"></span></span>
       </div>
-      <div class="flex items-center gap-1.5 shrink-0">
-        <button id="btnSaveSharedToMyLib" class="px-2.5 py-1 rounded bg-white text-indigo-700 hover:bg-indigo-50 font-semibold transition text-xs shadow-sm flex items-center gap-1">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btnSaveSharedToMyLib" class="touch-target px-3 py-1 rounded-lg bg-white text-indigo-700 hover:bg-indigo-50 font-semibold transition text-xs shadow-xs flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
           <span class="hidden sm:inline">Lưu thư viện</span>
         </button>
-        <button id="btnExitShareView" class="p-1 sm:px-2 sm:py-1 rounded bg-indigo-700 hover:bg-indigo-800 text-white font-medium transition text-xs" title="Thoát bài chia sẻ">
+        <button id="btnExitShareView" class="touch-target px-2.5 py-1 rounded-lg bg-indigo-700 hover:bg-indigo-800 text-white font-medium transition text-xs" title="Thoát bài chia sẻ">
           <span class="hidden sm:inline">Về thư viện</span>
-          <i data-lucide="x" class="w-3.5 h-3.5 sm:hidden"></i>
+          <svg class="w-3.5 h-3.5 sm:hidden"><use href="#icon-x"></use></svg>
         </button>
       </div>
     </div>
 
-    <!-- BANNER: THÔNG BÁO CHẾ ĐỘ KHÁCH (GỌN 2 DÒNG TRÊN MOBILE, KHÔNG ĐÈ LÊN HEADER) -->
-    <div id="guestWarningBanner" class="hidden w-full bg-amber-500/10 dark:bg-amber-500/15 border-b border-amber-500/20 px-3 sm:px-4 py-1.5 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 overflow-hidden">
-        <i data-lucide="info" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0"></i>
+    <!-- // REDESIGN: BANNER CHẾ ĐỘ KHÁCH DẢI MẢNH (COMPACT STRIPE), ẤM ÁP, NHỚ ĐÃ ĐÓNG -->
+    <div id="guestWarningBanner" class="hidden w-full bg-[#FEF9EE] dark:bg-[#201A12] border-b border-[#F5E6C8] dark:border-[#382D1D] px-3 sm:px-6 py-1.5 text-xs text-[#7C5E10] dark:text-[#E8C56B] flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 overflow-hidden min-w-0">
+        <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0"><use href="#icon-info"></use></svg>
         <div id="guestWarningBannerText" class="truncate sm:whitespace-normal text-[11px] sm:text-xs">
-          Bạn đang dùng <strong>Chế độ Khách</strong>. Hãy <button id="btnBannerUpgrade" class="underline font-semibold hover:text-amber-700">đăng ký</button> để bảo toàn dữ liệu vĩnh viễn.
+          Bạn đang ở <strong>Chế độ Khách</strong> (dữ liệu lưu trên máy). Hãy <button id="btnBannerUpgrade" class="underline font-semibold hover:text-amber-800 dark:hover:text-amber-200">đăng ký / đăng nhập</button> để đồng bộ vĩnh viễn.
         </div>
       </div>
       <button id="btnDismissGuestBanner" class="touch-target p-1 text-amber-700 dark:text-amber-300 hover:opacity-75 shrink-0" aria-label="Đóng thông báo">
-        <i data-lucide="x" class="w-4 h-4"></i>
+        <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
       </button>
     </div>
 
-    <!-- HEADER CHÍNH (ĐÃ TINH GỌN TRÊN MOBILE: 1 HÀNG SẠCH SẼ) -->
-    <header class="h-14 px-3 sm:px-5 flex items-center justify-between gap-2">
-      <!-- Cụm trái: Sidebar button + Logo & Tiêu đề -->
-      <div class="flex items-center gap-2 min-w-0">
-        <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" title="Mục lục bài học" class="touch-target p-2 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0">
-          <i data-lucide="panel-left" class="w-5 h-5"></i>
+    <!-- // REDESIGN: HEADER 1 HÀNG GỌN GÀNG, CHUẨN EDITORIAL (TIÊU ĐỀ SERIF, TRÁI - GIỮA - PHẢI CÂN ĐỐI) -->
+    <header class="h-14 sm:h-15 px-3 sm:px-6 flex items-center justify-between gap-3">
+      
+      <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif -->
+      <div class="flex items-center gap-2.5 min-w-0 shrink-0">
+        <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" title="Mục lục bài học" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <svg class="w-5 h-5"><use href="#icon-panel-left"></use></svg>
         </button>
 
-        <div class="flex items-center gap-2 min-w-0">
-          <div class="w-8 h-8 rounded-[10px] bg-[#8696FB] text-white flex items-center justify-center shadow-sm shrink-0">
-            <i data-lucide="book-open" class="w-4 h-4 text-white" stroke-width="2"></i>
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-logo"></use></svg>
           </div>
           <div class="flex flex-col min-w-0">
-            <span class="text-sm sm:text-[15px] font-bold tracking-tight text-[#1A1A1A] dark:text-white leading-tight truncate">Sách HTML</span>
-            <span class="hidden md:inline text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] leading-tight font-normal">Editorial v2.8 • 7-Day Cloud</span>
+            <span class="font-serif font-bold text-[15px] sm:text-base tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-tight truncate">Sách HTML</span>
+            <span class="hidden md:inline text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider font-medium leading-none mt-0.5">Thư viện &amp; Ôn tập</span>
           </div>
         </div>
       </div>
 
-      <!-- Ô tìm kiếm toàn cục trên Desktop/Tablet (trên Mobile thu gọn thành Icon) -->
-      <div class="hidden md:block relative flex-1 max-w-md mx-3">
+      <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (với phím tắt Ctrl K) -->
+      <div class="hidden md:block relative flex-1 max-w-md mx-2">
         <div class="relative flex items-center">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 text-[#6B6B66] dark:text-[#9AA3B2] pointer-events-none"></i>
+          <svg class="w-4 h-4 absolute left-3.5 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
           <input 
             id="globalSearchInput" 
             type="text" 
-            placeholder="Tìm bài học, nội dung, câu hỏi..." 
-            class="w-full bg-[#F7F7F5] dark:bg-[#161A20] text-xs md:text-sm text-[#1A1A1A] dark:text-[#ECEEF2] pl-9 pr-14 py-1.5 rounded-pill border border-[#E6E6E1] dark:border-[#262C36] focus:border-[#4F46E5] dark:focus:border-[#818CF8] focus:bg-white dark:focus:bg-[#161A20] transition placeholder:text-[#6B6B66]/70 dark:placeholder:text-[#9AA3B2]/60"
+            placeholder="Tìm kiếm bài học, câu hỏi ôn tập..." 
+            class="w-full bg-[#F2F0EB] dark:bg-[#16181E] text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] pl-9 pr-14 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] focus:border-indigo-500 focus:bg-white dark:focus:bg-[#181B20] focus:ring-2 focus:ring-indigo-500/10 transition placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/60"
           />
-          <span class="absolute right-3 hidden lg:flex items-center text-[10px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-[#E6E6E1] dark:border-[#262C36]">
+          <span class="absolute right-3 hidden lg:flex items-center text-[10px] font-medium text-[#6E6B65] dark:text-[#979DA8] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36]">
             Ctrl K
           </span>
         </div>
-        <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card shadow-xl z-50 p-2 text-sm"></div>
+        <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 text-sm"></div>
       </div>
 
-      <!-- Cụm công cụ bên phải (Giao diện Mobile thu gọn tinh tế) -->
-      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-        <!-- Nút tìm kiếm icon trên Mobile -->
-        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="md:hidden touch-target p-2 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <i data-lucide="search" class="w-5 h-5"></i>
+      <!-- CỤM PHẢI: Nút Tạo link (Primary), Đồng bộ, Menu Hiển thị (Popover), Avatar Tài khoản -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        
+        <!-- Nút Tìm kiếm trên Mobile -->
+        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="md:hidden touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
         </button>
 
-        <!-- Nút Tạo link nhanh (Hiện trên Desktop, ẩn trên mobile và chuyển vào menu) -->
-        <button id="btnHeaderQuickShare" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#818CF8] dark:hover:bg-[#6366F1] text-white text-xs font-semibold shadow-sm transition" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)">
-          <i data-lucide="link" class="w-3.5 h-3.5"></i>
+        <!-- // REDESIGN: Nút Chính Nổi Bật: "Tạo link nhanh" -->
+        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)">
+          <svg class="w-3.5 h-3.5"><use href="#icon-link"></use></svg>
           <span>Tạo link nhanh</span>
         </button>
 
-        <!-- Trạng thái đồng bộ (Desktop hiện chữ, mobile hiện chấm nhỏ) -->
-        <div id="syncBadge" class="flex items-center gap-1.5 text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] px-1 sm:px-2 py-1 rounded" title="Trạng thái lưu trữ đám mây">
-          <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
-          <span id="syncText" class="hidden lg:inline">Đã đồng bộ</span>
+        <!-- Trạng thái đồng bộ (Chấm nhỏ trang nhã có tooltip) -->
+        <div id="syncBadge" class="flex items-center gap-1.5 text-[11px] text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition cursor-default" title="Trạng thái lưu trữ đám mây">
+          <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+          <span id="syncText" class="hidden xl:inline">Đã đồng bộ</span>
         </div>
 
-        <!-- Cài App PWA (desktop / standalone prompt) -->
-        <button id="btnPwaInstall" class="hidden items-center gap-1 px-2.5 py-1.5 rounded-card bg-[#4F46E5]/10 hover:bg-[#4F46E5]/20 text-[#4F46E5] dark:text-[#818CF8] text-xs font-semibold transition" title="Cài đặt làm ứng dụng máy tính / điện thoại">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <!-- Cài App PWA (Nếu hỗ trợ) -->
+        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition" title="Cài đặt ứng dụng">
+          <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
           <span class="hidden sm:inline">Cài App</span>
         </button>
 
-        <!-- Cụm A- / 100% / A+ (Hiện trên màn hình vừa và lớn; mobile có thể chỉnh ở thanh đọc bài) -->
-        <div class="hidden sm:flex items-center bg-[#F7F7F5] dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card p-0.5" title="Tăng / Giảm cỡ chữ">
-          <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="px-2 py-1 rounded hover:bg-white dark:hover:bg-[#262C36] text-[#6B6B66] dark:text-[#9AA3B2] transition">
-            <span class="text-xs font-bold">A-</span>
-          </button>
-          <span id="fontScaleDisplay" class="text-[10px] font-semibold text-[#4F46E5] dark:text-[#818CF8] px-1 select-none min-w-[34px] text-center">100%</span>
-          <button id="btnFontInc" title="Tăng cỡ chữ (A+)" class="px-2 py-1 rounded hover:bg-white dark:hover:bg-[#262C36] text-[#6B6B66] dark:text-[#9AA3B2] transition">
-            <span class="text-xs font-bold">A+</span>
-          </button>
-        </div>
-
-        <!-- Nút Theme sáng/tối -->
-        <button id="btnThemeToggle" aria-label="Chuyển chế độ sáng/tối" class="touch-target p-2 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <i data-lucide="moon" class="w-[18px] h-[18px] dark:hidden"></i>
-          <i data-lucide="sun" class="w-[18px] h-[18px] hidden dark:block"></i>
-        </button>
-
-        <!-- Toàn màn hình (Desktop) -->
-        <button id="btnFullscreen" aria-label="Toàn màn hình đọc (F)" title="Toàn màn hình (F)" class="hidden md:flex touch-target p-2 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <i data-lucide="maximize-2" class="w-[18px] h-[18px]"></i>
-        </button>
-
-        <!-- Nút Menu 3 chấm (Mobile "⋯") / Avatar Tài khoản (Desktop) -->
+        <!-- // REDESIGN: Menu "Hiển thị" gom Cỡ chữ, Sáng/Tối, Toàn màn vào một Popover gọn gàng -->
         <div class="relative">
-          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target h-9 px-2 sm:px-2.5 rounded-full bg-[#4F46E5]/10 dark:bg-[#818CF8]/20 text-[#4F46E5] dark:text-[#818CF8] font-semibold text-xs flex items-center gap-1.5 border border-[#4F46E5]/20 hover:ring-2 hover:ring-[#4F46E5]/30 transition">
+          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs">
+            <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-sliders"></use></svg>
+            <span class="hidden sm:inline">Hiển thị</span>
+            <svg class="w-3 h-3 opacity-60"><use href="#icon-chevron-down"></use></svg>
+          </button>
+
+          <!-- Popover Tùy Chọn Hiển Thị (Display Settings Popover) -->
+          <div id="displaySettingsPopover" class="hidden absolute top-full right-0 mt-2 z-50 w-72 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-3.5 space-y-3.5 text-xs">
+            <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
+              <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Tùy chọn hiển thị</span>
+              <button id="btnCloseDisplaySettings" class="text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] p-1 rounded-md hover:bg-black/5">
+                <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+              </button>
+            </div>
+
+            <!-- Nhóm 1: Cỡ chữ bài đọc -->
+            <div>
+              <div class="text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] mb-1.5 flex items-center justify-between">
+                <span>Cỡ chữ bài viết</span>
+                <span id="fontScaleDisplay" class="font-semibold text-indigo-600 dark:text-indigo-400">100%</span>
+              </div>
+              <div class="flex items-center justify-between bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] rounded-lg p-1">
+                <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="touch-target px-3 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#6E6B65] dark:text-[#979DA8] transition font-bold text-xs">
+                  A-
+                </button>
+                <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-serif select-none">Mẫu chữ</span>
+                <button id="btnFontInc" title="Tăng cỡ chữ (A+)" class="touch-target px-3 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#6E6B65] dark:text-[#979DA8] transition font-bold text-xs">
+                  A+
+                </button>
+              </div>
+            </div>
+
+            <!-- Nhóm 2: Chế độ Sáng / Tối -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Giao diện đọc ban đêm</div>
+                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Nền tối dịu mắt, bảo vệ thị lực</div>
+              </div>
+              <button id="btnThemeToggle" aria-label="Chuyển chế độ sáng/tối" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] transition">
+                <svg class="w-4 h-4 dark:hidden"><use href="#icon-moon"></use></svg>
+                <svg class="w-4 h-4 hidden dark:block"><use href="#icon-sun"></use></svg>
+              </button>
+            </div>
+
+            <!-- Nhóm 3: Toàn màn hình -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Toàn màn hình đọc</div>
+                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Ẩn thanh công cụ (Phím F)</div>
+              </div>
+              <button id="btnFullscreen" aria-label="Toàn màn hình đọc (F)" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1 font-medium transition">
+                <svg class="w-3.5 h-3.5"><use href="#icon-maximize-2"></use></svg>
+                <span>Bật (F)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Avatar Nút Tài Khoản -->
+        <div class="relative">
+          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target h-8 sm:h-9 px-2 sm:px-2.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold text-xs flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800/60 hover:ring-2 hover:ring-indigo-500/20 transition">
             <span id="userInitial">U</span>
-            <span id="headerAccountLabel" class="hidden sm:inline font-normal max-w-[90px] truncate text-[11px]">Tài khoản</span>
-            <i data-lucide="more-vertical" class="w-3.5 h-3.5 sm:hidden"></i>
-            <i data-lucide="chevron-down" class="w-3 h-3 hidden sm:inline opacity-60"></i>
+            <span id="headerAccountLabel" class="hidden sm:inline font-normal max-w-[85px] truncate text-[11px]">Tài khoản</span>
+            <svg class="w-3 h-3 hidden sm:inline opacity-60"><use href="#icon-chevron-down"></use></svg>
+            <svg class="w-3.5 h-3.5 sm:hidden"><use href="#icon-more-vertical"></use></svg>
           </button>
         </div>
+
       </div>
     </header>
 
     <!-- THANH TÌM KIẾM MỞ RỘNG TRÊN MOBILE -->
-    <div id="mobileSearchExpandable" class="hidden md:hidden px-3 pb-2.5 pt-0 border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50">
-      <div class="relative flex items-center">
-        <i data-lucide="search" class="w-4 h-4 absolute left-3 text-[#6B6B66] dark:text-[#9AA3B2] pointer-events-none"></i>
+    <div id="mobileSearchExpandable" class="hidden md:hidden px-3 pb-2.5 pt-0 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+      <div class="relative flex items-center mt-1.5">
+        <svg class="w-4 h-4 absolute left-3 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
         <input 
           id="mobileSearchInput" 
           type="text" 
-          placeholder="Tìm bài học, nội dung, câu hỏi..." 
-          class="w-full bg-[#F7F7F5] dark:bg-[#161A20] text-sm text-[#1A1A1A] dark:text-[#ECEEF2] pl-9 pr-8 py-2 rounded-xl border border-[#E6E6E1] dark:border-[#262C36] focus:border-[#4F46E5]"
+          placeholder="Tìm kiếm bài học, câu hỏi..." 
+          class="w-full bg-[#F2F0EB] dark:bg-[#16181E] text-sm text-[#1C1917] dark:text-[#EDECE8] pl-9 pr-8 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] focus:border-indigo-500"
         />
         <button id="btnCloseMobileSearch" class="absolute right-2 p-1 text-gray-400 hover:text-gray-600">
-          <i data-lucide="x" class="w-4 h-4"></i>
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
-      <div id="mobileSearchResultsDropdown" class="hidden mt-2 max-h-72 overflow-y-auto bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card shadow-xl p-2 text-sm"></div>
+      <div id="mobileSearchResultsDropdown" class="hidden mt-2 max-h-72 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-2 text-sm"></div>
     </div>
 
-    <!-- THANH TIẾN ĐỘ ĐỌC BÀI VIẾT (2px) -->
-    <div class="w-full h-[2px] bg-transparent">
-      <div id="readingProgressBar" class="h-full bg-[#4F46E5] dark:bg-[#818CF8] transition-all duration-150 w-0"></div>
+    <!-- // REDESIGN: THANH TIẾN ĐỘ ĐỌC GẮN DÍNH NGAY DƯỚI TOPBAR (2.5px gradient mảnh dẻ) -->
+    <div class="w-full h-[2.5px] bg-[#E7E5DF]/40 dark:bg-[#262C36]/40 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 transition-all duration-150 w-0"></div>
     </div>
   </div>
-
   <!-- THÂN ỨNG DỤNG (FLEX-1, TỰ ĐỘNG LẤY PHẦN CÒN LẠI CỦA 100dvh) -->
   <div id="appBodyContainer" class="flex-1 flex overflow-hidden relative w-full">
     
     <!-- LỚP PHỦ NỀN KHI MỞ SIDEBAR TRÊN MOBILE -->
     <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-30 md:hidden hidden transition-opacity"></div>
 
-    <!-- SIDEBAR MỤC LỤC BÀI HỌC (DRAWER 85vw TRÊN MOBILE, CỘT CỐ ĐỊNH TRÊN DESKTOP) -->
-    <aside id="mainSidebar" class="w-[85vw] max-w-[320px] md:w-72 bg-white dark:bg-[#161A20] border-r border-[#E6E6E1] dark:border-[#262C36] flex flex-col fixed md:static top-0 bottom-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-250 ease-in-out shrink-0 pb-[env(safe-area-inset-bottom,0px)]">
+    <!-- // REDESIGN: SIDEBAR MỤC LỤC BÀI HỌC (THẺ BÀI RÕ RÀNG, TIẾN ĐỘ TỪNG MỤC, THU GỌN MƯỢT) -->
+    <aside id="mainSidebar" class="w-[85vw] max-w-[320px] md:w-72 bg-white dark:bg-[#181B20] border-r border-[#E7E5DF] dark:border-[#262C36] flex flex-col fixed md:static top-0 bottom-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-250 ease-in-out shrink-0 pb-[env(safe-area-inset-bottom,0px)]">
       
-      <div class="p-3.5 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between pt-[max(0.875rem,env(safe-area-inset-top,0px))] md:pt-3.5">
+      <!-- Tiêu đề sidebar -->
+      <div class="p-3.5 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between pt-[max(0.875rem,env(safe-area-inset-top,0px))] md:pt-3.5">
         <div class="flex items-center gap-2">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-[#6B6B66] dark:text-[#9AA3B2]">Mục lục bài học</h2>
+          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400"><use href="#icon-book-open"></use></svg>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8]">Mục lục bài học</h2>
         </div>
-        <div class="flex items-center gap-1">
-          <button id="btnNewCategory" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#818CF8] text-white text-xs font-medium transition shadow-sm">
-            <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+        <div class="flex items-center gap-1.5">
+          <button id="btnNewCategory" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium transition shadow-2xs">
+            <svg class="w-3.5 h-3.5"><use href="#icon-folder-plus"></use></svg>
             <span>Mục mới</span>
           </button>
-          <button id="btnCollapseSidebarDesktop" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng mục lục">
-            <i data-lucide="chevron-left" class="w-5 h-5 md:w-4 md:h-4"></i>
+          <button id="btnCollapseSidebarDesktop" class="touch-target p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng mục lục">
+            <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
           </button>
         </div>
       </div>
 
+      <!-- Bộ lọc bài học: Tất cả / Yêu thích / Chưa đọc -->
       <div class="px-3 pt-3">
-        <div class="grid grid-cols-3 gap-1 bg-[#F7F7F5] dark:bg-[#0F1115] p-1 rounded-card text-xs text-[#6B6B66] dark:text-[#9AA3B2] border border-[#E6E6E1] dark:border-[#262C36]">
-          <button data-filter="all" class="filter-tab py-1 text-center font-medium rounded transition bg-white dark:bg-[#161A20] text-[#1A1A1A] dark:text-[#ECEEF2] shadow-sm">
+        <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg text-xs text-[#6E6B65] dark:text-[#979DA8] border border-[#E7E5DF] dark:border-[#262C36]">
+          <button data-filter="all" class="filter-tab py-1 text-center font-medium rounded-md transition bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] shadow-2xs">
             Tất cả
           </button>
-          <button data-filter="favorites" class="filter-tab py-1 text-center font-medium rounded transition hover:text-[#1A1A1A] dark:hover:text-[#ECEEF2]">
+          <button data-filter="favorites" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8]">
             Yêu thích
           </button>
-          <button data-filter="unread" class="filter-tab py-1 text-center font-medium rounded transition hover:text-[#1A1A1A] dark:hover:text-[#ECEEF2]">
+          <button data-filter="unread" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8]">
             Chưa đọc
           </button>
         </div>
@@ -649,123 +835,146 @@
       <!-- Danh sách Mục & Bài học (Scrollable) -->
       <div id="categoriesList" class="flex-1 overflow-y-auto px-2 py-3 space-y-3"></div>
 
-      <div class="p-3 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between text-xs text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50">
-        <span id="statsSummary">0 mục • 0 bài</span>
-        <button id="btnSidebarQuickUpload" class="font-medium text-[#4F46E5] dark:text-[#818CF8] hover:underline flex items-center gap-1 py-1">
-          <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+      <!-- Chân sidebar -->
+      <div class="p-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-xs text-[#6E6B65] dark:text-[#979DA8] bg-[#FAF9F5]/70 dark:bg-[#111317]/50">
+        <span id="statsSummary" class="font-medium text-[11px]">0 mục • 0 bài</span>
+        <button id="btnSidebarQuickUpload" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5 py-1">
+          <svg class="w-3.5 h-3.5"><use href="#icon-upload"></use></svg>
           <span>Tải file</span>
         </button>
       </div>
     </aside>
 
-    <!-- KHU VỰC ĐỌC NỘI DUNG CHÍNH (READING AREA) -->
+    <!-- // REDESIGN: KHU VỰC ĐỌC NỘI DUNG CHÍNH (READING AREA) -->
     <main id="readingArea" class="flex-1 overflow-y-auto flex flex-col relative scroll-smooth focus:outline-none min-w-0 pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] md:pb-6">
       
-      <!-- THANH CÔNG CỤ ĐỌC BÀI (CUỘN NGANG MƯỢT MÀ TRÊN MOBILE KHÔNG BỊ TRÀN) -->
-      <div id="stickyReaderHeader" class="sticky top-0 z-20 backdrop-blur-md bg-white/95 dark:bg-[#0F1115]/95 border-b border-[#E6E6E1] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-2 text-xs overflow-x-auto no-scrollbar scroll-edge-hint transition-colors">
+      <!-- // REDESIGN: THANH CÔNG CỤ BÀI ĐỌC (3 NHÓM RÕ RÀNG: ĐIỀU HƯỚNG | HIỂN THỊ | HÀNH ĐỘNG) -->
+      <div id="stickyReaderHeader" class="sticky top-0 z-20 backdrop-blur-md bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] px-3 sm:px-6 py-2 flex items-center justify-between gap-3 text-xs overflow-x-auto no-scrollbar transition-colors">
         
-        <!-- Nhóm điều hướng: Trước / Sau / Nhảy tới -->
+        <!-- NHÓM 1: ĐIỀU HƯỚNG (Trước / Bộ đếm / Sau / Ô Tới) -->
         <div class="flex items-center gap-1.5 shrink-0">
-          <button id="btnPrevLesson" class="touch-target px-2.5 py-1.5 rounded-card border border-[#E6E6E1] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] flex items-center gap-1 font-medium transition disabled:opacity-40 disabled:pointer-events-none">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          <button id="btnPrevLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none">
+            <svg class="w-3.5 h-3.5"><use href="#icon-chevron-left"></use></svg>
             <span class="hidden sm:inline">Trước</span>
           </button>
 
-          <span id="currentLessonIndexBadge" class="font-medium text-[#6B6B66] dark:text-[#9AA3B2] px-1 select-none whitespace-nowrap">
-            0 / 0
-          </span>
+          <div class="px-2.5 py-1 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] font-medium whitespace-nowrap text-[11px] sm:text-xs">
+            <span id="currentLessonIndexBadge">0 / 0</span>
+          </div>
 
-          <button id="btnNextLesson" class="touch-target px-2.5 py-1.5 rounded-card border border-[#E6E6E1] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] flex items-center gap-1 font-medium transition disabled:opacity-40 disabled:pointer-events-none">
+          <button id="btnNextLesson" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none">
             <span class="hidden sm:inline">Sau</span>
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <svg class="w-3.5 h-3.5"><use href="#icon-chevron-right"></use></svg>
           </button>
 
-          <div class="hidden sm:flex items-center gap-1 ml-1 text-[#6B6B66] dark:text-[#9AA3B2]">
+          <div class="hidden sm:flex items-center gap-1 ml-1 text-[#6E6B65] dark:text-[#979DA8]">
             <span>Tới:</span>
-            <input id="jumpLessonInput" type="number" min="1" class="w-11 px-1 py-1 rounded border border-[#E6E6E1] dark:border-[#262C36] bg-transparent text-center text-[#1A1A1A] dark:text-[#ECEEF2]" />
+            <input id="jumpLessonInput" type="number" min="1" class="w-11 px-1.5 py-1 rounded-md border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs focus:border-indigo-500" />
           </div>
         </div>
 
-        <!-- Nhóm công cụ: Độ rộng / Trạng thái học / Thao tác -->
-        <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-          <!-- Chế độ độ rộng bài viết -->
-          <div class="flex items-center bg-[#F7F7F5] dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card p-0.5 text-[11px]" title="Độ rộng khung đọc bài">
-            <button data-width-opt="compact" class="width-tab px-2 py-1 rounded text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#1A1A1A] dark:hover:text-[#ECEEF2] transition font-medium">
-              Vừa
+        <!-- VẠCH NGĂN CÁCH 1 -->
+        <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block"></div>
+
+        <!-- NHÓM 2: HIỂN THỊ ĐỘ RỘNG (Segmented Pill Switcher) -->
+        <div class="hidden md:flex items-center bg-[#F2F0EB] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-pill p-0.5 text-[11px] shrink-0" title="Độ rộng khung đọc bài">
+          <button data-width-opt="compact" class="width-tab px-2.5 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
+            Vừa
+          </button>
+          <button data-width-opt="wide" class="width-tab px-2.5 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
+            Rộng
+          </button>
+          <button data-width-opt="full" class="width-tab px-2.5 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition">
+            Toàn màn
+          </button>
+        </div>
+
+        <!-- VẠCH NGĂN CÁCH 2 -->
+        <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block"></div>
+
+        <!-- NHÓM 3: HÀNH ĐỘNG (Đã học, Yêu thích hiện trực tiếp; Chia sẻ, Đổi tên, In trong menu "Thêm") -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          
+          <!-- Đã học -->
+          <button id="btnToggleLearned" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 transition shadow-2xs font-medium" title="Đánh dấu đã học bài">
+            <svg id="learnedIcon" class="w-3.5 h-3.5 text-gray-400"><use href="#icon-circle"></use></svg>
+            <span class="hidden lg:inline" id="learnedLabel">Đã học</span>
+          </button>
+
+          <!-- Yêu thích -->
+          <button id="btnToggleFavorite" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 transition shadow-2xs" title="Đánh dấu yêu thích">
+            <svg id="favIcon" class="w-4 h-4 text-gray-400 fill-none"><use href="#icon-star"></use></svg>
+          </button>
+
+          <!-- Nút Menu "Thêm" (Gom Chia sẻ, Đổi tên, In, Giữ màu gốc) -->
+          <div class="relative">
+            <button id="btnReaderMoreActions" aria-label="Thao tác khác cho bài học" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1 transition shadow-2xs" title="Thao tác khác">
+              <svg class="w-4 h-4"><use href="#icon-more-vertical"></use></svg>
             </button>
-            <button data-width-opt="wide" class="width-tab px-2 py-1 rounded text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#1A1A1A] dark:hover:text-[#ECEEF2] transition font-medium">
-              Rộng
-            </button>
-            <button data-width-opt="full" class="width-tab px-2 py-1 rounded bg-white dark:bg-[#262C36] text-[#4F46E5] dark:text-[#818CF8] shadow-sm font-semibold transition">
-              Toàn màn
-            </button>
+
+            <!-- Dropdown Menu Thao Tác Khác -->
+            <div id="readerMoreMenuDropdown" class="hidden absolute right-0 top-full mt-1.5 z-40 w-52 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-1 text-xs space-y-0.5">
+              <button id="btnShareCurrentLesson" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
+                <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-share-2"></use></svg>
+                <span>Chia sẻ link (7 ngày)</span>
+              </button>
+
+              <button id="btnRenameCurrent" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
+                <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-pencil"></use></svg>
+                <span>Đổi tên bài học</span>
+              </button>
+
+              <button id="btnPrintCurrent" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
+                <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-printer"></use></svg>
+                <span>In / Xuất PDF</span>
+              </button>
+
+              <div class="border-t border-[#E7E5DF] dark:border-[#262C36] my-1"></div>
+
+              <label class="flex items-center justify-between px-3 py-1.5 cursor-pointer text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-[11px]" title="Bật: giữ nguyên màu sắc gốc của file">
+                <span>Giữ màu sắc gốc</span>
+                <input type="checkbox" id="togglePreserveOriginalTheme" checked class="rounded text-indigo-600 focus:ring-0">
+              </label>
+            </div>
           </div>
 
-          <button id="btnToggleLearned" class="touch-target px-2.5 py-1.5 rounded-card border border-[#E6E6E1] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] flex items-center gap-1.5 transition" title="Đánh dấu đã học bài">
-            <i data-lucide="check-circle-2" class="w-3.5 h-3.5" id="learnedIcon"></i>
-            <span class="hidden md:inline" id="learnedLabel">Đã học</span>
-          </button>
-
-          <button id="btnToggleFavorite" class="touch-target p-2 rounded-card border border-[#E6E6E1] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] flex items-center gap-1 transition" title="Đánh dấu yêu thích">
-            <i data-lucide="star" class="w-4 h-4" id="favIcon"></i>
-          </button>
-
-          <!-- NÚT CHIA SẺ BÀI ĐANG ĐỌC -->
-          <button id="btnShareCurrentLesson" class="touch-target px-2.5 py-1.5 rounded-card bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] border border-indigo-200 dark:border-indigo-800 flex items-center gap-1 font-medium transition" title="Tạo link chia sẻ 7 ngày">
-            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-            <span class="hidden md:inline">Chia sẻ link</span>
-          </button>
-
-          <button id="btnRenameCurrent" class="hidden sm:flex touch-target px-2 py-1.5 rounded-card border border-[#E6E6E1] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] items-center gap-1 transition" title="Đổi tên hiển thị">
-            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-            <span class="hidden lg:inline">Đổi tên</span>
-          </button>
-
-          <button id="btnPrintCurrent" class="hidden sm:flex touch-target px-2 py-1.5 rounded-card border border-[#E6E6E1] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] items-center gap-1 transition" title="In hoặc xuất PDF bài này">
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-          </button>
-
-          <label class="hidden xl:flex items-center gap-1 text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] px-2 py-1 rounded cursor-pointer" title="Bật: giữ nguyên 100% màu sắc và phong cách gốc của file.">
-            <input type="checkbox" id="togglePreserveOriginalTheme" checked class="rounded text-[#4F46E5] focus:ring-0">
-            <span>Giữ màu gốc</span>
-          </label>
         </div>
       </div>
 
-      <!-- THANH TRƯỢT TIẾN ĐỘ BÀI HỌC -->
-      <div class="px-3 sm:px-8 pt-2 pb-1 border-b border-[#E6E6E1]/60 dark:border-[#262C36]/60">
+      <!-- THANH TRƯỢT TIẾN ĐỘ BÀI HỌC (SLIM TRACK) -->
+      <div class="px-3 sm:px-8 pt-2 pb-1 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60">
         <div class="flex items-center gap-3">
-          <span class="text-[11px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] whitespace-nowrap">Tiến độ:</span>
+          <span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] whitespace-nowrap">Tiến độ bài:</span>
           <input 
             type="range" 
             id="lessonSlider" 
             min="0" 
             max="0" 
             value="0" 
-            class="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer"
+            class="w-full h-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
             title="Kéo để nhảy nhanh đến bài"
           />
-          <span id="sliderValueTooltip" class="text-[11px] font-medium text-[#4F46E5] dark:text-[#818CF8] whitespace-nowrap min-w-[45px] text-right">0/0</span>
+          <span id="sliderValueTooltip" class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 whitespace-nowrap min-w-[45px] text-right font-mono">0/0</span>
         </div>
       </div>
 
-      <!-- THANH TÌM KIẾM TRONG BÀI NÀY (IN-ARTICLE SEARCH) -->
+      <!-- THANH TÌM KIẾM TRONG BÀI (IN-ARTICLE SEARCH) -->
       <div id="inArticleSearchBar" class="hidden bg-[#FEF3C7]/60 dark:bg-[#78350F]/40 px-3 sm:px-8 py-2 border-b border-amber-200 dark:border-amber-800/50 flex items-center justify-between text-xs">
         <div class="flex items-center gap-2 flex-1 min-w-0">
-          <i data-lucide="search" class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0"></i>
+          <svg class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0"><use href="#icon-search"></use></svg>
           <span class="text-amber-800 dark:text-amber-200 font-medium hidden sm:inline">Tìm trong bài:</span>
           <span id="inArticleKeyword" class="font-semibold text-amber-900 dark:text-amber-100 truncate"></span>
-          <span id="inArticleCount" class="text-amber-700 dark:text-amber-400 text-[11px] shrink-0">(0/0)</span>
+          <span id="inArticleCount" class="text-amber-700 dark:text-amber-400 text-[11px] shrink-0 font-mono">(0/0)</span>
         </div>
         <div class="flex items-center gap-1 shrink-0">
           <button id="btnPrevMatch" class="touch-target p-1 rounded hover:bg-amber-200 text-amber-900" title="Khớp trước">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
           </button>
           <button id="btnNextMatch" class="touch-target p-1 rounded hover:bg-amber-200 text-amber-900" title="Khớp sau">
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <svg class="w-4 h-4"><use href="#icon-chevron-right"></use></svg>
           </button>
           <button id="btnCloseInArticleSearch" class="touch-target p-1 rounded hover:bg-amber-200 text-amber-900 ml-1" title="Đóng">
-            <i data-lucide="x" class="w-4 h-4"></i>
+            <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
           </button>
         </div>
       </div>
@@ -774,114 +983,123 @@
       <div id="readingContainerWrapper" class="w-full flex-1 flex flex-col items-center">
         <div id="readingContentContainer" class="w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col transition-all duration-150">
           
-          <!-- MÀN HÌNH TRỐNG KHI VÀO WEB (TỐI ƯU KHÔNG BỊ THANH SAFARI CHE) -->
+          <!-- // REDESIGN: MÀN HÌNH TRỐNG (EDITORIAL EMPTY STATE VỚI MINH HỌA SÁCH THANH NHÃ) -->
           <div id="emptyLessonState" class="flex-1 flex flex-col items-center justify-center p-6 text-center my-auto min-h-[420px]">
-            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-[18px] sm:rounded-[20px] bg-[#8696FB]/15 text-[#4F46E5] dark:text-[#818CF8] flex items-center justify-center mb-4 shadow-sm">
-              <i data-lucide="book-open" class="w-8 h-8 sm:w-10 sm:h-10"></i>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4 shadow-xs border border-indigo-100 dark:border-indigo-900/40">
+              <svg class="w-8 h-8 sm:w-10 sm:h-10"><use href="#icon-book-open"></use></svg>
             </div>
-            <h2 class="text-lg sm:text-xl font-bold font-reading text-[#1A1A1A] dark:text-[#ECEEF2] mb-2">Thư viện của bạn đang trống</h2>
-            <p class="text-xs sm:text-sm text-[#6B6B66] dark:text-[#9AA3B2] max-w-sm mb-6 leading-relaxed">
-              Tải lên các file bài học HTML để lưu vào thư viện cá nhân, hoặc dùng <strong>Tạo link nhanh</strong> để chia sẻ trực tiếp (lưu 7 ngày).
+            <h2 class="text-xl sm:text-2xl font-serif font-bold text-[#1C1917] dark:text-[#EDECE8] mb-2 tracking-tight">Thư viện của bạn đang trống</h2>
+            <p class="text-xs sm:text-sm text-[#6E6B65] dark:text-[#979DA8] max-w-sm mb-6 leading-relaxed font-serif">
+              Tải lên các file bài học HTML để lưu vào thư viện ôn tập chuyên sâu, hoặc dùng <strong>Tạo link nhanh</strong> để xem trực tiếp (lưu 7 ngày).
             </p>
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-xs">
-              <button id="btnEmptyAddLesson" class="touch-target px-4 py-2.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm w-full">
-                <i data-lucide="upload" class="w-4 h-4"></i>
+              <button id="btnEmptyAddLesson" class="touch-target px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 shadow-xs w-full">
+                <svg class="w-4 h-4"><use href="#icon-upload"></use></svg>
                 <span>Tải file vào Thư viện</span>
               </button>
-              <button id="btnEmptyQuickShare" class="touch-target px-4 py-2.5 rounded-card border border-indigo-300 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 w-full">
-                <i data-lucide="link" class="w-4 h-4"></i>
+              <button id="btnEmptyQuickShare" class="touch-target px-4 py-2.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 w-full">
+                <svg class="w-4 h-4"><use href="#icon-link"></use></svg>
                 <span>Tạo link chia sẻ 7 ngày</span>
               </button>
             </div>
           </div>
 
-          <!-- PHẦN HIỂN THỊ NỘI DUNG KHI ĐÃ CÓ BÀI HỌC -->
+          <!-- // REDESIGN: KHU VỰC BÀI ĐỌC CHÍNH (TIÊU ĐỀ SERIF LỚN + META + KHỐI GHI CHÚ CALLOUT) -->
           <div id="activeLessonContentBox" class="hidden flex-1 flex flex-col w-full">
-            <div class="mb-3 sm:mb-4">
-              <div class="flex items-start justify-between gap-2 group">
+            
+            <!-- Tiêu đề lớn & Meta row -->
+            <div class="mb-4 sm:mb-6">
+              <div class="flex items-start justify-between gap-3 group">
                 <h1 
                   id="displayLessonTitle" 
-                  class="text-xl sm:text-2xl md:text-3xl font-bold font-reading tracking-tight text-[#1A1A1A] dark:text-[#ECEEF2] hover:text-[#4F46E5] cursor-pointer transition select-text leading-snug break-words"
+                  class="text-2xl sm:text-3xl md:text-4xl font-serif font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] hover:text-indigo-600 cursor-pointer transition select-text leading-tight break-words"
                   title="Nhấp đúp hoặc bấm icon bút để đổi tên"
                 >
                   Tiêu đề bài học
                 </h1>
-                <button id="btnInlineRename" class="opacity-60 md:opacity-0 group-hover:opacity-100 touch-target p-1.5 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 transition shrink-0" title="Đổi tên hiển thị">
-                  <i data-lucide="pencil" class="w-4 h-4"></i>
+                <button id="btnInlineRename" class="opacity-60 hover:opacity-100 touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đổi tên hiển thị">
+                  <svg class="w-4 h-4"><use href="#icon-pencil"></use></svg>
                 </button>
               </div>
 
-              <div class="flex items-center gap-1.5 text-xs text-[#6B6B66] dark:text-[#9AA3B2] mt-1">
-                <i data-lucide="file-text" class="w-3.5 h-3.5 shrink-0"></i>
-                <span>File:</span>
-                <span id="originalFileNameTag" class="font-mono text-[11px] opacity-80 truncate">lesson.html</span>
+              <!-- Hàng Meta thông tin: file tag, trạng thái, thời gian -->
+              <div class="flex flex-wrap items-center gap-2 text-xs text-[#6E6B65] dark:text-[#979DA8] mt-2">
+                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px]">
+                  <svg class="w-3 h-3"><use href="#icon-file-text"></use></svg>
+                  <span id="originalFileNameTag" class="truncate max-w-[200px]">lesson.html</span>
+                </div>
+                <span class="text-gray-300 dark:text-gray-700">•</span>
+                <span class="text-[11px]">Định dạng HTML thuần</span>
               </div>
             </div>
 
-            <!-- Khối mô tả & câu hỏi trọng tâm -->
-            <div id="descriptionBox" class="mb-4 bg-[#F7F7F5] dark:bg-[#161A20] border-l-4 border-[#4F46E5] dark:border-[#818CF8] rounded-r-card p-3 sm:p-4 transition-all">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="text-xs font-semibold uppercase tracking-wider text-[#4F46E5] dark:text-[#818CF8]">Mô tả & Câu hỏi trọng tâm</span>
-                <button id="btnEditDescription" class="text-xs text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#4F46E5] flex items-center gap-1 transition py-1">
-                  <i data-lucide="pencil" class="w-3 h-3"></i>
-                  <span>Sửa</span>
+            <!-- // REDESIGN: KHỐI GHI CHÚ & CÂU HỎI TRỌNG TÂM (EDITORIAL CALLOUT VỚI NÚT SỬA NỔI BẬT) -->
+            <div id="descriptionBox" class="mb-6 bg-[#FAF9F5] dark:bg-[#16191F] border border-[#E7E5DF] dark:border-[#262C36] border-l-4 border-l-indigo-600 dark:border-l-indigo-400 rounded-r-xl rounded-l-md p-4 sm:p-5 transition-all shadow-2xs">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-book-open"></use></svg>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">Ghi chú &amp; Câu hỏi trọng tâm</span>
+                </div>
+                <button id="btnEditDescription" class="touch-target px-2.5 py-1 rounded-md bg-white dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-xs font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1 shadow-2xs transition">
+                  <svg class="w-3 h-3"><use href="#icon-pencil"></use></svg>
+                  <span>Sửa ghi chú</span>
                 </button>
               </div>
               
               <div id="descriptionContentWrapper" class="relative">
-                <p id="descriptionText" class="font-reading text-sm sm:text-base text-[#1A1A1A] dark:text-[#ECEEF2] leading-relaxed whitespace-pre-line line-clamp-3 transition-all">
-                  Chưa có mô tả cho bài học này.
+                <p id="descriptionText" class="font-serif text-sm sm:text-[15px] text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line line-clamp-3 transition-all">
+                  Chưa có mô tả cho bài học này. Nhấp vào đây để thêm câu hỏi ôn tập hoặc ghi chú.
                 </p>
-                <button id="btnToggleDescExpand" class="hidden text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] mt-2 hover:underline">
+                <button id="btnToggleDescExpand" class="hidden text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-2 hover:underline">
                   Xem thêm
                 </button>
               </div>
 
-              <div id="descriptionEditor" class="hidden mt-2">
+              <div id="descriptionEditor" class="hidden mt-3">
                 <textarea 
                   id="descriptionTextarea" 
                   rows="4" 
                   maxlength="2000" 
-                  class="w-full text-sm font-reading p-3 rounded-card bg-white dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-[#4F46E5] leading-relaxed" 
+                  class="w-full text-sm font-serif p-3 rounded-lg bg-white dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 leading-relaxed focus:ring-1 focus:ring-indigo-500" 
                   placeholder="Nhập mô tả hoặc câu hỏi ôn tập..."
                 ></textarea>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2 text-xs">
-                  <span class="text-[#6B6B66] dark:text-[#9AA3B2] hidden sm:inline">Ctrl + Enter để lưu, Esc để hủy</span>
+                  <span class="text-[#6E6B65] dark:text-[#979DA8] hidden sm:inline">Phím tắt: Ctrl + Enter để lưu, Esc để hủy</span>
                   <div class="flex items-center gap-2 self-end sm:self-auto">
-                    <button id="btnCancelDesc" class="px-3 py-1.5 rounded-card border border-[#E6E6E1] dark:border-[#262C36] text-[#6B6B66]">Hủy</button>
-                    <button id="btnSaveDesc" class="px-3 py-1.5 rounded-card bg-[#4F46E5] text-white font-medium hover:opacity-90">Lưu mô tả</button>
+                    <button id="btnCancelDesc" class="px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
+                    <button id="btnSaveDesc" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-2xs transition">Lưu ghi chú</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Khung Iframe hiển thị file HTML (Bao phủ 100% width, không tràn ngang) -->
-            <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-card">
+            <!-- Khung Iframe hiển thị file HTML -->
+            <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-xl border border-[#E7E5DF]/50 dark:border-[#262C36]/50">
               <div id="iframeLoadingSkeleton" class="absolute inset-0 bg-transparent flex flex-col items-center justify-center gap-3 z-10 hidden">
-                <div class="w-8 h-8 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin"></div>
-                <span class="text-xs text-[#6B6B66] dark:text-[#9AA3B2]">Đang tải nội dung...</span>
+                <div class="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-xs text-[#6E6B65] dark:text-[#979DA8]">Đang tải nội dung...</span>
               </div>
 
               <iframe 
                 id="lessonIframe" 
                 sandbox="allow-scripts allow-same-origin allow-popups" 
-                scrolling="no"
+                scrolling="no" 
                 class="w-full border-0 transition-opacity duration-150 block" 
-                style="min-height: 400px; background-color: transparent;"
+                style="min-height: 400px; background-color: transparent;" 
                 title="Nội dung bài học HTML"
               ></iframe>
             </div>
 
-            <!-- Chân trang chuyển bài trên desktop/nội dung -->
-            <div class="mt-8 pt-4 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between">
-              <button id="btnBottomPrev" class="touch-target px-4 py-2 rounded-card border border-[#E6E6E1] dark:border-[#262C36] text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            <!-- Chân trang chuyển bài -->
+            <div class="mt-8 pt-4 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+              <button id="btnBottomPrev" class="touch-target px-4 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shadow-2xs">
+                <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
                 <span>Bài trước</span>
               </button>
-              <span class="text-xs text-[#6B6B66] dark:text-[#9AA3B2] hidden sm:inline">Dùng phím mũi tên ← và → để đổi bài</span>
-              <button id="btnBottomNext" class="touch-target px-4 py-2 rounded-card bg-[#4F46E5] text-white text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shadow-sm">
+              <span class="text-xs text-[#6E6B65] dark:text-[#979DA8] hidden sm:inline">Dùng phím mũi tên ← và → để đổi bài</span>
+              <button id="btnBottomNext" class="touch-target px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shadow-xs">
                 <span>Bài tiếp</span>
-                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <svg class="w-4 h-4"><use href="#icon-chevron-right"></use></svg>
               </button>
             </div>
           </div>
@@ -892,63 +1110,62 @@
 
   </div>
 
-  <!-- BOTTOM BAR CỐ ĐỊNH DÀNH RIÊNG CHO MOBILE (KHÔNG BỊ THANH ĐIỀU HƯỚNG SAFARI CHE) -->
-  <nav id="mobileBottomBar" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#161A20]/95 border-t border-[#E6E6E1] dark:border-[#262C36] backdrop-blur-md px-3 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-lg">
-    <button id="mbBtnPrev" class="touch-target flex flex-col items-center justify-center text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#4F46E5] active:scale-95 transition" aria-label="Bài trước">
-      <i data-lucide="chevron-left" class="w-5 h-5"></i>
+  <!-- BOTTOM BAR CỐ ĐỊNH CHO MOBILE -->
+  <nav id="mobileBottomBar" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-3 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-lg">
+    <button id="mbBtnPrev" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Bài trước">
+      <svg class="w-5 h-5"><use href="#icon-chevron-left"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Trước</span>
     </button>
-    <button id="mbBtnToc" class="touch-target flex flex-col items-center justify-center text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#4F46E5] active:scale-95 transition" aria-label="Mục lục bài học">
-      <i data-lucide="list" class="w-5 h-5"></i>
+    <button id="mbBtnToc" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Mục lục bài học">
+      <svg class="w-5 h-5"><use href="#icon-list"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Mục lục</span>
     </button>
-    <button id="mbBtnSearch" class="touch-target flex flex-col items-center justify-center text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#4F46E5] active:scale-95 transition" aria-label="Tìm kiếm">
-      <i data-lucide="search" class="w-5 h-5"></i>
+    <button id="mbBtnSearch" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Tìm kiếm">
+      <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Tìm kiếm</span>
     </button>
-    <button id="mbBtnShare" class="touch-target flex flex-col items-center justify-center text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#4F46E5] active:scale-95 transition" aria-label="Chia sẻ link">
-      <i data-lucide="share-2" class="w-5 h-5"></i>
+    <button id="mbBtnShare" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Chia sẻ link">
+      <svg class="w-5 h-5"><use href="#icon-share-2"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Chia sẻ</span>
     </button>
-    <button id="mbBtnNext" class="touch-target flex flex-col items-center justify-center text-[#4F46E5] dark:text-[#818CF8] hover:text-indigo-700 active:scale-95 transition font-semibold" aria-label="Bài tiếp">
-      <i data-lucide="chevron-right" class="w-5 h-5"></i>
+    <button id="mbBtnNext" class="touch-target flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 active:scale-95 transition font-semibold" aria-label="Bài tiếp">
+      <svg class="w-5 h-5"><use href="#icon-chevron-right"></use></svg>
       <span class="text-[10px] mt-0.5">Tiếp</span>
     </button>
   </nav>
 
   <!-- THANH CÔNG CỤ NỔI KHI ĐỌC TOÀN MÀN HÌNH -->
-  <div id="fullscreenFloatingBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#161A20]/95 backdrop-blur-md text-white border border-white/10 px-4 py-2 rounded-pill shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+  <div id="fullscreenFloatingBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#181B20]/95 backdrop-blur-md text-white border border-white/10 px-4 py-2 rounded-pill shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
     <button id="fsBtnPrev" class="p-1.5 rounded-full hover:bg-white/10 text-white transition" title="Bài trước">
-      <i data-lucide="chevron-left" class="w-4 h-4"></i>
+      <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
     </button>
     <span id="fsLessonNumber" class="text-xs font-semibold whitespace-nowrap">Bài 0 / 0</span>
     <input type="range" id="fsSlider" min="0" max="0" value="0" class="w-20 md:w-36 h-1 bg-white/20 rounded cursor-pointer" />
     <button id="fsBtnNext" class="p-1.5 rounded-full hover:bg-white/10 text-white transition" title="Bài sau">
-      <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <svg class="w-4 h-4"><use href="#icon-chevron-right"></use></svg>
     </button>
     <div class="w-[1px] h-4 bg-white/20"></div>
-    <button id="fsBtnFontDec" class="px-1 text-xs font-bold hover:text-indigo-400" title="Giảm cỡ chữ">A-</button>
+    <button id="fsBtnFontDec" class="px-1 text-xs font-bold hover:text-indigo-300" title="Giảm cỡ chữ">A-</button>
     <span id="fsFontScaleDisplay" class="text-[10px] font-semibold text-indigo-300 select-none">100%</span>
-    <button id="fsBtnFontInc" class="px-1 text-xs font-bold hover:text-indigo-400" title="Tăng cỡ chữ">A+</button>
+    <button id="fsBtnFontInc" class="px-1 text-xs font-bold hover:text-indigo-300" title="Tăng cỡ chữ">A+</button>
     <div class="w-[1px] h-4 bg-white/20"></div>
     <button id="fsBtnThemeToggle" class="p-1 rounded hover:bg-white/10 text-white" title="Chuyển chế độ">
-      <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+      <svg class="w-3.5 h-3.5"><use href="#icon-moon"></use></svg>
     </button>
     <div class="w-[1px] h-4 bg-white/20"></div>
     <button id="fsBtnExit" class="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-1 text-xs" title="Thoát toàn màn hình (Esc)">
-      <i data-lucide="minimize-2" class="w-3.5 h-3.5"></i>
+      <svg class="w-3.5 h-3.5"><use href="#icon-minimize-2"></use></svg>
       <span class="hidden sm:inline">Thoát</span>
     </button>
   </div>
-
-  <!-- MODAL / BOTTOM SHEET MENU TÀI KHOẢN (FIX: Tách khỏi header để không bị backdrop-blur tạo containing block làm cắt menu trên iOS) -->
+<!-- MODAL / BOTTOM SHEET MENU TÀI KHOẢN (FIX: Tách khỏi header để không bị backdrop-blur tạo containing block làm cắt menu trên iOS) -->
   <div id="userDropdownBackdrop" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity"></div>
   <div id="userDropdown" class="hidden fixed bottom-0 md:bottom-auto md:top-14 right-0 md:right-4 left-0 md:left-auto z-[65] w-full md:w-72 max-h-[85dvh] overflow-y-auto overscroll-contain bg-white dark:bg-[#161A20] border-t md:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl md:rounded-card shadow-2xl p-4 md:p-3 text-xs pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] md:pb-3" style="-webkit-overflow-scrolling: touch;">
     <!-- Handle bar & Header cho Bottom sheet trên mobile -->
     <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E6E6E1] dark:border-[#262C36] md:hidden">
       <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto"></div>
       <button id="btnCloseUserMenuMobile" class="touch-target p-1 text-[#6B6B66] dark:text-[#9AA3B2] absolute right-3 top-2.5" aria-label="Đóng menu tài khoản">
-        <i data-lucide="x" class="w-5 h-5"></i>
+        <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
       </button>
     </div>
 
@@ -964,7 +1181,7 @@
 
     <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
     <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-2">
-      <i data-lucide="link" class="w-4 h-4"></i>
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-link"></use></svg>
       <span>Tạo link chia sẻ 7 ngày</span>
     </button>
 
@@ -989,24 +1206,24 @@
 
     <!-- Nút đổi tài khoản (chỉ hiện khi đã đăng nhập) -->
     <button id="btnSwitchAccount" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <i data-lucide="log-in" class="w-4 h-4 text-[#4F46E5] dark:text-[#818CF8]"></i>
+      <svg class="w-4 h-4 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-log-in"></use></svg>
       <span id="btnSwitchAccountLabel">Đăng nhập tài khoản khác</span>
     </button>
 
     <!-- Cài đặt app PWA trên mobile -->
     <button id="btnMenuPwaInstall" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <i data-lucide="download" class="w-4 h-4"></i>
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-download"></use></svg>
       <span>Cài app lên màn hình chính</span>
     </button>
 
     <div class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
 
     <button id="btnExportData" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <i data-lucide="download" class="w-4 h-4"></i>
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-download"></use></svg>
       <span>Xuất sao lưu (.json)</span>
     </button>
     <label class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <i data-lucide="upload" class="w-4 h-4"></i>
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-upload"></use></svg>
       <span>Nhập sao lưu (.json)</span>
       <input type="file" id="importBackupInput" accept=".json" class="hidden" />
     </label>
@@ -1015,7 +1232,7 @@
 
     <!-- Nút Đăng xuất (FIX: Ẩn khi ở chế độ Khách, chỉ hiện khi đã đăng nhập) -->
     <button id="btnLogout" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-card text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
-      <i data-lucide="log-out" class="w-4 h-4"></i>
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-log-out"></use></svg>
       <span>Đăng xuất</span>
     </button>
   </div>
@@ -1026,7 +1243,7 @@
       <div class="flex items-center justify-between pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-card bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-[#818CF8] flex items-center justify-center">
-            <i data-lucide="share-2" class="w-4 h-4"></i>
+            <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-share-2"></use></svg>
           </div>
           <div>
             <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">Tạo link xem trực tiếp (7 ngày)</h3>
@@ -1034,7 +1251,7 @@
           </div>
         </div>
         <button id="btnCloseShareModal" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5" aria-label="Đóng modal">
-          <i data-lucide="x" class="w-5 h-5"></i>
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -1043,7 +1260,7 @@
           <label class="block text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Chọn file HTML muốn tạo link:</label>
           <div id="shareDropZone" class="border-2 border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] rounded-card p-4 text-center cursor-pointer bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50 transition">
             <input type="file" id="shareFileInput" accept=".html,.htm" class="hidden" />
-            <i data-lucide="upload-cloud" class="w-6 h-6 mx-auto mb-1 text-[#4F46E5] dark:text-[#818CF8]"></i>
+            <svg class="w-6 h-6 mx-auto mb-1 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-upload-cloud"></use></svg>
             <p class="text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2]" id="shareFileLabel">Bấm để chọn file HTML hoặc kéo thả vào đây</p>
           </div>
         </div>
@@ -1060,7 +1277,7 @@
                 placeholder="Đang tạo link chia sẻ..."
               />
               <button id="btnCopyShareUrl" class="touch-target px-3.5 py-2 rounded-card bg-[#4F46E5] text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 shadow-sm">
-                <i data-lucide="copy" class="w-3.5 h-3.5" id="copyIcon"></i>
+                <svg class="w-3.5 h-3.5" id="copyIcon" aria-hidden="true"><use href="#icon-copy"></use></svg>
                 <span id="copyBtnLabel">Sao chép</span>
               </button>
             </div>
@@ -1068,11 +1285,11 @@
 
           <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-card text-emerald-800 dark:text-emerald-300 text-xs space-y-1.5 leading-relaxed">
             <div class="flex items-start gap-2">
-              <i data-lucide="clock" class="w-4 h-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400"></i>
+              <svg class="w-4 h-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true"><use href="#icon-clock"></use></svg>
               <p><strong>Thời hạn lưu trữ: 7 ngày (1 tuần)</strong>. Sau 1 tuần, file chia sẻ sẽ tự động xóa sạch để giải phóng bộ nhớ.</p>
             </div>
             <div class="flex items-start gap-2 pt-1 border-t border-emerald-200/60 dark:border-emerald-800/40">
-              <i data-lucide="send" class="w-4 h-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400"></i>
+              <svg class="w-4 h-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true"><use href="#icon-send"></use></svg>
               <p>Bạn có thể gửi link này qua Zalo, Messenger, Email... Người nhận nhấp vào là xem được ngay trên điện thoại và máy tính.</p>
             </div>
           </div>
@@ -1083,7 +1300,7 @@
         <span class="text-[#6B6B66] dark:text-[#9AA3B2] truncate mr-2" id="shareStatusNote">Sẵn sàng</span>
         <button id="btnTestOpenShareUrl" class="text-[#4F46E5] dark:text-[#818CF8] font-medium hover:underline flex items-center gap-1 shrink-0 py-1">
           <span>Xem thử</span>
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#icon-external-link"></use></svg>
         </button>
       </div>
     </div>
@@ -1095,7 +1312,7 @@
       <div class="p-4 sm:p-5 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-card bg-[#4F46E5] text-white flex items-center justify-center">
-            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
           </div>
           <div>
             <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]" id="authModalTitle">Tài khoản Thư viện</h3>
@@ -1103,7 +1320,7 @@
           </div>
         </div>
         <button id="btnCloseAuthModal" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2]" aria-label="Đóng modal">
-          <i data-lucide="x" class="w-5 h-5"></i>
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -1120,14 +1337,14 @@
 
       <form id="authForm" class="p-4 sm:p-5 space-y-3 overflow-y-auto flex-1">
         <div id="authErrorMessage" class="hidden p-2.5 rounded-card bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-300 text-xs flex items-center gap-2">
-          <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+          <svg class="w-4 h-4 shrink-0" aria-hidden="true"><use href="#icon-alert-circle"></use></svg>
           <span id="authErrorText">Đã có lỗi xảy ra.</span>
         </div>
 
         <div id="authNameGroup" class="hidden">
           <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Họ và tên</label>
           <div class="relative">
-            <i data-lucide="user" class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]"></i>
+            <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-user"></use></svg>
             <input 
               id="authNameInput" 
               type="text" 
@@ -1140,7 +1357,7 @@
         <div>
           <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Địa chỉ Email</label>
           <div class="relative">
-            <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]"></i>
+            <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-mail"></use></svg>
             <input 
               id="authEmailInput" 
               type="email" 
@@ -1159,7 +1376,7 @@
             </button>
           </div>
           <div class="relative">
-            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]"></i>
+            <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-lock"></use></svg>
             <input 
               id="authPasswordInput" 
               type="password" 
@@ -1173,7 +1390,7 @@
         <div id="authConfirmPasswordGroup" class="hidden">
           <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Xác nhận mật khẩu</label>
           <div class="relative">
-            <i data-lucide="check-check" class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]"></i>
+            <svg class="w-4 h-4 absolute left-3 top-3 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-check-check"></use></svg>
             <input 
               id="authConfirmPasswordInput" 
               type="password" 
@@ -1228,18 +1445,18 @@
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-2xl max-h-[85dvh] sm:max-h-[90dvh] overflow-y-auto overscroll-contain flex flex-col shadow-2xl pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="p-4 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
-          <i data-lucide="upload" class="w-5 h-5 text-[#4F46E5] dark:text-[#818CF8]"></i>
+          <svg class="w-5 h-5 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-upload"></use></svg>
           <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">Thêm bài học HTML vào thư viện</h3>
         </div>
         <button id="btnCloseUploadModal" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2]" aria-label="Đóng modal">
-          <i data-lucide="x" class="w-5 h-5"></i>
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
       <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4">
         <div id="dropZone" class="border-2 border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] rounded-card p-5 sm:p-6 text-center cursor-pointer transition bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50">
           <input type="file" id="htmlFilesInput" multiple accept=".html,.htm" class="hidden" />
-          <i data-lucide="file-plus" class="w-8 h-8 mx-auto mb-2 text-[#6B6B66] dark:text-[#9AA3B2]"></i>
+          <svg class="w-8 h-8 mx-auto mb-2 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-file-plus"></use></svg>
           <p class="text-xs sm:text-sm font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Chạm vào đây để chọn file .html hoặc kéo thả</p>
           <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-1">Hỗ trợ chọn nhiều file cùng lúc</p>
         </div>
@@ -1292,7 +1509,7 @@
       
       <div class="flex items-center justify-between text-xs mb-4">
         <button id="btnRestoreOriginalName" class="text-[#4F46E5] dark:text-[#818CF8] hover:underline flex items-center gap-1 py-1">
-          <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+          <svg class="w-3 h-3" aria-hidden="true"><use href="#icon-rotate-ccw"></use></svg>
           <span>Tên file gốc</span>
         </button>
         <span id="renameCharCounter" class="text-[#6B6B66] dark:text-[#9AA3B2]">0/300</span>
@@ -1309,7 +1526,7 @@
   <div id="confirmDeleteModal" class="modal-animated fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center" style="-webkit-overflow-scrolling: touch;">
       <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3">
-        <i data-lucide="trash-2" class="w-6 h-6"></i>
+        <svg class="w-6 h-6" aria-hidden="true"><use href="#icon-trash-2"></use></svg>
       </div>
       <h3 id="confirmDeleteTitle" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Xác nhận xóa?</h3>
       <p id="confirmDeleteMsg" class="text-xs text-[#6B6B66] dark:text-[#9AA3B2] mb-5">Hành động này sẽ xóa dữ liệu vĩnh viễn.</p>
@@ -1324,14 +1541,14 @@
   <div id="pwaIosModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <div class="w-12 h-12 rounded-[14px] bg-[#8696FB] text-white flex items-center justify-center mx-auto mb-3 shadow-md">
-        <i data-lucide="book-open" class="w-6 h-6"></i>
+        <svg class="w-6 h-6" aria-hidden="true"><use href="#icon-book-open"></use></svg>
       </div>
       <h3 class="text-sm font-bold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Cài Thư viện Sách lên iPhone</h3>
       <p class="text-xs text-[#6B6B66] dark:text-[#9AA3B2] mb-4">Để dùng mượt toàn màn hình như app tải từ App Store:</p>
       <div class="text-left text-xs bg-[#F7F7F5] dark:bg-[#0F1115] p-3 rounded-card border border-[#E6E6E1] dark:border-[#262C36] space-y-2 mb-4 text-[#1A1A1A] dark:text-[#ECEEF2]">
         <div class="flex items-center gap-2">
           <span class="w-5 h-5 rounded-full bg-[#4F46E5] text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
-          <span>Bấm biểu tượng <strong>Chia sẻ</strong> (<i data-lucide="share" class="inline w-3.5 h-3.5 text-[#4F46E5]"></i>) ở thanh dưới Safari</span>
+          <span>Bấm biểu tượng <strong>Chia sẻ</strong> (<svg class="inline w-3.5 h-3.5 text-[#4F46E5]" aria-hidden="true"><use href="#icon-share"></use></svg>) ở thanh dưới Safari</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-5 h-5 rounded-full bg-[#4F46E5] text-white flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
@@ -1465,11 +1682,37 @@
       transitionDirection: 0 // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp
     };
 
-    function refreshIcons() {
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+    // // REDESIGN: Bộ render icon SVG độc bản nội bộ (Thay thế hoàn toàn Lucide / Icon bên ngoài)
+    function refreshIcons(container = document) {
+      const root = container || document;
+      const elements = root.querySelectorAll('[data-lucide], [data-icon]');
+      elements.forEach(el => {
+        const iconName = el.getAttribute('data-icon') || el.getAttribute('data-lucide');
+        if (!iconName) return;
+        const classes = el.getAttribute('class') || 'w-4 h-4';
+        const idAttr = el.id ? `id="${el.id}"` : '';
+        const titleAttr = el.title ? `title="${el.title}"` : '';
+        const styleAttr = el.getAttribute('style') ? `style="${el.getAttribute('style')}"` : '';
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        if (el.id) svg.id = el.id;
+        svg.setAttribute('class', classes);
+        if (el.title) svg.setAttribute('title', el.title);
+        if (el.getAttribute('style')) svg.setAttribute('style', el.getAttribute('style'));
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '1.75');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        svg.setAttribute('aria-hidden', 'true');
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', `#icon-${iconName}`);
+        svg.appendChild(use);
+        el.parentNode?.replaceChild(svg, el);
+      });
     }
+    window.refreshIcons = refreshIcons;
+    window.lucide = { createIcons: refreshIcons };
 
     // // ANIM: Tiện ích hiệu ứng hiển thị & ẩn mượt mà cho Modal / Bottom Sheet
     function showModalAnimated(target) {
@@ -2217,7 +2460,7 @@
                     >
                       <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
                         ${lesson.isCompleted 
-                          ? '<i data-lucide="check-circle-2" class="w-4 h-4 text-[#16A34A]"></i>' 
+                          ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><use href="#icon-check-circle-2"></use></svg>' 
                           : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block"></span>'
                         }
                       </button>
@@ -2229,7 +2472,7 @@
                       </div>
 
                       <div class="flex items-center gap-1 shrink-0">
-                        ${lesson.isFavorite ? '<i data-lucide="star" class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]"></i>' : ''}
+                        ${lesson.isFavorite ? '<svg class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><use href="#icon-star"></use></svg>' : ''}
                         
                         <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
                           <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
@@ -2305,7 +2548,7 @@
                     >
                       <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
                         ${lesson.isCompleted 
-                          ? '<i data-lucide="check-circle-2" class="w-4 h-4 text-[#16A34A]"></i>' 
+                          ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><use href="#icon-check-circle-2"></use></svg>' 
                           : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block"></span>'
                         }
                       </button>
@@ -2317,7 +2560,7 @@
                       </div>
 
                       <div class="flex items-center gap-1 shrink-0">
-                        ${lesson.isFavorite ? '<i data-lucide="star" class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]"></i>' : ''}
+                        ${lesson.isFavorite ? '<svg class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><use href="#icon-star"></use></svg>' : ''}
                         
                         <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
                           <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
@@ -2521,12 +2764,15 @@
       }
 
       if (learnedIcon) {
+        const useEl = learnedIcon.querySelector('use');
         if (currentLesson.isCompleted) {
           learnedIcon.setAttribute('class', "w-4 h-4 text-[#16A34A] icon-pop-animated");
           learnedLabel.innerText = "Đã học xong";
+          if (useEl) useEl.setAttribute('href', '#icon-check-circle-2');
         } else {
           learnedIcon.setAttribute('class', "w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]");
           learnedLabel.innerText = "Đã học";
+          if (useEl) useEl.setAttribute('href', '#icon-circle');
         }
       }
 
@@ -4430,6 +4676,50 @@
       refreshIcons();
       registerPwaServiceWorker();
     });
+  
+    // // REDESIGN: Tương tác đóng/mở popover menu "Hiển thị" trên Header
+    const btnDisplaySettingsToggle = document.getElementById('btnDisplaySettingsToggle');
+    const displaySettingsPopover = document.getElementById('displaySettingsPopover');
+    const btnCloseDisplaySettings = document.getElementById('btnCloseDisplaySettings');
+
+    if (btnDisplaySettingsToggle && displaySettingsPopover) {
+      btnDisplaySettingsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        displaySettingsPopover.classList.toggle('hidden');
+        if (!displaySettingsPopover.classList.contains('hidden')) {
+          refreshIcons(displaySettingsPopover);
+        }
+      });
+      if (btnCloseDisplaySettings) {
+        btnCloseDisplaySettings.addEventListener('click', () => {
+          displaySettingsPopover.classList.add('hidden');
+        });
+      }
+      document.addEventListener('click', (e) => {
+        if (!displaySettingsPopover.contains(e.target) && !btnDisplaySettingsToggle.contains(e.target)) {
+          displaySettingsPopover.classList.add('hidden');
+        }
+      });
+    }
+
+    // // REDESIGN: Tương tác đóng/mở menu "Thêm" trên thanh công cụ bài đọc
+    const btnReaderMoreActions = document.getElementById('btnReaderMoreActions');
+    const readerMoreMenuDropdown = document.getElementById('readerMoreMenuDropdown');
+
+    if (btnReaderMoreActions && readerMoreMenuDropdown) {
+      btnReaderMoreActions.addEventListener('click', (e) => {
+        e.stopPropagation();
+        readerMoreMenuDropdown.classList.toggle('hidden');
+        if (!readerMoreMenuDropdown.classList.contains('hidden')) {
+          refreshIcons(readerMoreMenuDropdown);
+        }
+      });
+      document.addEventListener('click', (e) => {
+        if (!readerMoreMenuDropdown.contains(e.target) && !btnReaderMoreActions.contains(e.target)) {
+          readerMoreMenuDropdown.classList.add('hidden');
+        }
+      });
+    }
   </script>
 </body>
 </html>
