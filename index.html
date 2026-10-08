@@ -47,6 +47,32 @@
       document.getElementById('pwaManifestLink').setAttribute('href', manifestUrl);
     })();
 
+    // // FIX: Cơ chế Crash Watchdog tự báo lỗi nhẹ và hỗ trợ người dùng xóa cache thoát kẹt
+    window.__showAppCrashBanner = function(message) {
+      try {
+        const banner = document.getElementById('appCrashBanner');
+        if (banner) {
+          banner.classList.remove('hidden');
+          const desc = document.getElementById('appCrashDesc');
+          if (desc && message) desc.innerText = String(message).slice(0, 120);
+        }
+      } catch (_) {}
+    };
+
+    window.clearAppCacheAndReload = async function() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          for (const reg of regs) await reg.unregister();
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          for (const k of keys) await caches.delete(k);
+        }
+      } catch (_) {}
+      window.location.href = window.location.origin + window.location.pathname + '?nocache=' + Date.now();
+    };
+
     window.addEventListener('error', function (e) {
       var msg = e && (e.message || (e.error && e.error.message));
       if (typeof msg === 'string' && (msg.includes('ResizeObserver') || msg.includes('undelivered notifications'))) {
@@ -55,13 +81,19 @@
         if (e.preventDefault) e.preventDefault();
         return true;
       }
+      if (typeof msg === 'string' && !msg.includes('Script error')) {
+        console.error("Watchdog caught error:", msg);
+        window.__showAppCrashBanner(msg);
+      }
     }, true);
 
-    window.onerror = function (msg) {
-      if (typeof msg === 'string' && (msg.includes('ResizeObserver') || msg.includes('undelivered notifications'))) {
-        return true;
+    window.addEventListener('unhandledrejection', function (e) {
+      var msg = e.reason && (e.reason.message || e.reason);
+      if (msg && !String(msg).includes('ResizeObserver')) {
+        console.error("Watchdog caught rejection:", msg);
+        window.__showAppCrashBanner(String(msg));
       }
-    };
+    });
   </script>
   
   <!-- // REDESIGN: Phông chữ Google Fonts chuẩn Editorial: Source Serif 4 (Tiêu đề sách), Newsreader, Inter (Thân bài) -->
@@ -1058,6 +1090,19 @@
             <span>Cần ôn hôm nay</span>
           </div>
           <span id="sidebarReviewDueBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100">0 bài</span>
+        </div>
+      </div>
+
+      <!-- // FEATURE-7: Thanh hành động chọn nhiều (Batch action bar) -->
+      <div id="sidebarBatchActionBar" class="hidden mx-3 mt-2 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-between text-xs gap-1.5 shrink-0">
+        <span id="batchLessonCountText" class="font-semibold text-indigo-700 dark:text-indigo-300 text-[11px] truncate">Đã chọn 0 bài</span>
+        <div class="flex items-center gap-1 shrink-0">
+          <button id="btnBatchSelectAllLessons" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-[#181B20] text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition" title="Chọn tất cả">Tất cả</button>
+          <button id="btnBatchDeselectAllLessons" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-[#181B20] text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition" title="Bỏ chọn">Bỏ</button>
+          <button id="btnBatchMoveCat" class="p-1 rounded text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Chuyển mục"><svg class="w-3.5 h-3.5"><use href="#icon-folder"></use></svg></button>
+          <button id="btnBatchAssignTags" class="p-1 rounded text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Gắn nhãn"><svg class="w-3.5 h-3.5"><use href="#icon-tag"></use></svg></button>
+          <button id="btnBatchToggleLearned" class="p-1 rounded text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Đổi trạng thái đã học"><svg class="w-3.5 h-3.5"><use href="#icon-check-circle"></use></svg></button>
+          <button id="btnBatchDeleteLesson" class="p-1 rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Xóa vào thùng rác"><svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg></button>
         </div>
       </div>
 
@@ -2166,7 +2211,166 @@
       <button id="btnCloseIosModal" class="w-full touch-target py-2 rounded-card bg-[#4F46E5] text-white text-xs font-semibold hover:opacity-90 transition">
         Đã hiểu
       </button>
+  <!-- // FEATURE-6: Modal Quản lý nhãn (Tag Management) -->
+  <div id="tagManageModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 border border-[#E7E5DF] dark:border-[#262C36] shadow-xl max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div>
+          <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Quản lý nhãn bài học</h3>
+          <p id="tagManageLessonTitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] truncate max-w-[280px] mt-0.5"></p>
+        </div>
+        <button id="btnCloseTagManageModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+      
+      <div class="py-3 flex-1 overflow-y-auto space-y-4">
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8] block mb-2">Gắn nhãn cho bài</label>
+          <div id="lessonTagsCheckboxList" class="flex flex-wrap gap-1.5 min-h-[36px]"></div>
+        </div>
+
+        <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36]">
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8] block mb-2">Tất cả nhãn trong thư viện</label>
+          <div id="allTagsManageList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36]">
+          <label class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] block mb-1.5">Tạo nhãn mới</label>
+          <div class="flex gap-2">
+            <input type="text" id="newTagNameInput" placeholder="Tên nhãn mới..." maxlength="25" class="flex-1 px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-xs text-[#1C1917] dark:text-[#EDECE8] focus:outline-hidden focus:ring-1 focus:ring-indigo-500" />
+            <button id="btnCreateNewTag" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs transition">Tạo nhãn</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- // FEATURE-7: Modal Chuyển mục hàng loạt (Batch Move) -->
+  <div id="batchMoveCatModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-5 border border-[#E7E5DF] dark:border-[#262C36] shadow-xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Chuyển đến mục khác</h3>
+        <button id="btnCloseBatchMoveModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+      <div id="batchMoveCatOptions" class="py-3 max-h-60 overflow-y-auto space-y-1"></div>
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E7E5DF] dark:border-[#262C36]">
+        <button id="btnCancelBatchMove" class="px-3 py-1.5 rounded-lg text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
+        <button id="btnConfirmBatchMove" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs transition">Xác nhận chuyển</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-8: Modal Thùng rác (Trash Modal) -->
+  <div id="trashModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full max-w-xl rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[85vh] flex flex-col overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Thùng rác bài học</h3>
+            <p id="trashModalSubtitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">Tự động xóa vĩnh viễn sau 30 ngày</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="btnEmptyTrashAll" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition">Dọn sạch</button>
+          <button id="btnCloseTrashModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+            <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
+      </div>
+      <div id="trashItemsListContainer" class="p-4 flex-1 overflow-y-auto space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-9: Modal Bảng phím tắt (Keyboard Shortcuts Modal) -->
+  <div id="shortcutsModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full max-w-lg rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[85vh] flex flex-col overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-help-circle"></use></svg>
+          </div>
+          <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Bảng phím tắt thao tác nhanh</h3>
+        </div>
+        <button id="btnCloseShortcutsModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+      <div class="p-4 flex-1 overflow-y-auto space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Tìm kiếm toàn bài</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">Ctrl + K</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Bảng phím tắt này</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">?</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Bài học trước đó</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">← hoặc J</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Bài học tiếp theo</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">→ hoặc K</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Đánh dấu đã học</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">L</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Thêm yêu thích</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">S</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Đóng / Mở mục lục</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">T</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Toàn màn hình</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">F</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Xem tất cả ghi chú</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">G</kbd>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5">
+            <span class="text-[#1C1917] dark:text-[#EDECE8] font-medium">Học Flashcard</span>
+            <kbd class="px-2 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shadow-2xs">C</kbd>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FIX: Thanh thông báo lỗi khẩn cấp (Crash Watchdog Banner) -->
+  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[9999] max-w-md bg-stone-900/95 dark:bg-stone-950/95 text-white p-3.5 rounded-2xl shadow-2xl backdrop-blur-md border border-stone-700/60 flex items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+      <div class="min-w-0">
+        <p class="font-semibold text-stone-100">Có lỗi xảy ra, thử tải lại</p>
+        <p id="appCrashDesc" class="text-stone-300 text-[11px] truncate">Bạn có thể xóa bộ nhớ đệm để tải phiên bản ổn định nhất.</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5 shrink-0">
+      <button id="btnCrashReload" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition cursor-pointer text-[11px]">Tải lại</button>
+      <button id="btnCrashClearAndReload" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition cursor-pointer text-[11px] shadow-sm">Xóa cache & tải lại</button>
+      <button id="btnCrashDismiss" class="text-stone-400 hover:text-white p-1 cursor-pointer" title="Đóng">✕</button>
+    </div>
+  </div>
+
+  <!-- // FEATURE-11: Banner thông báo cập nhật bản mới -->
+  <div id="appUpdateBanner" class="hidden fixed bottom-4 left-4 z-[9998] max-w-sm bg-indigo-900/95 text-white p-3.5 rounded-2xl shadow-2xl backdrop-blur-md border border-indigo-700/60 flex items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-indigo-300 animate-ping shrink-0"></span>
+      <p class="font-medium text-[11px]">Đã có bản cập nhật mới cho Thư viện Sách.</p>
+    </div>
+    <button id="btnReloadAppUpdate" class="px-2.5 py-1.5 rounded-lg bg-white text-indigo-900 font-bold hover:bg-indigo-50 transition cursor-pointer text-[11px] shrink-0">Cập nhật ngay</button>
   </div>
 
   <div id="toastContainer" class="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -2342,8 +2546,7 @@
       unsubscribeLessons: null,
       useLocalFallback: false,
       isSharedMode: false,
-      sharedLessonData: null,
-      transitionDirection: 0 // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp,
+      transitionDirection: 0, // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp
       tags: [], // // FEATURE-6: Danh sách nhãn [{ id, name, color }]
       selectedTagIds: [], // // FEATURE-6: Bộ lọc nhãn đang chọn
       sortOrder: 'newest', // // FEATURE-6: Thứ tự sắp xếp ('newest' | 'recent' | 'unlearned' | 'name')
@@ -4133,189 +4336,6 @@
       }
     });
 
-
-    // =========================================================================
-    // // FEATURE-10: TÌM KIẾM TOÀN THƯ VIỆN CÓ TRÍCH ĐOẠN & KHÔNG DẤU TIẾNG VIỆT
-    // =========================================================================
-    let searchActiveIndex = -1;
-
-    function buildPlainTextFromHtml(html) {
-      if (!html) return '';
-      const div = document.createElement('div');
-      div.innerHTML = html;
-      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
-    }
-
-    // Nâng cấp hàm performSearch để tìm cả trong Title, Description, Content, Highlights & Notes
-    function performSearch(query, dropdownEl) {
-      if (!query || query.trim().length === 0) {
-        dropdownEl.classList.add('hidden');
-        dropdownEl.innerHTML = '';
-        searchActiveIndex = -1;
-        return;
-      }
-
-      const rawQ = query.trim();
-      const normQ = removeVietnameseTones(rawQ);
-      const matches = [];
-
-      state.lessons.forEach(lesson => {
-        const cat = state.categories.find(c => c.id === lesson.categoryId);
-        const catTitle = cat ? cat.title : 'Chưa phân loại';
-
-        const normTitle = removeVietnameseTones(lesson.title || '');
-        const normDesc = removeVietnameseTones(lesson.description || '');
-
-        // 1. Kiểm tra Tiêu đề
-        if (normTitle.includes(normQ)) {
-          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Tiêu đề', snippet: lesson.title, query: rawQ });
-        }
-
-        // 2. Kiểm tra Mô tả
-        if (normDesc.includes(normQ)) {
-          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Mô tả', snippet: extractSearchSnippet(lesson.description, normQ), query: rawQ });
-        }
-
-        // 3. Kiểm tra Nội dung HTML bài học
-        if (lesson.htmlContent) {
-          if (!lesson._plainText) {
-            lesson._plainText = buildPlainTextFromHtml(lesson.htmlContent);
-          }
-          const normContent = removeVietnameseTones(lesson._plainText);
-          if (normContent.includes(normQ)) {
-            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Nội dung', snippet: extractSearchSnippet(lesson._plainText, normQ), query: rawQ });
-          }
-        }
-
-        // 4. Kiểm tra Highlight & Ghi chú của bài
-        const lessonHls = (state.learningData.highlights && state.learningData.highlights[lesson.id]) || [];
-        for (const h of lessonHls) {
-          const normHlText = removeVietnameseTones(h.text || '');
-          const normHlNote = removeVietnameseTones(h.note || '');
-          if (normHlText.includes(normQ)) {
-            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Highlight', snippet: `"${h.text}"`, query: rawQ, hlId: h.id });
-            break;
-          } else if (normHlNote.includes(normQ)) {
-            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Ghi chú', snippet: h.note, query: rawQ, hlId: h.id });
-            break;
-          }
-        }
-      });
-
-      renderEnhancedSearchResults(matches, rawQ, dropdownEl);
-    }
-
-    function extractSearchSnippet(fullText, normQuery) {
-      if (!fullText) return '';
-      const normFull = removeVietnameseTones(fullText);
-      const idx = normFull.indexOf(normQuery);
-      if (idx === -1) return fullText.substring(0, 90) + '...';
-
-      const start = Math.max(0, idx - 30);
-      const end = Math.min(fullText.length, idx + normQuery.length + 50);
-      return (start > 0 ? '...' : '') + fullText.substring(start, end) + (end < fullText.length ? '...' : '');
-    }
-
-    function renderEnhancedSearchResults(matches, query, dropdownEl) {
-      dropdownEl.innerHTML = '';
-      searchActiveIndex = -1;
-
-      if (matches.length === 0) {
-        dropdownEl.innerHTML = `
-          <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
-            Không tìm thấy bài học hay ghi chú nào cho "${query}".
-          </div>
-        `;
-        dropdownEl.classList.remove('hidden');
-        return;
-      }
-
-      // Giới hạn hiển thị 15 kết quả tối đa
-      const limitedMatches = matches.slice(0, 15);
-
-      // Nhóm theo mục bài học
-      const grouped = {};
-      limitedMatches.forEach(m => {
-        if (!grouped[m.categoryTitle]) grouped[m.categoryTitle] = [];
-        grouped[m.categoryTitle].push(m);
-      });
-
-      let html = '';
-      for (const [catName, list] of Object.entries(grouped)) {
-        html += `
-          <div class="mb-2">
-            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 px-2 py-0.5 block">
-              Mục: ${catName}
-            </span>
-            <div class="space-y-1">
-              ${list.map(item => `
-                <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800" data-lesson-id="${item.lesson.id}" data-hl-id="${item.hlId || ''}" data-query="${item.query}">
-                  <div class="flex items-center justify-between text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">
-                    <span class="truncate mr-2">${item.lesson.title}</span>
-                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
-                      ${item.matchType}
-                    </span>
-                  </div>
-                  <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-1 line-clamp-2 leading-relaxed">
-                    ${highlightMatch(item.snippet, query)}
-                  </p>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-
-      dropdownEl.innerHTML = html;
-      dropdownEl.classList.remove('hidden');
-
-      dropdownEl.querySelectorAll('.search-result-item').forEach(el => {
-        el.addEventListener('click', () => {
-          const lId = el.getAttribute('data-lesson-id');
-          const hId = el.getAttribute('data-hl-id');
-          const q = el.getAttribute('data-query');
-          dropdownEl.classList.add('hidden');
-          selectLesson(lId);
-
-          if (hId) {
-            setTimeout(() => jumpToHighlight(lId, hId), 400);
-          }
-        });
-      });
-    }
-
-    // Điều hướng phím mũi tên trong ô tìm kiếm
-    [searchInput, mobileSearchInput].forEach(inp => {
-      if (!inp) return;
-      inp.addEventListener('keydown', (e) => {
-        const dd = inp === searchInput ? searchDropdown : mobileSearchDropdown;
-        if (!dd || dd.classList.contains('hidden')) return;
-
-        const items = dd.querySelectorAll('.search-result-item');
-        if (items.length === 0) return;
-
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          searchActiveIndex = (searchActiveIndex + 1) % items.length;
-          items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
-          items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          searchActiveIndex = (searchActiveIndex - 1 + items.length) % items.length;
-          items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
-          items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          if (searchActiveIndex >= 0 && searchActiveIndex < items.length) {
-            items[searchActiveIndex].click();
-          }
-        } else if (e.key === 'Escape') {
-          dd.classList.add('hidden');
-        }
-      });
-    });
-
-
     // =========================================================================
     // // FEATURE-11: QUẢN LÝ NGOẠI TUYẾN (OFFLINE), ĐỒNG BỘ VÀ CẬP NHẬT PHIÊN BẢN
     // =========================================================================
@@ -4336,21 +4356,28 @@
       showToast('Ứng dụng đang chạy ở chế độ ngoại tuyến.', 'error');
     });
 
-    const btnReloadAppUpdate = document.getElementById('btnReloadAppUpdate');
-    if (btnReloadAppUpdate) {
-      btnReloadAppUpdate.addEventListener('click', () => {
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistration().then(reg => {
-            if (reg && reg.waiting) {
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-            }
-            window.location.reload();
-          });
+    const btnCrashReload = document.getElementById('btnCrashReload');
+    if (btnCrashReload) {
+      btnCrashReload.addEventListener('click', () => window.location.reload());
+    }
+    const btnCrashClearAndReload = document.getElementById('btnCrashClearAndReload');
+    if (btnCrashClearAndReload) {
+      btnCrashClearAndReload.addEventListener('click', () => {
+        if (typeof window.clearAppCacheAndReload === 'function') {
+          window.clearAppCacheAndReload();
         } else {
           window.location.reload();
         }
       });
     }
+    const btnCrashDismiss = document.getElementById('btnCrashDismiss');
+    if (btnCrashDismiss) {
+      btnCrashDismiss.addEventListener('click', () => {
+        const b = document.getElementById('appCrashBanner');
+        if (b) b.classList.add('hidden');
+      });
+    }
+
 
 
     function renderCategoriesAndLessons() {
@@ -5811,74 +5838,113 @@
       }
     });
 
+    // =========================================================================
+    // // FEATURE-10: TÌM KIẾM TOÀN THƯ VIỆN CÓ TRÍCH ĐOẠN & KHÔNG DẤU TIẾNG VIỆT
+    // =========================================================================
+    let searchActiveIndex = -1;
+
+    function buildPlainTextFromHtml(html) {
+      if (!html) return '';
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function extractSearchSnippet(fullText, normQuery) {
+      if (!fullText) return '';
+      const normFull = removeVietnameseTones(fullText);
+      const idx = normFull.indexOf(normQuery);
+      if (idx === -1) return fullText.substring(0, 90) + '...';
+
+      const start = Math.max(0, idx - 30);
+      const end = Math.min(fullText.length, idx + normQuery.length + 50);
+      return (start > 0 ? '...' : '') + fullText.substring(start, end) + (end < fullText.length ? '...' : '');
+    }
+
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      return text.replace(regex, '<mark class="bg-[#FEF3C7] dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-0.5 rounded">$1</mark>');
+    }
+
     function performSearch(query, dropdownEl) {
-      if (!query || query.length === 0) {
+      if (!query || query.trim().length === 0) {
         dropdownEl.classList.add('hidden');
         dropdownEl.innerHTML = '';
+        searchActiveIndex = -1;
         return;
       }
 
-      const normQuery = removeVietnameseTones(query);
+      const rawQ = query.trim();
+      const normQ = removeVietnameseTones(rawQ);
       const matches = [];
 
       state.lessons.forEach(lesson => {
         const cat = state.categories.find(c => c.id === lesson.categoryId);
         const catTitle = cat ? cat.title : 'Chưa phân loại';
 
-        const normTitle = removeVietnameseTones(lesson.title);
+        const normTitle = removeVietnameseTones(lesson.title || '');
         const normDesc = removeVietnameseTones(lesson.description || '');
-        const normContent = removeVietnameseTones(lesson.htmlContent || '');
 
-        let matchType = null;
-        let snippet = '';
-
-        if (normTitle.includes(normQuery)) {
-          matchType = 'Tiêu đề';
-          snippet = lesson.title;
-        } else if (normDesc.includes(normQuery)) {
-          matchType = 'Mô tả';
-          snippet = extractSnippet(lesson.description, normQuery);
-        } else if (normContent.includes(normQuery)) {
-          matchType = 'Nội dung';
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = lesson.htmlContent;
-          const plainText = tempDiv.textContent || tempDiv.innerText || '';
-          snippet = extractSnippet(plainText, normQuery);
+        // 1. Kiểm tra Tiêu đề
+        if (normTitle.includes(normQ)) {
+          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Tiêu đề', snippet: lesson.title, query: rawQ });
         }
 
-        if (matchType) {
-          matches.push({ lesson, categoryTitle: catTitle, matchType, snippet, query });
+        // 2. Kiểm tra Mô tả
+        if (normDesc.includes(normQ)) {
+          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Mô tả', snippet: extractSearchSnippet(lesson.description, normQ), query: rawQ });
+        }
+
+        // 3. Kiểm tra Nội dung HTML bài học
+        if (lesson.htmlContent) {
+          if (!lesson._plainText) {
+            lesson._plainText = buildPlainTextFromHtml(lesson.htmlContent);
+          }
+          const normContent = removeVietnameseTones(lesson._plainText);
+          if (normContent.includes(normQ)) {
+            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Nội dung', snippet: extractSearchSnippet(lesson._plainText, normQ), query: rawQ });
+          }
+        }
+
+        // 4. Kiểm tra Highlight & Ghi chú của bài
+        const lessonHls = (state.learningData && state.learningData.highlights && state.learningData.highlights[lesson.id]) || [];
+        for (const h of lessonHls) {
+          const normHlText = removeVietnameseTones(h.text || '');
+          const normHlNote = removeVietnameseTones(h.note || '');
+          if (normHlText.includes(normQ)) {
+            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Highlight', snippet: `"${h.text}"`, query: rawQ, hlId: h.id });
+            break;
+          } else if (normHlNote.includes(normQ)) {
+            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Ghi chú', snippet: h.note, query: rawQ, hlId: h.id });
+            break;
+          }
         }
       });
 
-      renderSearchResults(matches, query, dropdownEl);
-    }
-
-    function extractSnippet(fullText, normQuery) {
-      if (!fullText) return '';
-      const normFull = removeVietnameseTones(fullText);
-      const idx = normFull.indexOf(normQuery);
-      if (idx === -1) return fullText.substring(0, 80) + '...';
-
-      const start = Math.max(0, idx - 30);
-      const end = Math.min(fullText.length, idx + normQuery.length + 40);
-      return (start > 0 ? '...' : '') + fullText.substring(start, end) + (end < fullText.length ? '...' : '');
+      renderSearchResults(matches, rawQ, dropdownEl);
     }
 
     function renderSearchResults(matches, query, dropdownEl) {
       dropdownEl.innerHTML = '';
+      searchActiveIndex = -1;
+
       if (matches.length === 0) {
         dropdownEl.innerHTML = `
-          <div class="p-3 text-center text-[#6B6B66] dark:text-[#9AA3B2] text-xs">
-            Không tìm thấy bài học nào cho "${query}".
+          <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
+            Không tìm thấy bài học hay ghi chú nào cho "${query}".
           </div>
         `;
         dropdownEl.classList.remove('hidden');
         return;
       }
 
+      // Giới hạn hiển thị 15 kết quả tối đa
+      const limitedMatches = matches.slice(0, 15);
+
       const grouped = {};
-      matches.forEach(m => {
+      limitedMatches.forEach(m => {
         if (!grouped[m.categoryTitle]) grouped[m.categoryTitle] = [];
         grouped[m.categoryTitle].push(m);
       });
@@ -5887,19 +5953,19 @@
       for (const [catName, list] of Object.entries(grouped)) {
         html += `
           <div class="mb-2">
-            <span class="text-[10px] uppercase font-bold tracking-wider text-[#6B6B66] dark:text-[#9AA3B2] px-2 py-0.5 block">
+            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 px-2 py-0.5 block">
               Mục: ${catName}
             </span>
             <div class="space-y-1">
               ${list.map(item => `
-                <div class="p-2 rounded hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none" data-search-result-id="${item.lesson.id}">
+                <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800" data-lesson-id="${item.lesson.id}" data-hl-id="${item.hlId || ''}" data-query="${item.query}">
                   <div class="flex items-center justify-between text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">
                     <span class="truncate mr-2">${item.lesson.title}</span>
-                    <span class="text-[10px] font-normal px-1.5 py-0.2 rounded bg-[#FEF3C7] text-amber-900 shrink-0">
+                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
                       ${item.matchType}
                     </span>
                   </div>
-                  <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-0.5 line-clamp-2">
+                  <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-1 line-clamp-2 leading-relaxed">
                     ${highlightMatch(item.snippet, query)}
                   </p>
                 </div>
@@ -5912,23 +5978,51 @@
       dropdownEl.innerHTML = html;
       dropdownEl.classList.remove('hidden');
 
-      dropdownEl.querySelectorAll('[data-search-result-id]').forEach(el => {
+      dropdownEl.querySelectorAll('.search-result-item').forEach(el => {
         el.addEventListener('click', () => {
-          const lId = el.getAttribute('data-search-result-id');
-          exitShareMode();
-          selectLesson(lId);
+          const lId = el.getAttribute('data-lesson-id');
+          const hId = el.getAttribute('data-hl-id');
           dropdownEl.classList.add('hidden');
           mobileSearchExpandable.classList.add('hidden');
+          selectLesson(lId);
+
+          if (hId && typeof jumpToHighlight === 'function') {
+            setTimeout(() => jumpToHighlight(lId, hId), 400);
+          }
         });
       });
     }
 
-    function highlightMatch(text, query) {
-      if (!query) return text;
-      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${escaped})`, 'gi');
-      return text.replace(regex, '<mark class="bg-[#FEF3C7] dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-0.5 rounded">$1</mark>');
-    }
+    // Điều hướng phím mũi tên trong ô tìm kiếm
+    [searchInput, mobileSearchInput].forEach(inp => {
+      if (!inp) return;
+      inp.addEventListener('keydown', (e) => {
+        const dd = inp === searchInput ? searchDropdown : mobileSearchDropdown;
+        if (!dd || dd.classList.contains('hidden')) return;
+
+        const items = dd.querySelectorAll('.search-result-item');
+        if (items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          searchActiveIndex = (searchActiveIndex + 1) % items.length;
+          items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
+          items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          searchActiveIndex = (searchActiveIndex - 1 + items.length) % items.length;
+          items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
+          items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (searchActiveIndex >= 0 && searchActiveIndex < items.length) {
+            items[searchActiveIndex].click();
+          }
+        } else if (e.key === 'Escape') {
+          dd.classList.add('hidden');
+        }
+      });
+    });
 
     const uploadModal = document.getElementById('uploadModal');
     const dropZone = document.getElementById('dropZone');
@@ -6903,42 +6997,67 @@
       showToast("Cài đặt thành công! Mở ứng dụng từ màn hình chính.");
     });
 
+    // // FIX: Đăng ký Service Worker tệp sw.js (v3.4) chuẩn, hỗ trợ bắt sự kiện updatefound
     function registerPwaServiceWorker() {
-      if ('serviceWorker' in navigator) {
-        const swScript = `
-          const CACHE_NAME = 'thuvienhtml-pwa-v3';
-          self.addEventListener('install', (e) => {
-            self.skipWaiting();
-          });
-          self.addEventListener('activate', (e) => {
-            e.waitUntil(self.clients.claim());
-          });
-          self.addEventListener('fetch', (e) => {
-            if (e.request.url.includes('firebase') || e.request.url.includes('googleapis') || e.request.url.includes('litterbox')) {
-              return;
+      if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        navigator.serviceWorker.register('./sw.js', { scope: './' }).then((reg) => {
+          console.debug("PWA Service Worker đã sẵn sàng.", reg);
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  const banner = document.getElementById('appUpdateBanner');
+                  if (banner) banner.classList.remove('hidden');
+                }
+              });
             }
-            e.request && e.respondWith(
-              fetch(e.request).catch(() => caches.match(e.request))
-            );
           });
-        `;
-        const swBlob = new Blob([swScript], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(swBlob);
-
-        navigator.serviceWorker.register(swUrl).then(() => {
-          console.debug("PWA Service Worker đã sẵn sàng.");
         }).catch((err) => {
           console.warn("Không thể kích hoạt Service Worker:", err);
         });
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      initAuthAndData();
-      applyReadingWidth(state.readingWidth);
-      refreshIcons();
-      registerPwaServiceWorker();
-    });
+    const btnReloadAppUpdate = document.getElementById('btnReloadAppUpdate');
+    if (btnReloadAppUpdate) {
+      btnReloadAppUpdate.addEventListener('click', () => {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            window.location.reload();
+          });
+        } else {
+          window.location.reload();
+        }
+      });
+    }
+
+    // // FIX: Khởi động app an toàn, hỗ trợ cả trường hợp DOM đã tải xong trước khi module thực thi
+    function bootApp() {
+      try {
+        initAuthAndData();
+      } catch (err) {
+        console.error("Lỗi khi initAuthAndData:", err);
+      }
+      try {
+        applyReadingWidth(state.readingWidth);
+      } catch (_) {}
+      try {
+        refreshIcons();
+      } catch (_) {}
+      try {
+        registerPwaServiceWorker();
+      } catch (_) {}
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', bootApp);
+    } else {
+      bootApp();
+    }
   
     // // REDESIGN: Tương tác đóng/mở popover menu "Hiển thị" trên Header
     const btnDisplaySettingsToggle = document.getElementById('btnDisplaySettingsToggle');
