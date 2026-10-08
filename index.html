@@ -2213,73 +2213,119 @@
       <button id="btnCloseIosModal" class="w-full touch-target py-2 rounded-card bg-[#4F46E5] text-white text-xs font-semibold hover:opacity-90 transition">
         Đã hiểu
       </button>
-  <!-- // FIX-2 & FIX-3: Modal Menu Thao Tác Bài Học (Bottom Sheet trên Mobile, Popover trên Desktop) -->
-  <div id="lessonActionMenuModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-4 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col max-h-[88vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
-      <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+    </div>
+  </div>
+
+  <!-- // FIX-2: Modal Menu Thao Tác Bài Học (Bottom Sheet trên Mobile, Popover trên Desktop) -->
+  <div id="lessonActionMenuModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 sm:bg-black/20 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="action-menu-card bg-white dark:bg-[#181B20] w-full sm:w-[260px] rounded-t-2xl sm:rounded-2xl p-3 sm:p-2.5 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col max-h-[88vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-2.5">
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mb-2"></div>
+      <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
         <div class="min-w-0 pr-2">
           <h3 id="lessonActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn bài học</h3>
           <p id="lessonActionMenuSub" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate mt-0.5"></p>
         </div>
-        <button id="btnCloseLessonActionMenu" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đóng" aria-label="Đóng">
+        <button id="btnCloseLessonActionMenu" class="p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đóng" aria-label="Đóng">
           <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
-      <div class="py-2 flex-1 overflow-y-auto space-y-1 text-xs">
+      <div class="py-1.5 flex-1 overflow-y-auto space-y-0.5 text-xs">
         <!-- Gắn nhãn -->
-        <button id="btnActionMenuTag" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+        <button id="btnActionMenuTag" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-tag"></use></svg>
           <span class="flex-1">Gắn nhãn (Tag)</span>
         </button>
 
         <!-- Yêu thích -->
-        <button id="btnActionMenuFavorite" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+        <button id="btnActionMenuFavorite" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-amber-500 shrink-0" id="actionMenuFavIcon"><use href="#icon-star"></use></svg>
           <span id="actionMenuFavText" class="flex-1">Yêu thích</span>
         </button>
 
         <!-- Đã học / Chưa học -->
-        <button id="btnActionMenuLearned" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+        <button id="btnActionMenuLearned" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-emerald-600 shrink-0"><use href="#icon-check-circle-2"></use></svg>
           <span id="actionMenuLearnedText" class="flex-1">Đánh dấu đã học</span>
         </button>
 
         <!-- Đổi tên -->
-        <button id="btnActionMenuRename" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+        <button id="btnActionMenuRename" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-pencil"></use></svg>
           <span class="flex-1">Đổi tên bài học</span>
         </button>
 
         <!-- Tạo link chia sẻ -->
-        <button id="btnActionMenuShare" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+        <button id="btnActionMenuShare" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-share-2"></use></svg>
-          <span class="flex-1">Tạo link chia sẻ (7 ngày)</span>
+          <span class="flex-1">Tạo link chia sẻ</span>
         </button>
 
         <!-- Chuyển sang mục khác -->
-        <button id="btnActionMenuMoveCat" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+        <button id="btnActionMenuMoveCat" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-folder"></use></svg>
           <span class="flex-1">Chuyển sang mục khác</span>
         </button>
 
         <!-- Di chuyển lên / xuống -->
-        <div class="grid grid-cols-2 gap-1.5 pt-1">
-          <button id="btnActionMenuMoveUp" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
+        <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+          <button id="btnActionMenuMoveUp" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
             <svg class="w-3.5 h-3.5 text-indigo-600"><use href="#icon-arrow-up"></use></svg>
-            <span>Di chuyển lên</span>
+            <span>Lên</span>
           </button>
-          <button id="btnActionMenuMoveDown" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
+          <button id="btnActionMenuMoveDown" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
             <svg class="w-3.5 h-3.5 text-indigo-600"><use href="#icon-arrow-down"></use></svg>
-            <span>Di chuyển xuống</span>
+            <span>Xuống</span>
           </button>
         </div>
 
         <!-- Xóa bài -->
-        <div class="pt-1.5 border-t border-[#E7E5DF] dark:border-[#262C36] mt-1">
-          <button id="btnActionMenuDelete" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 font-medium transition text-left min-h-[44px]">
-            <svg class="w-4 h-4 text-red-500 shrink-0"><use href="#icon-trash-2"></use></svg>
+        <div class="pt-1 border-t border-[#E7E5DF] dark:border-[#262C36] mt-1">
+          <button id="btnActionMenuDelete" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium transition text-left min-h-[44px]">
+            <svg class="w-4 h-4 text-rose-500 shrink-0"><use href="#icon-trash-2"></use></svg>
             <span class="flex-1">Xóa bài (vào thùng rác)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FIX-2: Modal Menu Thao Tác Cho Mục Bài Học -->
+  <div id="categoryActionMenuModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 sm:bg-black/20 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="action-menu-card bg-white dark:bg-[#181B20] w-full sm:w-[240px] rounded-t-2xl sm:rounded-2xl p-3 sm:p-2.5 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col max-h-[88vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-2.5">
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mb-2"></div>
+      <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="min-w-0 pr-2">
+          <h3 id="catActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn mục</h3>
+          <p id="catActionMenuSub" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate mt-0.5"></p>
+        </div>
+        <button id="btnCloseCatActionMenu" class="p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đóng" aria-label="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+      <div class="py-1.5 flex-1 overflow-y-auto space-y-0.5 text-xs">
+        <button id="btnCatMenuRename" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-pencil"></use></svg>
+          <span class="flex-1">Đổi tên mục</span>
+        </button>
+        <button id="btnCatMenuAddLesson" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-plus"></use></svg>
+          <span class="flex-1">Thêm bài vào mục</span>
+        </button>
+        <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+          <button id="btnCatMenuMoveUp" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
+            <svg class="w-3.5 h-3.5 text-indigo-600"><use href="#icon-arrow-up"></use></svg>
+            <span>Lên</span>
+          </button>
+          <button id="btnCatMenuMoveDown" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
+            <svg class="w-3.5 h-3.5 text-indigo-600"><use href="#icon-arrow-down"></use></svg>
+            <span>Xuống</span>
+          </button>
+        </div>
+        <div class="pt-1 border-t border-[#E7E5DF] dark:border-[#262C36] mt-1">
+          <button id="btnCatMenuDelete" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium transition text-left min-h-[44px]">
+            <svg class="w-4 h-4 text-rose-500 shrink-0"><use href="#icon-trash-2"></use></svg>
+            <span class="flex-1">Xóa mục (vào thùng rác)</span>
           </button>
         </div>
       </div>
@@ -2362,27 +2408,30 @@
     </div>
   </div>
 
-  <!-- // FEATURE-8: Modal Thùng rác (Trash Modal) -->
-  <div id="trashModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 hidden">
-    <div class="bg-white dark:bg-[#181B20] w-full max-w-xl rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[85vh] flex flex-col overflow-hidden">
-      <div class="flex items-center justify-between p-4 border-b border-[#E7E5DF] dark:border-[#262C36]">
-        <div class="flex items-center gap-2">
+  <!-- // FIX-1: POP-UP Thùng rác (Ở giữa trên máy tính, Bottom Sheet trên điện thoại) -->
+  <div id="trashModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-xl rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[88vh] flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-0 overflow-hidden">
+      <!-- Drag bar trên mobile -->
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mt-2.5 mb-1"></div>
+
+      <div class="flex items-center justify-between p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
             <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
           </div>
           <div>
             <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Thùng rác bài học</h3>
-            <p id="trashModalSubtitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">Tự động xóa vĩnh viễn sau 30 ngày</p>
+            <p id="trashModalSubtitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">Các mục sẽ tự xóa sau 7 ngày</p>
           </div>
         </div>
-        <div class="flex items-center gap-1.5">
-          <button id="btnEmptyTrashAll" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition">Dọn sạch</button>
-          <button id="btnCloseTrashModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
+        <div class="flex items-center gap-2">
+          <button id="btnEmptyTrashAll" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition border border-red-200 dark:border-red-900/50">Dọn sạch</button>
+          <button id="btnCloseTrashModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng" aria-label="Đóng">
             <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
           </button>
         </div>
       </div>
-      <div id="trashItemsListContainer" class="p-4 flex-1 overflow-y-auto space-y-2"></div>
+      <div id="trashItemsListContainer" class="p-3.5 sm:p-4 flex-1 overflow-y-auto space-y-2"></div>
     </div>
   </div>
 
@@ -2589,8 +2638,8 @@
       } catch (_) {}
     }
 
-    // // FIX-1/FIX-2: TOMBSTONE VÀ QUẢN LÝ THÙNG RÁC CHỐNG TÁI SINH DỮ LIỆU
-    const TOMBSTONE_RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30 ngày
+    // // FIX-1/FIX-2: TOMBSTONE VÀ QUẢN LÝ THÙNG RÁC 7 NGÀY
+    const TOMBSTONE_RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 ngày
 
     function getTombstones() {
       try {
@@ -2641,6 +2690,21 @@
       return !!tb[id];
     }
 
+    function purgeExpiredTrashItems() {
+      try {
+        const now = Date.now();
+        const initialCount = (state.trash || []).length;
+        state.trash = (state.trash || []).filter(item => {
+          if (!item || !item.item) return false;
+          const exp = item.expiresAt || ((item.deletedAt || now) + TOMBSTONE_RETENTION_MS);
+          return exp > now;
+        });
+        if (state.trash.length !== initialCount) {
+          saveLocalTrash();
+        }
+      } catch (_) {}
+    }
+
     function getInitialTrash() {
       try {
         const stored = localStorage.getItem('local_trash');
@@ -2649,7 +2713,7 @@
         const seenItemIds = new Set();
         const cleaned = [];
 
-        // Lọc quá hạn 30 ngày và deduplicate triệt để theo item.id
+        // Lọc quá hạn 7 ngày và deduplicate triệt để theo item.id
         for (const tItem of list) {
           if (!tItem || !tItem.item || !tItem.item.id) continue;
           const exp = tItem.expiresAt || ((tItem.deletedAt || now) + TOMBSTONE_RETENTION_MS);
@@ -4454,11 +4518,64 @@
     if (btnCloseBatchMove) btnCloseBatchMove.addEventListener('click', () => { singleLessonMoveCatId = null; hideModalAnimated(batchMoveCatModal); });
 
     // =========================================================================
-    // // FIX-2 & FIX-3: MENU THAO TÁC BÀI HỌC (BOTTOM SHEET / POPOVER)
+// // FIX-2 & FIX-3: MENU THAO TÁC BÀI HỌC VÀ DANH MỤC (POPOVER TRÊN PC, BOTTOM SHEET TRÊN MOBILE)
     // =========================================================================
     let currentMenuLessonId = null;
+    let currentMenuCatId = null;
 
-    function openLessonActionMenu(lessonId) {
+    // // FIX-2: Hàm định vị popover tự thích ứng (tự lật lên/xuống, dịch trái/phải kẹp trong màn hình)
+    function positionMenuPopover(cardEl, triggerEl) {
+      if (!cardEl) return;
+      if (window.innerWidth < 640 || !triggerEl) {
+        cardEl.style.position = '';
+        cardEl.style.top = '';
+        cardEl.style.left = '';
+        cardEl.style.width = '';
+        cardEl.style.margin = '';
+        cardEl.style.transform = '';
+        return;
+      }
+
+      const rect = triggerEl.getBoundingClientRect();
+      const cardWidth = Math.min(270, window.innerWidth - 20);
+      cardEl.style.position = 'fixed';
+      cardEl.style.margin = '0';
+      cardEl.style.transform = 'none';
+      cardEl.style.width = cardWidth + 'px';
+
+      // Tính tọa độ ngang (left): căn lề phải với mép phải nút bấm hoặc kẹp trong màn hình
+      let left = rect.right - cardWidth;
+      if (left < 10) left = rect.left;
+      if (left + cardWidth > window.innerWidth - 10) {
+        left = window.innerWidth - cardWidth - 10;
+      }
+      if (left < 10) left = 10;
+
+      // Tính tọa độ dọc (top): tự động lật lên hoặc xuống
+      const cardHeight = cardEl.offsetHeight || 330;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      let top;
+      if (spaceBelow >= cardHeight + 8 || spaceBelow >= spaceAbove) {
+        // Đủ chỗ bên dưới hoặc không gian bên dưới rộng hơn
+        top = rect.bottom + 6;
+        if (top + cardHeight > window.innerHeight - 10) {
+          top = Math.max(10, window.innerHeight - cardHeight - 10);
+        }
+      } else {
+        // Lật lên trên nút bấm
+        top = rect.top - cardHeight - 6;
+        if (top < 10) top = 10;
+      }
+
+      cardEl.style.left = `${Math.round(left)}px`;
+      cardEl.style.top = `${Math.round(top)}px`;
+      cardEl.style.bottom = 'auto';
+      cardEl.style.right = 'auto';
+    }
+
+    function openLessonActionMenu(lessonId, triggerEl = null) {
       currentMenuLessonId = lessonId;
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (!lesson) return;
@@ -4469,6 +4586,7 @@
       const favText = document.getElementById('actionMenuFavText');
       const favIcon = document.getElementById('actionMenuFavIcon');
       const learnedText = document.getElementById('actionMenuLearnedText');
+      const card = modal?.querySelector('.action-menu-card');
 
       if (titleEl) titleEl.innerText = lesson.title || 'Bài học';
       let catName = 'Chưa phân loại';
@@ -4490,6 +4608,33 @@
       if (learnedText) learnedText.innerText = lesson.isCompleted ? 'Đánh dấu chưa học' : 'Đánh dấu đã học';
 
       showModalAnimated(modal);
+      if (card) {
+        requestAnimationFrame(() => {
+          positionMenuPopover(card, triggerEl);
+        });
+      }
+    }
+
+    function openCategoryActionMenu(catId, triggerEl = null) {
+      currentMenuCatId = catId;
+      const cat = state.categories.find(c => c.id === catId);
+      if (!cat) return;
+
+      const modal = document.getElementById('categoryActionMenuModal');
+      const titleEl = document.getElementById('catActionMenuTitle');
+      const subEl = document.getElementById('catActionMenuSub');
+      const card = modal?.querySelector('.action-menu-card');
+
+      if (titleEl) titleEl.innerText = cat.title || 'Mục bài học';
+      const count = state.lessons.filter(l => l.categoryId === cat.id).length;
+      if (subEl) subEl.innerText = `${count} bài học trong mục`;
+
+      showModalAnimated(modal);
+      if (card) {
+        requestAnimationFrame(() => {
+          positionMenuPopover(card, triggerEl);
+        });
+      }
     }
 
     function toggleFavoriteLesson(lessonId) {
@@ -4505,6 +4650,7 @@
       showToast(lesson.isFavorite ? 'Đã thêm vào mục Yêu thích' : 'Đã bỏ khỏi mục Yêu thích');
     }
 
+    // Gắn sự kiện đóng modal menu
     const btnCloseLessonActionMenu = document.getElementById('btnCloseLessonActionMenu');
     if (btnCloseLessonActionMenu) {
       btnCloseLessonActionMenu.addEventListener('click', () => {
@@ -4512,6 +4658,14 @@
       });
     }
 
+    const btnCloseCatActionMenu = document.getElementById('btnCloseCatActionMenu');
+    if (btnCloseCatActionMenu) {
+      btnCloseCatActionMenu.addEventListener('click', () => {
+        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+      });
+    }
+
+    // Các nút trong Menu Bài học
     const btnActionMenuTag = document.getElementById('btnActionMenuTag');
     if (btnActionMenuTag) {
       btnActionMenuTag.addEventListener('click', () => {
@@ -4589,19 +4743,90 @@
       });
     }
 
+    // // FIX-2: Xóa trong Menu - màu đỏ ở cuối, chuyển thùng rác ngay kèm toast Đã xóa • Hoàn tác
     const btnActionMenuDelete = document.getElementById('btnActionMenuDelete');
     if (btnActionMenuDelete) {
       btnActionMenuDelete.addEventListener('click', () => {
         const lId = currentMenuLessonId;
         hideModalAnimated(document.getElementById('lessonActionMenuModal'));
-        const lesson = state.lessons.find(l => l.id === lId);
-        if (lesson) {
-          askConfirmDelete(`Chuyển bài "${lesson.title}" vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
-            moveLessonToTrash(lesson.id);
-          });
+        if (lId) {
+          moveLessonToTrash(lId);
         }
       });
     }
+
+    // Các nút trong Menu Mục (Category)
+    const btnCatMenuRename = document.getElementById('btnCatMenuRename');
+    if (btnCatMenuRename) {
+      btnCatMenuRename.addEventListener('click', () => {
+        const cId = currentMenuCatId;
+        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        const cat = state.categories.find(c => c.id === cId);
+        if (cat) setTimeout(() => openCategoryModal(cat), 150);
+      });
+    }
+
+    const btnCatMenuAddLesson = document.getElementById('btnCatMenuAddLesson');
+    if (btnCatMenuAddLesson) {
+      btnCatMenuAddLesson.addEventListener('click', () => {
+        const cId = currentMenuCatId;
+        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        state.activeCategoryId = cId;
+        openUploadModal();
+      });
+    }
+
+    const btnCatMenuMoveUp = document.getElementById('btnCatMenuMoveUp');
+    if (btnCatMenuMoveUp) {
+      btnCatMenuMoveUp.addEventListener('click', () => {
+        const cId = currentMenuCatId;
+        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        if (cId) moveCategoryOrder(cId, -1);
+      });
+    }
+
+    const btnCatMenuMoveDown = document.getElementById('btnCatMenuMoveDown');
+    if (btnCatMenuMoveDown) {
+      btnCatMenuMoveDown.addEventListener('click', () => {
+        const cId = currentMenuCatId;
+        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        if (cId) moveCategoryOrder(cId, 1);
+      });
+    }
+
+    const btnCatMenuDelete = document.getElementById('btnCatMenuDelete');
+    if (btnCatMenuDelete) {
+      btnCatMenuDelete.addEventListener('click', () => {
+        const cId = currentMenuCatId;
+        hideModalAnimated(document.getElementById('categoryActionMenuModal'));
+        if (cId) {
+          moveCategoryToTrash(cId);
+        }
+      });
+    }
+
+    // // FIX-2: EVENT DELEGATION BẮT TẤT CẢ CÁC NÚT MENU ⋯ TRONG DANH SÁCH VÀ DRAWER
+    document.addEventListener('click', (e) => {
+      // 1. Menu Bài học
+      const lessonMenuBtn = e.target.closest('[data-open-lesson-menu]');
+      if (lessonMenuBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const lessonId = lessonMenuBtn.getAttribute('data-open-lesson-menu');
+        openLessonActionMenu(lessonId, lessonMenuBtn);
+        return;
+      }
+
+      // 2. Menu Danh mục
+      const catMenuBtn = e.target.closest('[data-open-cat-menu]');
+      if (catMenuBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const catId = catMenuBtn.getAttribute('data-open-cat-menu');
+        openCategoryActionMenu(catId, catMenuBtn);
+        return;
+      }
+    });
 
     // Gắn nhãn hàng loạt
     if (btnBatchAssignTags) {
@@ -4631,12 +4856,12 @@
       });
     }
 
-    // Xóa hàng loạt đưa vào thùng rác
+    // Xóa hàng loạt đưa vào thùng rác (7 ngày)
     if (btnBatchDeleteLesson) {
       btnBatchDeleteLesson.addEventListener('click', () => {
         if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) return;
         const count = state.selectedLessonIds.size;
-        askConfirmDelete(`Chuyển ${count} bài học đã chọn vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+        askConfirmDelete(`Chuyển ${count} bài học đã chọn vào Thùng rác? (Có thể khôi phục trong 7 ngày)`, () => {
           const idsToDelete = Array.from(state.selectedLessonIds);
           for (const lId of idsToDelete) {
             moveLessonToTrash(lId, true); // true = skip individual toast
@@ -4685,20 +4910,27 @@
 
 
     // =========================================================================
-    // // FEATURE-8: THÙNG RÁC (TRASH) VÀ HOÀN TÁC TRONG 30 NGÀY (FIX-1, FIX-2)
+    // // FEATURE-8 & FIX-1: THÙNG RÁC (TRASH) VÀ HOÀN TÁC TRONG 7 NGÀY
     // =========================================================================
     function moveLessonToTrash(lessonId, skipToast = false) {
       const idx = state.lessons.findIndex(l => l.id === lessonId);
       if (idx === -1) return null;
       const lesson = state.lessons.splice(idx, 1)[0];
 
-      // FIX-2: Thêm Tombstone để ngăn chặn tuyệt đối Firestore onSnapshot hồi sinh bài
       addTombstone(lesson.id);
+
+      let originalCategoryTitle = 'Chưa phân loại';
+      if (lesson.categoryId) {
+        const cat = state.categories.find(c => c.id === lesson.categoryId);
+        if (cat) originalCategoryTitle = cat.title;
+      }
 
       const trashItem = {
         id: 'trash_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
         type: 'lesson',
         item: lesson,
+        originalCategoryId: lesson.categoryId || null,
+        originalCategoryTitle: originalCategoryTitle,
         deletedAt: Date.now(),
         expiresAt: Date.now() + TOMBSTONE_RETENTION_MS,
         relatedData: {
@@ -4710,14 +4942,12 @@
       };
 
       if (!state.trash) state.trash = [];
-      // FIX-1: Deduplicate - Loại bỏ các bản ghi trùng ID trong thùng rác để huy hiệu hiển thị chuẩn
       state.trash = state.trash.filter(t => !t.item || t.item.id !== lesson.id);
       state.trash.unshift(trashItem);
 
       saveLocalTrash();
       saveLocalLessons();
 
-      // FIX-2: Xóa dứt điểm trên Firestore ngay khi bỏ vào thùng rác
       if (!state.useLocalFallback && db && state.userId) {
         try {
           const docRef = doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lessonId);
@@ -4736,7 +4966,7 @@
       updateTrashUIBadge();
 
       if (!skipToast) {
-        showActionToast(`Đã chuyển bài "${lesson.title}" vào Thùng rác`, 'Hoàn tác', () => {
+        showActionToast(`Đã xóa "${lesson.title}"`, 'Hoàn tác', () => {
           restoreTrashItem(trashItem.id);
         });
       }
@@ -4748,10 +4978,8 @@
       if (idx === -1) return null;
       const cat = state.categories.splice(idx, 1)[0];
 
-      // Thêm tombstone cho danh mục
       addTombstone(cat.id);
 
-      // Di chuyển các bài thuộc mục này vào thùng rác cùng mục & thêm tombstone cho từng bài
       const relatedLessons = state.lessons.filter(l => l.categoryId === catId);
       state.lessons = state.lessons.filter(l => l.categoryId !== catId);
 
@@ -4774,6 +5002,7 @@
         id: 'trash_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
         type: 'category',
         item: cat,
+        originalCategoryTitle: cat.title,
         relatedLessons: relatedLessons,
         deletedAt: Date.now(),
         expiresAt: Date.now() + TOMBSTONE_RETENTION_MS
@@ -4796,7 +5025,7 @@
       renderActiveLesson();
       updateTrashUIBadge();
 
-      showActionToast(`Đã chuyển mục "${cat.title}" vào Thùng rác`, 'Hoàn tác', () => {
+      showActionToast(`Đã xóa mục "${cat.title}"`, 'Hoàn tác', () => {
         restoreTrashItem(trashItem.id);
       });
       return trashItem;
@@ -4808,33 +5037,62 @@
       const trashItem = state.trash.splice(idx, 1)[0];
 
       if (trashItem.type === 'lesson' && trashItem.item) {
-        removeTombstone(trashItem.item.id);
-        upsertLesson(trashItem.item);
+        const lesson = trashItem.item;
+        removeTombstone(lesson.id);
+
+        // Khôi phục mục gốc nếu đã bị xóa
+        const targetCatId = lesson.categoryId;
+        let targetCatExists = targetCatId ? state.categories.some(c => c.id === targetCatId) : false;
+
+        if (targetCatId && !targetCatExists) {
+          const catInTrashIdx = state.trash.findIndex(t => t.type === 'category' && t.item && t.item.id === targetCatId);
+          if (catInTrashIdx !== -1) {
+            const restoredCatItem = state.trash.splice(catInTrashIdx, 1)[0];
+            removeTombstone(restoredCatItem.item.id);
+            if (!state.categories.some(c => c.id === restoredCatItem.item.id)) {
+              state.categories.push(restoredCatItem.item);
+            }
+            if (!state.useLocalFallback && db && state.userId) {
+              try {
+                await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', restoredCatItem.item.id), restoredCatItem.item, { merge: true });
+              } catch (_) {}
+            }
+            targetCatExists = true;
+          } else {
+            // Không còn mục gốc -> gán về Chưa phân loại
+            lesson.categoryId = null;
+          }
+        }
+
+        upsertLesson(lesson);
 
         if (trashItem.relatedData) {
           if (trashItem.relatedData.highlights) {
-            state.learningData.highlights[trashItem.item.id] = trashItem.relatedData.highlights;
+            state.learningData.highlights[lesson.id] = trashItem.relatedData.highlights;
           }
           if (trashItem.relatedData.progress) {
-            state.learningData.readingProgress[trashItem.item.id] = trashItem.relatedData.progress;
+            state.learningData.readingProgress[lesson.id] = trashItem.relatedData.progress;
           }
           if (trashItem.relatedData.schedule) {
-            state.learningData.reviewSchedules[trashItem.item.id] = trashItem.relatedData.schedule;
+            state.learningData.reviewSchedules[lesson.id] = trashItem.relatedData.schedule;
+          }
+          if (trashItem.relatedData.flashcards && Array.isArray(trashItem.relatedData.flashcards)) {
+            if (!state.learningData.flashcards) state.learningData.flashcards = [];
+            state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== lesson.id).concat(trashItem.relatedData.flashcards);
           }
           saveLearningData();
         }
 
-        // Đồng bộ lại lên Firestore nếu có tài khoản
         if (!state.useLocalFallback && db && state.userId) {
           try {
-            await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', trashItem.item.id), trashItem.item, { merge: true });
+            await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), lesson, { merge: true });
           } catch (e) {
             console.warn("Lỗi setDoc khi restore lesson:", e);
           }
         }
 
-        state.activeLessonId = trashItem.item.id;
-        showToast(`Đã khôi phục bài "${trashItem.item.title}"`);
+        state.activeLessonId = lesson.id;
+        showToast(`Đã khôi phục bài "${lesson.title}"`);
       } else if (trashItem.type === 'category' && trashItem.item) {
         removeTombstone(trashItem.item.id);
         const cIdx = state.categories.findIndex(c => c.id === trashItem.item.id);
@@ -4873,16 +5131,49 @@
       renderTrashModalView();
     }
 
-    async function permanentDeleteTrashItem(trashId) {
+    async function permanentDeleteTrashItem(trashId, rowEl = null) {
       const idx = (state.trash || []).findIndex(t => t.id === trashId);
       if (idx === -1) return;
       const item = state.trash.splice(idx, 1)[0];
 
+      // Hiệu ứng mượt mà khi xóa dòng (không hỏi xác nhận theo yêu cầu)
+      if (rowEl) {
+        rowEl.style.transition = 'all 0.25s ease-out';
+        rowEl.style.opacity = '0';
+        rowEl.style.transform = 'translateX(24px)';
+        rowEl.style.maxHeight = rowEl.offsetHeight + 'px';
+        setTimeout(() => {
+          rowEl.style.maxHeight = '0px';
+          rowEl.style.paddingTop = '0px';
+          rowEl.style.paddingBottom = '0px';
+          rowEl.style.marginTop = '0px';
+          rowEl.style.marginBottom = '0px';
+          rowEl.style.borderWidth = '0px';
+          setTimeout(() => {
+            rowEl.remove();
+            if ((state.trash || []).length === 0) {
+              renderTrashModalView();
+            }
+          }, 200);
+        }, 150);
+      }
+
+      // Xóa triệt để mọi dữ liệu liên quan ở mọi nơi lưu trữ
       if (item.type === 'lesson' && item.item) {
-        addTombstone(item.item.id);
+        const lId = item.item.id;
+        addTombstone(lId);
+        if (state.learningData) {
+          if (state.learningData.highlights) delete state.learningData.highlights[lId];
+          if (state.learningData.readingProgress) delete state.learningData.readingProgress[lId];
+          if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[lId];
+          if (state.learningData.flashcards) {
+            state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== lId);
+          }
+          saveLearningData();
+        }
         if (!state.useLocalFallback && db && state.userId) {
           try {
-            await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', item.item.id));
+            await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lId));
           } catch (_) {}
         }
       } else if (item.type === 'category' && item.item) {
@@ -4895,18 +5186,29 @@
         if (item.relatedLessons && Array.isArray(item.relatedLessons)) {
           for (const rel of item.relatedLessons) {
             addTombstone(rel.id);
+            if (state.learningData) {
+              if (state.learningData.highlights) delete state.learningData.highlights[rel.id];
+              if (state.learningData.readingProgress) delete state.learningData.readingProgress[rel.id];
+              if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[rel.id];
+              if (state.learningData.flashcards) {
+                state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== rel.id);
+              }
+            }
             if (!state.useLocalFallback && db && state.userId) {
               try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', rel.id));
               } catch (_) {}
             }
           }
+          if (state.learningData) saveLearningData();
         }
       }
 
       saveLocalTrash();
       updateTrashUIBadge();
-      renderTrashModalView();
+      if (!rowEl) {
+        renderTrashModalView();
+      }
       showToast(`Đã xóa vĩnh viễn`);
     }
 
@@ -4921,10 +5223,19 @@
 
         for (const item of toDelete) {
           if (item.type === 'lesson' && item.item) {
-            addTombstone(item.item.id);
+            const lId = item.item.id;
+            addTombstone(lId);
+            if (state.learningData) {
+              if (state.learningData.highlights) delete state.learningData.highlights[lId];
+              if (state.learningData.readingProgress) delete state.learningData.readingProgress[lId];
+              if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[lId];
+              if (state.learningData.flashcards) {
+                state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== lId);
+              }
+            }
             if (!state.useLocalFallback && db && state.userId) {
               try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', item.item.id));
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lId));
               } catch (_) {}
             }
           } else if (item.type === 'category' && item.item) {
@@ -4937,6 +5248,14 @@
             if (item.relatedLessons && Array.isArray(item.relatedLessons)) {
               for (const rel of item.relatedLessons) {
                 addTombstone(rel.id);
+                if (state.learningData) {
+                  if (state.learningData.highlights) delete state.learningData.highlights[rel.id];
+                  if (state.learningData.readingProgress) delete state.learningData.readingProgress[rel.id];
+                  if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[rel.id];
+                  if (state.learningData.flashcards) {
+                    state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== rel.id);
+                  }
+                }
                 if (!state.useLocalFallback && db && state.userId) {
                   try {
                     await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', rel.id));
@@ -4946,7 +5265,7 @@
             }
           }
         }
-
+        if (state.learningData) saveLearningData();
         showToast('Đã dọn sạch thùng rác');
       });
     }
@@ -4967,7 +5286,8 @@
     }
 
     function openTrashModal() {
-      // FIX-1: Đóng sidebar trên mobile nếu đang mở để modal không bị che khuất
+      // Dọn các mục đã quá 7 ngày trước khi mở
+      purgeExpiredTrashItems();
       if (typeof closeMobileSidebar === 'function') {
         try { closeMobileSidebar(); } catch (_) {}
       }
@@ -4980,23 +5300,35 @@
       }
     }
 
+    function formatDeletedDate(timestamp) {
+      if (!timestamp) return '';
+      const d = new Date(timestamp);
+      const pad = n => String(n).padStart(2, '0');
+      return `${pad(d.getHours())}:${pad(d.getMinutes())} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+    }
+
     function renderTrashModalView() {
       const container = document.getElementById('trashItemsListContainer');
       const subtitle = document.getElementById('trashModalSubtitle');
       if (!container) return;
       container.innerHTML = '';
 
-      const items = state.trash || [];
+      // Sắp xếp mới xóa nhất lên đầu
+      const items = (state.trash || []).slice().sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
       if (subtitle) {
-        subtitle.innerText = `${items.length} mục trong thùng rác • Tự động xóa vĩnh viễn sau 30 ngày`;
+        subtitle.innerText = items.length > 0
+          ? `${items.length} mục trong thùng rác • Các mục sẽ tự xóa sau 7 ngày`
+          : 'Các mục sẽ tự xóa sau 7 ngày';
       }
 
       if (items.length === 0) {
         container.innerHTML = `
-          <div class="text-center py-10 text-[#6E6B65] dark:text-[#979DA8]">
-            <svg class="w-10 h-10 mx-auto mb-2 opacity-30"><use href="#icon-trash-2"></use></svg>
-            <p class="font-medium">Thùng rác trống</p>
-            <p class="text-[11px] mt-0.5 opacity-75">Các bài học hoặc mục bị xóa sẽ được lưu trữ tại đây trong 30 ngày.</p>
+          <div class="text-center py-12 text-[#6E6B65] dark:text-[#979DA8]">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center">
+              <svg class="w-6 h-6 opacity-40"><use href="#icon-trash-2"></use></svg>
+            </div>
+            <p class="font-medium text-sm text-[#1C1917] dark:text-[#EDECE8]">Thùng rác trống</p>
+            <p class="text-xs mt-1 opacity-75">Các bài học hoặc mục bị xóa sẽ được lưu trữ tại đây trong 7 ngày.</p>
           </div>
         `;
         return;
@@ -5005,26 +5337,52 @@
       const now = Date.now();
       items.forEach(tItem => {
         if (!tItem) return;
-        const daysLeft = Math.max(1, Math.ceil(((tItem.expiresAt || ((tItem.deletedAt || now) + TOMBSTONE_RETENTION_MS)) - now) / 86400000));
+        const msLeft = (tItem.expiresAt || ((tItem.deletedAt || now) + TOMBSTONE_RETENTION_MS)) - now;
+        const daysLeft = Math.max(1, Math.ceil(msLeft / 86400000));
+        const daysText = msLeft <= 0 ? 'Hết hạn hôm nay' : `Còn ${daysLeft} ngày`;
         const title = tItem.item ? (tItem.item.title || 'Mục không tên') : 'Không rõ';
         const typeLabel = tItem.type === 'category' ? 'Mục' : 'Bài học';
 
+        let catName = 'Chưa phân loại';
+        if (tItem.type === 'lesson') {
+          if (tItem.originalCategoryTitle) {
+            catName = tItem.originalCategoryTitle;
+          } else if (tItem.item && tItem.item.categoryId) {
+            const foundCat = state.categories.find(c => c.id === tItem.item.categoryId);
+            if (foundCat) catName = foundCat.title;
+          }
+        } else {
+          catName = 'Thư mục';
+        }
+
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36]';
+        row.className = 'trash-item-row group flex items-center justify-between p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] transition-all duration-300';
+        row.setAttribute('data-trash-id', tItem.id);
         row.innerHTML = `
-          <div class="min-w-0 pr-2">
-            <div class="flex items-center gap-1.5 mb-0.5">
-              <span class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.2 rounded bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">${typeLabel}</span>
-              <h4 class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8] truncate">${title}</h4>
+          <div class="min-w-0 pr-3 flex-1">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${tItem.type === 'category' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'}">${typeLabel}</span>
+              <h4 class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8] truncate max-w-[260px] sm:max-w-md" title="${title}">${title}</h4>
             </div>
-            <p class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Còn ${daysLeft} ngày để khôi phục</p>
+            <div class="flex items-center gap-2 text-[11px] text-[#6E6B65] dark:text-[#979DA8] flex-wrap">
+              <span class="inline-flex items-center gap-1">
+                <svg class="w-3 h-3 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-folder"></use></svg>
+                <span class="truncate max-w-[140px]">${catName}</span>
+              </span>
+              <span>•</span>
+              <span>Xóa: ${formatDeletedDate(tItem.deletedAt)}</span>
+              <span>•</span>
+              <span class="font-medium ${msLeft <= 86400000 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}">${daysText}</span>
+            </div>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button class="btn-restore-trash px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs transition">
-              Khôi phục
+            <button class="btn-restore-trash px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs transition flex items-center gap-1" title="Khôi phục về danh mục cũ">
+              <svg class="w-3.5 h-3.5"><use href="#icon-rotate-ccw"></use></svg>
+              <span>Khôi phục</span>
             </button>
-            <button class="btn-perm-delete-trash p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Xóa vĩnh viễn">
-              <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
+            <button class="btn-perm-delete-trash px-2 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/40 text-xs font-medium transition flex items-center gap-1" title="Xóa vĩnh viễn ngay lập tức">
+              <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+              <span class="hidden sm:inline">Xóa hẳn</span>
             </button>
           </div>
         `;
@@ -5033,12 +5391,12 @@
         if (restoreBtn) {
           restoreBtn.addEventListener('click', () => restoreTrashItem(tItem.id));
         }
+
+        // // FIX-1: Bấm "Xóa vĩnh viễn" là xóa ngay lập tức không hỏi xác nhận, hiệu ứng trượt biến mất mượt
         const permDelBtn = row.querySelector('.btn-perm-delete-trash');
         if (permDelBtn) {
           permDelBtn.addEventListener('click', () => {
-            askConfirmDelete(`Xóa vĩnh viễn "${title}"? Thao tác này không thể hoàn tác.`, () => {
-              permanentDeleteTrashItem(tItem.id);
-            });
+            permanentDeleteTrashItem(tItem.id, row);
           });
         }
 
@@ -5047,8 +5405,7 @@
     }
 
 
-    // =========================================================================
-    // // FEATURE-9: VUỐT CHUYỂN BÀI VÀ BẢNG PHÍM TẮT
+        // // FEATURE-9: VUỐT CHUYỂN BÀI VÀ BẢNG PHÍM TẮT
     // =========================================================================
     function setupSwipeGestures() {
       const readingArea = document.getElementById('readingArea');
@@ -5365,11 +5722,9 @@
                   ${completedCount}/${totalCount}
                 </span>
 
-                <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Đổi tên mục" data-rename-cat="${cat.id}">
-                  <svg class="w-3.5 h-3.5"><use href="#icon-pencil"></use></svg>
-                </button>
-                <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Chuyển vào thùng rác" data-delete-cat="${cat.id}">
-                  <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+                <!-- // FIX-2: Nút menu ⋯ cho mục -->
+                <button class="touch-target p-1.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#1A1A1A] dark:hover:text-[#EDECE8] transition" data-open-cat-menu="${cat.id}" title="Tùy chọn mục" aria-label="Tùy chọn mục">
+                  <svg class="w-3.5 h-3.5"><use href="#icon-more-vertical"></use></svg>
                 </button>
               </div>
             </div>
@@ -5568,7 +5923,7 @@
           const catId = el.getAttribute('data-delete-cat');
           const cat = state.categories.find(c => c.id === catId);
           if (!cat) return;
-          askConfirmDelete(`Chuyển mục "${cat.title}" và các bài bên trong vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+          askConfirmDelete(`Chuyển mục "${cat.title}" và các bài bên trong vào Thùng rác? (Có thể khôi phục trong 7 ngày)`, () => {
             moveCategoryToTrash(catId);
           });
         });
@@ -5603,7 +5958,7 @@
           e.stopPropagation();
           const lesson = state.lessons.find(l => l.id === el.getAttribute('data-quick-delete-lesson'));
           if (lesson) {
-            askConfirmDelete(`Chuyển bài "${lesson.title}" vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+            askConfirmDelete(`Chuyển bài "${lesson.title}" vào Thùng rác? (Có thể khôi phục trong 7 ngày)`, () => {
               moveLessonToTrash(lesson.id);
             });
           }
