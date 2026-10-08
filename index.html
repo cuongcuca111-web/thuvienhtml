@@ -17,10 +17,9 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%238696FB'/%3E%3Cg transform='translate(4, 4)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/%3E%3C/g%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%238696FB'/%3E%3Cg transform='translate(24, 24) scale(6)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/%3E%3C/g%3E%3C/svg%3E">
 
-  <!-- Web App Manifest (Data URI inline để chạy độc lập 100% trong 1 file) -->
+  <!-- Web App Manifest inline -->
   <link rel="manifest" id="pwaManifestLink">
 
-  <!-- Chặn cảnh báo vô hại ResizeObserver trước khi nạp tài nguyên -->
   <script>
     (function() {
       const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='%238696FB'/><g transform='translate(24, 24) scale(6)' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z'/></g></svg>`;
@@ -65,14 +64,13 @@
     };
   </script>
   
-  <!-- Phông chữ Google Fonts: Inter cho giao diện, Source Serif 4 & Newsreader cho việc đọc sách -->
+  <!-- Phông chữ Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS & Lucide Icons CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <script>
@@ -218,7 +216,6 @@
 </head>
 <body class="h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100">
 
-  <!-- HEADER TRÊN CÙNG -->
   <header class="h-14 fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/80 dark:bg-[#0F1115]/85 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between px-3 md:px-5 transition-colors">
     <div class="flex items-center gap-2.5">
       <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên" title="Thu gọn / Mở rộng thanh bên" class="p-2 rounded-card text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center">
@@ -230,7 +227,7 @@
         </div>
         <div class="flex flex-col justify-center">
           <span class="text-[15px] font-bold tracking-tight text-[#1A1A1A] dark:text-white leading-tight">Thư viện Sách HTML</span>
-          <span class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] leading-tight mt-0.5 font-normal">Editorial v2.7 • Smart Scaler</span>
+          <span class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] leading-tight mt-0.5 font-normal">Editorial v2.8 • 7-Day Cloud Share</span>
         </div>
       </div>
     </div>
@@ -254,8 +251,8 @@
     </div>
 
     <div class="flex items-center gap-1 md:gap-1.5">
-      <!-- NÚT TẠO LINK NHANH -->
-      <button id="btnHeaderQuickShare" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#818CF8] dark:hover:bg-[#6366F1] text-white text-xs font-semibold shadow-sm transition" title="Tải file lên và tạo link chia sẻ ngay cho người khác">
+      <!-- NÚT TẠO LINK NHANH (LƯU 1 TUẦN) -->
+      <button id="btnHeaderQuickShare" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#818CF8] dark:hover:bg-[#6366F1] text-white text-xs font-semibold shadow-sm transition" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)">
         <i data-lucide="link" class="w-3.5 h-3.5"></i>
         <span class="hidden sm:inline">Tạo link nhanh</span>
       </button>
@@ -272,7 +269,7 @@
         <span class="hidden sm:inline">Cài App</span>
       </button>
 
-      <!-- Điều chỉnh cỡ chữ A- / A+ kèm mức hiển thị % -->
+      <!-- Điều chỉnh cỡ chữ A- / A+ -->
       <div class="flex items-center bg-[#F7F7F5] dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card p-0.5" title="Tăng / Giảm cỡ chữ văn bản và infographic">
         <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="px-2 py-1 rounded hover:bg-white dark:hover:bg-[#262C36] text-[#6B6B66] dark:text-[#9AA3B2] transition">
           <span class="text-xs font-bold">A-</span>
@@ -347,21 +344,22 @@
       </div>
     </div>
 
-    <!-- Thanh tiến độ đọc cực mảnh -->
+    <!-- Thanh tiến độ đọc -->
     <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-transparent">
       <div id="readingProgressBar" class="h-full bg-[#4F46E5] dark:bg-[#818CF8] transition-all duration-150 w-0"></div>
     </div>
   </header>
 
-  <!-- BANNER KHI ĐANG XEM BÀI CHIA SẺ QUA LINK -->
+  <!-- BANNER KHI ĐANG XEM BÀI CHIA SẺ QUA LINK (HIỂN THỊ HẠN 7 NGÀY) -->
   <div id="sharedLessonBanner" class="hidden fixed top-14 left-0 right-0 z-30 bg-indigo-600 text-white px-4 py-2.5 text-xs shadow-md flex items-center justify-between transition-all">
     <div class="flex items-center gap-2 overflow-hidden mr-2">
       <i data-lucide="share-2" class="w-4 h-4 flex-shrink-0 text-indigo-200"></i>
-      <span class="truncate">Bạn đang xem bài chia sẻ trực tiếp: <strong id="sharedBannerTitle">Bài học</strong></span>
+      <span class="truncate">Đang xem bài chia sẻ: <strong id="sharedBannerTitle">Bài học</strong> <span id="sharedBannerExpiry" class="text-[11px] text-indigo-200 ml-1.5 font-normal">(Còn hạn ~7 ngày)</span></span>
     </div>
     <div class="flex items-center gap-2 flex-shrink-0">
-      <button id="btnSaveSharedToMyLib" class="px-3 py-1 rounded bg-white text-indigo-700 hover:bg-indigo-50 font-semibold transition text-xs shadow-sm">
-        Lưu vào thư viện của tôi
+      <button id="btnSaveSharedToMyLib" class="px-3 py-1 rounded bg-white text-indigo-700 hover:bg-indigo-50 font-semibold transition text-xs shadow-sm flex items-center gap-1.5">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Lưu vào thư viện của tôi</span>
       </button>
       <button id="btnExitShareView" class="px-2 py-1 rounded bg-indigo-700 hover:bg-indigo-800 text-white font-medium transition text-xs">
         Về thư viện chính
@@ -416,10 +414,8 @@
         </div>
       </div>
 
-      <!-- Danh sách Mục & Bài học (Scrollable) -->
-      <div id="categoriesList" class="flex-1 overflow-y-auto px-2 py-3 space-y-3">
-        <!-- Render động từ JS -->
-      </div>
+      <!-- Danh sách Mục & Bài học -->
+      <div id="categoriesList" class="flex-1 overflow-y-auto px-2 py-3 space-y-3"></div>
 
       <div class="p-3 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50">
         <span id="statsSummary">0 mục • 0 bài</span>
@@ -430,7 +426,6 @@
       </div>
     </aside>
 
-    <!-- KHU VỰC ĐỌC NỘI DUNG CHÍNH (READING AREA) -->
     <main id="readingArea" class="flex-1 overflow-y-auto flex flex-col relative scroll-smooth focus:outline-none">
       <div id="stickyReaderHeader" class="sticky top-0 z-10 backdrop-blur-md bg-white/90 dark:bg-[#0F1115]/90 border-b border-[#E6E6E1] dark:border-[#262C36] px-4 md:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
         
@@ -475,7 +470,7 @@
           </label>
 
           <!-- NÚT CHIA SẺ BÀI ĐANG ĐỌC -->
-          <button id="btnShareCurrentLesson" class="p-1.5 md:px-2.5 md:py-1.5 rounded-card bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5 font-medium transition hover:opacity-90" title="Tạo link chia sẻ cho người khác xem ngay">
+          <button id="btnShareCurrentLesson" class="p-1.5 md:px-2.5 md:py-1.5 rounded-card bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5 font-medium transition hover:opacity-90" title="Tạo link chia sẻ cho người khác xem ngay trong 7 ngày">
             <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">Chia sẻ link</span>
           </button>
@@ -537,18 +532,17 @@
         </div>
       </div>
 
-      <!-- KHUNG ĐỌC NỘI DUNG CHÍNH (EDITORIAL CONTAINER) -->
       <div id="readingContainerWrapper" class="w-full flex-1 flex flex-col items-center">
         <div id="readingContentContainer" class="w-full mx-auto px-4 md:px-6 py-4 md:py-6 flex-1 flex flex-col transition-all duration-150">
           
-          <!-- MÀN HÌNH TRỐNG MẶC ĐỊNH KHI VÀO WEB -->
+          <!-- MÀN HÌNH TRỐNG KHI VÀO WEB -->
           <div id="emptyLessonState" class="flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[500px]">
             <div class="w-20 h-20 rounded-[20px] bg-[#8696FB]/15 text-[#4F46E5] dark:text-[#818CF8] flex items-center justify-center mb-5 shadow-sm">
               <i data-lucide="book-open" class="w-10 h-10"></i>
             </div>
             <h2 class="text-xl font-bold font-reading text-[#1A1A1A] dark:text-[#ECEEF2] mb-2">Thư viện của bạn đang trống</h2>
             <p class="text-xs sm:text-sm text-[#6B6B66] dark:text-[#9AA3B2] max-w-md mb-6 leading-relaxed">
-              Bạn có thể tải lên các file bài học HTML để lưu vào thư viện cá nhân, hoặc dùng tính năng <strong>Tạo link nhanh</strong> để chia sẻ file cho người khác xem ngay lập tức mà không cần đăng nhập.
+              Bạn có thể tải lên các file bài học HTML để lưu vào thư viện cá nhân, hoặc dùng tính năng <strong>Tạo link nhanh</strong> để chia sẻ file cho người khác xem ngay lập tức (lưu giữ 7 ngày trong hệ thống).
             </p>
             <div class="flex flex-wrap items-center justify-center gap-3">
               <button id="btnEmptyAddLesson" class="px-4 py-2.5 rounded-card bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#818CF8] dark:hover:bg-[#6366F1] text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 shadow-sm">
@@ -557,14 +551,13 @@
               </button>
               <button id="btnEmptyQuickShare" class="px-4 py-2.5 rounded-card border border-indigo-300 dark:border-indigo-800 bg-indigo-50/60 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-[#4F46E5] dark:text-[#818CF8] text-xs sm:text-sm font-semibold transition flex items-center gap-2">
                 <i data-lucide="link" class="w-4 h-4"></i>
-                <span>Tạo link chia sẻ nhanh</span>
+                <span>Tạo link chia sẻ nhanh (7 ngày)</span>
               </button>
             </div>
           </div>
 
-          <!-- PHẦN HIỂN THỊ NỘI DUNG KHI ĐÃ CÓ BÀI HỌC ĐƯỢC CHỌN -->
+          <!-- PHẦN HIỂN THỊ NỘI DUNG KHI ĐÃ CÓ BÀI HỌC -->
           <div id="activeLessonContentBox" class="hidden flex-1 flex flex-col">
-            <!-- Tiêu đề bài học -->
             <div class="mb-4">
               <div class="flex items-start justify-between gap-3 group">
                 <h1 
@@ -660,7 +653,6 @@
 
   </div>
 
-  <!-- THANH CÔNG CỤ NỔI KHI ĐỌC TOÀN MÀN HÌNH -->
   <div id="fullscreenFloatingBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#161A20]/95 backdrop-blur-md text-white border border-white/10 px-4 py-2 rounded-pill shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
     <button id="fsBtnPrev" class="p-1.5 rounded-full hover:bg-white/10 text-white transition" title="Bài trước">
       <i data-lucide="chevron-left" class="w-4 h-4"></i>
@@ -685,7 +677,7 @@
     </button>
   </div>
 
-  <!-- MODAL: TẠO LINK CHIA SẺ NHANH -->
+  <!-- MODAL: TẠO LINK CHIA SẺ NHANH (LƯU 7 NGÀY - TỰ ĐỘNG XÓA) -->
   <div id="quickShareModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-lg shadow-2xl p-5 flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-4">
@@ -694,7 +686,7 @@
             <i data-lucide="share-2" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">Tạo link xem trực tiếp</h3>
+            <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">Tạo link xem trực tiếp (Lưu 7 ngày)</h3>
             <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]">Người nhận không cần đăng nhập hay cài đặt gì vẫn xem được</p>
           </div>
         </div>
@@ -730,14 +722,20 @@
           </div>
         </div>
 
-        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-card text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2">
-          <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
-          <p>Link này có thể gửi qua Zalo, Messenger, Email,... Bạn bè của bạn chỉ cần nhấp vào link là mở trực tiếp bài học trên điện thoại hoặc máy tính ngay lập tức!</p>
+        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-card text-emerald-800 dark:text-emerald-300 text-xs space-y-1.5">
+          <div class="flex items-start gap-2">
+            <i data-lucide="clock" class="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400"></i>
+            <p><strong>Thời hạn lưu trữ: Đúng 1 tuần (7 ngày)</strong>. Sau 1 tuần, dữ liệu chia sẻ này sẽ tự động xóa sạch để giải phóng bộ nhớ hệ thống.</p>
+          </div>
+          <div class="flex items-start gap-2 pt-1 border-t border-emerald-200/60 dark:border-emerald-800/40">
+            <i data-lucide="send" class="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400"></i>
+            <p>Bạn có thể gửi link này qua Zalo, Messenger, Email... Người nhận nhấp vào là xem được ngay trên cả máy tính lẫn điện thoại.</p>
+          </div>
         </div>
       </div>
 
       <div class="mt-4 pt-3 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between text-xs">
-        <span class="text-[#6B6B66] dark:text-[#9AA3B2]" id="shareStatusNote">Sẵn sàng chia sẻ</span>
+        <span class="text-[#6B6B66] dark:text-[#9AA3B2]" id="shareStatusNote">Sẵn sàng tạo link</span>
         <button id="btnTestOpenShareUrl" class="text-[#4F46E5] dark:text-[#818CF8] font-medium hover:underline flex items-center gap-1">
           <span>Xem thử bài viết</span>
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
@@ -1008,7 +1006,6 @@
 
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- SCRIPT LOGIC ỨNG DỤNG -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
@@ -1094,6 +1091,9 @@
         .toLowerCase();
     }
 
+    // Thời gian sống của link chia sẻ: đúng 7 ngày (1 tuần)
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
     const state = {
       user: null,
       userId: null,
@@ -1163,7 +1163,6 @@
       }
     }
 
-    /* Quản lý lưu trữ cục bộ khi offline */
     function loadLocalState() {
       state.useLocalFallback = true;
       try {
@@ -1197,16 +1196,31 @@
       } catch (_) {}
     }
 
-    /* Khởi tạo xác thực & Kiểm tra Link chia sẻ */
+    /* Đảm bảo người dùng luôn có xác thực (kể cả ẩn danh) để đọc/ghi link chia sẻ */
+    async function ensureUserAuth() {
+      if (auth && auth.currentUser) return auth.currentUser;
+      if (!auth) return null;
+      try {
+        const cred = await signInAnonymously(auth);
+        return cred.user;
+      } catch (e) {
+        console.warn("ensureUserAuth signInAnonymously fallback:", e);
+        return null;
+      }
+    }
+
     async function initAuthAndData() {
+      // 1. Kiểm tra tham số chia sẻ trên URL trước
       const urlParams = new URLSearchParams(window.location.search);
       const shareId = urlParams.get('share');
-      if (shareId) {
-        await loadSharedLessonFromCloud(shareId);
-      }
+      const shareUrl = urlParams.get('share_url');
+      const shareTitle = urlParams.get('stitle') || 'Bài học được chia sẻ';
 
       if (!auth) {
         enableFallbackMode("Không thể kết nối Firebase SDK. Đang dùng chế độ ngoại tuyến.");
+        if (shareId || shareUrl) {
+          await loadSharedLesson(shareId, shareUrl, shareTitle);
+        }
         return;
       }
 
@@ -1259,6 +1273,11 @@
 
           await loadUserSettings();
           setupRealtimeListeners();
+
+          // Khi auth đã sẵn sàng, nạp bài chia sẻ nếu URL có yêu cầu
+          if (shareId || shareUrl) {
+            await loadSharedLesson(shareId, shareUrl, shareTitle);
+          }
         } else {
           localStorage.removeItem('last_auth_user_email');
           localStorage.removeItem('last_auth_user_name');
@@ -1269,11 +1288,17 @@
           } catch (anonErr) {
             console.warn("signInAnonymously không khả dụng:", anonErr);
             setupLocalGuestUser();
+            if (shareId || shareUrl) {
+              await loadSharedLesson(shareId, shareUrl, shareTitle);
+            }
           }
         }
       }, (error) => {
         console.error("Lỗi onAuthStateChanged:", error);
         enableFallbackMode("Lỗi xác thực: " + (error.message || ''));
+        if (shareId || shareUrl) {
+          loadSharedLesson(shareId, shareUrl, shareTitle);
+        }
       });
     }
 
@@ -1358,7 +1383,6 @@
       openAuthModal('register');
     });
 
-    /* Modal xác thực đăng nhập/đăng ký */
     const authModal = document.getElementById('authModal');
     const tabBtnLogin = document.getElementById('tabBtnLogin');
     const tabBtnRegister = document.getElementById('tabBtnRegister');
@@ -1781,7 +1805,7 @@
                       <div class="flex items-center gap-1 flex-shrink-0">
                         ${lesson.isFavorite ? '<i data-lucide="star" class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]"></i>' : ''}
                         
-                        <button class="opacity-0 group-hover/item:opacity-100 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ">
+                        <button class="opacity-0 group-hover/item:opacity-100 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
                           <i data-lucide="share-2" class="w-3 h-3"></i>
                         </button>
                         <button class="opacity-0 group-hover/item:opacity-100 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
@@ -1953,7 +1977,6 @@
       titleEl.innerText = currentLesson.title;
       originalFileEl.innerText = currentLesson.originalFileName || 'lesson.html';
 
-      // Áp dụng cỡ chữ động cho Tiêu đề và Mô tả theo fontSizeOffset
       applyTextScalingToArticleHeaders();
 
       if (currentLesson.description && currentLesson.description.trim().length > 0) {
@@ -1990,7 +2013,7 @@
       }
 
       if (state.isSharedMode) {
-        indexBadge.innerText = "Bài chia sẻ";
+        indexBadge.innerText = "Bài chia sẻ (7 ngày)";
         jumpInput.value = 1;
         slider.min = 0;
         slider.max = 0;
@@ -2037,9 +2060,7 @@
       }
     }
 
-    /* TÍNH NĂNG SMART CONTENT & INFOGRAPHIC SCALING */
     function getScaleFactor(offset) {
-      // Offset từ -2 đến +4: tương ứng từ 80% đến 140%
       const basePercentage = 100 + (offset * 10);
       return {
         percentText: `${basePercentage}%`,
@@ -2071,23 +2092,19 @@
           (doc.head || doc.body).appendChild(scalerStyle);
         }
 
-        // Tối ưu cho cả văn bản thông thường lẫn infographic (hỗ trợ zoom, SVG text, css fixed box)
         scalerStyle.textContent = `
           body {
             zoom: ${scaleValue} !important;
             -webkit-text-size-adjust: ${scaleValue * 100}% !important;
             transform-origin: top center;
           }
-          /* Đảm bảo bảng biểu và infographic không bị tràn lề khi phóng to */
           img, svg, canvas, table {
             max-width: 100% !important;
           }
         `;
 
-        // Gán trực tiếp thuộc tính zoom trên body để các trình duyệt nhân Chromium/WebKit/Blink hiển thị mượt mà tức thì
         doc.body.style.zoom = scaleValue;
 
-        // Kích hoạt tính toán lại chiều cao chính xác sau khi co giãn
         setTimeout(() => {
           inspectIframeNativeBackgroundAndResize();
         }, 60);
@@ -2146,7 +2163,6 @@
 
       iframe.onload = () => {
         skeleton.classList.add('hidden');
-        // Áp dụng ngay lập tức mức co giãn font/infographic khi tải xong bài
         applyFontSizeToIframe();
         inspectIframeNativeBackgroundAndResize();
       };
@@ -2195,7 +2211,6 @@
               const hDoc = iframe.contentDocument.documentElement;
               if (!b || !hDoc) return;
 
-              // Đo đạc có tính đến hệ số zoom
               const { scaleValue } = getScaleFactor(state.fontSizeOffset);
               const naturalHeight = Math.max(b.scrollHeight, b.offsetHeight, hDoc.scrollHeight, hDoc.offsetHeight, 400);
               const scaledHeight = Math.ceil(naturalHeight * (scaleValue > 1 ? scaleValue : 1));
@@ -2346,7 +2361,6 @@
       }
     }
 
-    /* QUẢN LÝ CHIA SẺ BÀI HỌC */
     const quickShareModal = document.getElementById('quickShareModal');
     const shareFileInput = document.getElementById('shareFileInput');
     const shareDropZone = document.getElementById('shareDropZone');
@@ -2358,6 +2372,7 @@
     const shareFileUploadArea = document.getElementById('shareFileUploadArea');
     const sharedLessonBanner = document.getElementById('sharedLessonBanner');
     const sharedBannerTitle = document.getElementById('sharedBannerTitle');
+    const sharedBannerExpiry = document.getElementById('sharedBannerExpiry');
 
     function openQuickShareModal(initialLesson = null) {
       quickShareModal.classList.remove('hidden');
@@ -2370,7 +2385,7 @@
         shareFileUploadArea.classList.remove('hidden');
         shareFileLabel.innerText = "Bấm để chọn file HTML hoặc kéo thả vào đây";
         shareGeneratedUrlInput.value = "";
-        document.getElementById('shareStatusNote').innerText = "Vui lòng chọn một file HTML để tạo link";
+        document.getElementById('shareStatusNote').innerText = "Vui lòng chọn một file HTML để tạo link (lưu 7 ngày)";
       }
     }
 
@@ -2408,7 +2423,7 @@
       }
 
       shareFileLabel.innerText = `Đã chọn: ${file.name}`;
-      document.getElementById('shareStatusNote').innerText = "Đang tạo liên kết tải nhanh...";
+      document.getElementById('shareStatusNote').innerText = "Đang tải lên hệ thống chia sẻ 7 ngày...";
 
       try {
         const content = await file.text();
@@ -2417,7 +2432,12 @@
         if (titleMatch && titleMatch[1]) {
           title = titleMatch[1].trim();
         } else {
-          title = file.name.replace(/\.[^/.]+$/, "");
+          const h1Match = content.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+          if (h1Match && h1Match[1]) {
+            title = h1Match[1].trim();
+          } else {
+            title = file.name.replace(/\.[^/.]+$/, "");
+          }
         }
 
         const tempLesson = {
@@ -2434,53 +2454,104 @@
       }
     }
 
+    // Tải file HTML lên Litterbox (Catbox) với thời gian sống time=168h (đúng 7 ngày = 1 tuần)
+    async function uploadTo7DayCloud(htmlContent, fileName = 'lesson.html') {
+      const formData = new FormData();
+      formData.append('reqtype', 'fileupload');
+      formData.append('time', '168h'); // 168 giờ = 7 ngày tự hủy
+      const fileBlob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      formData.append('fileToUpload', fileBlob, fileName);
+
+      const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        throw new Error(`Upload fail status: ${res.status}`);
+      }
+      const directUrl = await res.text();
+      if (!directUrl || !directUrl.startsWith('http')) {
+        throw new Error('Invalid URL returned from cloud');
+      }
+      return directUrl.trim();
+    }
+
     async function createShareLinkFromLesson(lesson) {
-      document.getElementById('shareStatusNote').innerText = "Đang tạo link công khai...";
-      const shareId = 's_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+      document.getElementById('shareStatusNote').innerText = "Đang tạo liên kết lưu trữ 7 ngày...";
+      shareGeneratedUrlInput.value = "Đang khởi tạo...";
+
+      // Đảm bảo có user ẩn danh hoặc thật để Firestore không chặn
+      await ensureUserAuth();
+
+      const now = Date.now();
+      const expiresAt = now + SEVEN_DAYS_MS; // 7 ngày sau
+      const shareId = 's_' + now.toString(36) + '_' + Math.random().toString(36).substr(2, 6);
 
       const shareDocData = {
         id: shareId,
         title: lesson.title,
         description: lesson.description || '',
-        originalFileName: lesson.originalFileName || 'tailieu.html',
+        originalFileName: lesson.originalFileName || 'lesson.html',
         htmlContent: lesson.htmlContent,
-        createdAt: new Date().toISOString()
+        createdAt: now,
+        expiresAt: expiresAt
       };
 
-      try {
-        if (db) {
+      const approxSize = new Blob([lesson.htmlContent || '']).size;
+      let shareUrl = '';
+      let saveCloudSuccess = false;
+
+      // Nếu dung lượng vừa phải (< 750KB), ưu tiên lưu vào Firestore
+      if (db && approxSize < 750000) {
+        try {
           const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
           await setDoc(shareRef, shareDocData);
-        } else {
+          shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+          saveCloudSuccess = true;
+        } catch (err) {
+          console.warn("Firestore public_shares lưu thất bại, chuyển sang 7-day cloud upload:", err);
+        }
+      }
+
+      // Nếu Firestore không được cấp quyền hoặc file lớn (> 750KB), dùng 7-Day Cloud Storage (Litterbox 168h)
+      if (!saveCloudSuccess) {
+        try {
+          const directFileUrl = await uploadTo7DayCloud(lesson.htmlContent, lesson.originalFileName || 'lesson.html');
+          const encodedCloudUrl = encodeURIComponent(directFileUrl);
+          const encodedTitle = encodeURIComponent(lesson.title || 'Bài học');
+          shareUrl = `${window.location.origin}${window.location.pathname}?share_url=${encodedCloudUrl}&stitle=${encodedTitle}`;
+          saveCloudSuccess = true;
+        } catch (cloudErr) {
+          console.warn("Litterbox upload lỗi:", cloudErr);
+          // Trường hợp mạng chặn cả 2, lưu local fallback
+          shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
           localStorage.setItem('local_share_' + shareId, JSON.stringify(shareDocData));
         }
-
-        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
-        shareGeneratedUrlInput.value = shareUrl;
-        document.getElementById('shareStatusNote').innerText = "Đã tạo link thành công! Sẵn sàng sao chép.";
-
-        btnTestOpenShareUrl.onclick = () => {
-          window.open(shareUrl, '_blank');
-        };
-
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          copyBtnLabel.innerText = "Đã chép link!";
-          showToast("Đã sao chép link chia sẻ vào bộ nhớ tạm");
-          setTimeout(() => { copyBtnLabel.innerText = "Sao chép"; }, 2500);
-        }).catch(() => {});
-
-      } catch (err) {
-        console.error("Lỗi tạo share doc:", err);
-        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
-        shareGeneratedUrlInput.value = shareUrl;
-        localStorage.setItem('local_share_' + shareId, JSON.stringify(shareDocData));
-        document.getElementById('shareStatusNote').innerText = "Đã tạo link cục bộ thành công.";
       }
+
+      // Lưu một bản sao tại local để máy người tạo test tức thì
+      try {
+        localStorage.setItem('local_share_' + shareId, JSON.stringify(shareDocData));
+      } catch (_) {}
+
+      shareGeneratedUrlInput.value = shareUrl;
+      document.getElementById('shareStatusNote').innerText = "Đã tạo link thành công! Có hiệu lực và tự hủy sau 7 ngày.";
+
+      btnTestOpenShareUrl.onclick = () => {
+        window.open(shareUrl, '_blank');
+      };
+
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        copyBtnLabel.innerText = "Đã chép link!";
+        showToast("Đã sao chép link chia sẻ 7 ngày vào bộ nhớ tạm");
+        setTimeout(() => { copyBtnLabel.innerText = "Sao chép"; }, 2500);
+      }).catch(() => {});
     }
 
     btnCopyShareUrl.addEventListener('click', () => {
       const url = shareGeneratedUrlInput.value;
-      if (!url) return;
+      if (!url || url.includes('Đang')) return;
       navigator.clipboard.writeText(url).then(() => {
         copyBtnLabel.innerText = "Đã chép!";
         showToast("Đã sao chép liên kết vào bộ nhớ tạm");
@@ -2488,36 +2559,96 @@
       });
     });
 
-    async function loadSharedLessonFromCloud(shareId) {
+    async function loadSharedLesson(shareId, directCloudUrl, fallbackTitle) {
       setSyncStatus(true, "Đang nạp bài chia sẻ...");
       try {
         let lessonData = null;
-        if (db) {
-          const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
-          const snap = await getDoc(shareRef);
-          if (snap.exists()) {
-            lessonData = snap.data();
+
+        // Trường hợp 1: Mở qua link trực tiếp Cloud 7 ngày (?share_url=...)
+        if (directCloudUrl) {
+          const actualUrl = decodeURIComponent(directCloudUrl);
+          const decodedTitle = decodeURIComponent(fallbackTitle || 'Bài học được chia sẻ');
+          
+          const response = await fetch(actualUrl);
+          if (!response.ok) {
+            if (response.status === 404) {
+              showToast("Liên kết chia sẻ này đã hết hạn sau 7 ngày và đã tự động xóa.", "error");
+              return;
+            }
+            throw new Error("Không thể tải file từ cloud");
+          }
+          const htmlText = await response.text();
+
+          lessonData = {
+            id: 'shared_' + Date.now(),
+            title: decodedTitle,
+            description: 'Bài học được chia sẻ qua liên kết công khai (tự hủy sau 7 ngày).',
+            originalFileName: decodedTitle + '.html',
+            htmlContent: htmlText,
+            expiresAt: Date.now() + SEVEN_DAYS_MS
+          };
+        }
+        // Trường hợp 2: Mở qua shareId Firestore (?share=...)
+        else if (shareId) {
+          await ensureUserAuth();
+
+          if (db) {
+            try {
+              const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
+              const snap = await getDoc(shareRef);
+              if (snap.exists()) {
+                const data = snap.data();
+                // KIỂM TRA THỜI HẠN 7 NGÀY
+                const now = Date.now();
+                if (data.expiresAt && now > data.expiresAt) {
+                  // Đã hết hạn -> xóa bài khỏi Firestore
+                  try { await deleteDoc(shareRef); } catch (_) {}
+                  showToast("Liên kết chia sẻ này đã hết hạn sau 7 ngày và đã tự động xóa.", "error");
+                  return;
+                }
+                lessonData = data;
+              }
+            } catch (fsErr) {
+              console.warn("Không đọc được từ Firestore public_shares:", fsErr);
+            }
+          }
+
+          if (!lessonData) {
+            const localStr = localStorage.getItem('local_share_' + shareId);
+            if (localStr) {
+              const lData = JSON.parse(localStr);
+              if (lData.expiresAt && Date.now() > lData.expiresAt) {
+                localStorage.removeItem('local_share_' + shareId);
+                showToast("Liên kết chia sẻ này đã hết hạn sau 7 ngày.", "error");
+                return;
+              }
+              lessonData = lData;
+            }
           }
         }
 
-        if (!lessonData) {
-          const localStr = localStorage.getItem('local_share_' + shareId);
-          if (localStr) lessonData = JSON.parse(localStr);
-        }
-
-        if (lessonData) {
+        if (lessonData && lessonData.htmlContent) {
           state.isSharedMode = true;
           state.sharedLessonData = lessonData;
           sharedLessonBanner.classList.remove('hidden');
           sharedBannerTitle.innerText = lessonData.title;
+
+          // Tính số ngày còn lại
+          if (lessonData.expiresAt) {
+            const diffDays = Math.ceil((lessonData.expiresAt - Date.now()) / (24 * 60 * 60 * 1000));
+            sharedBannerExpiry.innerText = diffDays > 0 ? `(Còn hạn ~${diffDays} ngày)` : `(Sắp hết hạn)`;
+          } else {
+            sharedBannerExpiry.innerText = `(Hạn lưu trữ 7 ngày)`;
+          }
+
           renderActiveLesson();
           showToast(`Đang xem bài chia sẻ: "${lessonData.title}"`);
         } else {
-          showToast("Không tìm thấy bài học từ link chia sẻ này hoặc liên kết đã hết hạn", "error");
+          showToast("Không tìm thấy bài học hoặc liên kết đã hết hạn (sau 7 ngày).", "error");
         }
       } catch (err) {
         console.error("Lỗi tải bài chia sẻ:", err);
-        showToast("Không thể tải bài học chia sẻ", "error");
+        showToast("Không thể tải bài học từ link chia sẻ này.", "error");
       } finally {
         setSyncStatus(false);
       }
@@ -2558,8 +2689,11 @@
 
       const newDocId = 'lesson_' + Date.now();
       const newLesson = {
-        ...state.sharedLessonData,
         id: newDocId,
+        title: state.sharedLessonData.title,
+        description: state.sharedLessonData.description || '',
+        originalFileName: state.sharedLessonData.originalFileName || 'shared_lesson.html',
+        htmlContent: state.sharedLessonData.htmlContent,
         categoryId: targetCatId,
         isCompleted: false,
         isFavorite: false,
@@ -2574,12 +2708,11 @@
         saveLocalLessons();
       }
 
-      showToast("Đã lưu bài học vào Thư viện của bạn!");
+      showToast("Đã lưu vĩnh viễn bài học vào Thư viện của bạn!");
       exitShareMode();
       selectLesson(newDocId);
     });
 
-    /* Tìm kiếm toàn cục */
     let searchDebounceTimer = null;
     const searchInput = document.getElementById('globalSearchInput');
     const searchDropdown = document.getElementById('searchResultsDropdown');
@@ -2730,7 +2863,6 @@
       return text.replace(regex, '<mark class="bg-[#FEF3C7] dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-0.5 rounded">$1</mark>');
     }
 
-    /* Modal nạp file HTML */
     const uploadModal = document.getElementById('uploadModal');
     const dropZone = document.getElementById('dropZone');
     const htmlFilesInput = document.getElementById('htmlFilesInput');
@@ -2940,7 +3072,6 @@
       }
     });
 
-    /* Modal Mục */
     const categoryModal = document.getElementById('categoryModal');
     const categoryNameInput = document.getElementById('categoryNameInput');
     const categoryModalTitle = document.getElementById('categoryModalTitle');
@@ -3013,7 +3144,6 @@
       }
     });
 
-    /* Modal Đổi tên bài học */
     const renameModal = document.getElementById('renameLessonModal');
     const renameInput = document.getElementById('renameLessonInput');
     const renameCounter = document.getElementById('renameCharCounter');
@@ -3066,7 +3196,6 @@
       renameModal.classList.add('hidden');
     });
 
-    /* Sửa mô tả tại chỗ */
     const descTextWrapper = document.getElementById('descriptionContentWrapper');
     const descEditor = document.getElementById('descriptionEditor');
     const descTextarea = document.getElementById('descriptionTextarea');
@@ -3115,7 +3244,6 @@
       }
     });
 
-    /* Hộp thoại xác nhận xóa */
     const confirmModal = document.getElementById('confirmDeleteModal');
     const confirmMsg = document.getElementById('confirmDeleteMsg');
     const btnProceedDelete = document.getElementById('btnProceedConfirmDelete');
@@ -3139,7 +3267,6 @@
       state.lastDeleteAction = null;
     });
 
-    /* Slider bài học */
     const slider = document.getElementById('lessonSlider');
     const fsSlider = document.getElementById('fsSlider');
 
@@ -3235,7 +3362,6 @@
       });
     });
 
-    /* ĐIỀU CHỈNH CỠ CHỮ THÔNG MINH */
     function adjustFontSize(delta) {
       state.fontSizeOffset = Math.max(-2, Math.min(4, state.fontSizeOffset + delta));
       updateFontSizeDisplay();
@@ -3288,7 +3414,6 @@
       });
     });
 
-    /* Toàn màn hình & Focus mode */
     const readingArea = document.getElementById('readingArea');
     const floatingBar = document.getElementById('fullscreenFloatingBar');
     let floatingBarTimer = null;
@@ -3532,7 +3657,6 @@
       }
     });
 
-    /* PWA Service Worker & Install Prompt */
     let deferredInstallPrompt = null;
     const btnPwaInstall = document.getElementById('btnPwaInstall');
     const pwaIosModal = document.getElementById('pwaIosModal');
@@ -3597,10 +3721,10 @@
             e.waitUntil(self.clients.claim());
           });
           self.addEventListener('fetch', (e) => {
-            if (e.request.url.includes('firebase') || e.request.url.includes('googleapis')) {
+            if (e.request.url.includes('firebase') || e.request.url.includes('googleapis') || e.request.url.includes('litterbox')) {
               return;
             }
-            e.respondWith(
+            e.request && e.respondWith(
               fetch(e.request).catch(() => caches.match(e.request))
             );
           });
