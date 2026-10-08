@@ -445,6 +445,28 @@
     }
 
   </style>
+  <!-- // FEATURE-11: Đăng ký Service Worker và PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then(reg => {
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  const banner = document.getElementById('appUpdateBanner');
+                  if (banner) banner.classList.remove('hidden');
+                }
+              });
+            });
+          })
+          .catch(err => console.warn('PWA ServiceWorker error:', err));
+      });
+    }
+  </script>
+
 </head>
 <body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
   <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
@@ -565,6 +587,39 @@
       <path d="M7 21L21 7L17 3L3 17L7 21Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M11 13L15 17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M22 21H7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+        <symbol id="icon-tag" viewBox="0 0 24 24">
+      <path d="M12 2H2V12L14.3 24.3C14.7 24.7 15.3 24.7 15.7 24.3L23.3 16.7C23.7 16.3 23.7 15.7 23.3 15.3L12 2Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-grip-vertical" viewBox="0 0 24 24">
+      <circle cx="9" cy="12" r="1.2" fill="currentColor"/>
+      <circle cx="9" cy="5" r="1.2" fill="currentColor"/>
+      <circle cx="9" cy="19" r="1.2" fill="currentColor"/>
+      <circle cx="15" cy="12" r="1.2" fill="currentColor"/>
+      <circle cx="15" cy="5" r="1.2" fill="currentColor"/>
+      <circle cx="15" cy="19" r="1.2" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-arrow-up" viewBox="0 0 24 24">
+      <path d="M12 19V5M5 12L12 5L19 12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-arrow-down" viewBox="0 0 24 24">
+      <path d="M12 5V19M19 12L12 19L5 12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-help-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M9.09 9A3 3 0 0 1 15 10C15 12 12 13 12 15M12 18H12.01" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-check-square" viewBox="0 0 24 24">
+      <polyline points="9 11 12 14 22 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 12V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-wifi-off" viewBox="0 0 24 24">
+      <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55A10.94 10.94 0 0 1 7.28 11.06M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-sort" viewBox="0 0 24 24">
+      <path d="M11 5H21M11 9H18M11 13H15M3 17L6 20L9 17M6 18V4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
     <symbol id="icon-trash-2" viewBox="0 0 24 24">
       <path d="M3 6H21M8 6V4A2 2 0 0 1 10 2H14A2 2 0 0 1 16 2V6M19 6V20A2 2 0 0 1 17 22H7A2 2 0 0 1 5 20V6M10 11V17M14 11V17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -834,6 +889,19 @@
                 <span>Bật (F)</span>
               </button>
             </div>
+
+            <!-- Nhóm 4: Vuốt ngang chuyển bài (Mobile) -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Vuốt ngang chuyển bài</div>
+                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Vuốt sang trái/phải trên điện thoại</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="toggleSwipeGesture" type="checkbox" class="sr-only peer" checked>
+                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
           </div>
         </div>
 
@@ -892,6 +960,9 @@
             <svg class="w-3.5 h-3.5"><use href="#icon-folder-plus"></use></svg>
             <span>Mục mới</span>
           </button>
+          <button id="btnToggleBatchLessons" class="touch-target p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Chọn nhiều bài để thao tác hàng loạt">
+            <svg class="w-4 h-4"><use href="#icon-check-square"></use></svg>
+          </button>
           <button id="btnCollapseSidebarDesktop" class="touch-target p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng mục lục">
             <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
           </button>
@@ -914,6 +985,53 @@
       </div>
 
       
+            <!-- // FEATURE-6: Thanh lọc theo Nhãn và Sắp xếp nâng cao -->
+      <div class="px-3 pt-2 flex items-center justify-between gap-1.5 shrink-0 text-xs">
+        <div class="relative flex-1 min-w-0">
+          <button id="btnTagFilterDropdown" class="w-full px-2 py-1.5 rounded-lg bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-between gap-1 transition truncate" title="Lọc bài theo nhãn">
+            <span class="flex items-center gap-1.5 truncate">
+              <svg class="w-3 h-3 text-indigo-500 shrink-0"><use href="#icon-tag"></use></svg>
+              <span id="tagFilterButtonLabel" class="truncate">Nhãn: Tất cả</span>
+            </span>
+            <svg class="w-3 h-3 opacity-60 shrink-0"><use href="#icon-chevron-down"></use></svg>
+          </button>
+          <!-- Popover chọn nhãn -->
+          <div id="tagFilterDropdownMenu" class="hidden absolute left-0 top-full mt-1 w-52 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 space-y-1 text-xs">
+            <div class="flex items-center justify-between pb-1 mb-1 border-b border-[#E7E5DF] dark:border-[#262C36]">
+              <span class="font-semibold text-[11px] text-[#1C1917] dark:text-[#EDECE8]">Lọc theo nhãn</span>
+              <button id="btnClearTagFilter" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline">Xóa lọc</button>
+            </div>
+            <div id="tagFilterOptionsList" class="max-h-48 overflow-y-auto space-y-0.5"></div>
+          </div>
+        </div>
+
+        <div class="relative shrink-0">
+          <button id="btnSortOrderDropdown" class="px-2 py-1.5 rounded-lg bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center gap-1 transition" title="Sắp xếp bài học">
+            <svg class="w-3 h-3 text-indigo-500"><use href="#icon-sort"></use></svg>
+            <span id="sortOrderButtonLabel" class="hidden sm:inline">Mới thêm</span>
+          </button>
+          <!-- Popover chọn sắp xếp -->
+          <div id="sortOrderDropdownMenu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-1.5 space-y-0.5 text-xs">
+            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-between" data-sort="newest">
+              <span>Mới thêm</span>
+              <span class="sort-check text-indigo-600">✓</span>
+            </button>
+            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between" data-sort="recent">
+              <span>Mở gần đây</span>
+              <span class="sort-check text-indigo-600 hidden">✓</span>
+            </button>
+            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between" data-sort="unlearned">
+              <span>Chưa học trước</span>
+              <span class="sort-check text-indigo-600 hidden">✓</span>
+            </button>
+            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between" data-sort="name">
+              <span>Theo tên (A-Z)</span>
+              <span class="sort-check text-indigo-600 hidden">✓</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- // FIX: Thẻ Tiếp tục học ghim cố định ở đầu Sidebar, hiển thị xuyên suốt trong luồng flex -->
       <div id="sidebarContinueLearningBox" class="hidden mx-3 mt-2.5 p-2.5 rounded-xl bg-indigo-50/90 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900/50 shadow-xs shrink-0">
         <div class="flex items-center justify-between text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold mb-1">
@@ -949,7 +1067,12 @@
       <!-- Chân sidebar -->
       <div class="p-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-xs text-[#6E6B65] dark:text-[#979DA8] bg-[#FAF9F5]/70 dark:bg-[#111317]/50">
         <span id="statsSummary" class="font-medium text-[11px]">0 mục • 0 bài</span>
-        <button id="btnSidebarQuickUpload" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5 py-1">
+        <button id="btnOpenTrash" class="touch-target font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 transition" title="Thùng rác">
+            <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+            <span>Thùng rác</span>
+            <span id="trashCountBadge" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">0</span>
+          </button>
+          <button id="btnSidebarQuickUpload" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5 py-1">
           <svg class="w-3.5 h-3.5"><use href="#icon-upload"></use></svg>
           <span>Tải file</span>
         </button>
@@ -1209,7 +1332,13 @@
                 </button>
               </div>
               
-              <div id="descriptionContentWrapper" class="relative">
+                        <!-- // FEATURE-6: Danh sách Nhãn gắn trên bài đọc -->
+          <div id="articleTagsList" class="flex items-center gap-1.5 flex-wrap my-1"></div>
+          <button id="btnArticleManageTags" class="touch-target inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 transition" title="Gắn hoặc quản lý nhãn">
+            <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
+            <span>+ Nhãn</span>
+          </button>
+          <div id="descriptionContentWrapper" class="relative">
                 <p id="descriptionText" class="font-serif text-sm sm:text-[15px] text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line line-clamp-3 transition-all">
                   Chưa có mô tả cho bài học này. Nhấp vào đây để thêm câu hỏi ôn tập hoặc ghi chú.
                 </p>
@@ -2128,6 +2257,66 @@
     // Thời gian sống của link chia sẻ: đúng 7 ngày (1 tuần)
     const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
+    
+    // =========================================================================
+    // // FEATURE-6 & 8: KHỞI TẠO DỮ LIỆU NHÃN (TAGS) VÀ THÙNG RÁC (TRASH)
+    // =========================================================================
+    const DEFAULT_TAGS = [
+      { id: 'tag_kho', name: 'Khó', color: '#EF4444' },
+      { id: 'tag_sapthi', name: 'Sắp thi', color: '#F59E0B' },
+      { id: 'tag_quantrong', name: 'Quan trọng', color: '#8B5CF6' }
+    ];
+
+    function getInitialTags() {
+      try {
+        const stored = localStorage.getItem('local_tags');
+        return stored ? JSON.parse(stored) : DEFAULT_TAGS;
+      } catch (_) {
+        return DEFAULT_TAGS;
+      }
+    }
+
+    function saveLocalTags() {
+      try {
+        localStorage.setItem('local_tags', JSON.stringify(state.tags));
+      } catch (_) {}
+    }
+
+    function getInitialTrash() {
+      try {
+        const stored = localStorage.getItem('local_trash');
+        const list = stored ? JSON.parse(stored) : [];
+        // Tự động dọn dẹp các mục đã quá hạn 30 ngày
+        const now = Date.now();
+        const cleaned = list.filter(item => (item.expiresAt || (item.deletedAt + 30 * 86400000)) > now);
+        if (cleaned.length !== list.length) {
+          localStorage.setItem('local_trash', JSON.stringify(cleaned));
+        }
+        return cleaned;
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveLocalTrash() {
+      try {
+        localStorage.setItem('local_trash', JSON.stringify(state.trash));
+      } catch (_) {}
+      updateTrashUIBadge();
+    }
+
+    function updateTrashUIBadge() {
+      const badge = document.getElementById('trashCountBadge');
+      if (!badge) return;
+      const count = (state.trash || []).length;
+      if (count > 0) {
+        badge.innerText = count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
     const state = {
       user: null,
       userId: null,
@@ -2154,7 +2343,16 @@
       useLocalFallback: false,
       isSharedMode: false,
       sharedLessonData: null,
-      transitionDirection: 0 // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp
+      transitionDirection: 0 // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp,
+      tags: [], // // FEATURE-6: Danh sách nhãn [{ id, name, color }]
+      selectedTagIds: [], // // FEATURE-6: Bộ lọc nhãn đang chọn
+      sortOrder: 'newest', // // FEATURE-6: Thứ tự sắp xếp ('newest' | 'recent' | 'unlearned' | 'name')
+      isBatchSelectingLessons: false, // // FEATURE-7: Trạng thái chọn nhiều bài trong mục lục
+      selectedLessonIds: new Set(), // // FEATURE-7: Tập hợp ID bài đang chọn
+      trash: [], // // FEATURE-8: Thùng rác [{ id, type, item, deletedAt, expiresAt, relatedData }]
+      swipeEnabled: true, // // FEATURE-9: Bật/tắt vuốt ngang chuyển bài
+      offlineSyncQueue: [], // // FEATURE-11: Hàng đợi đồng bộ khi có mạng lại
+
     };
 
     // // REDESIGN: Bộ render icon SVG độc bản nội bộ (Thay thế hoàn toàn Lucide / Icon bên ngoài)
@@ -2303,6 +2501,13 @@
 
         state.categories = storedCats ? JSON.parse(storedCats) : [];
         state.lessons = storedLessons ? JSON.parse(storedLessons) : [];
+        state.tags = getInitialTags();
+        state.trash = getInitialTrash();
+
+        try {
+          const storedSort = localStorage.getItem('local_sort_order');
+          if (storedSort) state.sortOrder = storedSort;
+        } catch (_) {}
 
         if (state.lessons.length > 0 && !state.activeLessonId) {
           state.activeLessonId = state.lessons[0].id;
@@ -2311,6 +2516,7 @@
 
         renderCategoriesAndLessons();
         renderActiveLesson();
+        updateTrashUIBadge();
       } catch (err) {
         console.warn("Lỗi loadLocalState:", err);
       }
@@ -3087,6 +3293,1066 @@
       });
     }
 
+    
+    // =========================================================================
+    // // FEATURE-6: QUẢN LÝ NHÃN (TAGS), BỘ LỌC VÀ SẮP XẾP NÂNG CAO
+    // =========================================================================
+    let currentTagManageLessonId = null;
+
+    function getTagById(tagId) {
+      return (state.tags || []).find(t => t.id === tagId);
+    }
+
+    function openTagManageModal(lessonId) {
+      currentTagManageLessonId = lessonId;
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      const modal = document.getElementById('tagManageModal');
+      const titleEl = document.getElementById('tagManageLessonTitle');
+      if (titleEl) titleEl.innerText = lesson ? lesson.title : 'Chọn bài học';
+
+      renderLessonTagsCheckboxes();
+      renderAllTagsManageList();
+      showModalAnimated(modal);
+    }
+
+    function renderLessonTagsCheckboxes() {
+      const container = document.getElementById('lessonTagsCheckboxList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const lesson = state.lessons.find(l => l.id === currentTagManageLessonId);
+      const activeTagIds = (lesson && lesson.tagIds) || [];
+
+      if (!state.tags || state.tags.length === 0) {
+        container.innerHTML = '<p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1">Chưa có nhãn nào. Hãy tạo nhãn mới bên dưới.</p>';
+        return;
+      }
+
+      state.tags.forEach(tag => {
+        const isChecked = activeTagIds.includes(tag.id);
+        const row = document.createElement('label');
+        row.className = 'flex items-center justify-between p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none';
+        row.innerHTML = `
+          <div class="flex items-center gap-2">
+            <input type="checkbox" class="tag-assign-cb rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" data-tag-id="${tag.id}" ${isChecked ? 'checked' : ''} />
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${tag.color};"></span>
+            <span class="font-medium text-[11px] text-[#1C1917] dark:text-[#EDECE8]">${tag.name}</span>
+          </div>
+          <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${isChecked ? 'Đã gắn' : ''}</span>
+        `;
+
+        const cb = row.querySelector('.tag-assign-cb');
+        cb.addEventListener('change', () => {
+          if (!lesson) return;
+          if (!lesson.tagIds) lesson.tagIds = [];
+          if (cb.checked) {
+            if (!lesson.tagIds.includes(tag.id)) lesson.tagIds.push(tag.id);
+          } else {
+            lesson.tagIds = lesson.tagIds.filter(id => id !== tag.id);
+          }
+          saveLocalLessons();
+          if (state.userId && !state.useLocalFallback && db) {
+            updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), { tagIds: lesson.tagIds }).catch(()=>{});
+          }
+          renderCategoriesAndLessons();
+          renderActiveLesson();
+          renderLessonTagsCheckboxes();
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function renderAllTagsManageList() {
+      const container = document.getElementById('allTagsManageList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      (state.tags || []).forEach(tag => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-1.5 rounded-lg bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36]';
+        item.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${tag.color};"></span>
+            <span class="text-[11px] font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">${tag.name}</span>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button class="btn-rename-tag p-1 rounded hover:bg-black/5 text-[#6E6B65] dark:text-[#979DA8]" title="Đổi tên nhãn">
+              <svg class="w-3 h-3"><use href="#icon-pencil"></use></svg>
+            </button>
+            <button class="btn-delete-tag p-1 rounded hover:bg-red-50 text-red-500" title="Xóa nhãn">
+              <svg class="w-3 h-3"><use href="#icon-trash-2"></use></svg>
+            </button>
+          </div>
+        `;
+
+        // Rename tag
+        item.querySelector('.btn-rename-tag').addEventListener('click', () => {
+          const newName = prompt(`Nhập tên mới cho nhãn "${tag.name}":`, tag.name);
+          if (newName && newName.trim()) {
+            tag.name = newName.trim();
+            saveLocalTags();
+            renderAllTagsManageList();
+            renderLessonTagsCheckboxes();
+            renderCategoriesAndLessons();
+            renderActiveLesson();
+            updateTagFilterUI();
+            showToast('Đã đổi tên nhãn');
+          }
+        });
+
+        // Delete tag
+        item.querySelector('.btn-delete-tag').addEventListener('click', () => {
+          if (confirm(`Bạn có chắc muốn xóa nhãn "${tag.name}"? Nhãn này sẽ bị gỡ khỏi mọi bài học.`)) {
+            state.tags = state.tags.filter(t => t.id !== tag.id);
+            // Gỡ tag khỏi tất cả bài học
+            state.lessons.forEach(l => {
+              if (l.tagIds) l.tagIds = l.tagIds.filter(id => id !== tag.id);
+            });
+            state.selectedTagIds = state.selectedTagIds.filter(id => id !== tag.id);
+            saveLocalTags();
+            saveLocalLessons();
+            renderAllTagsManageList();
+            renderLessonTagsCheckboxes();
+            renderCategoriesAndLessons();
+            renderActiveLesson();
+            updateTagFilterUI();
+            showToast('Đã xóa nhãn');
+          }
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    let selectedNewTagColor = '#EF4444';
+    document.querySelectorAll('.tag-color-swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        selectedNewTagColor = sw.getAttribute('data-color') || '#EF4444';
+        document.querySelectorAll('.tag-color-swatch').forEach(s => s.classList.remove('ring-2', 'ring-indigo-500'));
+        sw.classList.add('ring-2', 'ring-indigo-500');
+      });
+    });
+
+    const btnCreateNewTag = document.getElementById('btnCreateNewTag');
+    if (btnCreateNewTag) {
+      btnCreateNewTag.addEventListener('click', () => {
+        const input = document.getElementById('newTagNameInput');
+        const name = (input ? input.value : '').trim();
+        if (!name) {
+          showToast('Vui lòng nhập tên nhãn', 'error');
+          return;
+        }
+
+        const newTag = {
+          id: 'tag_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+          name: name,
+          color: selectedNewTagColor
+        };
+
+        if (!state.tags) state.tags = [];
+        state.tags.push(newTag);
+        saveLocalTags();
+
+        if (input) input.value = '';
+        renderAllTagsManageList();
+        renderLessonTagsCheckboxes();
+        updateTagFilterUI();
+        showToast(`Đã tạo nhãn "${name}"`);
+      });
+    }
+
+    const btnCloseTagManage = document.getElementById('btnCloseTagManageModal');
+    if (btnCloseTagManage) {
+      btnCloseTagManage.addEventListener('click', () => {
+        hideModalAnimated(document.getElementById('tagManageModal'));
+      });
+    }
+
+    // Dropdown chọn Lọc theo nhãn
+    const btnTagFilterDropdown = document.getElementById('btnTagFilterDropdown');
+    const tagFilterMenu = document.getElementById('tagFilterDropdownMenu');
+    const btnClearTagFilter = document.getElementById('btnClearTagFilter');
+
+    if (btnTagFilterDropdown && tagFilterMenu) {
+      btnTagFilterDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        tagFilterMenu.classList.toggle('hidden');
+        if (sortOrderMenu) sortOrderMenu.classList.add('hidden');
+        renderTagFilterDropdownOptions();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!btnTagFilterDropdown.contains(e.target) && !tagFilterMenu.contains(e.target)) {
+          tagFilterMenu.classList.add('hidden');
+        }
+      });
+    }
+
+    if (btnClearTagFilter) {
+      btnClearTagFilter.addEventListener('click', () => {
+        state.selectedTagIds = [];
+        updateTagFilterUI();
+        renderCategoriesAndLessons();
+        if (tagFilterMenu) tagFilterMenu.classList.add('hidden');
+      });
+    }
+
+    function renderTagFilterDropdownOptions() {
+      const container = document.getElementById('tagFilterOptionsList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!state.tags || state.tags.length === 0) {
+        container.innerHTML = '<p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1">Chưa có nhãn.</p>';
+        return;
+      }
+
+      state.tags.forEach(tag => {
+        const isChecked = state.selectedTagIds.includes(tag.id);
+        const opt = document.createElement('label');
+        opt.className = 'flex items-center justify-between p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-xs select-none';
+        opt.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <input type="checkbox" class="tag-filter-opt-cb rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" data-filter-tag-id="${tag.id}" ${isChecked ? 'checked' : ''} />
+            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${tag.color};"></span>
+            <span class="truncate text-[11px] text-[#1C1917] dark:text-[#EDECE8]">${tag.name}</span>
+          </div>
+        `;
+
+        opt.querySelector('.tag-filter-opt-cb').addEventListener('change', (e) => {
+          if (e.target.checked) {
+            if (!state.selectedTagIds.includes(tag.id)) state.selectedTagIds.push(tag.id);
+          } else {
+            state.selectedTagIds = state.selectedTagIds.filter(id => id !== tag.id);
+          }
+          updateTagFilterUI();
+          renderCategoriesAndLessons();
+        });
+
+        container.appendChild(opt);
+      });
+    }
+
+    function updateTagFilterUI() {
+      const label = document.getElementById('tagFilterButtonLabel');
+      if (!label) return;
+      if (!state.selectedTagIds || state.selectedTagIds.length === 0) {
+        label.innerText = 'Nhãn: Tất cả';
+      } else if (state.selectedTagIds.length === 1) {
+        const t = getTagById(state.selectedTagIds[0]);
+        label.innerText = t ? `Nhãn: ${t.name}` : 'Nhãn: 1 đã chọn';
+      } else {
+        label.innerText = `Nhãn: ${state.selectedTagIds.length} đã chọn`;
+      }
+    }
+
+    // Dropdown chọn Sắp xếp
+    const btnSortOrderDropdown = document.getElementById('btnSortOrderDropdown');
+    const sortOrderMenu = document.getElementById('sortOrderDropdownMenu');
+    const sortOrderButtonLabel = document.getElementById('sortOrderButtonLabel');
+
+    if (btnSortOrderDropdown && sortOrderMenu) {
+      btnSortOrderDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortOrderMenu.classList.toggle('hidden');
+        if (tagFilterMenu) tagFilterMenu.classList.add('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!btnSortOrderDropdown.contains(e.target) && !sortOrderMenu.contains(e.target)) {
+          sortOrderMenu.classList.add('hidden');
+        }
+      });
+
+      sortOrderMenu.querySelectorAll('.sort-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sortVal = btn.getAttribute('data-sort') || 'newest';
+          state.sortOrder = sortVal;
+          localStorage.setItem('local_sort_order', sortVal);
+          saveUserSettings();
+
+          // Cập nhật UI checkmarks
+          sortOrderMenu.querySelectorAll('.sort-option-btn').forEach(b => {
+            const isMatch = b.getAttribute('data-sort') === sortVal;
+            const check = b.querySelector('.sort-check');
+            if (check) check.classList.toggle('hidden', !isMatch);
+          });
+
+          // Cập nhật nhãn nút
+          const names = {
+            newest: 'Mới thêm',
+            recent: 'Mở gần đây',
+            unlearned: 'Chưa học trước',
+            name: 'Theo tên (A-Z)'
+          };
+          if (sortOrderButtonLabel) sortOrderButtonLabel.innerText = names[sortVal] || 'Sắp xếp';
+
+          sortOrderMenu.classList.add('hidden');
+          renderCategoriesAndLessons();
+        });
+      });
+    }
+
+    const btnArticleManageTags = document.getElementById('btnArticleManageTags');
+    if (btnArticleManageTags) {
+      btnArticleManageTags.addEventListener('click', () => {
+        if (state.activeLessonId) openTagManageModal(state.activeLessonId);
+      });
+    }
+
+
+    // =========================================================================
+    // // FEATURE-7: CHỌN NHIỀU BÀI HỌC VÀ KÉO THẢ (MULTI-SELECT & DRAG AND DROP)
+    // =========================================================================
+    const btnToggleBatchLessons = document.getElementById('btnToggleBatchLessons');
+    const sidebarBatchActionBar = document.getElementById('sidebarBatchActionBar');
+    const batchLessonCountText = document.getElementById('batchLessonCountText');
+    const btnBatchSelectAll = document.getElementById('btnBatchSelectAllLessons');
+    const btnBatchDeselectAll = document.getElementById('btnBatchDeselectAllLessons');
+    const btnBatchMoveCat = document.getElementById('btnBatchMoveCat');
+    const btnBatchAssignTags = document.getElementById('btnBatchAssignTags');
+    const btnBatchToggleLearned = document.getElementById('btnBatchToggleLearned');
+    const btnBatchDeleteLesson = document.getElementById('btnBatchDeleteLesson');
+
+    if (btnToggleBatchLessons) {
+      btnToggleBatchLessons.addEventListener('click', () => {
+        state.isBatchSelectingLessons = !state.isBatchSelectingLessons;
+        if (!state.isBatchSelectingLessons) {
+          state.selectedLessonIds.clear();
+        }
+        btnToggleBatchLessons.classList.toggle('bg-indigo-50', state.isBatchSelectingLessons);
+        btnToggleBatchLessons.classList.toggle('text-indigo-600', state.isBatchSelectingLessons);
+        updateBatchLessonActionUI();
+        renderCategoriesAndLessons();
+      });
+    }
+
+    function updateBatchLessonActionUI() {
+      if (!sidebarBatchActionBar) return;
+      if (!state.isBatchSelectingLessons) {
+        sidebarBatchActionBar.classList.add('hidden');
+        return;
+      }
+      sidebarBatchActionBar.classList.remove('hidden');
+      const count = state.selectedLessonIds ? state.selectedLessonIds.size : 0;
+      if (batchLessonCountText) {
+        batchLessonCountText.innerText = `Đã chọn ${count} bài`;
+      }
+    }
+
+    if (btnBatchSelectAll) {
+      btnBatchSelectAll.addEventListener('click', () => {
+        state.lessons.forEach(l => state.selectedLessonIds.add(l.id));
+        updateBatchLessonActionUI();
+        renderCategoriesAndLessons();
+      });
+    }
+
+    if (btnBatchDeselectAll) {
+      btnBatchDeselectAll.addEventListener('click', () => {
+        state.selectedLessonIds.clear();
+        updateBatchLessonActionUI();
+        renderCategoriesAndLessons();
+      });
+    }
+
+    // Chuyển mục hàng loạt
+    const batchMoveCatModal = document.getElementById('batchMoveCatModal');
+    const batchMoveCatOptions = document.getElementById('batchMoveCatOptions');
+    let selectedBatchTargetCatId = null;
+
+    if (btnBatchMoveCat) {
+      btnBatchMoveCat.addEventListener('click', () => {
+        if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) {
+          showToast('Chưa chọn bài học nào', 'error');
+          return;
+        }
+        renderBatchMoveCatOptions();
+        showModalAnimated(batchMoveCatModal);
+      });
+    }
+
+    function renderBatchMoveCatOptions() {
+      if (!batchMoveCatOptions) return;
+      batchMoveCatOptions.innerHTML = '';
+
+      // Thêm tùy chọn "Chưa phân loại"
+      const uncatOpt = document.createElement('label');
+      uncatOpt.className = 'flex items-center gap-2 p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-xs';
+      uncatOpt.innerHTML = `
+        <input type="radio" name="batchTargetCat" value="" class="text-indigo-600 focus:ring-indigo-500" checked />
+        <span>Chưa phân loại</span>
+      `;
+      uncatOpt.querySelector('input').addEventListener('change', () => { selectedBatchTargetCatId = null; });
+      batchMoveCatOptions.appendChild(uncatOpt);
+
+      state.categories.forEach(cat => {
+        const opt = document.createElement('label');
+        opt.className = 'flex items-center gap-2 p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-xs';
+        opt.innerHTML = `
+          <input type="radio" name="batchTargetCat" value="${cat.id}" class="text-indigo-600 focus:ring-indigo-500" />
+          <span class="font-medium">${cat.title}</span>
+        `;
+        opt.querySelector('input').addEventListener('change', () => { selectedBatchTargetCatId = cat.id; });
+        batchMoveCatOptions.appendChild(opt);
+      });
+    }
+
+    const btnConfirmBatchMove = document.getElementById('btnConfirmBatchMove');
+    if (btnConfirmBatchMove) {
+      btnConfirmBatchMove.addEventListener('click', () => {
+        const count = state.selectedLessonIds.size;
+        for (const lId of state.selectedLessonIds) {
+          const les = state.lessons.find(l => l.id === lId);
+          if (les) les.categoryId = selectedBatchTargetCatId;
+        }
+        saveLocalLessons();
+        renderCategoriesAndLessons();
+        hideModalAnimated(batchMoveCatModal);
+        showToast(`Đã chuyển ${count} bài học`);
+      });
+    }
+
+    const btnCancelBatchMove = document.getElementById('btnCancelBatchMove');
+    const btnCloseBatchMove = document.getElementById('btnCloseBatchMoveModal');
+    if (btnCancelBatchMove) btnCancelBatchMove.addEventListener('click', () => hideModalAnimated(batchMoveCatModal));
+    if (btnCloseBatchMove) btnCloseBatchMove.addEventListener('click', () => hideModalAnimated(batchMoveCatModal));
+
+    // Gắn nhãn hàng loạt
+    if (btnBatchAssignTags) {
+      btnBatchAssignTags.addEventListener('click', () => {
+        if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) {
+          showToast('Chưa chọn bài học nào', 'error');
+          return;
+        }
+        const firstId = Array.from(state.selectedLessonIds)[0];
+        openTagManageModal(firstId);
+      });
+    }
+
+    // Đánh dấu đã học hàng loạt
+    if (btnBatchToggleLearned) {
+      btnBatchToggleLearned.addEventListener('click', () => {
+        if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) return;
+        const count = state.selectedLessonIds.size;
+        for (const lId of state.selectedLessonIds) {
+          const les = state.lessons.find(l => l.id === lId);
+          if (les) les.isCompleted = true;
+        }
+        saveLocalLessons();
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+        showToast(`Đã đánh dấu hoàn thành ${count} bài`);
+      });
+    }
+
+    // Xóa hàng loạt đưa vào thùng rác
+    if (btnBatchDeleteLesson) {
+      btnBatchDeleteLesson.addEventListener('click', () => {
+        if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) return;
+        const count = state.selectedLessonIds.size;
+        askConfirmDelete(`Chuyển ${count} bài học đã chọn vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+          const idsToDelete = Array.from(state.selectedLessonIds);
+          for (const lId of idsToDelete) {
+            moveLessonToTrash(lId, true); // true = skip individual toast
+          }
+          state.selectedLessonIds.clear();
+          state.isBatchSelectingLessons = false;
+          if (btnToggleBatchLessons) {
+            btnToggleBatchLessons.classList.remove('bg-indigo-50', 'text-indigo-600');
+          }
+          updateBatchLessonActionUI();
+          renderCategoriesAndLessons();
+          renderActiveLesson();
+          showActionToast(`Đã chuyển ${count} bài vào Thùng rác`, 'Mở Thùng rác', () => openTrashModal());
+        });
+      });
+    }
+
+    // Kéo thả và thay đổi thứ tự (Drag & Drop / Reorder)
+    let draggedLessonId = null;
+
+    function moveLessonOrder(lessonId, delta) {
+      const idx = state.lessons.findIndex(l => l.id === lessonId);
+      if (idx === -1) return;
+      const targetIdx = idx + delta;
+      if (targetIdx >= 0 && targetIdx < state.lessons.length) {
+        const temp = state.lessons[idx];
+        state.lessons[idx] = state.lessons[targetIdx];
+        state.lessons[targetIdx] = temp;
+        saveLocalLessons();
+        renderCategoriesAndLessons();
+      }
+    }
+
+    function moveCategoryOrder(catId, delta) {
+      const idx = state.categories.findIndex(c => c.id === catId);
+      if (idx === -1) return;
+      const targetIdx = idx + delta;
+      if (targetIdx >= 0 && targetIdx < state.categories.length) {
+        const temp = state.categories[idx];
+        state.categories[idx] = state.categories[targetIdx];
+        state.categories[targetIdx] = temp;
+        saveLocalCategories();
+        renderCategoriesAndLessons();
+      }
+    }
+
+
+    // =========================================================================
+    // // FEATURE-8: THÙNG RÁC (TRASH) VÀ HOÀN TÁC TRONG 30 NGÀY
+    // =========================================================================
+    function moveLessonToTrash(lessonId, skipToast = false) {
+      const idx = state.lessons.findIndex(l => l.id === lessonId);
+      if (idx === -1) return null;
+      const lesson = state.lessons.splice(idx, 1)[0];
+
+      const trashItem = {
+        id: 'trash_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        type: 'lesson',
+        item: lesson,
+        deletedAt: Date.now(),
+        expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000,
+        relatedData: {
+          highlights: (state.learningData.highlights && state.learningData.highlights[lesson.id]) || [],
+          progress: (state.learningData.readingProgress && state.learningData.readingProgress[lesson.id]) || null,
+          flashcards: (state.learningData.flashcards || []).filter(f => f.lessonId === lesson.id),
+          schedule: (state.learningData.reviewSchedules && state.learningData.reviewSchedules[lesson.id]) || null
+        }
+      };
+
+      if (!state.trash) state.trash = [];
+      state.trash.unshift(trashItem);
+      saveLocalTrash();
+      saveLocalLessons();
+
+      if (state.activeLessonId === lessonId) {
+        state.activeLessonId = state.lessons.length > 0 ? state.lessons[0].id : null;
+      }
+
+      renderCategoriesAndLessons();
+      renderActiveLesson();
+      updateTrashUIBadge();
+
+      if (!skipToast) {
+        showActionToast(`Đã chuyển bài "${lesson.title}" vào Thùng rác`, 'Hoàn tác', () => {
+          restoreTrashItem(trashItem.id);
+        });
+      }
+      return trashItem;
+    }
+
+    function moveCategoryToTrash(catId) {
+      const idx = state.categories.findIndex(c => c.id === catId);
+      if (idx === -1) return null;
+      const cat = state.categories.splice(idx, 1)[0];
+
+      // Di chuyển các bài thuộc mục này vào thùng rác cùng mục
+      const relatedLessons = state.lessons.filter(l => l.categoryId === catId);
+      state.lessons = state.lessons.filter(l => l.categoryId !== catId);
+
+      const trashItem = {
+        id: 'trash_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        type: 'category',
+        item: cat,
+        relatedLessons: relatedLessons,
+        deletedAt: Date.now(),
+        expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000
+      };
+
+      if (!state.trash) state.trash = [];
+      state.trash.unshift(trashItem);
+      saveLocalTrash();
+      saveLocalCategories();
+      saveLocalLessons();
+
+      renderCategoriesAndLessons();
+      renderActiveLesson();
+      updateTrashUIBadge();
+
+      showActionToast(`Đã chuyển mục "${cat.title}" vào Thùng rác`, 'Hoàn tác', () => {
+        restoreTrashItem(trashItem.id);
+      });
+      return trashItem;
+    }
+
+    function restoreTrashItem(trashId) {
+      const idx = (state.trash || []).findIndex(t => t.id === trashId);
+      if (idx === -1) return;
+      const trashItem = state.trash.splice(idx, 1)[0];
+
+      if (trashItem.type === 'lesson') {
+        state.lessons.push(trashItem.item);
+        if (trashItem.relatedData) {
+          if (trashItem.relatedData.highlights) {
+            state.learningData.highlights[trashItem.item.id] = trashItem.relatedData.highlights;
+          }
+          if (trashItem.relatedData.progress) {
+            state.learningData.readingProgress[trashItem.item.id] = trashItem.relatedData.progress;
+          }
+          if (trashItem.relatedData.schedule) {
+            state.learningData.reviewSchedules[trashItem.item.id] = trashItem.relatedData.schedule;
+          }
+          saveLearningData();
+        }
+        state.activeLessonId = trashItem.item.id;
+        showToast(`Đã khôi phục bài "${trashItem.item.title}"`);
+      } else if (trashItem.type === 'category') {
+        state.categories.push(trashItem.item);
+        if (trashItem.relatedLessons) {
+          state.lessons.push(...trashItem.relatedLessons);
+        }
+        showToast(`Đã khôi phục mục "${trashItem.item.title}"`);
+      }
+
+      saveLocalTrash();
+      saveLocalCategories();
+      saveLocalLessons();
+      renderCategoriesAndLessons();
+      renderActiveLesson();
+      updateTrashUIBadge();
+      renderTrashModalView();
+    }
+
+    function permanentDeleteTrashItem(trashId) {
+      const idx = (state.trash || []).findIndex(t => t.id === trashId);
+      if (idx === -1) return;
+      const item = state.trash.splice(idx, 1)[0];
+      saveLocalTrash();
+      updateTrashUIBadge();
+      renderTrashModalView();
+      showToast(`Đã xóa vĩnh viễn`);
+    }
+
+    function emptyTrashAll() {
+      if (!state.trash || state.trash.length === 0) return;
+      askConfirmDelete('Bạn có chắc muốn dọn sạch toàn bộ Thùng rác? Hành động này sẽ xóa vĩnh viễn và không thể hoàn tác.', () => {
+        state.trash = [];
+        saveLocalTrash();
+        updateTrashUIBadge();
+        renderTrashModalView();
+        showToast('Đã dọn sạch thùng rác');
+      });
+    }
+
+    const trashModal = document.getElementById('trashModal');
+    const btnOpenTrash = document.getElementById('btnOpenTrash');
+    const btnCloseTrashModal = document.getElementById('btnCloseTrashModal');
+    const btnEmptyTrashAll = document.getElementById('btnEmptyTrashAll');
+
+    if (btnOpenTrash) {
+      btnOpenTrash.addEventListener('click', openTrashModal);
+    }
+    if (btnCloseTrashModal) {
+      btnCloseTrashModal.addEventListener('click', () => hideModalAnimated(trashModal));
+    }
+    if (btnEmptyTrashAll) {
+      btnEmptyTrashAll.addEventListener('click', emptyTrashAll);
+    }
+
+    function openTrashModal() {
+      renderTrashModalView();
+      showModalAnimated(trashModal);
+    }
+
+    function renderTrashModalView() {
+      const container = document.getElementById('trashItemsListContainer');
+      const subtitle = document.getElementById('trashModalSubtitle');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const items = state.trash || [];
+      if (subtitle) {
+        subtitle.innerText = `${items.length} mục trong thùng rác • Tự động xóa vĩnh viễn sau 30 ngày`;
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-[#6E6B65] dark:text-[#979DA8]">
+            <svg class="w-10 h-10 mx-auto mb-2 opacity-30"><use href="#icon-trash-2"></use></svg>
+            <p class="font-medium">Thùng rác trống</p>
+            <p class="text-[11px] mt-0.5 opacity-75">Các bài học hoặc mục bị xóa sẽ được lưu trữ tại đây trong 30 ngày.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const now = Date.now();
+      items.forEach(tItem => {
+        const daysLeft = Math.max(1, Math.ceil(((tItem.expiresAt || (tItem.deletedAt + 30 * 86400000)) - now) / 86400000));
+        const title = tItem.item ? (tItem.item.title || 'Mục không tên') : 'Không rõ';
+        const typeLabel = tItem.type === 'category' ? 'Mục' : 'Bài học';
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36]';
+        row.innerHTML = `
+          <div class="min-w-0 pr-2">
+            <div class="flex items-center gap-1.5 mb-0.5">
+              <span class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.2 rounded bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">${typeLabel}</span>
+              <h4 class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8] truncate">${title}</h4>
+            </div>
+            <p class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Còn ${daysLeft} ngày để khôi phục</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button class="btn-restore-trash px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs transition">
+              Khôi phục
+            </button>
+            <button class="btn-perm-delete-trash p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Xóa vĩnh viễn">
+              <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
+            </button>
+          </div>
+        `;
+
+        row.querySelector('.btn-restore-trash').addEventListener('click', () => restoreTrashItem(tItem.id));
+        row.querySelector('.btn-perm-delete-trash').addEventListener('click', () => {
+          askConfirmDelete(`Xóa vĩnh viễn "${title}"? Thao tác này không thể hoàn tác.`, () => {
+            permanentDeleteTrashItem(tItem.id);
+          });
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+
+    // =========================================================================
+    // // FEATURE-9: VUỐT CHUYỂN BÀI VÀ BẢNG PHÍM TẮT
+    // =========================================================================
+    function setupSwipeGestures() {
+      const readingArea = document.getElementById('readingArea');
+      if (!readingArea) return;
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+
+      const handleTouchStart = (e) => {
+        if (state.swipeEnabled === false) return;
+        if (e.touches.length !== 1) return;
+        // Bỏ qua nếu người dùng đang có vùng chọn/bôi đen chữ
+        if (window.getSelection()?.toString().trim()) return;
+
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTime = Date.now();
+      };
+
+      const handleTouchEnd = (e) => {
+        if (state.swipeEnabled === false) return;
+        if (e.changedTouches.length !== 1) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        const dt = Date.now() - touchStartTime;
+
+        // Phải lướt nhanh (< 450ms), khoảng cách đủ lớn (>= 60px), góc nghiêng ngang áp đảo (|dx| > |dy| * 1.6)
+        if (dt > 450 || Math.abs(dx) < 60) return;
+        if (Math.abs(dx) <= Math.abs(dy) * 1.6) return;
+
+        // Không kích hoạt nếu chạm vào vùng có thanh cuộn ngang
+        let node = e.target;
+        while (node && node !== readingArea && node !== document.body) {
+          if (node.scrollWidth > node.clientWidth && (node.scrollLeft > 0 || (dx < 0 && node.scrollLeft + node.clientWidth < node.scrollWidth))) {
+            return;
+          }
+          node = node.parentElement;
+        }
+
+        if (dx < -60) {
+          stepLesson(1); // Vuốt sang trái -> Bài tiếp theo
+        } else if (dx > 60) {
+          stepLesson(-1); // Vuốt sang phải -> Bài trước đó
+        }
+      };
+
+      readingArea.addEventListener('touchstart', handleTouchStart, { passive: true });
+      readingArea.addEventListener('touchend', handleTouchEnd, { passive: true });
+    }
+
+    setupSwipeGestures();
+
+    // Toggle switch vuốt chuyển bài trong menu Hiển thị
+    const toggleSwipeGesture = document.getElementById('toggleSwipeGesture');
+    if (toggleSwipeGesture) {
+      toggleSwipeGesture.addEventListener('change', (e) => {
+        state.swipeEnabled = e.target.checked;
+        saveUserSettings();
+        showToast(state.swipeEnabled ? 'Đã bật vuốt chuyển bài' : 'Đã tắt vuốt chuyển bài');
+      });
+    }
+
+    // Modal Bảng phím tắt (Phím ?)
+    const shortcutsModal = document.getElementById('shortcutsModal');
+    const btnCloseShortcutsModal = document.getElementById('btnCloseShortcutsModal');
+
+    function openShortcutsModal() {
+      showModalAnimated(shortcutsModal);
+    }
+    if (btnCloseShortcutsModal) {
+      btnCloseShortcutsModal.addEventListener('click', () => hideModalAnimated(shortcutsModal));
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      const isInput = activeTag === 'input' || activeTag === 'textarea' || document.activeElement.isContentEditable;
+
+      // Phím ? mở bảng phím tắt
+      if (e.key === '?' && !isInput) {
+        e.preventDefault();
+        openShortcutsModal();
+        return;
+      }
+
+      // Phím Esc đóng modal
+      if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.modal-animated.modal-active');
+        if (activeModal) {
+          hideModalAnimated(activeModal);
+          return;
+        }
+      }
+
+      // Phím tắt điều hướng khi không đang gõ
+      if (!isInput && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key === 'l' || e.key === 'L') {
+          const cur = state.lessons.find(l => l.id === state.activeLessonId);
+          if (cur) updateLessonField(cur.id, { isCompleted: !cur.isCompleted });
+        } else if (e.key === 's' || e.key === 'S') {
+          const cur = state.lessons.find(l => l.id === state.activeLessonId);
+          if (cur) updateLessonField(cur.id, { isFavorite: !cur.isFavorite });
+        } else if (e.key === 't' || e.key === 'T') {
+          toggleDesktopSidebar();
+        } else if (e.key === 'g' || e.key === 'G') {
+          renderAllNotesView();
+          showModalAnimated(allNotesModal);
+        } else if (e.key === 'c' || e.key === 'C') {
+          openFlashcardStudyModal();
+        }
+      }
+    });
+
+
+    // =========================================================================
+    // // FEATURE-10: TÌM KIẾM TOÀN THƯ VIỆN CÓ TRÍCH ĐOẠN & KHÔNG DẤU TIẾNG VIỆT
+    // =========================================================================
+    let searchActiveIndex = -1;
+
+    function buildPlainTextFromHtml(html) {
+      if (!html) return '';
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+    }
+
+    // Nâng cấp hàm performSearch để tìm cả trong Title, Description, Content, Highlights & Notes
+    function performSearch(query, dropdownEl) {
+      if (!query || query.trim().length === 0) {
+        dropdownEl.classList.add('hidden');
+        dropdownEl.innerHTML = '';
+        searchActiveIndex = -1;
+        return;
+      }
+
+      const rawQ = query.trim();
+      const normQ = removeVietnameseTones(rawQ);
+      const matches = [];
+
+      state.lessons.forEach(lesson => {
+        const cat = state.categories.find(c => c.id === lesson.categoryId);
+        const catTitle = cat ? cat.title : 'Chưa phân loại';
+
+        const normTitle = removeVietnameseTones(lesson.title || '');
+        const normDesc = removeVietnameseTones(lesson.description || '');
+
+        // 1. Kiểm tra Tiêu đề
+        if (normTitle.includes(normQ)) {
+          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Tiêu đề', snippet: lesson.title, query: rawQ });
+        }
+
+        // 2. Kiểm tra Mô tả
+        if (normDesc.includes(normQ)) {
+          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Mô tả', snippet: extractSearchSnippet(lesson.description, normQ), query: rawQ });
+        }
+
+        // 3. Kiểm tra Nội dung HTML bài học
+        if (lesson.htmlContent) {
+          if (!lesson._plainText) {
+            lesson._plainText = buildPlainTextFromHtml(lesson.htmlContent);
+          }
+          const normContent = removeVietnameseTones(lesson._plainText);
+          if (normContent.includes(normQ)) {
+            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Nội dung', snippet: extractSearchSnippet(lesson._plainText, normQ), query: rawQ });
+          }
+        }
+
+        // 4. Kiểm tra Highlight & Ghi chú của bài
+        const lessonHls = (state.learningData.highlights && state.learningData.highlights[lesson.id]) || [];
+        for (const h of lessonHls) {
+          const normHlText = removeVietnameseTones(h.text || '');
+          const normHlNote = removeVietnameseTones(h.note || '');
+          if (normHlText.includes(normQ)) {
+            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Highlight', snippet: `"${h.text}"`, query: rawQ, hlId: h.id });
+            break;
+          } else if (normHlNote.includes(normQ)) {
+            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Ghi chú', snippet: h.note, query: rawQ, hlId: h.id });
+            break;
+          }
+        }
+      });
+
+      renderEnhancedSearchResults(matches, rawQ, dropdownEl);
+    }
+
+    function extractSearchSnippet(fullText, normQuery) {
+      if (!fullText) return '';
+      const normFull = removeVietnameseTones(fullText);
+      const idx = normFull.indexOf(normQuery);
+      if (idx === -1) return fullText.substring(0, 90) + '...';
+
+      const start = Math.max(0, idx - 30);
+      const end = Math.min(fullText.length, idx + normQuery.length + 50);
+      return (start > 0 ? '...' : '') + fullText.substring(start, end) + (end < fullText.length ? '...' : '');
+    }
+
+    function renderEnhancedSearchResults(matches, query, dropdownEl) {
+      dropdownEl.innerHTML = '';
+      searchActiveIndex = -1;
+
+      if (matches.length === 0) {
+        dropdownEl.innerHTML = `
+          <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
+            Không tìm thấy bài học hay ghi chú nào cho "${query}".
+          </div>
+        `;
+        dropdownEl.classList.remove('hidden');
+        return;
+      }
+
+      // Giới hạn hiển thị 15 kết quả tối đa
+      const limitedMatches = matches.slice(0, 15);
+
+      // Nhóm theo mục bài học
+      const grouped = {};
+      limitedMatches.forEach(m => {
+        if (!grouped[m.categoryTitle]) grouped[m.categoryTitle] = [];
+        grouped[m.categoryTitle].push(m);
+      });
+
+      let html = '';
+      for (const [catName, list] of Object.entries(grouped)) {
+        html += `
+          <div class="mb-2">
+            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 px-2 py-0.5 block">
+              Mục: ${catName}
+            </span>
+            <div class="space-y-1">
+              ${list.map(item => `
+                <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800" data-lesson-id="${item.lesson.id}" data-hl-id="${item.hlId || ''}" data-query="${item.query}">
+                  <div class="flex items-center justify-between text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                    <span class="truncate mr-2">${item.lesson.title}</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
+                      ${item.matchType}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-1 line-clamp-2 leading-relaxed">
+                    ${highlightMatch(item.snippet, query)}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      dropdownEl.innerHTML = html;
+      dropdownEl.classList.remove('hidden');
+
+      dropdownEl.querySelectorAll('.search-result-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const lId = el.getAttribute('data-lesson-id');
+          const hId = el.getAttribute('data-hl-id');
+          const q = el.getAttribute('data-query');
+          dropdownEl.classList.add('hidden');
+          selectLesson(lId);
+
+          if (hId) {
+            setTimeout(() => jumpToHighlight(lId, hId), 400);
+          }
+        });
+      });
+    }
+
+    // Điều hướng phím mũi tên trong ô tìm kiếm
+    [searchInput, mobileSearchInput].forEach(inp => {
+      if (!inp) return;
+      inp.addEventListener('keydown', (e) => {
+        const dd = inp === searchInput ? searchDropdown : mobileSearchDropdown;
+        if (!dd || dd.classList.contains('hidden')) return;
+
+        const items = dd.querySelectorAll('.search-result-item');
+        if (items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          searchActiveIndex = (searchActiveIndex + 1) % items.length;
+          items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
+          items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          searchActiveIndex = (searchActiveIndex - 1 + items.length) % items.length;
+          items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
+          items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (searchActiveIndex >= 0 && searchActiveIndex < items.length) {
+            items[searchActiveIndex].click();
+          }
+        } else if (e.key === 'Escape') {
+          dd.classList.add('hidden');
+        }
+      });
+    });
+
+
+    // =========================================================================
+    // // FEATURE-11: QUẢN LÝ NGOẠI TUYẾN (OFFLINE), ĐỒNG BỘ VÀ CẬP NHẬT PHIÊN BẢN
+    // =========================================================================
+    window.addEventListener('online', () => {
+      setSyncStatus(false, 'Đã đồng bộ');
+      showToast('Đã kết nối lại Internet. Dữ liệu đang được đồng bộ!');
+      // Tự động đẩy dữ liệu cục bộ lên đám mây nếu đã đăng nhập
+      if (state.userId && !state.useLocalFallback && db) {
+        saveUserSettings();
+        saveLearningData();
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      setSyncStatus(false, 'Đang ngoại tuyến');
+      const dot = document.getElementById('syncDot');
+      if (dot) dot.setAttribute('class', 'w-2.5 h-2.5 rounded-full bg-gray-400');
+      showToast('Ứng dụng đang chạy ở chế độ ngoại tuyến.', 'error');
+    });
+
+    const btnReloadAppUpdate = document.getElementById('btnReloadAppUpdate');
+    if (btnReloadAppUpdate) {
+      btnReloadAppUpdate.addEventListener('click', () => {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            window.location.reload();
+          });
+        } else {
+          window.location.reload();
+        }
+      });
+    }
+
+
     function renderCategoriesAndLessons() {
       const container = document.getElementById('categoriesList');
       const statsSummary = document.getElementById('statsSummary');
@@ -3094,10 +4360,44 @@
         statsSummary.innerText = `${state.categories.length} mục • ${state.lessons.length} bài`;
       }
 
-      // FIX: Tách các bài chưa có mục hoặc mục không khớp trong state.categories
+      // Helper sắp xếp bài học theo lựa chọn
+      function sortLessonsList(list) {
+        const sorted = [...list];
+        const order = state.sortOrder || 'newest';
+        if (order === 'recent') {
+          sorted.sort((a, b) => (b.lastOpenedAt || 0) - (a.lastOpenedAt || 0));
+        } else if (order === 'unlearned') {
+          sorted.sort((a, b) => (a.isCompleted ? 1 : 0) - (b.isCompleted ? 1 : 0));
+        } else if (order === 'name') {
+          sorted.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi'));
+        } else {
+          // newest
+          sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        }
+        return sorted;
+      }
+
+      // Helper lọc bài học theo Tab và Nhãn
+      function filterLessonsList(list) {
+        let res = list;
+        // Lọc theo Tab (all / favorites / unread)
+        if (state.activeFilter === 'favorites') {
+          res = res.filter(l => l.isFavorite);
+        } else if (state.activeFilter === 'unread') {
+          res = res.filter(l => !l.isCompleted);
+        }
+
+        // // FEATURE-6: Lọc theo Nhãn đã chọn
+        if (state.selectedTagIds && state.selectedTagIds.length > 0) {
+          res = res.filter(l => l.tagIds && l.tagIds.some(tId => state.selectedTagIds.includes(tId)));
+        }
+
+        return sortLessonsList(res);
+      }
+
+      // Tách các bài chưa có mục hoặc mục không khớp trong state.categories
       const uncategorizedLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
 
-      // FIX: Chỉ hiện empty state khi cả danh mục và bài học chưa phân loại đều rỗng
       if (state.categories.length === 0 && uncategorizedLessons.length === 0) {
         container.innerHTML = `
           <div class="text-center py-8 px-4 text-[#6B6B66] dark:text-[#9AA3B2]">
@@ -3111,32 +4411,32 @@
       }
 
       let html = '';
-      state.categories.forEach(cat => {
+      state.categories.forEach((cat, catIdx) => {
         const allCatLessons = state.lessons.filter(l => l.categoryId === cat.id);
         const completedCount = allCatLessons.filter(l => l.isCompleted).length;
         const totalCount = allCatLessons.length;
         const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-        let filteredLessons = allCatLessons;
-        if (state.activeFilter === 'favorites') {
-          filteredLessons = allCatLessons.filter(l => l.isFavorite);
-        } else if (state.activeFilter === 'unread') {
-          filteredLessons = allCatLessons.filter(l => !l.isCompleted);
-        }
-
+        const filteredLessons = filterLessonsList(allCatLessons);
         const isExpanded = state.categoryExpanded[cat.id] !== false;
 
         html += `
-          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat">
+          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category" data-cat-id="${cat.id}">
             <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="${cat.id}">
-              <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
+              <div class="flex items-center gap-1.5 flex-1 min-w-0 pr-1">
+                <!-- Nút sắp xếp mục lên/xuống -->
+                <div class="flex items-center text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
+                  <button class="p-0.5 hover:text-indigo-600" data-move-cat-up="${cat.id}" title="Di chuyển mục lên"><svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg></button>
+                  <button class="p-0.5 hover:text-indigo-600" data-move-cat-down="${cat.id}" title="Di chuyển mục xuống"><svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg></button>
+                </div>
+
                 <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5 text-[#6B6B66] dark:text-[#9AA3B2] shrink-0 transition-transform"></i>
                 <span class="text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] leading-tight break-words" title="${cat.title}">
                   ${cat.title}
                 </span>
               </div>
 
-              <div class="flex items-center gap-1.5 shrink-0">
+              <div class="flex items-center gap-1 shrink-0">
                 <span class="text-[10px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] px-1.5 py-0.5 rounded border border-[#E6E6E1] dark:border-[#262C36]">
                   ${completedCount}/${totalCount}
                 </span>
@@ -3144,7 +4444,7 @@
                 <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Đổi tên mục" data-rename-cat="${cat.id}">
                   <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                 </button>
-                <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Xóa mục" data-delete-cat="${cat.id}">
+                <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Chuyển vào thùng rác" data-delete-cat="${cat.id}">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -3157,19 +4457,40 @@
             ${isExpanded ? `
               <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredLessons.length === 0 ? `
-                  <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Mục này chưa có bài học.</p>
+                  <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Mục này chưa có bài học phù hợp.</p>
                 ` : filteredLessons.map((lesson, idx) => {
                   const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
+                  const isChecked = state.selectedLessonIds ? state.selectedLessonIds.has(lesson.id) : false;
+
+                  // Render tag chips
+                  const tagChips = (lesson.tagIds || []).map(tId => {
+                    const t = getTagById(tId);
+                    if (!t) return '';
+                    return `<span class="px-1.5 py-0.2 rounded text-[9px] font-medium" style="background-color: ${t.color}22; color: ${t.color}; border: 1px solid ${t.color}44;">${t.name}</span>`;
+                  }).join('');
+
                   return `
                     <div 
-                      class="group/item lesson-item-stagger flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
+                      class="group/item lesson-item-stagger flex items-start gap-1.5 p-1.5 rounded-card cursor-pointer transition select-none relative lesson-draggable-item ${
                         isActive 
                           ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
                           : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
                       }"
-                      style="animation-delay: ${Math.min(idx * 25, 200)}ms;"
+                      style="animation-delay: ${Math.min(idx * 20, 200)}ms;"
                       data-select-lesson="${lesson.id}"
+                      data-lesson-id="${lesson.id}"
+                      draggable="true"
                     >
+                      <!-- // FEATURE-7: Checkbox chọn nhiều bài -->
+                      ${state.isBatchSelectingLessons ? `
+                        <input type="checkbox" class="lesson-batch-cb mt-1 rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
+                      ` : `
+                        <!-- Tay cầm kéo thả bằng cảm ứng và chuột -->
+                        <div class="lesson-drag-handle touch-none cursor-grab text-gray-300 dark:text-gray-600 hover:text-gray-500 p-0.5 shrink-0 mt-0.5" data-lesson-id="${lesson.id}" title="Kéo để sắp xếp">
+                          <svg class="w-3 h-3"><use href="#icon-grip-vertical"></use></svg>
+                        </div>
+                      `}
+
                       <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
                         ${lesson.isCompleted 
                           ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><use href="#icon-check-circle-2"></use></svg>' 
@@ -3178,22 +4499,36 @@
                       </button>
 
                       <div class="flex-1 min-w-0 pt-0.5">
-                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-3">
+                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2">
                           ${lesson.title}
                         </p>
+                        <!-- // FEATURE-6: Tag chips -->
+                        ${tagChips ? `<div class="flex items-center gap-1 flex-wrap mt-0.5">${tagChips}</div>` : ''}
                       </div>
 
-                      <div class="flex items-center gap-1 shrink-0">
+                      <div class="flex items-center gap-0.5 shrink-0 opacity-80 sm:opacity-40 sm:group-hover/item:opacity-100 transition">
                         ${lesson.isFavorite ? '<svg class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><use href="#icon-star"></use></svg>' : ''}
                         
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
-                          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                        <!-- Nút di chuyển bài lên / xuống -->
+                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-up="${lesson.id}" title="Di chuyển lên">
+                          <svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg>
                         </button>
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
-                          <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-down="${lesson.id}" title="Di chuyển xuống">
+                          <svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg>
                         </button>
-                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-delete-lesson="${lesson.id}" title="Xóa bài">
-                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+
+                        <!-- Gắn nhãn nhanh -->
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-manage-tags="${lesson.id}" title="Quản lý nhãn">
+                          <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
+                          <i data-lucide="share-2" class="w-3 h-3"></i>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
+                          <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-delete-lesson="${lesson.id}" title="Chuyển vào thùng rác">
+                          <i data-lucide="trash-2" class="w-3 h-3"></i>
                         </button>
                       </div>
                     </div>
@@ -3213,21 +4548,15 @@
         `;
       });
 
-      // FIX: Hiển thị nhóm "Chưa phân loại" nếu có bài học chưa thuộc mục nào
+      // Hiển thị nhóm "Chưa phân loại" nếu có bài học chưa thuộc mục nào
       if (uncategorizedLessons.length > 0) {
-        let filteredUncat = uncategorizedLessons;
-        if (state.activeFilter === 'favorites') {
-          filteredUncat = uncategorizedLessons.filter(l => l.isFavorite);
-        } else if (state.activeFilter === 'unread') {
-          filteredUncat = uncategorizedLessons.filter(l => !l.isCompleted);
-        }
-
+        const filteredUncat = filterLessonsList(uncategorizedLessons);
         const completedUncat = uncategorizedLessons.filter(l => l.isCompleted).length;
         const totalUncat = uncategorizedLessons.length;
         const isUncatExpanded = state.categoryExpanded['__uncategorized__'] !== false;
 
         html += `
-          <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat">
+          <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category" data-cat-id="__uncategorized__">
             <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="__uncategorized__">
               <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
                 <i data-lucide="${isUncatExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"></i>
@@ -3248,16 +4577,34 @@
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Không có bài học phù hợp bộ lọc.</p>
                 ` : filteredUncat.map((lesson, idx) => {
                   const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
+                  const isChecked = state.selectedLessonIds ? state.selectedLessonIds.has(lesson.id) : false;
+
+                  const tagChips = (lesson.tagIds || []).map(tId => {
+                    const t = getTagById(tId);
+                    if (!t) return '';
+                    return `<span class="px-1.5 py-0.2 rounded text-[9px] font-medium" style="background-color: ${t.color}22; color: ${t.color}; border: 1px solid ${t.color}44;">${t.name}</span>`;
+                  }).join('');
+
                   return `
                     <div 
-                      class="group/item lesson-item-stagger flex items-start gap-2 p-2 rounded-card cursor-pointer transition select-none relative ${
+                      class="group/item lesson-item-stagger flex items-start gap-1.5 p-1.5 rounded-card cursor-pointer transition select-none relative lesson-draggable-item ${
                         isActive 
                           ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
                           : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
                       }"
-                      style="animation-delay: ${Math.min(idx * 25, 200)}ms;"
+                      style="animation-delay: ${Math.min(idx * 20, 200)}ms;"
                       data-select-lesson="${lesson.id}"
+                      data-lesson-id="${lesson.id}"
+                      draggable="true"
                     >
+                      ${state.isBatchSelectingLessons ? `
+                        <input type="checkbox" class="lesson-batch-cb mt-1 rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
+                      ` : `
+                        <div class="lesson-drag-handle touch-none cursor-grab text-gray-300 dark:text-gray-600 hover:text-gray-500 p-0.5 shrink-0 mt-0.5" data-lesson-id="${lesson.id}" title="Kéo để sắp xếp">
+                          <svg class="w-3 h-3"><use href="#icon-grip-vertical"></use></svg>
+                        </div>
+                      `}
+
                       <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
                         ${lesson.isCompleted 
                           ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><use href="#icon-check-circle-2"></use></svg>' 
@@ -3266,22 +4613,33 @@
                       </button>
 
                       <div class="flex-1 min-w-0 pt-0.5">
-                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-3">
+                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2">
                           ${lesson.title}
                         </p>
+                        ${tagChips ? `<div class="flex items-center gap-1 flex-wrap mt-0.5">${tagChips}</div>` : ''}
                       </div>
 
-                      <div class="flex items-center gap-1 shrink-0">
+                      <div class="flex items-center gap-0.5 shrink-0 opacity-80 sm:opacity-40 sm:group-hover/item:opacity-100 transition">
                         ${lesson.isFavorite ? '<svg class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><use href="#icon-star"></use></svg>' : ''}
                         
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
-                          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-up="${lesson.id}" title="Di chuyển lên">
+                          <svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg>
                         </button>
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
-                          <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-down="${lesson.id}" title="Di chuyển xuống">
+                          <svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg>
                         </button>
-                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" data-quick-delete-lesson="${lesson.id}" title="Xóa bài">
-                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-manage-tags="${lesson.id}" title="Quản lý nhãn">
+                          <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
+                          <i data-lucide="share-2" class="w-3 h-3"></i>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
+                          <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </button>
+                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-delete-lesson="${lesson.id}" title="Chuyển vào thùng rác">
+                          <i data-lucide="trash-2" class="w-3 h-3"></i>
                         </button>
                       </div>
                     </div>
@@ -3294,12 +4652,46 @@
       }
 
       container.innerHTML = html;
-      refreshIcons();
-      attachSidebarItemEvents();
-    }
+      refreshIcons(container);
 
-    function attachSidebarItemEvents() {
-      document.querySelectorAll('[data-toggle-cat]').forEach(el => {
+      // Gắn sự kiện click chọn bài
+      container.querySelectorAll('[data-select-lesson]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('button') || e.target.closest('input')) return;
+          const lessonId = el.getAttribute('data-select-lesson');
+          if (state.isBatchSelectingLessons) {
+            const cb = el.querySelector('.lesson-batch-cb');
+            if (cb) {
+              cb.checked = !cb.checked;
+              if (cb.checked) {
+                state.selectedLessonIds.add(lessonId);
+              } else {
+                state.selectedLessonIds.delete(lessonId);
+              }
+              updateBatchLessonActionUI();
+            }
+          } else {
+            selectLesson(lessonId);
+            if (window.innerWidth < 768) closeMobileSidebar();
+          }
+        });
+      });
+
+      // Gắn sự kiện checkbox batch
+      container.querySelectorAll('.lesson-batch-cb').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const lId = cb.getAttribute('data-lesson-id');
+          if (e.target.checked) {
+            state.selectedLessonIds.add(lId);
+          } else {
+            state.selectedLessonIds.delete(lId);
+          }
+          updateBatchLessonActionUI();
+        });
+      });
+
+      // Gắn sự kiện mở/thu gọn mục
+      container.querySelectorAll('[data-toggle-cat]').forEach(el => {
         el.addEventListener('click', (e) => {
           if (e.target.closest('button')) return;
           const catId = el.getAttribute('data-toggle-cat');
@@ -3308,85 +4700,171 @@
         });
       });
 
-      document.querySelectorAll('[data-select-lesson]').forEach(el => {
+      // Di chuyển mục lên / xuống
+      container.querySelectorAll('[data-move-cat-up]').forEach(el => {
         el.addEventListener('click', (e) => {
-          if (e.target.closest('button')) return;
-          const lessonId = el.getAttribute('data-select-lesson');
-          exitShareMode();
-          selectLesson(lessonId);
-          if (window.innerWidth < 768) {
-            closeMobileSidebar();
-          }
+          e.stopPropagation();
+          moveCategoryOrder(el.getAttribute('data-move-cat-up'), -1);
+        });
+      });
+      container.querySelectorAll('[data-move-cat-down]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveCategoryOrder(el.getAttribute('data-move-cat-down'), 1);
         });
       });
 
-      document.querySelectorAll('[data-toggle-learned]').forEach(el => {
-        el.addEventListener('click', async (e) => {
+      // Di chuyển bài lên / xuống
+      container.querySelectorAll('[data-move-lesson-up]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveLessonOrder(el.getAttribute('data-move-lesson-up'), -1);
+        });
+      });
+      container.querySelectorAll('[data-move-lesson-down]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveLessonOrder(el.getAttribute('data-move-lesson-down'), 1);
+        });
+      });
+
+      // Gắn nhãn bài
+      container.querySelectorAll('[data-manage-tags]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openTagManageModal(el.getAttribute('data-manage-tags'));
+        });
+      });
+
+      // Đánh dấu đã học
+      container.querySelectorAll('[data-toggle-learned]').forEach(el => {
+        el.addEventListener('click', (e) => {
           e.stopPropagation();
           const lessonId = el.getAttribute('data-toggle-learned');
           const lesson = state.lessons.find(l => l.id === lessonId);
-          if (!lesson) return;
-          await updateLessonField(lessonId, { isCompleted: !lesson.isCompleted });
+          if (lesson) updateLessonField(lesson.id, { isCompleted: !lesson.isCompleted });
         });
       });
 
-      document.querySelectorAll('[data-rename-cat]').forEach(el => {
+      // Đổi tên mục
+      container.querySelectorAll('[data-rename-cat]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           const catId = el.getAttribute('data-rename-cat');
           const cat = state.categories.find(c => c.id === catId);
-          if (!cat) return;
-          openCategoryModal(cat);
+          if (cat) openRenameCategoryModal(cat);
         });
       });
 
-      document.querySelectorAll('[data-delete-cat]').forEach(el => {
+      // // FEATURE-8: Xóa mục chuyển vào Thùng rác
+      container.querySelectorAll('[data-delete-cat]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           const catId = el.getAttribute('data-delete-cat');
           const cat = state.categories.find(c => c.id === catId);
           if (!cat) return;
-          askConfirmDelete(`Xóa mục "${cat.title}"? Toàn bộ các bài học bên trong cũng sẽ bị xóa.`, async () => {
-            await deleteCategoryAndItsLessons(catId);
+          askConfirmDelete(`Chuyển mục "${cat.title}" và các bài bên trong vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+            moveCategoryToTrash(catId);
           });
         });
       });
 
-      document.querySelectorAll('[data-add-lesson-cat]').forEach(el => {
+      container.querySelectorAll('[data-add-lesson-cat]').forEach(el => {
         el.addEventListener('click', () => {
-          const catId = el.getAttribute('data-add-lesson-cat');
-          state.activeCategoryId = catId;
+          state.activeCategoryId = el.getAttribute('data-add-lesson-cat');
           openUploadModal();
         });
       });
 
-      document.querySelectorAll('[data-share-lesson]').forEach(el => {
+      container.querySelectorAll('[data-share-lesson]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const lessonId = el.getAttribute('data-share-lesson');
-          const lesson = state.lessons.find(l => l.id === lessonId);
+          const lesson = state.lessons.find(l => l.id === el.getAttribute('data-share-lesson'));
           if (lesson) openQuickShareModal(lesson);
         });
       });
 
-      document.querySelectorAll('[data-quick-rename-lesson]').forEach(el => {
+      container.querySelectorAll('[data-quick-rename-lesson]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const lessonId = el.getAttribute('data-quick-rename-lesson');
-          const lesson = state.lessons.find(l => l.id === lessonId);
+          const lesson = state.lessons.find(l => l.id === el.getAttribute('data-quick-rename-lesson'));
           if (lesson) openRenameLessonModal(lesson);
         });
       });
 
-      document.querySelectorAll('[data-quick-delete-lesson]').forEach(el => {
+      // // FEATURE-8: Xóa bài học chuyển vào Thùng rác
+      container.querySelectorAll('[data-quick-delete-lesson]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          const lessonId = el.getAttribute('data-quick-delete-lesson');
-          const lesson = state.lessons.find(l => l.id === lessonId);
+          const lesson = state.lessons.find(l => l.id === el.getAttribute('data-quick-delete-lesson'));
           if (lesson) {
-            askConfirmDelete(`Xóa bài "${lesson.title}"?`, async () => {
-              await deleteLesson(lessonId);
+            askConfirmDelete(`Chuyển bài "${lesson.title}" vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+              moveLessonToTrash(lesson.id);
             });
+          }
+        });
+      });
+
+      // // FEATURE-7: Kéo thả HTML5 Drag and Drop
+      container.querySelectorAll('.lesson-draggable-item').forEach(dragEl => {
+        dragEl.addEventListener('dragstart', (e) => {
+          draggedLessonId = dragEl.getAttribute('data-lesson-id');
+          e.dataTransfer.setData('text/plain', draggedLessonId);
+          dragEl.classList.add('opacity-40');
+        });
+
+        dragEl.addEventListener('dragend', () => {
+          dragEl.classList.remove('opacity-40');
+          container.querySelectorAll('.drop-indicator-active').forEach(el => el.classList.remove('drop-indicator-active', 'border-t-2', 'border-indigo-500'));
+        });
+
+        dragEl.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dragEl.classList.add('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+        });
+
+        dragEl.addEventListener('dragleave', () => {
+          dragEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+        });
+
+        dragEl.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dragEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+          const targetLessonId = dragEl.getAttribute('data-lesson-id');
+          if (draggedLessonId && draggedLessonId !== targetLessonId) {
+            const dragIdx = state.lessons.findIndex(l => l.id === draggedLessonId);
+            const targetIdx = state.lessons.findIndex(l => l.id === targetLessonId);
+            if (dragIdx !== -1 && targetIdx !== -1) {
+              const item = state.lessons.splice(dragIdx, 1)[0];
+              // Gán category của target cho item
+              item.categoryId = state.lessons[targetIdx] ? state.lessons[targetIdx].categoryId : item.categoryId;
+              state.lessons.splice(targetIdx, 0, item);
+              saveLocalLessons();
+              renderCategoriesAndLessons();
+              showToast('Đã sắp xếp lại vị trí bài học');
+            }
+          }
+        });
+      });
+
+      // Kéo bài thả vào tiêu đề Danh mục khác
+      container.querySelectorAll('.drop-target-category').forEach(catEl => {
+        catEl.addEventListener('dragover', (e) => {
+          e.preventDefault();
+        });
+
+        catEl.addEventListener('drop', (e) => {
+          if (e.target.closest('.lesson-draggable-item')) return; // Đã xử lý ở item
+          e.preventDefault();
+          const targetCatId = catEl.getAttribute('data-cat-id');
+          if (draggedLessonId) {
+            const les = state.lessons.find(l => l.id === draggedLessonId);
+            if (les) {
+              les.categoryId = targetCatId === '__uncategorized__' ? null : targetCatId;
+              saveLocalLessons();
+              renderCategoriesAndLessons();
+              showToast('Đã chuyển bài sang mục mới');
+            }
           }
         });
       });
@@ -3459,6 +4937,27 @@
       originalFileEl.innerText = currentLesson.originalFileName || 'lesson.html';
 
       applyTextScalingToArticleHeaders();
+
+      // // FEATURE-6: Hiển thị danh sách nhãn trên thanh tiêu đề bài đọc
+      const articleTagsList = document.getElementById('articleTagsList');
+      if (articleTagsList) {
+        articleTagsList.innerHTML = '';
+        const tagIds = currentLesson.tagIds || [];
+        for (const tId of tagIds) {
+          const t = getTagById(tId);
+          if (t) {
+            const chip = document.createElement('span');
+            chip.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium cursor-pointer transition hover:opacity-80';
+            chip.style.backgroundColor = `${t.color}22`;
+            chip.style.color = t.color;
+            chip.style.border = `1px solid ${t.color}44`;
+            chip.innerText = t.name;
+            chip.title = 'Bấm để quản lý nhãn';
+            chip.addEventListener('click', () => openTagManageModal(currentLesson.id));
+            articleTagsList.appendChild(chip);
+          }
+        }
+      }
 
       if (currentLesson.description && currentLesson.description.trim().length > 0) {
         descText.innerText = currentLesson.description;
@@ -3774,6 +5273,12 @@
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (lesson) {
         state.activeCategoryId = lesson.categoryId;
+        // // FEATURE-6: Theo dõi thời điểm mở gần nhất
+        lesson.lastOpenedAt = Date.now();
+        saveLocalLessons();
+        if (state.userId && !state.useLocalFallback && db) {
+          updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lessonId), { lastOpenedAt: lesson.lastOpenedAt }).catch(() => {});
+        }
       }
       renderCategoriesAndLessons();
       renderActiveLesson();
@@ -5258,9 +6763,13 @@
         userId: state.userId,
         categories: state.categories,
         lessons: state.lessons,
+        tags: state.tags,
+        trash: state.trash,
         settings: {
           fontSizeOffset: state.fontSizeOffset,
-          isDarkMode: state.isDarkMode
+          isDarkMode: state.isDarkMode,
+          sortOrder: state.sortOrder,
+          swipeEnabled: state.swipeEnabled
         },
         learningData: state.learningData
       };
@@ -5294,6 +6803,18 @@
         if (data.learningData) {
           state.learningData = data.learningData;
           saveLearningData();
+        }
+
+        if (data.tags) {
+          state.tags = data.tags;
+          saveLocalTags();
+        }
+        if (data.trash) {
+          state.trash = data.trash;
+          saveLocalTrash();
+        }
+        if (data.settings && data.settings.sortOrder) {
+          state.sortOrder = data.settings.sortOrder;
         }
 
         if (!state.useLocalFallback && db && state.userId) {
