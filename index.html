@@ -981,86 +981,88 @@
     <!-- // REDESIGN: SIDEBAR MỤC LỤC BÀI HỌC (THẺ BÀI RÕ RÀNG, TIẾN ĐỘ TỪNG MỤC, THU GỌN MƯỢT) -->
     <aside id="mainSidebar" class="w-[85vw] max-w-[320px] md:w-72 bg-white dark:bg-[#181B20] border-r border-[#E7E5DF] dark:border-[#262C36] flex flex-col fixed md:static top-0 bottom-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-250 ease-in-out shrink-0 pb-[env(safe-area-inset-bottom,0px)]">
       
-      <!-- Tiêu đề sidebar -->
-      <div class="p-3.5 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between pt-[max(0.875rem,env(safe-area-inset-top,0px))] md:pt-3.5">
-        <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400"><use href="#icon-book-open"></use></svg>
-          <h2 class="text-xs font-bold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8]">Mục lục bài học</h2>
+      <!-- // FIX-5: HÀNG 1 - Tiêu đề Mục lục & Nút thu gọn sidebar (1 dòng duy nhất, không ngắt dòng) -->
+      <div class="px-3.5 py-3 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between pt-[max(0.75rem,env(safe-area-inset-top,0px))] md:pt-3 shrink-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-book-open"></use></svg>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-[#1C1917] dark:text-[#EDECE8] whitespace-nowrap truncate font-serif">Mục lục bài học</h2>
         </div>
-        <div class="flex items-center gap-1.5">
-          <button id="btnNewCategory" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium transition shadow-2xs">
-            <svg class="w-3.5 h-3.5"><use href="#icon-folder-plus"></use></svg>
-            <span>Mục mới</span>
-          </button>
-          <button id="btnToggleBatchLessons" class="touch-target p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Chọn nhiều bài để thao tác hàng loạt">
-            <svg class="w-4 h-4"><use href="#icon-check-square"></use></svg>
-          </button>
-          <button id="btnCollapseSidebarDesktop" class="touch-target p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng mục lục">
-            <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
-          </button>
-        </div>
+        <button id="btnCollapseSidebarDesktop" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" title="Đóng mục lục">
+          <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
+        </button>
       </div>
 
-      <!-- Bộ lọc bài học: Tất cả / Yêu thích / Chưa đọc -->
-      <div class="px-3 pt-3">
-        <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg text-xs text-[#6E6B65] dark:text-[#979DA8] border border-[#E7E5DF] dark:border-[#262C36]">
-          <button data-filter="all" class="filter-tab py-1 text-center font-medium rounded-md transition bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] shadow-2xs">
-            Tất cả
-          </button>
-          <button data-filter="favorites" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8]">
-            Yêu thích
-          </button>
-          <button data-filter="unread" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8]">
-            Chưa đọc
-          </button>
-        </div>
-      </div>
+      <!-- // FIX-5: HÀNG 2 - Thanh công cụ (+ Mục mới, Chọn nhiều, Lọc nhãn, Sắp xếp) -->
+      <div class="px-3 py-2 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60 flex items-center gap-1.5 shrink-0 text-xs">
+        <!-- Nút + Mục mới: 1 dòng rõ ràng, không xuống dòng -->
+        <button id="btnNewCategory" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs whitespace-nowrap shrink-0 transition cursor-pointer" title="Tạo mục bài học mới">
+          <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-plus"></use></svg>
+          <span class="whitespace-nowrap font-medium text-xs">+ Mục mới</span>
+        </button>
 
-      
-            <!-- // FEATURE-6: Thanh lọc theo Nhãn và Sắp xếp nâng cao -->
-      <div class="px-3 pt-2 flex items-center justify-between gap-1.5 shrink-0 text-xs">
+        <!-- Nút Chọn nhiều -->
+        <button id="btnToggleBatchLessons" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1C1917] dark:hover:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] transition shrink-0 cursor-pointer" title="Chọn nhiều bài để thao tác">
+          <svg class="w-3.5 h-3.5"><use href="#icon-check-square"></use></svg>
+        </button>
+
+        <!-- Dropdown Lọc nhãn -->
         <div class="relative flex-1 min-w-0">
-          <button id="btnTagFilterDropdown" class="w-full px-2 py-1.5 rounded-lg bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-between gap-1 transition truncate" title="Lọc bài theo nhãn">
-            <span class="flex items-center gap-1.5 truncate">
+          <button id="btnTagFilterDropdown" class="w-full px-2 py-1.5 rounded-lg bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-between gap-1 transition truncate cursor-pointer" title="Lọc bài theo nhãn">
+            <span class="flex items-center gap-1 min-w-0 truncate">
               <svg class="w-3 h-3 text-indigo-500 shrink-0"><use href="#icon-tag"></use></svg>
-              <span id="tagFilterButtonLabel" class="truncate">Nhãn: Tất cả</span>
+              <span id="tagFilterButtonLabel" class="truncate whitespace-nowrap">Tất cả</span>
             </span>
-            <svg class="w-3 h-3 opacity-60 shrink-0"><use href="#icon-chevron-down"></use></svg>
+            <svg class="w-2.5 h-2.5 opacity-60 shrink-0"><use href="#icon-chevron-down"></use></svg>
           </button>
           <!-- Popover chọn nhãn -->
           <div id="tagFilterDropdownMenu" class="hidden absolute left-0 top-full mt-1 w-52 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 space-y-1 text-xs">
             <div class="flex items-center justify-between pb-1 mb-1 border-b border-[#E7E5DF] dark:border-[#262C36]">
               <span class="font-semibold text-[11px] text-[#1C1917] dark:text-[#EDECE8]">Lọc theo nhãn</span>
-              <button id="btnClearTagFilter" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline">Xóa lọc</button>
+              <button id="btnClearTagFilter" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Xóa lọc</button>
             </div>
             <div id="tagFilterOptionsList" class="max-h-48 overflow-y-auto space-y-0.5"></div>
           </div>
         </div>
 
+        <!-- Dropdown Sắp xếp -->
         <div class="relative shrink-0">
-          <button id="btnSortOrderDropdown" class="px-2 py-1.5 rounded-lg bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center gap-1 transition" title="Sắp xếp bài học">
-            <svg class="w-3 h-3 text-indigo-500"><use href="#icon-sort"></use></svg>
-            <span id="sortOrderButtonLabel" class="hidden sm:inline">Mới thêm</span>
+          <button id="btnSortOrderDropdown" class="p-1.5 rounded-lg bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center gap-1 transition cursor-pointer" title="Sắp xếp bài học">
+            <svg class="w-3.5 h-3.5 text-indigo-500"><use href="#icon-sort"></use></svg>
           </button>
           <!-- Popover chọn sắp xếp -->
           <div id="sortOrderDropdownMenu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-1.5 space-y-0.5 text-xs">
-            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-between" data-sort="newest">
+            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-between cursor-pointer" data-sort="newest">
               <span>Mới thêm</span>
               <span class="sort-check text-indigo-600">✓</span>
             </button>
-            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between" data-sort="recent">
+            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between cursor-pointer" data-sort="recent">
               <span>Mở gần đây</span>
               <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
-            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between" data-sort="unlearned">
+            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between cursor-pointer" data-sort="unlearned">
               <span>Chưa học trước</span>
               <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
-            <button class="sort-option-btn w-full text-left px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between" data-sort="name">
+            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between cursor-pointer" data-sort="name">
               <span>Theo tên (A-Z)</span>
               <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- HÀNG 3: Bộ lọc bài học: Tất cả / Yêu thích / Chưa đọc -->
+      <div class="px-3 pt-2 shrink-0">
+        <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg text-xs text-[#6E6B65] dark:text-[#979DA8] border border-[#E7E5DF] dark:border-[#262C36]">
+          <button data-filter="all" class="filter-tab py-1 text-center font-medium rounded-md transition bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] shadow-2xs whitespace-nowrap cursor-pointer">
+            Tất cả
+          </button>
+          <button data-filter="favorites" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8] whitespace-nowrap cursor-pointer">
+            Yêu thích
+          </button>
+          <button data-filter="unread" class="filter-tab py-1 text-center font-medium rounded-md transition hover:text-[#1C1917] dark:hover:text-[#EDECE8] whitespace-nowrap cursor-pointer">
+            Chưa đọc
+          </button>
         </div>
       </div>
 
@@ -2211,9 +2213,82 @@
       <button id="btnCloseIosModal" class="w-full touch-target py-2 rounded-card bg-[#4F46E5] text-white text-xs font-semibold hover:opacity-90 transition">
         Đã hiểu
       </button>
-  <!-- // FEATURE-6: Modal Quản lý nhãn (Tag Management) -->
+  <!-- // FIX-2 & FIX-3: Modal Menu Thao Tác Bài Học (Bottom Sheet trên Mobile, Popover trên Desktop) -->
+  <div id="lessonActionMenuModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-4 border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col max-h-[88vh] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
+      <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="min-w-0 pr-2">
+          <h3 id="lessonActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn bài học</h3>
+          <p id="lessonActionMenuSub" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate mt-0.5"></p>
+        </div>
+        <button id="btnCloseLessonActionMenu" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đóng" aria-label="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="py-2 flex-1 overflow-y-auto space-y-1 text-xs">
+        <!-- Gắn nhãn -->
+        <button id="btnActionMenuTag" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-tag"></use></svg>
+          <span class="flex-1">Gắn nhãn (Tag)</span>
+        </button>
+
+        <!-- Yêu thích -->
+        <button id="btnActionMenuFavorite" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-amber-500 shrink-0" id="actionMenuFavIcon"><use href="#icon-star"></use></svg>
+          <span id="actionMenuFavText" class="flex-1">Yêu thích</span>
+        </button>
+
+        <!-- Đã học / Chưa học -->
+        <button id="btnActionMenuLearned" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-emerald-600 shrink-0"><use href="#icon-check-circle-2"></use></svg>
+          <span id="actionMenuLearnedText" class="flex-1">Đánh dấu đã học</span>
+        </button>
+
+        <!-- Đổi tên -->
+        <button id="btnActionMenuRename" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-pencil"></use></svg>
+          <span class="flex-1">Đổi tên bài học</span>
+        </button>
+
+        <!-- Tạo link chia sẻ -->
+        <button id="btnActionMenuShare" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-share-2"></use></svg>
+          <span class="flex-1">Tạo link chia sẻ (7 ngày)</span>
+        </button>
+
+        <!-- Chuyển sang mục khác -->
+        <button id="btnActionMenuMoveCat" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-folder"></use></svg>
+          <span class="flex-1">Chuyển sang mục khác</span>
+        </button>
+
+        <!-- Di chuyển lên / xuống -->
+        <div class="grid grid-cols-2 gap-1.5 pt-1">
+          <button id="btnActionMenuMoveUp" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
+            <svg class="w-3.5 h-3.5 text-indigo-600"><use href="#icon-arrow-up"></use></svg>
+            <span>Di chuyển lên</span>
+          </button>
+          <button id="btnActionMenuMoveDown" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
+            <svg class="w-3.5 h-3.5 text-indigo-600"><use href="#icon-arrow-down"></use></svg>
+            <span>Di chuyển xuống</span>
+          </button>
+        </div>
+
+        <!-- Xóa bài -->
+        <div class="pt-1.5 border-t border-[#E7E5DF] dark:border-[#262C36] mt-1">
+          <button id="btnActionMenuDelete" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 font-medium transition text-left min-h-[44px]">
+            <svg class="w-4 h-4 text-red-500 shrink-0"><use href="#icon-trash-2"></use></svg>
+            <span class="flex-1">Xóa bài (vào thùng rác)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // FEATURE-6 & FIX-4: Modal Quản lý nhãn (Tag Management) -->
   <div id="tagManageModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 border border-[#E7E5DF] dark:border-[#262C36] shadow-xl max-h-[85vh] flex flex-col">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 border border-[#E7E5DF] dark:border-[#262C36] shadow-xl max-h-[85vh] flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
       <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
         <div>
           <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Quản lý nhãn bài học</h3>
@@ -2225,20 +2300,44 @@
       </div>
       
       <div class="py-3 flex-1 overflow-y-auto space-y-4">
+        <!-- Danh sách nhãn gắn cho bài -->
         <div>
           <label class="text-xs font-semibold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8] block mb-2">Gắn nhãn cho bài</label>
-          <div id="lessonTagsCheckboxList" class="flex flex-wrap gap-1.5 min-h-[36px]"></div>
+          <div id="lessonTagsCheckboxList" class="flex flex-col gap-1 min-h-[36px]"></div>
         </div>
 
+        <!-- Gợi ý nhãn nhanh -->
+        <div>
+          <label class="text-[11px] font-semibold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8] block mb-1.5">Gợi ý nhãn nhanh</label>
+          <div id="suggestedTagsList" class="flex flex-wrap gap-1.5">
+            <button type="button" class="btn-suggest-tag px-2.5 py-1 rounded-full text-xs font-medium border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:opacity-80 transition" data-tag-name="Khó" data-tag-color="#E11D48">+ Khó</button>
+            <button type="button" class="btn-suggest-tag px-2.5 py-1 rounded-full text-xs font-medium border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:opacity-80 transition" data-tag-name="Sắp thi" data-tag-color="#D97706">+ Sắp thi</button>
+            <button type="button" class="btn-suggest-tag px-2.5 py-1 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:opacity-80 transition" data-tag-name="Quan trọng" data-tag-color="#7C3AED">+ Quan trọng</button>
+          </div>
+        </div>
+
+        <!-- Tất cả nhãn trong thư viện -->
         <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36]">
           <label class="text-xs font-semibold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8] block mb-2">Tất cả nhãn trong thư viện</label>
-          <div id="allTagsManageList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
+          <div id="allTagsManageList" class="space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
         </div>
 
+        <!-- Tạo nhãn mới: 6 màu Editorial + Ô nhập + Nút tạo -->
         <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36]">
           <label class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] block mb-1.5">Tạo nhãn mới</label>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Chọn màu:</span>
+            <div id="tagColorPickerSwatches" class="flex items-center gap-1.5">
+              <button type="button" class="tag-color-swatch w-5 h-5 rounded-full ring-2 ring-indigo-500 ring-offset-1 transition-transform hover:scale-110" style="background-color: #4F46E5;" data-color="#4F46E5" title="Chàm"></button>
+              <button type="button" class="tag-color-swatch w-5 h-5 rounded-full transition-transform hover:scale-110" style="background-color: #059669;" data-color="#059669" title="Xanh lá"></button>
+              <button type="button" class="tag-color-swatch w-5 h-5 rounded-full transition-transform hover:scale-110" style="background-color: #D97706;" data-color="#D97706" title="Vàng cam"></button>
+              <button type="button" class="tag-color-swatch w-5 h-5 rounded-full transition-transform hover:scale-110" style="background-color: #E11D48;" data-color="#E11D48" title="Hồng đào"></button>
+              <button type="button" class="tag-color-swatch w-5 h-5 rounded-full transition-transform hover:scale-110" style="background-color: #7C3AED;" data-color="#7C3AED" title="Tím oải hương"></button>
+              <button type="button" class="tag-color-swatch w-5 h-5 rounded-full transition-transform hover:scale-110" style="background-color: #475569;" data-color="#475569" title="Xám đá"></button>
+            </div>
+          </div>
           <div class="flex gap-2">
-            <input type="text" id="newTagNameInput" placeholder="Tên nhãn mới..." maxlength="25" class="flex-1 px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-xs text-[#1C1917] dark:text-[#EDECE8] focus:outline-hidden focus:ring-1 focus:ring-indigo-500" />
+            <input type="text" id="newTagNameInput" placeholder="Tên nhãn mới... (Nhấn Enter)" maxlength="25" class="flex-1 px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-xs text-[#1C1917] dark:text-[#EDECE8] focus:outline-hidden focus:ring-1 focus:ring-indigo-500" />
             <button id="btnCreateNewTag" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-2xs transition">Tạo nhãn</button>
           </div>
         </div>
@@ -2466,17 +2565,21 @@
     // // FEATURE-6 & 8: KHỞI TẠO DỮ LIỆU NHÃN (TAGS) VÀ THÙNG RÁC (TRASH)
     // =========================================================================
     const DEFAULT_TAGS = [
-      { id: 'tag_kho', name: 'Khó', color: '#EF4444' },
-      { id: 'tag_sapthi', name: 'Sắp thi', color: '#F59E0B' },
-      { id: 'tag_quantrong', name: 'Quan trọng', color: '#8B5CF6' }
+      { id: 'tag_kho', name: 'Khó', color: '#E11D48' },
+      { id: 'tag_sapthi', name: 'Sắp thi', color: '#D97706' },
+      { id: 'tag_quantrong', name: 'Quan trọng', color: '#7C3AED' }
     ];
 
     function getInitialTags() {
       try {
         const stored = localStorage.getItem('local_tags');
-        return stored ? JSON.parse(stored) : DEFAULT_TAGS;
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+        return [...DEFAULT_TAGS];
       } catch (_) {
-        return DEFAULT_TAGS;
+        return [...DEFAULT_TAGS];
       }
     }
 
@@ -3628,20 +3731,74 @@
       });
     }
 
-    let selectedNewTagColor = '#EF4444';
+    let selectedNewTagColor = '#4F46E5';
     document.querySelectorAll('.tag-color-swatch').forEach(sw => {
       sw.addEventListener('click', () => {
-        selectedNewTagColor = sw.getAttribute('data-color') || '#EF4444';
-        document.querySelectorAll('.tag-color-swatch').forEach(s => s.classList.remove('ring-2', 'ring-indigo-500'));
-        sw.classList.add('ring-2', 'ring-indigo-500');
+        selectedNewTagColor = sw.getAttribute('data-color') || '#4F46E5';
+        document.querySelectorAll('.tag-color-swatch').forEach(s => s.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-1'));
+        sw.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-1');
       });
     });
 
+    // // FIX-4: Gợi ý nhãn có sẵn: "Khó", "Sắp thi", "Quan trọng"
+    document.querySelectorAll('.btn-suggest-tag').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tagName = btn.getAttribute('data-tag-name');
+        const tagColor = btn.getAttribute('data-tag-color') || '#4F46E5';
+        if (!tagName) return;
+
+        if (!state.tags) state.tags = [];
+        let tag = state.tags.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+        if (!tag) {
+          tag = {
+            id: 'tag_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+            name: tagName,
+            color: tagColor
+          };
+          state.tags.push(tag);
+          saveLocalTags();
+        }
+
+        // Tự động gắn vào bài đang mở modal quản lý nhãn
+        if (currentTagManageLessonId) {
+          const lesson = state.lessons.find(l => l.id === currentTagManageLessonId);
+          if (lesson) {
+            if (!lesson.tagIds) lesson.tagIds = [];
+            if (!lesson.tagIds.includes(tag.id)) {
+              lesson.tagIds.push(tag.id);
+            }
+            saveLocalLessons();
+            if (state.userId && !state.useLocalFallback && db) {
+              updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), { tagIds: lesson.tagIds }).catch(()=>{});
+            }
+          }
+        }
+
+        renderAllTagsManageList();
+        renderLessonTagsCheckboxes();
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+        updateTagFilterUI();
+        showToast(`Đã gắn nhãn "${tagName}"`);
+      });
+    });
+
+    const newTagNameInput = document.getElementById('newTagNameInput');
     const btnCreateNewTag = document.getElementById('btnCreateNewTag');
+
+    // // FIX-4: Nhấn Enter để tạo nhãn
+    if (newTagNameInput) {
+      newTagNameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (btnCreateNewTag) btnCreateNewTag.click();
+        }
+      });
+    }
+
     if (btnCreateNewTag) {
       btnCreateNewTag.addEventListener('click', () => {
-        const input = document.getElementById('newTagNameInput');
-        const name = (input ? input.value : '').trim();
+        const name = (newTagNameInput ? newTagNameInput.value : '').trim();
         if (!name) {
           showToast('Vui lòng nhập tên nhãn', 'error');
           return;
@@ -3657,11 +3814,28 @@
         state.tags.push(newTag);
         saveLocalTags();
 
-        if (input) input.value = '';
+        // // FIX-4: Tạo xong tự động tick gắn cho bài hiện tại
+        if (currentTagManageLessonId) {
+          const lesson = state.lessons.find(l => l.id === currentTagManageLessonId);
+          if (lesson) {
+            if (!lesson.tagIds) lesson.tagIds = [];
+            if (!lesson.tagIds.includes(newTag.id)) {
+              lesson.tagIds.push(newTag.id);
+            }
+            saveLocalLessons();
+            if (state.userId && !state.useLocalFallback && db) {
+              updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), { tagIds: lesson.tagIds }).catch(()=>{});
+            }
+          }
+        }
+
+        if (newTagNameInput) newTagNameInput.value = '';
         renderAllTagsManageList();
         renderLessonTagsCheckboxes();
+        renderCategoriesAndLessons();
+        renderActiveLesson();
         updateTagFilterUI();
-        showToast(`Đã tạo nhãn "${name}"`);
+        showToast(`Đã tạo và gắn nhãn "${name}"`);
       });
     }
 
@@ -3860,13 +4034,24 @@
       });
     }
 
-    // Chuyển mục hàng loạt
+    // Chuyển mục hàng loạt & chuyển mục cho từng bài
     const batchMoveCatModal = document.getElementById('batchMoveCatModal');
     const batchMoveCatOptions = document.getElementById('batchMoveCatOptions');
     let selectedBatchTargetCatId = null;
+    let singleLessonMoveCatId = null;
+
+    function openMoveCatModalForLesson(lessonId) {
+      singleLessonMoveCatId = lessonId;
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+      selectedBatchTargetCatId = lesson.categoryId || null;
+      renderBatchMoveCatOptions(selectedBatchTargetCatId);
+      showModalAnimated(batchMoveCatModal);
+    }
 
     if (btnBatchMoveCat) {
       btnBatchMoveCat.addEventListener('click', () => {
+        singleLessonMoveCatId = null;
         if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) {
           showToast('Chưa chọn bài học nào', 'error');
           return;
@@ -3876,15 +4061,16 @@
       });
     }
 
-    function renderBatchMoveCatOptions() {
+    function renderBatchMoveCatOptions(currentCatId = null) {
       if (!batchMoveCatOptions) return;
       batchMoveCatOptions.innerHTML = '';
 
       // Thêm tùy chọn "Chưa phân loại"
       const uncatOpt = document.createElement('label');
       uncatOpt.className = 'flex items-center gap-2 p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-xs';
+      const isUncatChecked = !currentCatId;
       uncatOpt.innerHTML = `
-        <input type="radio" name="batchTargetCat" value="" class="text-indigo-600 focus:ring-indigo-500" checked />
+        <input type="radio" name="batchTargetCat" value="" class="text-indigo-600 focus:ring-indigo-500" ${isUncatChecked ? 'checked' : ''} />
         <span>Chưa phân loại</span>
       `;
       uncatOpt.querySelector('input').addEventListener('change', () => { selectedBatchTargetCatId = null; });
@@ -3893,8 +4079,9 @@
       state.categories.forEach(cat => {
         const opt = document.createElement('label');
         opt.className = 'flex items-center gap-2 p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-xs';
+        const isCatChecked = currentCatId === cat.id;
         opt.innerHTML = `
-          <input type="radio" name="batchTargetCat" value="${cat.id}" class="text-indigo-600 focus:ring-indigo-500" />
+          <input type="radio" name="batchTargetCat" value="${cat.id}" class="text-indigo-600 focus:ring-indigo-500" ${isCatChecked ? 'checked' : ''} />
           <span class="font-medium">${cat.title}</span>
         `;
         opt.querySelector('input').addEventListener('change', () => { selectedBatchTargetCatId = cat.id; });
@@ -3905,6 +4092,22 @@
     const btnConfirmBatchMove = document.getElementById('btnConfirmBatchMove');
     if (btnConfirmBatchMove) {
       btnConfirmBatchMove.addEventListener('click', () => {
+        if (singleLessonMoveCatId) {
+          const les = state.lessons.find(l => l.id === singleLessonMoveCatId);
+          if (les) {
+            les.categoryId = selectedBatchTargetCatId;
+            saveLocalLessons();
+            if (state.userId && !state.useLocalFallback && db) {
+              updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', les.id), { categoryId: les.categoryId }).catch(()=>{});
+            }
+            renderCategoriesAndLessons();
+            showToast('Đã chuyển bài học sang mục mới');
+          }
+          singleLessonMoveCatId = null;
+          hideModalAnimated(batchMoveCatModal);
+          return;
+        }
+
         const count = state.selectedLessonIds.size;
         for (const lId of state.selectedLessonIds) {
           const les = state.lessons.find(l => l.id === lId);
@@ -3919,8 +4122,158 @@
 
     const btnCancelBatchMove = document.getElementById('btnCancelBatchMove');
     const btnCloseBatchMove = document.getElementById('btnCloseBatchMoveModal');
-    if (btnCancelBatchMove) btnCancelBatchMove.addEventListener('click', () => hideModalAnimated(batchMoveCatModal));
-    if (btnCloseBatchMove) btnCloseBatchMove.addEventListener('click', () => hideModalAnimated(batchMoveCatModal));
+    if (btnCancelBatchMove) btnCancelBatchMove.addEventListener('click', () => { singleLessonMoveCatId = null; hideModalAnimated(batchMoveCatModal); });
+    if (btnCloseBatchMove) btnCloseBatchMove.addEventListener('click', () => { singleLessonMoveCatId = null; hideModalAnimated(batchMoveCatModal); });
+
+    // =========================================================================
+    // // FIX-2 & FIX-3: MENU THAO TÁC BÀI HỌC (BOTTOM SHEET / POPOVER)
+    // =========================================================================
+    let currentMenuLessonId = null;
+
+    function openLessonActionMenu(lessonId) {
+      currentMenuLessonId = lessonId;
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      const modal = document.getElementById('lessonActionMenuModal');
+      const titleEl = document.getElementById('lessonActionMenuTitle');
+      const subEl = document.getElementById('lessonActionMenuSub');
+      const favText = document.getElementById('actionMenuFavText');
+      const favIcon = document.getElementById('actionMenuFavIcon');
+      const learnedText = document.getElementById('actionMenuLearnedText');
+
+      if (titleEl) titleEl.innerText = lesson.title || 'Bài học';
+      let catName = 'Chưa phân loại';
+      if (lesson.categoryId) {
+        const cat = state.categories.find(c => c.id === lesson.categoryId);
+        if (cat) catName = cat.title;
+      }
+      if (subEl) subEl.innerText = `${lesson.originalFileName ? lesson.originalFileName + ' • ' : ''}${catName}`;
+
+      if (favText) favText.innerText = lesson.isFavorite ? 'Bỏ yêu thích' : 'Yêu thích';
+      if (favIcon) {
+        if (lesson.isFavorite) {
+          favIcon.setAttribute('class', 'w-4 h-4 text-amber-500 fill-amber-500 shrink-0');
+        } else {
+          favIcon.setAttribute('class', 'w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0');
+        }
+      }
+
+      if (learnedText) learnedText.innerText = lesson.isCompleted ? 'Đánh dấu chưa học' : 'Đánh dấu đã học';
+
+      showModalAnimated(modal);
+    }
+
+    function toggleFavoriteLesson(lessonId) {
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+      lesson.isFavorite = !lesson.isFavorite;
+      saveLocalLessons();
+      if (state.userId && !state.useLocalFallback && db) {
+        updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), { isFavorite: lesson.isFavorite }).catch(()=>{});
+      }
+      renderCategoriesAndLessons();
+      renderActiveLesson();
+      showToast(lesson.isFavorite ? 'Đã thêm vào mục Yêu thích' : 'Đã bỏ khỏi mục Yêu thích');
+    }
+
+    const btnCloseLessonActionMenu = document.getElementById('btnCloseLessonActionMenu');
+    if (btnCloseLessonActionMenu) {
+      btnCloseLessonActionMenu.addEventListener('click', () => {
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+      });
+    }
+
+    const btnActionMenuTag = document.getElementById('btnActionMenuTag');
+    if (btnActionMenuTag) {
+      btnActionMenuTag.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        if (lId) setTimeout(() => openTagManageModal(lId), 150);
+      });
+    }
+
+    const btnActionMenuFavorite = document.getElementById('btnActionMenuFavorite');
+    if (btnActionMenuFavorite) {
+      btnActionMenuFavorite.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        if (lId) toggleFavoriteLesson(lId);
+      });
+    }
+
+    const btnActionMenuLearned = document.getElementById('btnActionMenuLearned');
+    if (btnActionMenuLearned) {
+      btnActionMenuLearned.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        if (lId) {
+          const lesson = state.lessons.find(l => l.id === lId);
+          if (lesson) updateLessonField(lesson.id, { isCompleted: !lesson.isCompleted });
+        }
+      });
+    }
+
+    const btnActionMenuRename = document.getElementById('btnActionMenuRename');
+    if (btnActionMenuRename) {
+      btnActionMenuRename.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        const lesson = state.lessons.find(l => l.id === lId);
+        if (lesson) setTimeout(() => openRenameLessonModal(lesson), 150);
+      });
+    }
+
+    const btnActionMenuShare = document.getElementById('btnActionMenuShare');
+    if (btnActionMenuShare) {
+      btnActionMenuShare.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        const lesson = state.lessons.find(l => l.id === lId);
+        if (lesson) setTimeout(() => openQuickShareModal(lesson), 150);
+      });
+    }
+
+    const btnActionMenuMoveCat = document.getElementById('btnActionMenuMoveCat');
+    if (btnActionMenuMoveCat) {
+      btnActionMenuMoveCat.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        if (lId) setTimeout(() => openMoveCatModalForLesson(lId), 150);
+      });
+    }
+
+    const btnActionMenuMoveUp = document.getElementById('btnActionMenuMoveUp');
+    if (btnActionMenuMoveUp) {
+      btnActionMenuMoveUp.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        if (lId) moveLessonOrder(lId, -1);
+      });
+    }
+
+    const btnActionMenuMoveDown = document.getElementById('btnActionMenuMoveDown');
+    if (btnActionMenuMoveDown) {
+      btnActionMenuMoveDown.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        if (lId) moveLessonOrder(lId, 1);
+      });
+    }
+
+    const btnActionMenuDelete = document.getElementById('btnActionMenuDelete');
+    if (btnActionMenuDelete) {
+      btnActionMenuDelete.addEventListener('click', () => {
+        const lId = currentMenuLessonId;
+        hideModalAnimated(document.getElementById('lessonActionMenuModal'));
+        const lesson = state.lessons.find(l => l.id === lId);
+        if (lesson) {
+          askConfirmDelete(`Chuyển bài "${lesson.title}" vào Thùng rác? (Có thể khôi phục trong 30 ngày)`, () => {
+            moveLessonToTrash(lesson.id);
+          });
+        }
+      });
+    }
 
     // Gắn nhãn hàng loạt
     if (btnBatchAssignTags) {
@@ -4437,6 +4790,76 @@
         return;
       }
 
+      // // FIX-2: Hàm sinh HTML dòng bài học rõ ràng, có tên bài, chip nhãn, và nút menu ⋯ duy nhất
+      function renderLessonItemHtml(lesson, idx) {
+        const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
+        const isChecked = state.selectedLessonIds ? state.selectedLessonIds.has(lesson.id) : false;
+
+        // Render tag chips
+        const tagChips = (lesson.tagIds || []).map(tId => {
+          const t = getTagById(tId);
+          if (!t) return '';
+          return `<span class="px-1.5 py-0.5 rounded text-[9px] font-medium leading-none cursor-pointer hover:opacity-80 transition inline-block" style="background-color: ${t.color}20; color: ${t.color}; border: 1px solid ${t.color}40;" data-chip-manage-tags="${lesson.id}">${t.name}</span>`;
+        }).join('');
+
+        return `
+          <div 
+            class="group/item lesson-item-stagger flex items-center gap-2 p-1.5 rounded-card cursor-pointer transition select-none relative lesson-draggable-item ${
+              isActive 
+                ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
+                : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
+            }"
+            style="animation-delay: ${Math.min(idx * 20, 200)}ms;"
+            data-select-lesson="${lesson.id}"
+            data-lesson-id="${lesson.id}"
+            draggable="true"
+          >
+            <!-- Checkbox chọn nhiều bài hoặc tay cầm kéo thả -->
+            ${state.isBatchSelectingLessons ? `
+              <input type="checkbox" class="lesson-batch-cb rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
+            ` : `
+              <div class="lesson-drag-handle touch-none cursor-grab text-gray-300 dark:text-gray-600 hover:text-gray-500 p-0.5 shrink-0 opacity-40 hover:opacity-100 transition" data-lesson-id="${lesson.id}" title="Kéo để sắp xếp">
+                <svg class="w-3.5 h-3.5"><use href="#icon-grip-vertical"></use></svg>
+              </div>
+            `}
+
+            <!-- Nút tròn tick đã học / chưa học -->
+            <button class="shrink-0 p-1 text-gray-400 hover:text-emerald-600 transition flex items-center justify-center touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học (Bấm để đổi)' : 'Chưa học (Bấm để đổi)'}" aria-label="Đổi trạng thái học">
+              ${lesson.isCompleted 
+                ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#icon-check-circle-2"></use></svg>' 
+                : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block hover:border-emerald-500 transition-colors"></span>'
+              }
+            </button>
+
+            <!-- Vùng tên bài học rõ ràng + dòng phụ (tên file gốc & chips) -->
+            <div class="flex-1 min-w-0 pr-1 py-0.5" data-open-lesson-content="${lesson.id}">
+              <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2 break-words" title="${lesson.title}">
+                ${lesson.title}
+              </p>
+              <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                ${lesson.originalFileName ? `
+                  <span class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] truncate max-w-[130px] font-mono opacity-80" title="File gốc: ${lesson.originalFileName}">
+                    ${lesson.originalFileName}
+                  </span>
+                ` : ''}
+                ${tagChips ? `<div class="flex items-center gap-1 flex-wrap">${tagChips}</div>` : ''}
+              </div>
+            </div>
+
+            <!-- Khu vực bên phải: Nút sao nhanh (desktop hover) + Nút menu ⋯ duy nhất -->
+            <div class="flex items-center gap-0.5 shrink-0">
+              <button class="p-1 rounded-md text-amber-500 hover:scale-110 transition ${lesson.isFavorite ? 'block' : 'hidden sm:group-hover/item:block text-gray-300 dark:text-gray-600 hover:text-amber-500'}" data-quick-star="${lesson.id}" title="${lesson.isFavorite ? 'Bỏ yêu thích' : 'Yêu thích'}">
+                <svg class="w-3.5 h-3.5 ${lesson.isFavorite ? 'fill-amber-500' : ''}"><use href="#icon-star"></use></svg>
+              </button>
+
+              <button class="touch-target p-1.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#1A1A1A] dark:hover:text-[#EDECE8] transition" data-open-lesson-menu="${lesson.id}" title="Tùy chọn bài học" aria-label="Tùy chọn bài học">
+                <svg class="w-3.5 h-3.5"><use href="#icon-more-vertical"></use></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
       let html = '';
       state.categories.forEach((cat, catIdx) => {
         const allCatLessons = state.lessons.filter(l => l.categoryId === cat.id);
@@ -4451,13 +4874,12 @@
           <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category" data-cat-id="${cat.id}">
             <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="${cat.id}">
               <div class="flex items-center gap-1.5 flex-1 min-w-0 pr-1">
-                <!-- Nút sắp xếp mục lên/xuống -->
                 <div class="flex items-center text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-up="${cat.id}" title="Di chuyển mục lên"><svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg></button>
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-down="${cat.id}" title="Di chuyển mục xuống"><svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg></button>
                 </div>
 
-                <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5 text-[#6B6B66] dark:text-[#9AA3B2] shrink-0 transition-transform"></i>
+                <svg class="w-3.5 h-3.5 text-[#6B6B66] dark:text-[#9AA3B2] shrink-0 transition-transform"><use href="#icon-${isExpanded ? 'chevron-down' : 'chevron-right'}"></use></svg>
                 <span class="text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] leading-tight break-words" title="${cat.title}">
                   ${cat.title}
                 </span>
@@ -4469,10 +4891,10 @@
                 </span>
 
                 <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Đổi tên mục" data-rename-cat="${cat.id}">
-                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                  <svg class="w-3.5 h-3.5"><use href="#icon-pencil"></use></svg>
                 </button>
                 <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2] transition" title="Chuyển vào thùng rác" data-delete-cat="${cat.id}">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
                 </button>
               </div>
             </div>
@@ -4485,88 +4907,13 @@
               <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredLessons.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Mục này chưa có bài học phù hợp.</p>
-                ` : filteredLessons.map((lesson, idx) => {
-                  const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
-                  const isChecked = state.selectedLessonIds ? state.selectedLessonIds.has(lesson.id) : false;
-
-                  // Render tag chips
-                  const tagChips = (lesson.tagIds || []).map(tId => {
-                    const t = getTagById(tId);
-                    if (!t) return '';
-                    return `<span class="px-1.5 py-0.2 rounded text-[9px] font-medium" style="background-color: ${t.color}22; color: ${t.color}; border: 1px solid ${t.color}44;">${t.name}</span>`;
-                  }).join('');
-
-                  return `
-                    <div 
-                      class="group/item lesson-item-stagger flex items-start gap-1.5 p-1.5 rounded-card cursor-pointer transition select-none relative lesson-draggable-item ${
-                        isActive 
-                          ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
-                          : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
-                      }"
-                      style="animation-delay: ${Math.min(idx * 20, 200)}ms;"
-                      data-select-lesson="${lesson.id}"
-                      data-lesson-id="${lesson.id}"
-                      draggable="true"
-                    >
-                      <!-- // FEATURE-7: Checkbox chọn nhiều bài -->
-                      ${state.isBatchSelectingLessons ? `
-                        <input type="checkbox" class="lesson-batch-cb mt-1 rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
-                      ` : `
-                        <!-- Tay cầm kéo thả bằng cảm ứng và chuột -->
-                        <div class="lesson-drag-handle touch-none cursor-grab text-gray-300 dark:text-gray-600 hover:text-gray-500 p-0.5 shrink-0 mt-0.5" data-lesson-id="${lesson.id}" title="Kéo để sắp xếp">
-                          <svg class="w-3 h-3"><use href="#icon-grip-vertical"></use></svg>
-                        </div>
-                      `}
-
-                      <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
-                        ${lesson.isCompleted 
-                          ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><use href="#icon-check-circle-2"></use></svg>' 
-                          : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block"></span>'
-                        }
-                      </button>
-
-                      <div class="flex-1 min-w-0 pt-0.5">
-                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2">
-                          ${lesson.title}
-                        </p>
-                        <!-- // FEATURE-6: Tag chips -->
-                        ${tagChips ? `<div class="flex items-center gap-1 flex-wrap mt-0.5">${tagChips}</div>` : ''}
-                      </div>
-
-                      <div class="flex items-center gap-0.5 shrink-0 opacity-80 sm:opacity-40 sm:group-hover/item:opacity-100 transition">
-                        ${lesson.isFavorite ? '<svg class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><use href="#icon-star"></use></svg>' : ''}
-                        
-                        <!-- Nút di chuyển bài lên / xuống -->
-                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-up="${lesson.id}" title="Di chuyển lên">
-                          <svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg>
-                        </button>
-                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-down="${lesson.id}" title="Di chuyển xuống">
-                          <svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg>
-                        </button>
-
-                        <!-- Gắn nhãn nhanh -->
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-manage-tags="${lesson.id}" title="Quản lý nhãn">
-                          <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
-                        </button>
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
-                          <i data-lucide="share-2" class="w-3 h-3"></i>
-                        </button>
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
-                          <i data-lucide="pencil" class="w-3 h-3"></i>
-                        </button>
-                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-delete-lesson="${lesson.id}" title="Chuyển vào thùng rác">
-                          <i data-lucide="trash-2" class="w-3 h-3"></i>
-                        </button>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
+                ` : filteredLessons.map((lesson, idx) => renderLessonItemHtml(lesson, idx)).join('')}
 
                 <button 
                   class="w-full touch-target py-2 px-2 mt-1 rounded-card border border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] text-[11px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#4F46E5] transition flex items-center justify-center gap-1.5"
                   data-add-lesson-cat="${cat.id}"
                 >
-                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <svg class="w-3.5 h-3.5"><use href="#icon-plus"></use></svg>
                   <span>Thêm bài vào mục này</span>
                 </button>
               </div>
@@ -4586,7 +4933,7 @@
           <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category" data-cat-id="__uncategorized__">
             <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="__uncategorized__">
               <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
-                <i data-lucide="${isUncatExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"></i>
+                <svg class="w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"><use href="#icon-${isUncatExpanded ? 'chevron-down' : 'chevron-right'}"></use></svg>
                 <span class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] leading-tight break-words">
                   Chưa phân loại
                 </span>
@@ -4602,76 +4949,7 @@
               <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredUncat.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Không có bài học phù hợp bộ lọc.</p>
-                ` : filteredUncat.map((lesson, idx) => {
-                  const isActive = lesson.id === state.activeLessonId && !state.isSharedMode;
-                  const isChecked = state.selectedLessonIds ? state.selectedLessonIds.has(lesson.id) : false;
-
-                  const tagChips = (lesson.tagIds || []).map(tId => {
-                    const t = getTagById(tId);
-                    if (!t) return '';
-                    return `<span class="px-1.5 py-0.2 rounded text-[9px] font-medium" style="background-color: ${t.color}22; color: ${t.color}; border: 1px solid ${t.color}44;">${t.name}</span>`;
-                  }).join('');
-
-                  return `
-                    <div 
-                      class="group/item lesson-item-stagger flex items-start gap-1.5 p-1.5 rounded-card cursor-pointer transition select-none relative lesson-draggable-item ${
-                        isActive 
-                          ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
-                          : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
-                      }"
-                      style="animation-delay: ${Math.min(idx * 20, 200)}ms;"
-                      data-select-lesson="${lesson.id}"
-                      data-lesson-id="${lesson.id}"
-                      draggable="true"
-                    >
-                      ${state.isBatchSelectingLessons ? `
-                        <input type="checkbox" class="lesson-batch-cb mt-1 rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
-                      ` : `
-                        <div class="lesson-drag-handle touch-none cursor-grab text-gray-300 dark:text-gray-600 hover:text-gray-500 p-0.5 shrink-0 mt-0.5" data-lesson-id="${lesson.id}" title="Kéo để sắp xếp">
-                          <svg class="w-3 h-3"><use href="#icon-grip-vertical"></use></svg>
-                        </div>
-                      `}
-
-                      <button class="mt-0.5 shrink-0 text-gray-400 hover:text-emerald-600 transition touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học' : 'Chưa học'}">
-                        ${lesson.isCompleted 
-                          ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><use href="#icon-check-circle-2"></use></svg>' 
-                          : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block"></span>'
-                        }
-                      </button>
-
-                      <div class="flex-1 min-w-0 pt-0.5">
-                        <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2">
-                          ${lesson.title}
-                        </p>
-                        ${tagChips ? `<div class="flex items-center gap-1 flex-wrap mt-0.5">${tagChips}</div>` : ''}
-                      </div>
-
-                      <div class="flex items-center gap-0.5 shrink-0 opacity-80 sm:opacity-40 sm:group-hover/item:opacity-100 transition">
-                        ${lesson.isFavorite ? '<svg class="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><use href="#icon-star"></use></svg>' : ''}
-                        
-                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-up="${lesson.id}" title="Di chuyển lên">
-                          <svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg>
-                        </button>
-                        <button class="p-0.5 hover:text-indigo-600 text-gray-400" data-move-lesson-down="${lesson.id}" title="Di chuyển xuống">
-                          <svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg>
-                        </button>
-
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-manage-tags="${lesson.id}" title="Quản lý nhãn">
-                          <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
-                        </button>
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-share-lesson="${lesson.id}" title="Tạo link chia sẻ 7 ngày">
-                          <i data-lucide="share-2" class="w-3 h-3"></i>
-                        </button>
-                        <button class="touch-target p-1 rounded hover:bg-black/10 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-rename-lesson="${lesson.id}" title="Đổi tên">
-                          <i data-lucide="pencil" class="w-3 h-3"></i>
-                        </button>
-                        <button class="touch-target p-1 rounded hover:bg-red-50 hover:text-red-600 text-[#6B6B66] dark:text-[#9AA3B2]" data-quick-delete-lesson="${lesson.id}" title="Chuyển vào thùng rác">
-                          <i data-lucide="trash-2" class="w-3 h-3"></i>
-                        </button>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
+                ` : filteredUncat.map((lesson, idx) => renderLessonItemHtml(lesson, idx)).join('')}
               </div>
             ` : ''}
           </div>
@@ -4680,6 +4958,31 @@
 
       container.innerHTML = html;
       refreshIcons(container);
+
+      // Gắn sự kiện click mở menu tùy chọn bài ⋯
+      container.querySelectorAll('[data-open-lesson-menu]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openLessonActionMenu(el.getAttribute('data-open-lesson-menu'));
+        });
+      });
+
+      // Gắn sự kiện click sao nhanh Desktop
+      container.querySelectorAll('[data-quick-star]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const lId = el.getAttribute('data-quick-star');
+          toggleFavoriteLesson(lId);
+        });
+      });
+
+      // Gắn sự kiện click chip nhãn để mở quản lý nhãn
+      container.querySelectorAll('[data-chip-manage-tags]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openTagManageModal(el.getAttribute('data-chip-manage-tags'));
+        });
+      });
 
       // Gắn sự kiện click chọn bài
       container.querySelectorAll('[data-select-lesson]').forEach(el => {
@@ -4773,13 +5076,13 @@
         });
       });
 
-      // Đổi tên mục
+      // Đổi tên mục: FIX-1 gọi đúng openCategoryModal
       container.querySelectorAll('[data-rename-cat]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           const catId = el.getAttribute('data-rename-cat');
           const cat = state.categories.find(c => c.id === catId);
-          if (cat) openRenameCategoryModal(cat);
+          if (cat) openCategoryModal(cat);
         });
       });
 
@@ -6258,6 +6561,7 @@
     const categoryModalTitle = document.getElementById('categoryModalTitle');
     let editingCategoryId = null;
 
+    // // FIX-1: Khôi phục và nâng cấp modal tạo/đổi tên mục
     function openCategoryModal(cat = null) {
       if (cat) {
         editingCategoryId = cat.id;
@@ -6269,8 +6573,23 @@
         categoryNameInput.value = "";
       }
       showModalAnimated(categoryModal);
-      categoryNameInput.focus();
+      setTimeout(() => {
+        categoryNameInput.focus();
+        categoryNameInput.select();
+      }, 60);
     }
+    window.openRenameCategoryModal = openCategoryModal;
+
+    // // FIX-1: Hỗ trợ phím Enter để Lưu, phím Esc để Hủy
+    categoryNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('btnSaveCategoryModal').click();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        hideModalAnimated(categoryModal);
+      }
+    });
 
     document.getElementById('btnNewCategory').addEventListener('click', () => openCategoryModal());
     document.getElementById('btnCancelCategoryModal').addEventListener('click', () => hideModalAnimated(categoryModal));
@@ -6288,7 +6607,6 @@
           const cat = state.categories.find(c => c.id === editingCategoryId);
           if (cat) cat.title = name;
           renderCategoriesAndLessons();
-          // FIX: Luôn cập nhật LocalStorage
           saveLocalCategories();
 
           if (!state.useLocalFallback && db && state.userId) {
@@ -6306,8 +6624,9 @@
           };
           state.categories.push(newCat);
           state.activeCategoryId = newCatId;
+          // // FIX-1: Mục mới luôn ở trạng thái mở sẵn
+          state.categoryExpanded[newCatId] = true;
           renderCategoriesAndLessons();
-          // FIX: Luôn cập nhật LocalStorage
           saveLocalCategories();
 
           if (!state.useLocalFallback && db && state.userId) {
@@ -6315,6 +6634,12 @@
             await setDoc(catRef, newCat);
           }
           showToast("Đã tạo mục mới");
+
+          // // FIX-1: Cuộn mượt đến mục vừa tạo
+          setTimeout(() => {
+            const catEl = document.querySelector(`[data-cat-id="${newCatId}"]`);
+            if (catEl) catEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
         }
         hideModalAnimated(categoryModal);
         setSyncStatus(false);
