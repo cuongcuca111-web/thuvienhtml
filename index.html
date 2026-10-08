@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v3.8.3';
+    const CURRENT_APP_VERSION = 'v3.9.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -284,12 +284,20 @@
       --highlight: #78350F;
     }
 
-    /* // ANIM: Hệ thống CSS Variables chuyển động thống nhất cho toàn bộ web */
+    /* ===== MOTION SYSTEM ===== */
+    /* // ANIM: Hệ thống Design Tokens chuyển động phong cách Editorial */
     :root {
-      --anim-dur-fast: 150ms;
-      --anim-dur-mid: 250ms;
-      --anim-dur-slow: 350ms;
-      --anim-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --dur-fast: 150ms;
+      --dur-base: 250ms;
+      --dur-slow: 400ms;
+
+      /* Tương thích ngược với các biến anim cũ */
+      --anim-dur-fast: var(--dur-fast);
+      --anim-dur-mid: var(--dur-base);
+      --anim-dur-slow: var(--dur-slow);
+      --anim-ease: var(--ease-out);
     }
 
     * {
@@ -301,42 +309,280 @@
       background-color: var(--bg-app);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
-      transition: background-color var(--anim-dur-mid) var(--anim-ease), color var(--anim-dur-mid) var(--anim-ease);
       touch-action: manipulation;
       min-height: 100dvh;
       overflow-x: hidden;
     }
 
-    /* // ANIM: Chuyển màu nền & viền mượt mà giữa Dark và Light mode */
-    #unifiedTopBar, #stickyReaderHeader, #readingArea, #mainSidebar, #readingContentContainer, aside, header, #userDropdown, #mobileBottomBar {
-      transition: background-color var(--anim-dur-mid) var(--anim-ease), border-color var(--anim-dur-mid) var(--anim-ease), color var(--anim-dur-mid) var(--anim-ease);
+    /* // ANIM: Chuyển màu êm ái khi đổi theme Dark/Light (chỉ kích hoạt lúc chuyển đổi) */
+    .theme-transitioning,
+    .theme-transitioning *,
+    .theme-transitioning *::before,
+    .theme-transitioning *::after {
+      transition: background-color var(--dur-base) var(--ease-out) !important,
+                  border-color var(--dur-base) var(--ease-out) !important,
+                  color var(--dur-base) var(--ease-out) !important,
+                  fill var(--dur-base) var(--ease-out) !important,
+                  stroke var(--dur-base) var(--ease-out) !important;
     }
 
-    /* // ANIM: Hiệu ứng co nhẹ 0.97 khi bấm nút & hover đổi màu tinh tế */
+    /* // ANIM: Hiệu ứng nút bấm tactile co nhẹ scale 0.97 và focus-visible */
     button, .touch-target, [role="button"], input[type="button"], input[type="submit"] {
-      transition: transform var(--anim-dur-fast) var(--anim-ease), background-color var(--anim-dur-fast) var(--anim-ease), border-color var(--anim-dur-fast) var(--anim-ease), color var(--anim-dur-fast) var(--anim-ease), box-shadow var(--anim-dur-fast) var(--anim-ease);
-      will-change: transform;
+      transition: transform var(--dur-fast) var(--ease-out),
+                  background-color var(--dur-fast) var(--ease-out),
+                  border-color var(--dur-fast) var(--ease-out),
+                  color var(--dur-fast) var(--ease-out),
+                  box-shadow var(--dur-fast) var(--ease-out);
     }
     button:active, .touch-target:active {
       transform: scale(0.97);
     }
-
-    /* Focus-visible trợ năng đạt chuẩn WCAG */
     button:focus-visible, a:focus-visible, input:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
-    /* // ANIM: Chuyển chế độ độ rộng khung đọc mượt mà */
+    /* // ANIM: Độ rộng khung đọc co giãn mượt mà */
     #readingContentContainer {
-      transition: max-width var(--anim-dur-mid) var(--anim-ease), padding var(--anim-dur-mid) var(--anim-ease);
+      transition: max-width var(--dur-slow) var(--ease-out), padding var(--dur-slow) var(--ease-out);
       will-change: max-width;
     }
 
-    /* // ANIM: Hiệu ứng chuyển động mượt mà cho Modal & Bottom Sheet */
+    /* // ANIM: Chuyển bài học theo hướng (Sau: từ phải; Trước: từ trái; Trực tiếp: trượt lên) */
+    .lesson-enter-next {
+      animation: lessonEnterNext var(--dur-base) var(--ease-out) both;
+    }
+    .lesson-enter-prev {
+      animation: lessonEnterPrev var(--dur-base) var(--ease-out) both;
+    }
+    .lesson-enter, .lesson-enter-direct {
+      animation: lessonEnterDirect var(--dur-base) var(--ease-out) both;
+    }
+    .lesson-exit {
+      animation: lessonExit var(--dur-fast) var(--ease-out) forwards;
+    }
+
+    @keyframes lessonEnterNext {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes lessonEnterPrev {
+      from { opacity: 0; transform: translateX(-16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes lessonEnterDirect {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes lessonExit {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-6px); }
+    }
+
+    /* // ANIM: Bộ đếm n / tổng nảy nhẹ khi đổi số */
+    .counter-tick {
+      animation: counterTick 200ms var(--ease-out) both;
+    }
+    @keyframes counterTick {
+      0% { opacity: 0; transform: translateY(-4px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* // ANIM: Skeleton Shimmer mỏng nhẹ thanh lịch */
+    .skeleton-shimmer {
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0.03) 25%, rgba(0, 0, 0, 0.08) 37%, rgba(0, 0, 0, 0.03) 63%);
+      background-size: 400% 100%;
+      animation: skeletonShimmer 1.4s ease infinite;
+    }
+    .dark .skeleton-shimmer {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 37%, rgba(255, 255, 255, 0.03) 63%);
+      background-size: 400% 100%;
+    }
+    @keyframes skeletonShimmer {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+
+    /* // ANIM: Thanh tiến độ bài học & thanh tiến độ chung */
+    #readingProgressBar, #focusProgressBar {
+      transition: width var(--dur-slow) var(--ease-out);
+    }
+
+    /* // ANIM: Mục lục bên trái (Sidebar Lesson Items) */
+    .lesson-item-row {
+      transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+    }
+    .lesson-item-row:hover {
+      transform: translateX(2px);
+    }
+    .lesson-item-row:active {
+      transform: scale(0.98);
+      transition-duration: 100ms;
+    }
+
+    /* Thanh chỉ báo bài đang chọn viền trái co giãn nhẹ */
+    .lesson-active-indicator {
+      transition: transform var(--dur-base) var(--ease-spring), opacity var(--dur-fast) var(--ease-out);
+      transform-origin: center;
+    }
+
+    /* Xuất hiện stagger 30ms cho tối đa 8 bài đầu */
+    .lesson-item-stagger {
+      animation: lessonItemStaggerIn var(--dur-base) var(--ease-out) both;
+      animation-delay: calc(var(--item-idx, 0) * 30ms);
+    }
+    @keyframes lessonItemStaggerIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bài đang xóa thu nhỏ mờ dần */
+    .lesson-deleting {
+      transform: scale(0.92);
+      opacity: 0;
+      max-height: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      overflow: hidden;
+      transition: all var(--dur-base) var(--ease-out);
+    }
+
+    /* Bài đang kéo thả nổi lên */
+    .lesson-is-dragging {
+      opacity: 0.65;
+      transform: scale(1.02);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    /* // ANIM: Mở / Thu gọn nhóm danh mục bằng CSS Grid 0fr ↔ 1fr */
+    .category-lessons-grid {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--dur-base) var(--ease-out);
+    }
+    .category-lessons-grid.is-expanded {
+      grid-template-rows: 1fr;
+    }
+    .category-lessons-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+    .cat-chevron {
+      transition: transform var(--dur-base) var(--ease-out);
+      transform-origin: center;
+    }
+    .cat-header.is-expanded .cat-chevron,
+    [data-toggle-cat].is-expanded .cat-chevron {
+      transform: rotate(90deg);
+    }
+
+    /* Hiệu ứng nảy nhẹ của bộ đếm nhóm và ăn mừng hoàn thành 100% */
+    .badge-bounce {
+      animation: badgeBounce var(--dur-base) var(--ease-spring);
+    }
+    @keyframes badgeBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+    .group-celebrate-flash {
+      animation: groupCelebrateFlash 700ms var(--ease-out);
+    }
+    @keyframes groupCelebrateFlash {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.6), 0 4px 14px rgba(16, 185, 129, 0.2); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* // ANIM: Vòng tròn nút "Đã học" và dấu tích SVG động */
+    .check-circle-wrapper {
+      transition: transform var(--dur-base) var(--ease-spring);
+    }
+    .check-bg-fill {
+      fill: #10B981;
+      transform: scale(0);
+      transform-origin: center;
+      transition: transform var(--dur-base) var(--ease-spring);
+    }
+    .check-circle-border {
+      stroke: #D1D5DB;
+      transition: stroke var(--dur-fast) var(--ease-out);
+    }
+    .dark .check-circle-border {
+      stroke: #4B5563;
+    }
+    .check-mark-path {
+      stroke-dasharray: 14;
+      stroke-dashoffset: 14;
+      transition: stroke-dashoffset 200ms ease-in;
+    }
+
+    /* Trạng thái đã học */
+    .lesson-check-btn.is-checked .check-bg-fill {
+      transform: scale(1);
+    }
+    .lesson-check-btn.is-checked .check-circle-border {
+      stroke: #10B981;
+    }
+    .lesson-check-btn.is-checked .check-mark-path {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 300ms var(--ease-out) 100ms;
+    }
+    .lesson-check-btn.is-checked .check-circle-wrapper {
+      animation: checkBounce var(--dur-base) var(--ease-spring);
+    }
+    @keyframes checkBounce {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.18); }
+      100% { transform: scale(1); }
+    }
+
+    /* Vòng sóng ripple mờ lan ra */
+    .check-ripple {
+      position: absolute;
+      inset: -3px;
+      border-radius: 9999px;
+      border: 2px solid #10B981;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .lesson-check-btn.anim-pop .check-ripple {
+      animation: rippleWave 450ms ease-out forwards;
+    }
+    @keyframes rippleWave {
+      0% { transform: scale(0.7); opacity: 0.8; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    /* Gạch ngang tên bài mờ mượt mà từ trái sang phải */
+    .lesson-title-text {
+      position: relative;
+      display: inline;
+      background-image: linear-gradient(currentColor, currentColor);
+      background-position: 0 50%;
+      background-repeat: no-repeat;
+      background-size: 0% 1px;
+      transition: background-size var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+    }
+    .lesson-item-row.is-completed .lesson-title-text {
+      opacity: 0.65;
+      background-size: 100% 1px;
+    }
+    body.no-strike-learned .lesson-item-row.is-completed .lesson-title-text {
+      background-size: 0% 1px !important;
+    }
+
+    /* Cross-fade nhãn nút trên toolbar */
+    .cross-fade-text {
+      transition: opacity var(--dur-fast) var(--ease-out);
+    }
+
+    /* // ANIM: Chuyển động Modal và Bottom Sheet với Spring easing */
     .modal-animated {
       opacity: 0;
-      transition: opacity var(--anim-dur-mid) var(--anim-ease);
+      transition: opacity var(--dur-fast) var(--ease-out);
       pointer-events: none;
     }
     .modal-animated.modal-active {
@@ -344,27 +590,25 @@
       pointer-events: auto;
     }
     .modal-animated > div {
-      transform: translateY(12px) scale(0.97);
+      transform: translateY(8px) scale(0.96);
       opacity: 0;
-      transition: transform var(--anim-dur-mid) var(--anim-ease), opacity var(--anim-dur-mid) var(--anim-ease);
-      will-change: transform, opacity;
+      transition: transform var(--dur-base) var(--ease-spring), opacity var(--dur-fast) var(--ease-out);
     }
     .modal-animated.modal-active > div {
       transform: translateY(0) scale(1);
       opacity: 1;
     }
-    .modal-animated.modal-closing {
-      opacity: 0;
-    }
     .modal-animated.modal-closing > div {
-      transform: translateY(10px) scale(0.97);
+      transform: translateY(8px) scale(0.97);
       opacity: 0;
+      transition: transform 180ms var(--ease-out), opacity 180ms var(--ease-out);
     }
 
     @media (max-width: 640px) {
       .modal-animated.is-bottom-sheet > div {
         transform: translateY(100%);
         opacity: 1;
+        transition: transform var(--dur-base) var(--ease-out);
       }
       .modal-animated.is-bottom-sheet.modal-active > div {
         transform: translateY(0);
@@ -373,13 +617,14 @@
       .modal-animated.is-bottom-sheet.modal-closing > div {
         transform: translateY(100%);
         opacity: 1;
+        transition: transform 180ms var(--ease-out);
       }
     }
 
-    /* // ANIM: Hiệu ứng mở Bottom Sheet / Dropdown cho Menu Tài khoản & Sidebar Drawer */
+    /* Dropdown / User menu & Sidebar drawer */
     #userDropdownBackdrop, #sidebarBackdrop {
       opacity: 0;
-      transition: opacity var(--anim-dur-mid) var(--anim-ease);
+      transition: opacity var(--dur-base) var(--ease-out);
       pointer-events: none;
     }
     #userDropdownBackdrop.backdrop-active, #sidebarBackdrop.backdrop-active {
@@ -387,111 +632,38 @@
       pointer-events: auto;
     }
     #mainSidebar {
-      transition: transform var(--anim-dur-mid) var(--anim-ease), margin-left var(--anim-dur-mid) var(--anim-ease), background-color var(--anim-dur-mid) var(--anim-ease), border-color var(--anim-dur-mid) var(--anim-ease);
-      will-change: transform;
+      transition: transform var(--dur-base) var(--ease-out), margin-left var(--dur-base) var(--ease-out);
     }
     #userDropdown {
-      transition: transform var(--anim-dur-mid) var(--anim-ease), opacity var(--anim-dur-mid) var(--anim-ease);
-      will-change: transform, opacity;
-    }
-    @media (max-width: 767px) {
-      #userDropdown {
-        transform: translateY(100%);
-      }
-      #userDropdown.user-menu-active {
-        transform: translateY(0);
-      }
-      #userDropdown.user-menu-closing {
-        transform: translateY(100%);
-      }
-    }
-    @media (min-width: 768px) {
-      #userDropdown {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.97);
-        pointer-events: none;
-      }
-      #userDropdown.user-menu-active {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        pointer-events: auto;
-      }
-      #userDropdown.user-menu-closing {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.97);
-      }
+      transition: transform var(--dur-base) var(--ease-spring), opacity var(--dur-fast) var(--ease-out);
     }
 
-    /* // ANIM: Hiệu ứng chuyển bài đọc mượt mà theo hướng */
-    .lesson-enter-next {
-      animation: lessonEnterNext var(--anim-dur-mid) var(--anim-ease) both;
-      will-change: transform, opacity;
+    /* Toast Notification slide in spring */
+    .toast-animated {
+      animation: toastSlideIn var(--dur-base) var(--ease-spring) both;
     }
-    .lesson-enter-prev {
-      animation: lessonEnterPrev var(--anim-dur-mid) var(--anim-ease) both;
-      will-change: transform, opacity;
+    .toast-closing {
+      animation: toastSlideOut var(--dur-fast) var(--ease-out) forwards;
     }
-    .lesson-enter {
-      animation: lessonEnterDirect var(--anim-dur-mid) var(--anim-ease) both;
-      will-change: transform, opacity;
-    }
-    @keyframes lessonEnterNext {
-      from { opacity: 0; transform: translateX(10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes lessonEnterPrev {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes lessonEnterDirect {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* // ANIM: Hiệu ứng xuất hiện mượt mà của thẻ bài học trong sidebar */
-    .lesson-item-stagger {
-      animation: itemStaggerIn var(--anim-dur-mid) var(--anim-ease) both;
-      will-change: transform, opacity;
-    }
-    @keyframes itemStaggerIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* // ANIM: Hiệu ứng xuất hiện êm ái cho màn hình trống */
-    #emptyLessonState {
-      animation: emptyStateFadeIn var(--anim-dur-slow) var(--anim-ease) both;
-      will-change: transform, opacity;
-    }
-    @keyframes emptyStateFadeIn {
-      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.96); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+    @keyframes toastSlideOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(8px); }
+    }
 
-    /* // FIX: Anchored Popover Menu ⋯ (Hiệu ứng mở fade + scale 160ms tại vị trí nút, hỗ trợ prefers-reduced-motion) */
+    /* Popover Menu ⋯ */
     @keyframes menuPopoverIn {
-      from {
-        opacity: 0;
-        transform: scale(0.94);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+      from { opacity: 0; transform: scale(0.94); }
+      to { opacity: 1; transform: scale(1); }
     }
     .action-menu-card {
-      animation: menuPopoverIn 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: menuPopoverIn 160ms var(--ease-out) both;
       transform-origin: var(--menu-transform-origin, top right);
-      will-change: transform, opacity;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     }
-    @media (prefers-reduced-motion: reduce) {
-      .action-menu-card {
-        animation: none !important;
-      }
-    }
-
-    /* // FIX: Trạng thái active nổi bật cho nút ⋯ khi popover đang mở */
     [data-open-lesson-menu].is-menu-active,
     [data-open-cat-menu].is-menu-active,
     #btnReaderMoreActions.is-menu-active {
@@ -500,49 +672,24 @@
       border-color: rgba(99, 102, 241, 0.4) !important;
     }
 
-    /* // ANIM: Hiệu ứng popup/dropdown tìm kiếm & Popover Hiển thị */
+    /* Dropdown tìm kiếm & Popover */
     #searchResultsDropdown:not(.hidden), #mobileSearchResultsDropdown:not(.hidden), #displaySettingsPopover:not(.hidden), #readerMoreMenuDropdown:not(.hidden) {
-      animation: dropdownSlideFade var(--anim-dur-fast) var(--anim-ease) both;
+      animation: dropdownSlideFade var(--dur-fast) var(--ease-out) both;
       transform-origin: top right;
-      will-change: transform, opacity;
     }
     @keyframes dropdownSlideFade {
       from { opacity: 0; transform: translateY(-6px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* // ANIM: Hiệu ứng tactile nảy nhẹ cho icon trạng thái (yêu thích, đã học, theme) */
-    .icon-pop-animated {
-      animation: iconPopScale var(--anim-dur-mid) var(--anim-ease) both;
-      will-change: transform;
-    }
-    @keyframes iconPopScale {
-      0% { transform: scale(0.85); }
-      50% { transform: scale(1.16); }
-      100% { transform: scale(1); }
+    /* View Transitions API hỗ trợ */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: var(--dur-base);
+      animation-timing-function: var(--ease-out);
     }
 
-    /* // ANIM: Hiệu ứng thu gọn êm ái cho Banner Khách */
-    #guestWarningBanner {
-      transition: max-height var(--anim-dur-mid) var(--anim-ease), opacity var(--anim-dur-mid) var(--anim-ease), padding var(--anim-dur-mid) var(--anim-ease);
-      max-height: 80px;
-      overflow: hidden;
-    }
-    #guestWarningBanner.banner-collapsing {
-      max-height: 0 !important;
-      opacity: 0 !important;
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-      border-width: 0 !important;
-    }
-
-    /* // ANIM: Thanh tiến độ mượt mà */
-    #readingProgressBar {
-      transition: width var(--anim-dur-fast) linear;
-      will-change: width;
-    }
-
-    /* // ANIM: Tôn trọng prefers-reduced-motion của người dùng */
+    /* Tôn trọng prefers-reduced-motion của người dùng */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -550,7 +697,20 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
       }
+      .micro-confetti-particle {
+        display: none !important;
+      }
     }
+
+    /* // ANIM: Chuyển theme mượt mà trong 250ms */
+    .theme-transitioning,
+    .theme-transitioning *,
+    .theme-transitioning *::before,
+    .theme-transitioning *::after {
+      transition: background-color 250ms var(--ease-out), border-color 250ms var(--ease-out), color 250ms var(--ease-out), fill 250ms var(--ease-out), stroke 250ms var(--ease-out) !important;
+      transition-delay: 0s !important;
+    }
+    /* ===== END MOTION SYSTEM ===== */
 
     /* Tùy chỉnh thanh cuộn tinh tế */
     ::-webkit-scrollbar {
@@ -1226,6 +1386,16 @@
                 <svg class="w-3.5 h-3.5"><use href="#icon-focus"></use></svg>
                 <span>Bật</span>
               </button>
+            <!-- // FEATURE-3: Tùy chọn gạch tên bài đã học -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+              <div>
+                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Gạch tên bài đã học</div>
+                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Hiển thị vạch gạch ngang mờ khi đã học</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="toggleStrikeLearned" type="checkbox" class="sr-only peer" checked>
+                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
             </div>
 
           </div>
@@ -1263,7 +1433,7 @@
 
     <!-- // REDESIGN: THANH TIẾN ĐỘ ĐỌC GẮN DÍNH NGAY DƯỚI TOPBAR (2.5px gradient mảnh dẻ) -->
     <div class="w-full h-[2.5px] bg-[#E7E5DF]/40 dark:bg-[#262C36]/40 overflow-hidden">
-      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 transition-all duration-150 w-0"></div>
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 w-0"></div>
     </div>
   </div>
   <!-- THÂN ỨNG DỤNG (FLEX-1, TỰ ĐỘNG LẤY PHẦN CÒN LẠI CỦA 100dvh) -->
@@ -1447,7 +1617,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v3.8.3 - build 08/10/2026 19:45
+        Thư viện Sách HTML v3.9.0 - build 08/10/2026 21:15
       </div>
     </aside>
 
@@ -1762,9 +1932,15 @@
 
             <!-- Khung Iframe hiển thị file HTML -->
             <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-xl border border-[#E7E5DF]/50 dark:border-[#262C36]/50">
-              <div id="iframeLoadingSkeleton" class="absolute inset-0 bg-transparent flex flex-col items-center justify-center gap-3 z-10 hidden">
-                <div class="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                <span class="text-xs text-[#6E6B65] dark:text-[#979DA8]">Đang tải nội dung...</span>
+              <div id="iframeLoadingSkeleton" class="absolute inset-0 bg-white dark:bg-[#161A20] flex flex-col p-6 sm:p-8 gap-3.5 z-10 hidden transition-opacity duration-150">
+                <div class="skeleton-shimmer h-7 w-2/5 rounded-md"></div>
+                <div class="skeleton-shimmer h-4 w-4/5 rounded-md mt-2"></div>
+                <div class="skeleton-shimmer h-4 w-full rounded-md"></div>
+                <div class="skeleton-shimmer h-4 w-11/12 rounded-md"></div>
+                <div class="skeleton-shimmer h-4 w-3/4 rounded-md"></div>
+                <div class="skeleton-shimmer h-32 w-full rounded-lg mt-3"></div>
+                <div class="skeleton-shimmer h-4 w-5/6 rounded-md mt-2"></div>
+                <div class="skeleton-shimmer h-4 w-2/3 rounded-md"></div>
               </div>
 
               <iframe 
@@ -1930,7 +2106,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v3.8.3 - build 08/10/2026 19:45
+      Thư viện Sách HTML v3.9.0 - build 08/10/2026 21:15
     </div>
   </div>
 
@@ -3448,6 +3624,7 @@
       recentLessons: [],
 
     };
+    window.state = state;
 
     // // REDESIGN: Bộ render icon SVG độc bản nội bộ (Thay thế hoàn toàn Lucide / Icon bên ngoài)
     function refreshIcons(container = document) {
@@ -3481,10 +3658,15 @@
     window.refreshIcons = refreshIcons;
     window.lucide = { createIcons: refreshIcons };
 
+    // ===== MOTION HELPERS: MODAL, TOAST, CONFETTI, CELEBRATION =====
     // // ANIM: Tiện ích hiệu ứng hiển thị & ẩn mượt mà cho Modal / Bottom Sheet
     function showModalAnimated(target) {
       const el = typeof target === 'string' ? document.getElementById(target) : target;
       if (!el) return;
+      if (el._closeTimer) {
+        clearTimeout(el._closeTimer);
+        el._closeTimer = null;
+      }
       el.classList.remove('hidden', 'modal-closing');
       void el.offsetWidth;
       el.classList.add('modal-active');
@@ -3494,17 +3676,22 @@
     function hideModalAnimated(target) {
       const el = typeof target === 'string' ? document.getElementById(target) : target;
       if (!el || el.classList.contains('hidden')) return;
+      if (el._closeTimer) clearTimeout(el._closeTimer);
       el.classList.remove('modal-active');
       el.classList.add('modal-closing');
-      setTimeout(() => {
+
+      const cleanup = () => {
         el.classList.add('hidden');
         el.classList.remove('modal-closing');
+        el._closeTimer = null;
         const anyActive = document.querySelector('.modal-animated.modal-active');
         const userMenuOpen = document.getElementById('userDropdownBackdrop')?.classList.contains('backdrop-active');
         if (!anyActive && !userMenuOpen) {
           document.body.style.overflow = '';
         }
-      }, 250);
+      };
+
+      el._closeTimer = setTimeout(cleanup, 220);
     }
 
     // // ANIM: Tự động đóng modal mượt mà khi người dùng chạm vào lớp nền mờ
@@ -3514,24 +3701,91 @@
       }
     });
 
+    // // ANIM: Bắn 6-8 hạt confetti nhỏ thanh lịch xung quanh vòng tròn (tôn trọng reduced-motion)
+    function shootMicroConfetti(targetEl) {
+      if (!targetEl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const rect = targetEl.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const colors = ['#4F46E5', '#10B981', '#F59E0B', '#818CF8', '#34D399', '#FBBF24', '#6366F1'];
+      const count = 7;
+
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'micro-confetti-particle';
+        const angle = (i / count) * 2 * Math.PI + (Math.random() * 0.4 - 0.2);
+        const dist = 16 + Math.random() * 12;
+        const dx = Math.cos(angle) * dist;
+        const dy = Math.sin(angle) * dist;
+        const color = colors[i % colors.length];
+
+        p.style.cssText = `
+          position: fixed;
+          left: ${centerX}px;
+          top: ${centerY}px;
+          width: 4px;
+          height: 4px;
+          border-radius: ${i % 2 === 0 ? '50%' : '1px'};
+          background-color: ${color};
+          pointer-events: none;
+          z-index: 9999;
+          transform: translate(-50%, -50%);
+        `;
+        document.body.appendChild(p);
+
+        if (p.animate) {
+          p.animate([
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+          ], {
+            duration: 600,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            fill: 'forwards'
+          }).onfinish = () => p.remove();
+        } else {
+          setTimeout(() => p.remove(), 600);
+        }
+      }
+    }
+
+    // // ANIM: Hiệu ứng ăn mừng tinh tế khi hoàn thành 100% nhóm
+    function triggerGroupCompletedCelebration(catId) {
+      const groupEl = document.querySelector(`[data-cat-id="${catId}"]`);
+      if (groupEl) {
+        groupEl.classList.remove('group-celebrate-flash');
+        void groupEl.offsetWidth;
+        groupEl.classList.add('group-celebrate-flash');
+        const badge = groupEl.querySelector('.cat-count-badge');
+        if (badge) {
+          badge.classList.remove('badge-bounce');
+          void badge.offsetWidth;
+          badge.classList.add('badge-bounce');
+        }
+      }
+      if (navigator.vibrate) {
+        try { navigator.vibrate(10); } catch (_) {}
+      }
+    }
+    window.shootMicroConfetti = shootMicroConfetti;
+    window.triggerGroupCompletedCelebration = triggerGroupCompletedCelebration;
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
+      if (!container) return;
       const toast = document.createElement('div');
-      toast.className = `pointer-events-auto flex items-center gap-2 px-3.5 py-2.5 rounded-card text-xs font-medium shadow-lg transition-all transform duration-200 translate-y-2 opacity-0 ${
+      toast.className = `toast-animated pointer-events-auto flex items-center gap-2 px-3.5 py-2.5 rounded-card text-xs font-medium shadow-lg transition select-none ${
         type === 'error' ? 'bg-red-600 text-white' : 'bg-[#161A20] text-white border border-white/10 dark:bg-white dark:text-[#1A1A1A]'
       }`;
 
       const iconName = type === 'error' ? 'alert-circle' : 'check-circle-2';
-      toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i><span>${message}</span>`;
+      toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
       container.appendChild(toast);
       refreshIcons();
 
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
-
       setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
+        toast.classList.remove('toast-animated');
+        toast.classList.add('toast-closing');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
         setTimeout(() => toast.remove(), 250);
       }, 3500);
     }
@@ -3541,7 +3795,7 @@
       const container = document.getElementById('toastContainer');
       if (!container) return;
       const toast = document.createElement('div');
-      toast.className = 'pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium shadow-xl border border-white/10 bg-[#161A20] text-white dark:bg-white dark:text-[#1A1A1A] dark:border-black/10 transition-all transform duration-200 translate-y-2 opacity-0 z-50';
+      toast.className = 'toast-animated pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium shadow-xl border border-white/10 bg-[#161A20] text-white dark:bg-white dark:text-[#1A1A1A] dark:border-black/10 z-50 select-none';
       toast.innerHTML = `
         <div class="flex items-center gap-2 min-w-0">
           <svg class="w-4 h-4 text-emerald-400 shrink-0"><use href="#icon-check-circle-2"></use></svg>
@@ -3555,21 +3809,20 @@
         e.stopPropagation();
         if (handled) return;
         handled = true;
-        toast.remove();
+        toast.classList.add('toast-closing');
+        setTimeout(() => toast.remove(), 200);
         if (typeof actionCallback === 'function') actionCallback();
       });
 
       container.appendChild(toast);
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
 
       setTimeout(() => {
         if (!handled && toast.parentNode) {
-          toast.classList.add('opacity-0', 'translate-y-2');
-          setTimeout(() => toast.remove(), 250);
+          toast.classList.remove('toast-animated');
+          toast.classList.add('toast-closing');
+          setTimeout(() => toast.remove(), 200);
         }
-      }, 5500);
+      }, 4000);
     }
     window.showToast = showToast;
 
@@ -4498,6 +4751,17 @@
       } catch (e) {
         console.warn("Lỗi đọc Firestore settings:", e);
       }
+      try {
+        const strikePref = localStorage.getItem('cfg_strike_learned');
+        const cbStrike = document.getElementById('toggleStrikeLearned');
+        if (strikePref === 'false') {
+          document.body.classList.add('no-strike-learned');
+          if (cbStrike) cbStrike.checked = false;
+        } else {
+          document.body.classList.remove('no-strike-learned');
+          if (cbStrike) cbStrike.checked = true;
+        }
+      } catch (_) {}
       updateFontSizeDisplay();
     }
 
@@ -6443,16 +6707,21 @@
 
         return `
           <div 
-            class="group/item lesson-item-stagger flex items-center gap-2 p-1.5 rounded-card cursor-pointer transition select-none relative lesson-draggable-item ${
+            class="group/item lesson-item-row lesson-item-stagger flex items-center gap-2 p-1.5 rounded-card cursor-pointer select-none relative lesson-draggable-item ${
               isActive 
-                ? 'bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 border-l-2 border-[#4F46E5] dark:border-[#818CF8]' 
-                : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-2 border-transparent'
-            }"
-            style="animation-delay: ${Math.min(idx * 20, 200)}ms;"
+                ? 'is-active bg-[#4F46E5]/10 dark:bg-[#818CF8]/15 text-indigo-900 dark:text-indigo-200' 
+                : 'hover:bg-black/5 dark:hover:bg-white/5'
+            } ${lesson.isCompleted ? 'is-completed' : ''}"
+            style="--item-idx: ${Math.min(idx, 8)};"
             data-select-lesson="${lesson.id}"
             data-lesson-id="${lesson.id}"
             draggable="true"
           >
+            <!-- Thanh chỉ báo bài đang chọn viền trái co giãn nhẹ -->
+            <span class="lesson-active-indicator absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#4F46E5] dark:bg-[#818CF8] rounded-r ${
+              isActive ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
+            }"></span>
+
             <!-- Checkbox chọn nhiều bài hoặc tay cầm kéo thả -->
             ${state.isBatchSelectingLessons ? `
               <input type="checkbox" class="lesson-batch-cb rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer shrink-0" data-lesson-id="${lesson.id}" ${isChecked ? 'checked' : ''} />
@@ -6462,17 +6731,21 @@
               </div>
             `}
 
-            <!-- Nút tròn tick đã học / chưa học -->
-            <button class="shrink-0 p-1 text-gray-400 hover:text-emerald-600 transition flex items-center justify-center touch-target" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học (Bấm để đổi)' : 'Chưa học (Bấm để đổi)'}" aria-label="Đổi trạng thái học">
-              ${lesson.isCompleted 
-                ? '<svg class="w-4 h-4 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#icon-check-circle-2"></use></svg>' 
-                : '<span class="w-3.5 h-3.5 rounded-full border border-gray-300 dark:border-gray-600 block hover:border-emerald-500 transition-colors"></span>'
-              }
+            <!-- Nút tròn tick đã học / chưa học hiệu ứng lan từ tâm và vẽ dấu tích SVG -->
+            <button class="lesson-check-btn shrink-0 p-1 flex items-center justify-center touch-target relative ${lesson.isCompleted ? 'is-checked' : ''}" data-toggle-learned="${lesson.id}" title="${lesson.isCompleted ? 'Đã học (Bấm để đổi)' : 'Chưa học (Bấm để đổi)'}" aria-label="Đổi trạng thái học">
+              <div class="check-circle-wrapper relative w-4 h-4 flex items-center justify-center">
+                <svg class="check-circle-svg w-4 h-4" viewBox="0 0 20 20" fill="none">
+                  <circle class="check-bg-fill" cx="10" cy="10" r="9" />
+                  <circle class="check-circle-border" cx="10" cy="10" r="8.5" stroke-width="1.5" />
+                  <path class="check-mark-path" d="M6 10.2L8.7 13L14.2 7.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="check-ripple"></span>
+              </div>
             </button>
 
             <!-- Vùng tên bài học rõ ràng + dòng phụ (tên file gốc & chips) -->
             <div class="flex-1 min-w-0 pr-1 py-0.5" data-open-lesson-content="${lesson.id}">
-              <p class="text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2 break-words" title="${lesson.title}">
+              <p class="lesson-title-text text-xs leading-snug font-medium text-[#1A1A1A] dark:text-[#ECEEF2] line-clamp-2 break-words" title="${lesson.title}">
                 ${lesson.title}
               </p>
               <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
@@ -6510,23 +6783,27 @@
         const isExpanded = state.categoryExpanded[cat.id] !== false;
 
         html += `
-          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category" data-cat-id="${cat.id}">
-            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="${cat.id}">
+          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-shadow duration-200" data-cat-id="${cat.id}">
+            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isExpanded ? 'is-expanded' : ''}" data-toggle-cat="${cat.id}">
               <div class="flex items-center gap-1.5 flex-1 min-w-0 pr-1">
                 <div class="flex items-center text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-up="${cat.id}" title="Di chuyển mục lên"><svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg></button>
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-down="${cat.id}" title="Di chuyển mục xuống"><svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg></button>
                 </div>
 
-                <svg class="w-3.5 h-3.5 text-[#6B6B66] dark:text-[#9AA3B2] shrink-0 transition-transform"><use href="#icon-${isExpanded ? 'chevron-down' : 'chevron-right'}"></use></svg>
+                <svg class="cat-chevron w-3.5 h-3.5 text-[#6B6B66] dark:text-[#9AA3B2] shrink-0 transition-transform"><use href="#icon-chevron-right"></use></svg>
                 <span class="text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] leading-tight break-words" title="${cat.title}">
                   ${cat.title}
                 </span>
               </div>
 
               <div class="flex items-center gap-1 shrink-0">
-                <span class="text-[10px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] px-1.5 py-0.5 rounded border border-[#E6E6E1] dark:border-[#262C36]">
-                  ${completedCount}/${totalCount}
+                <span class="cat-count-badge text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
+                  progressPercent === 100 && totalCount > 0
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 font-semibold'
+                    : 'text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36]'
+                }">
+                  ${completedCount}/${totalCount}${progressPercent === 100 && totalCount > 0 ? ' ✓' : ''}
                 </span>
 
                 <!-- // FIX-2: Nút menu ⋯ cho mục -->
@@ -6537,11 +6814,11 @@
             </div>
 
             <div class="w-full bg-[#E6E6E1]/50 dark:bg-[#262C36]/50 h-1">
-              <div class="bg-[#16A34A] h-full transition-all duration-300" style="width: ${progressPercent}%;"></div>
+              <div class="bg-[#16A34A] h-full transition-all duration-400" style="width: ${progressPercent}%;"></div>
             </div>
 
-            ${isExpanded ? `
-              <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
+            <div class="category-lessons-grid ${isExpanded ? 'is-expanded' : ''}" data-cat-grid="${cat.id}">
+              <div class="category-lessons-inner p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredLessons.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Mục này chưa có bài học phù hợp.</p>
                 ` : filteredLessons.map((lesson, idx) => renderLessonItemHtml(lesson, idx)).join('')}
@@ -6554,7 +6831,7 @@
                   <span>Thêm bài vào mục này</span>
                 </button>
               </div>
-            ` : ''}
+            </div>
           </div>
         `;
       });
@@ -6567,28 +6844,32 @@
         const isUncatExpanded = state.categoryExpanded['__uncategorized__'] !== false;
 
         html += `
-          <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category" data-cat-id="__uncategorized__">
-            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition" data-toggle-cat="__uncategorized__">
+          <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-shadow duration-200" data-cat-id="__uncategorized__">
+            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isUncatExpanded ? 'is-expanded' : ''}" data-toggle-cat="__uncategorized__">
               <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
-                <svg class="w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"><use href="#icon-${isUncatExpanded ? 'chevron-down' : 'chevron-right'}"></use></svg>
+                <svg class="cat-chevron w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"><use href="#icon-chevron-right"></use></svg>
                 <span class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] leading-tight break-words">
                   Chưa phân loại
                 </span>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
-                <span class="text-[10px] font-medium text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] px-1.5 py-0.5 rounded border border-[#E6E6E1] dark:border-[#262C36]">
-                  ${completedUncat}/${totalUncat}
+                <span class="cat-count-badge text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
+                  completedUncat === totalUncat && totalUncat > 0
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 font-semibold'
+                    : 'text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36]'
+                }">
+                  ${completedUncat}/${totalUncat}${completedUncat === totalUncat && totalUncat > 0 ? ' ✓' : ''}
                 </span>
               </div>
             </div>
 
-            ${isUncatExpanded ? `
-              <div class="p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
+            <div class="category-lessons-grid ${isUncatExpanded ? 'is-expanded' : ''}" data-cat-grid="__uncategorized__">
+              <div class="category-lessons-inner p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredUncat.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Không có bài học phù hợp bộ lọc.</p>
                 ` : filteredUncat.map((lesson, idx) => renderLessonItemHtml(lesson, idx)).join('')}
               </div>
-            ` : ''}
+            </div>
           </div>
         `;
       }
@@ -6662,13 +6943,27 @@
         });
       });
 
-      // Gắn sự kiện mở/thu gọn mục
+      // Gắn sự kiện mở/thu gọn mục mượt mà bằng CSS Grid 0fr ↔ 1fr không giật
       container.querySelectorAll('[data-toggle-cat]').forEach(el => {
         el.addEventListener('click', (e) => {
           if (e.target.closest('button')) return;
           const catId = el.getAttribute('data-toggle-cat');
-          state.categoryExpanded[catId] = !(state.categoryExpanded[catId] !== false);
-          renderCategoriesAndLessons();
+          const gridEl = container.querySelector(`[data-cat-grid="${catId}"]`);
+          const currentlyExpanded = gridEl ? gridEl.classList.contains('is-expanded') : (state.categoryExpanded[catId] !== false);
+          const nextExpanded = !currentlyExpanded;
+          state.categoryExpanded[catId] = nextExpanded;
+
+          if (gridEl) {
+            if (nextExpanded) {
+              gridEl.classList.add('is-expanded');
+              el.classList.add('is-expanded');
+            } else {
+              gridEl.classList.remove('is-expanded');
+              el.classList.remove('is-expanded');
+            }
+          } else {
+            renderCategoriesAndLessons();
+          }
         });
       });
 
@@ -6708,13 +7003,35 @@
         });
       });
 
-      // Đánh dấu đã học
+      // Đánh dấu đã học: hiệu ứng vẽ dấu tích SVG, nảy nhẹ, sóng ripple, confetti và ăn mừng nhóm
       container.querySelectorAll('[data-toggle-learned]').forEach(el => {
-        el.addEventListener('click', (e) => {
+        el.addEventListener('click', async (e) => {
           e.stopPropagation();
           const lessonId = el.getAttribute('data-toggle-learned');
           const lesson = state.lessons.find(l => l.id === lessonId);
-          if (lesson) updateLessonField(lesson.id, { isCompleted: !lesson.isCompleted });
+          if (!lesson) return;
+
+          const targetState = !lesson.isCompleted;
+          if (targetState) {
+            el.classList.add('is-checked', 'anim-pop');
+            shootMicroConfetti(el);
+            if (navigator.vibrate) {
+              try { navigator.vibrate(10); } catch (_) {}
+            }
+          } else {
+            el.classList.remove('is-checked', 'anim-pop');
+          }
+
+          // Kiểm tra xem nhóm đã hoàn thành tất cả bài hay chưa
+          if (targetState && lesson.categoryId) {
+            const catLessons = state.lessons.filter(l => l.categoryId === lesson.categoryId);
+            const othersDone = catLessons.filter(l => l.id !== lesson.id).every(l => l.isCompleted);
+            if (othersDone && catLessons.length > 0) {
+              setTimeout(() => triggerGroupCompletedCelebration(lesson.categoryId), 250);
+            }
+          }
+
+          await updateLessonField(lesson.id, { isCompleted: targetState });
         });
       });
 
@@ -6841,6 +7158,7 @@
         });
       });
     }
+    window.renderCategoriesAndLessons = renderCategoriesAndLessons;
 
     function renderActiveLesson() {
       const emptyState = document.getElementById('emptyLessonState');
@@ -6994,6 +7312,10 @@
         const totalInCat = catLessons.length;
 
         indexBadge.innerText = `${currentIndex + 1} / ${totalInCat}`;
+        indexBadge.classList.remove('counter-tick');
+        void indexBadge.offsetWidth;
+        indexBadge.classList.add('counter-tick');
+
         if (fsLessonNumber) fsLessonNumber.innerText = `Bài ${currentIndex + 1} / ${totalInCat}`;
         jumpInput.value = currentIndex + 1;
         jumpInput.max = totalInCat;
@@ -7030,7 +7352,15 @@
         if (btnShareCurrent) btnShareCurrent.classList.remove('hidden');
         if (btnReaderShared) btnReaderShared.classList.remove('hidden');
         if (btnRenameCurrent) btnRenameCurrent.classList.remove('hidden');
-        if (btnToggleLearned) btnToggleLearned.classList.remove('hidden');
+        if (btnToggleLearned) {
+          btnToggleLearned.classList.remove('hidden');
+          btnToggleLearned.style.transition = 'all var(--dur-base) var(--ease-out)';
+          if (currentLesson.isCompleted) {
+            btnToggleLearned.classList.add('bg-emerald-50', 'dark:bg-emerald-950/40', 'text-emerald-700', 'dark:text-emerald-300', 'border-emerald-200', 'dark:border-emerald-800');
+          } else {
+            btnToggleLearned.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/40', 'text-emerald-700', 'dark:text-emerald-300', 'border-emerald-200', 'dark:border-emerald-800');
+          }
+        }
         if (btnToggleFav) btnToggleFav.classList.remove('hidden');
       }
 
@@ -7112,7 +7442,21 @@
     function loadHtmlIntoIframe(rawHtml) {
       const iframe = document.getElementById('lessonIframe');
       const skeleton = document.getElementById('iframeLoadingSkeleton');
-      skeleton.classList.remove('hidden');
+      const container = document.getElementById('iframeOuterContainer');
+
+      // // ANIM: Giữ nền khung cùng màu theme để không bị chớp trắng ở dark mode
+      if (container) {
+        container.style.backgroundColor = state.isDarkMode ? '#161A20' : '#FFFFFF';
+      }
+      if (skeleton) {
+        skeleton.classList.remove('hidden');
+        skeleton.style.opacity = '1';
+        skeleton.style.transition = 'opacity 150ms var(--ease-out)';
+      }
+      if (iframe) {
+        iframe.style.opacity = '0';
+        iframe.style.transition = 'opacity 250ms var(--ease-out)';
+      }
 
       if (state.preserveOriginalTheme) {
         iframe.srcdoc = rawHtml;
@@ -7184,7 +7528,15 @@
       }
 
       iframe.onload = () => {
-        skeleton.classList.add('hidden');
+        if (skeleton) {
+          skeleton.style.opacity = '0';
+          setTimeout(() => {
+            skeleton.classList.add('hidden');
+          }, 150);
+        }
+        if (iframe) {
+          iframe.style.opacity = '1';
+        }
         applyFontSizeToIframe();
         inspectIframeNativeBackgroundAndResize();
       };
@@ -7279,12 +7631,22 @@
           updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lessonId), { lastOpenedAt: lesson.lastOpenedAt }).catch(() => {});
         }
       }
-      renderCategoriesAndLessons();
-      renderActiveLesson();
-      saveUserSettings();
 
-      const ra = document.getElementById('readingArea');
-      if (ra) ra.scrollTo({ top: 0, behavior: 'smooth' });
+      const updateView = () => {
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+        saveUserSettings();
+        const ra = document.getElementById('readingArea');
+        if (ra) ra.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.startViewTransition(() => {
+          updateView();
+        });
+      } else {
+        updateView();
+      }
     }
 
     function stepLesson(direction) {
@@ -7308,6 +7670,8 @@
         selectLesson(catLessons[targetIndex].id);
       }
     }
+    window.selectLesson = selectLesson;
+    window.stepLesson = stepLesson;
 
     async function updateLessonField(lessonId, updateFields) {
       const lIdx = state.lessons.findIndex(l => l.id === lessonId);
@@ -7338,6 +7702,11 @@
     }
 
     async function deleteLesson(lessonId) {
+      const itemEl = document.querySelector(`.lesson-item-row[data-lesson-id="${lessonId}"]`);
+      if (itemEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        itemEl.classList.add('lesson-deleting');
+        await new Promise(r => setTimeout(r, 260));
+      }
       addTombstone(lessonId);
       state.lessons = state.lessons.filter(l => l.id !== lessonId);
       if (state.activeLessonId === lessonId) {
@@ -8683,6 +9052,13 @@
       await updateLessonField(cur.id, { isCompleted: targetState });
 
       if (targetState) {
+        shootMicroConfetti(document.getElementById('btnToggleLearned'));
+        if (navigator.vibrate) {
+          try { navigator.vibrate(10); } catch (_) {}
+        }
+        if (cur.categoryId) {
+          triggerGroupCompletedCelebration(cur.categoryId);
+        }
         try {
           scheduleSpacedRepetition(cur.id);
           const today = getTodayDateStr();
@@ -8716,6 +9092,19 @@
       renderActiveLesson();
       saveUserSettings();
     });
+
+    const toggleStrikeLearnedEl = document.getElementById('toggleStrikeLearned');
+    if (toggleStrikeLearnedEl) {
+      toggleStrikeLearnedEl.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          document.body.classList.remove('no-strike-learned');
+          localStorage.setItem('cfg_strike_learned', 'true');
+        } else {
+          document.body.classList.add('no-strike-learned');
+          localStorage.setItem('cfg_strike_learned', 'false');
+        }
+      });
+    }
 
     function applyReadingWidth(mode) {
       state.readingWidth = mode;
@@ -8780,13 +9169,18 @@
     }
 
     function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
       state.isDarkMode = !state.isDarkMode;
       applyTheme(state.isDarkMode);
       if (!state.preserveOriginalTheme) {
         renderActiveLesson();
       }
       saveUserSettings();
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+      }, 260);
     }
+    window.toggleTheme = toggleTheme;
 
     document.getElementById('btnThemeToggle').addEventListener('click', toggleTheme);
     document.getElementById('fsBtnThemeToggle').addEventListener('click', toggleTheme);
@@ -13119,7 +13513,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v3.8.3 - build 08/10/2026 19:45 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v3.9.0 - build 08/10/2026 21:15 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
