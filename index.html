@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.7.1';
+    const CURRENT_APP_VERSION = 'v4.7.2';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -155,33 +155,65 @@
       if (pLink) pLink.setAttribute('href', manifestUrl);
     })();
 
-    // // FIX: Cơ chế Crash Watchdog tự báo lỗi nhẹ và hỗ trợ người dùng xóa cache thoát kẹt
+    // VIỆC 4B: Hệ thống báo lỗi thông minh & chống spam banner
     window.__lastAppCrashInfo = null;
-    window.__showAppCrashBanner = function(message, error, blockName) {
+    window.__lastErrorMsg = '';
+    window.__lastErrorTime = 0;
+    window.__lastBannerTime = 0;
+    window.__errorRepeatCount = 0;
+    window.__bannerDismissTimer = null;
+
+    function shouldIgnoreError(msg) {
+      if (!msg) return true;
+      const s = String(msg).toLowerCase();
+      // Bỏ qua êm: iframe cross-origin, ResizeObserver, Script error, AbortError, mạng tạm thời, extension
+      if (s.includes('resizeobserver')) return true;
+      if (s.includes('script error')) return true;
+      if (s.includes('securityerror') || s.includes('cross-origin') || s.includes('blocked a frame')) return true;
+      if (s.includes('aborterror')) return true;
+      if (s.includes('undelivered notifications')) return true;
+      if (s.includes('chrome-extension://') || s.includes('moz-extension://')) return true;
+      if (s.includes('liên kết không còn khả dụng') || s.includes('link đã hết hạn') || s.includes('thu hồi') || s.includes('không tìm thấy link')) return true;
+      return false;
+    }
+
+    function reportError(error, contextName) {
       try {
-        // Không hiện thanh lỗi hệ thống đối với các thông báo lỗi đã được xử lý thân thiện trong nội dung
-        if (typeof message === 'string' && (
-          message.includes('Liên kết không còn khả dụng') ||
-          message.includes('Link đã hết hạn') ||
-          message.includes('thu hồi') ||
-          message.includes('Không tìm thấy link')
-        )) {
+        const errMsg = String((error && error.message) || error || 'Lỗi không xác định');
+        if (shouldIgnoreError(errMsg)) {
+          console.warn(`[safe:${contextName || 'handler'}] Bỏ qua lỗi không nghiêm trọng:`, errMsg);
           return;
         }
 
-        const now = new Date().toISOString();
+        console.error(`[Lỗi Hệ Thống:${contextName || 'app'}]`, error);
+
+        const now = Date.now();
+        // Chống trùng lặp: cùng message trong 10s chỉ log, không hiện lại
+        if (window.__lastErrorMsg === errMsg && (now - window.__lastErrorTime < 10000)) {
+          window.__errorRepeatCount++;
+          return;
+        }
+        window.__lastErrorMsg = errMsg;
+        window.__lastErrorTime = now;
+        window.__errorRepeatCount++;
+
+        // Giới hạn tần suất banner: tối đa 1 banner mỗi 30s
+        if (now - window.__lastBannerTime < 30000) {
+          return;
+        }
+        window.__lastBannerTime = now;
+
         const errName = (error && error.name) || (error instanceof Error ? error.name : 'Lỗi Giao Diện');
-        const errMsg = String((error && error.message) || message || 'Lỗi không xác định');
         const errStack = (error && error.stack) || (new Error().stack || 'Không có stack trace');
-        const blk = blockName || 'Khởi tạo hệ thống';
+        const blk = contextName || 'Khởi tạo hệ thống';
 
         window.__lastAppCrashInfo = {
-          time: now,
+          time: new Date().toISOString(),
           block: blk,
           name: errName,
           message: errMsg,
           stack: errStack,
-          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.7.1',
+          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.7.2',
           url: window.location.href,
           userAgent: navigator.userAgent
         };
@@ -203,9 +235,27 @@
             stackEl.innerText = errStack;
             stackEl.classList.remove('hidden');
           }
+
+          // Nút Xóa cache & tải lại chỉ hiện khi lỗi lặp lại >= 3 lần
+          const clearBtn = document.getElementById('btnCrashClearAndReload');
+          if (clearBtn) {
+            if (window.__errorRepeatCount >= 3) {
+              clearBtn.classList.remove('hidden');
+            } else {
+              clearBtn.classList.add('hidden');
+            }
+          }
+
+          // Tự ẩn sau 12 giây nếu người dùng không tương tác
+          if (window.__bannerDismissTimer) clearTimeout(window.__bannerDismissTimer);
+          window.__bannerDismissTimer = setTimeout(() => {
+            banner.classList.add('hidden');
+          }, 12000);
         }
       } catch (_) {}
-    };
+    }
+    window.reportError = reportError;
+    window.__showAppCrashBanner = (msg, err, blk) => reportError(err || msg, blk);
 
     window.clearAppCacheAndReload = async function() {
       try {
@@ -222,25 +272,21 @@
     };
 
     window.addEventListener('error', function (e) {
-      var msg = e && (e.message || (e.error && e.error.message));
-      if (typeof msg === 'string' && (msg.includes('ResizeObserver') || msg.includes('undelivered notifications'))) {
-        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-        if (e.stopPropagation) e.stopPropagation();
+      const err = e.error || e.message;
+      if (shouldIgnoreError(e.message || (e.error && e.error.message))) {
         if (e.preventDefault) e.preventDefault();
         return true;
       }
-      if (typeof msg === 'string' && !msg.includes('Script error')) {
-        console.error("Watchdog caught error:", msg);
-        window.__showAppCrashBanner(msg);
-      }
+      reportError(err, 'window.onerror');
     }, true);
 
     window.addEventListener('unhandledrejection', function (e) {
-      var msg = e.reason && (e.reason.message || e.reason);
-      if (msg && !String(msg).includes('ResizeObserver')) {
-        console.error("Watchdog caught rejection:", msg);
-        window.__showAppCrashBanner(String(msg));
+      const reason = e.reason;
+      if (shouldIgnoreError(reason && (reason.message || reason))) {
+        if (e.preventDefault) e.preventDefault();
+        return;
       }
+      reportError(reason, 'unhandledrejection');
     });
   </script>
   
@@ -1497,6 +1543,53 @@
       transform: scale(1.1);
     }
 
+  
+    /* VIỆC 3: Icon Bảng Màu Palette cho 'Giữ màu sắc gốc' */
+    .opt-ico {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      transition: all var(--dur-fast, 150ms) cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .opt-ico--palette {
+      color: #6B7280;
+      background: rgba(107, 114, 128, 0.10);
+    }
+    html[data-theme="dark"] .opt-ico--palette {
+      color: #9CA3AF;
+      background: rgba(156, 163, 175, 0.12);
+    }
+    .opt-ico--palette.is-active {
+      color: #7c3aed;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(124, 58, 237, 0.22));
+      box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.25);
+    }
+    html[data-theme="dark"] .opt-ico--palette.is-active {
+      color: #c4b5fd;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.26), rgba(124, 58, 237, 0.32));
+      box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.35);
+    }
+    .opt-ico--palette.is-active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 6.5px;
+      height: 6.5px;
+      border-radius: 50%;
+      background: #10B981;
+      border: 1.5px solid #FFFFFF;
+      box-shadow: 0 0 4px rgba(16, 185, 129, 0.6);
+    }
+    html[data-theme="dark"] .opt-ico--palette.is-active::after {
+      border-color: #161A20;
+    }
+
   </style>
   <!-- // FEATURE-11: Đăng ký Service Worker và PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -1672,12 +1765,6 @@
     </symbol>
     <symbol id="icon-pencil" viewBox="0 0 24 24">
       <path d="M17 3A2.8 2.8 0 1 1 21 7L7.5 20.5L2 22L3.5 16.5L17 3Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-    <symbol id="icon-printer" viewBox="0 0 24 24">
-      <path d="M6 9V3H18V9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="4" y="9" width="16" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
-      <path d="M6 18V21H18V18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="17" cy="12.5" r="0.75" fill="currentColor"/>
     </symbol>
     <symbol id="icon-moon" viewBox="0 0 24 24">
       <path d="M21 12.8A9 9 0 1 1 11.2 3A7 7 0 0 0 21 12.8Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2185,9 +2272,14 @@
                 <!-- Hàng 4: Giữ màu sắc gốc -->
                 <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                      <svg class="w-4 h-4"><use href="#icon-palette"></use></svg>
-                    </div>
+                    <span id="optIcoPalette" class="opt-ico opt-ico--palette" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z"/>
+                        <circle cx="7.5" cy="11" r="1.1" fill="currentColor" stroke="none"/>
+                        <circle cx="10.5" cy="7" r="1.1" fill="currentColor" stroke="none"/>
+                        <circle cx="15" cy="7.5" r="1.1" fill="currentColor" stroke="none"/>
+                      </svg>
+                    </span>
                     <div class="min-w-0">
                       <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Giữ màu sắc gốc</div>
                       <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Bảo tồn định dạng &amp; màu nền file HTML gốc</div>
@@ -2257,24 +2349,6 @@
                     <span>Bật (F)</span>
                   </button>
                 </div>
-
-                <!-- Hàng 2: In / Xuất PDF -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
-                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                      <svg class="w-4 h-4"><use href="#icon-printer"></use></svg>
-                    </div>
-                    <div class="min-w-0">
-                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">In / Xuất PDF</div>
-                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">In bài viết hoặc lưu dưới dạng PDF</div>
-                    </div>
-                  </div>
-                  <button id="btnPrintCurrent" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition text-xs shrink-0 cursor-pointer">
-                    <svg class="w-3.5 h-3.5"><use href="#icon-printer"></use></svg>
-                    <span>In bài</span>
-                  </button>
-                </div>
-
                 <!-- Hàng 3: Tùy chỉnh đọc chuyên sâu (Aa) -->
                 <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
@@ -2592,7 +2666,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.7.1 - build 09/10/2026
+        Thư viện Sách HTML v4.7.2 - build 09/10/2026
       </div>
     </aside>
 
@@ -3148,7 +3222,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.7.1 - build 09/10/2026
+      Thư viện Sách HTML v4.7.2 - build 09/10/2026
     </div>
   </div>
 
@@ -3381,10 +3455,6 @@
           <button id="btnExportNotesMarkdown" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 cursor-pointer" title="Xuất toàn bộ ghi chú ra file Markdown (.md)">
             <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
             <span class="hidden sm:inline">Xuất .md</span>
-          </button>
-          <button id="btnPrintNotes" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 cursor-pointer" title="In hoặc lưu PDF">
-            <svg class="w-3.5 h-3.5"><use href="#icon-printer"></use></svg>
-            <span class="hidden sm:inline">In/PDF</span>
           </button>
           <button id="btnCloseAllNotesModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
             <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
@@ -4753,7 +4823,7 @@
   </div>
 
   <!-- // FIX: Thanh thông báo lỗi khẩn cấp & Chẩn đoán lỗi (Crash Watchdog Banner & Diagnostic Mode) -->
-  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[9999] max-w-lg w-[calc(100vw-2rem)] sm:w-auto bg-stone-900/98 dark:bg-stone-950/98 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md border border-rose-500/30 flex flex-col gap-3 text-xs">
+  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[9999] max-w-lg w-[calc(100vw-2rem)] sm:w-auto bg-stone-900/98 dark:bg-stone-950/98 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md border border-rose-500/30 flex flex-col gap-3 text-xs pointer-events-auto">
     <div class="flex items-start justify-between gap-3 min-w-0">
       <div class="flex items-start gap-2.5 min-w-0 flex-1">
         <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0 mt-1"></span>
@@ -5489,32 +5559,45 @@
     // =========================================================================
     // HỆ THỐNG TIỆN ÍCH AN TOÀN DOM & KHỞI TẠO BỀN VỮNG (FAULT-TOLERANT)
     // =========================================================================
-    const $ = (sel) => typeof sel === 'string' ? document.querySelector(sel) : sel;
-    const $$ = (sel) => typeof sel === 'string' ? Array.from(document.querySelectorAll(sel)) : (sel ? [sel] : []);
+    // VIỆC 4A: Tiện ích an toàn bao bọc bắt lỗi toàn diện
+    const $ = (s, r = document) => typeof s === 'string' ? r.querySelector(s) : s;
+    const $$ = (s, r = document) => typeof s === 'string' ? Array.from(r.querySelectorAll(s)) : (s ? [s] : []);
 
-    function on(el, evt, fn, options) {
+    const safe = (fn, name = 'handler') => (...args) => {
+      try {
+        const res = fn(...args);
+        if (res && typeof res.catch === 'function') {
+          res.catch(err => reportError(err, name));
+        }
+        return res;
+      } catch (err) {
+        reportError(err, name);
+      }
+    };
+
+    function on(el, evt, fn, opt) {
       const target = typeof el === 'string' ? document.querySelector(el) : el;
       if (target && typeof target.addEventListener === 'function') {
-        target.addEventListener(evt, fn, options);
+        target.addEventListener(evt, safe(fn, `on:${evt}:${typeof el === 'string' ? el : target.id || target.tagName}`), opt);
         return target;
       } else {
-        console.warn('Thiếu phần tử gắn sự kiện:', evt, el);
+        console.warn('[init] Thiếu phần tử cho sự kiện:', evt, el);
         return null;
       }
     }
 
     function safeRun(blockName, fn) {
       try {
-        fn();
+        const res = fn();
+        if (res && typeof res.catch === 'function') {
+          res.catch(err => {
+            console.error(`[Lỗi Khởi Tạo] Khối '${blockName}' gặp sự cố:`, err);
+            reportError(err, blockName);
+          });
+        }
       } catch (err) {
         console.error(`[Lỗi Khởi Tạo] Khối '${blockName}' gặp sự cố:`, err);
-        if (typeof window.__showAppCrashBanner === 'function') {
-          window.__showAppCrashBanner(
-            `Khối '${blockName}' gặp sự cố: ${err && err.message ? err.message : err}`,
-            err,
-            blockName
-          );
-        }
+        reportError(err, blockName);
       }
     }
 
@@ -9985,7 +10068,7 @@
           if (cfg.preserveOriginalTheme !== undefined) {
             state.preserveOriginalTheme = cfg.preserveOriginalTheme;
             const cb = document.getElementById('togglePreserveOriginalTheme');
-            if (cb) cb.checked = state.preserveOriginalTheme;
+            if (cb) { cb.checked = state.preserveOriginalTheme; if (typeof updatePaletteIconUI === 'function') updatePaletteIconUI(state.preserveOriginalTheme); }
           }
           if (cfg.readingWidth) {
             state.readingWidth = cfg.readingWidth;
@@ -10011,7 +10094,7 @@
           if (cfg.preserveOriginalTheme !== undefined) {
             state.preserveOriginalTheme = cfg.preserveOriginalTheme;
             const cb = document.getElementById('togglePreserveOriginalTheme');
-            if (cb) cb.checked = state.preserveOriginalTheme;
+            if (cb) { cb.checked = state.preserveOriginalTheme; if (typeof updatePaletteIconUI === 'function') updatePaletteIconUI(state.preserveOriginalTheme); }
           }
           if (cfg.readingWidth) {
             state.readingWidth = cfg.readingWidth;
@@ -12936,6 +13019,58 @@
     }
     window.selectLesson = selectLesson;
     window.stepLesson = stepLesson;
+
+        function closeDisplaySettingsPopover() {
+      const popover = document.getElementById('displaySettingsPopover');
+      if (popover) {
+        popover.classList.add('hidden');
+        const btn = document.getElementById('btnDisplaySettingsToggle');
+        if (btn) btn.classList.remove('is-menu-active');
+      }
+    }
+    window.closeDisplaySettingsPopover = closeDisplaySettingsPopover;
+
+    function closeReaderMoreMenu() {
+      const menu = document.getElementById('readerMoreMenuDropdown');
+      if (menu) {
+        menu.classList.add('hidden');
+        const btn = document.getElementById('btnReaderMoreActions');
+        if (btn) btn.classList.remove('is-menu-active');
+      }
+    }
+    window.closeReaderMoreMenu = closeReaderMoreMenu;
+
+    function updateFavoriteStyleUI(isFav) {
+      const btn = document.getElementById('btnToggleFavorite');
+      if (!btn) return;
+      if (isFav) {
+        btn.classList.add('text-amber-500');
+        btn.setAttribute('aria-pressed', 'true');
+      } else {
+        btn.classList.remove('text-amber-500');
+        btn.setAttribute('aria-pressed', 'false');
+      }
+    }
+    window.updateFavoriteStyleUI = updateFavoriteStyleUI;
+
+    // VIỆC 2: Cổng lưu thống nhất saveLessons() và saveLessonsState()
+    async function saveLessons() {
+      try {
+        saveLocalLessons();
+        if (typeof syncToCloud === 'function') {
+          await syncToCloud();
+        } else if (typeof syncLocalDataToFirestore === 'function') {
+          await syncLocalDataToFirestore();
+        }
+      } catch (e) {
+        console.warn('Lỗi saveLessons fallback:', e);
+      }
+    }
+    window.saveLessons = saveLessons;
+    window.saveLessonsState = saveLessons;
+    function saveLessonsState() {
+      return saveLessons();
+    }
 
     async function updateLessonField(lessonId, updateFields) {
       const lIdx = state.lessons.findIndex(l => l.id === lessonId);
@@ -15946,18 +16081,20 @@
       if (cur) await updateLessonField(cur.id, { isFavorite: !cur.isFavorite });
     });
 
-    on('#btnPrintCurrent', 'click', () => {
-      const iframe = document.getElementById('lessonIframe');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
+    function updatePaletteIconUI(isOn) {
+      const ico = document.getElementById('optIcoPalette');
+      if (!ico) return;
+      if (isOn) {
+        ico.classList.add('is-active');
       } else {
-        window.print();
+        ico.classList.remove('is-active');
       }
-    });
+    }
+    window.updatePaletteIconUI = updatePaletteIconUI;
 
     on('#togglePreserveOriginalTheme', 'change', (e) => {
       state.preserveOriginalTheme = e.target.checked;
+      updatePaletteIconUI(state.preserveOriginalTheme);
       renderActiveLesson();
       saveUserSettings();
     });
@@ -19305,7 +19442,8 @@
     };
 
     function applyFrameSettingsToDoc(doc) {
-      if (!doc) return;
+      try {
+        if (!doc) return;
       const html = doc.documentElement;
       const body = doc.body;
       const showFrames = localStorage.getItem('setting_show_text_frames') !== 'false';
@@ -19318,6 +19456,9 @@
       if (body) {
         body.classList.toggle('hide-text-frames', !showFrames);
         body.classList.toggle('hide-frame-badges', !showBadges);
+      }
+      } catch (err) {
+        console.warn('Lỗi êm trong applyFrameSettingsToDoc:', err);
       }
     }
 
@@ -19534,7 +19675,8 @@
 
     // Gỡ bỏ thẻ khung và khôi phục text node nguyên vẹn
     function removeFrameFromDoc(doc, frameId) {
-      if (!doc || !frameId) return;
+      try {
+        if (!doc || !frameId) return;
       const elements = doc.querySelectorAll(`[data-frame-id="${frameId}"], [data-hl-id="${frameId}"]`);
       elements.forEach(el => {
         if (el.classList.contains('frame-corner-badge')) {
@@ -19551,6 +19693,9 @@
           parent.normalize();
         }
       });
+      } catch (err) {
+        console.warn('Lỗi êm trong removeFrameFromDoc:', err);
+      }
     }
 
     // Tương thích ngược với tên hàm cũ
@@ -19828,7 +19973,8 @@
 
     // Khôi phục toàn bộ khung đánh dấu cho bài đọc (Dùng TextQuoteAnchor và TreeWalker an toàn)
     function restoreFramesForLesson(lessonId) {
-      if (!lessonId) return;
+      try {
+        if (!lessonId) return;
       const iframe = document.getElementById('lessonIframe');
       if (!iframe || !iframe.contentDocument) return;
       const doc = iframe.contentDocument;
@@ -19899,6 +20045,9 @@
             } catch (_) {}
           }
         }
+      }
+      } catch (err) {
+        console.warn('Lỗi êm trong restoreFramesForLesson:', err);
       }
     }
 
@@ -20630,37 +20779,6 @@
         a.click();
         URL.revokeObjectURL(url);
         showToast("Đã tải file Markdown ghi chú & khung!");
-      });
-    }
-
-    const btnPrintNotes = document.getElementById('btnPrintNotes');
-    if (btnPrintNotes) {
-      btnPrintNotes.addEventListener('click', () => {
-        const container = document.getElementById('allNotesListContainer');
-        if (!container) return;
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Ghi chú & Khung - Thư viện Sách HTML</title>
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif; padding: 24px; line-height: 1.6; color: #111; }
-              h1 { border-bottom: 2px solid #333; padding-bottom: 8px; font-size: 20px; }
-              h2 { font-size: 16px; margin-top: 24px; border-bottom: 1px solid #ccc; }
-              blockquote { background: #f9f9f9; border-left: 3px solid #6366f1; margin: 8px 0; padding: 8px 12px; font-style: italic; }
-              .note { margin-left: 16px; color: #555; font-size: 13px; }
-            </style>
-          </head>
-          <body>
-            <h1>Tất cả Ghi chú & Khung</h1>
-            ${container.innerHTML}
-            <script>window.onload = function() { window.print(); }<\/script>
-          </body>
-          </html>
-        `);
-        printWindow.document.close();
       });
     }
 
@@ -23272,15 +23390,6 @@
         renderCategoriesAndLessons();
         showToast(cur.isFavorite ? "Đã thêm vào mục yêu thích" : "Đã xóa khỏi mục yêu thích");
       });
-      on('#btnPrintCurrent', 'click', () => {
-        const iframe = document.getElementById('lessonIframe');
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } else {
-          window.print();
-        }
-      });
       on('#btnFullscreen', 'click', toggleFullscreen);
       on('#fsBtnExit', 'click', exitFullscreen);
       on('#btnFontDec', 'click', () => adjustFontSize(-1));
@@ -23341,6 +23450,58 @@
       // Các phím tắt đã được gán sự kiện an toàn
     }
 
+    
+    // VIỆC 4D: Tự kiểm tra hệ thống (Chỉ chạy khi có ?debug=1 trên URL)
+    function selfTest() {
+      console.group('%c [Thư viện HTML] Kiểm tra tự động (Self-Test System) %c', 'background:#4F46E5;color:#fff;font-weight:bold;padding:3px 6px;border-radius:3px;', '');
+      const coreElements = [
+        { name: 'Khung header chính', sel: '#mainHeader' },
+        { name: 'Sidebar thư viện', sel: '#sidebarContainer' },
+        { name: 'Iframe bài học', sel: '#lessonIframe' },
+        { name: 'Nút Trước bài', sel: '#btnPrevLesson' },
+        { name: 'Nút Sau bài', sel: '#btnNextLesson' },
+        { name: 'Nút Đã học', sel: '#btnToggleLearned' },
+        { name: 'Nút Yêu thích', sel: '#btnToggleFavorite' },
+        { name: 'Popover Tùy chọn hiển thị', sel: '#displaySettingsPopover' },
+        { name: 'Icon Bảng màu Palette', sel: '#optIcoPalette' },
+        { name: 'Công tắc Giữ màu gốc', sel: '#togglePreserveOriginalTheme' },
+        { name: 'Banner báo lỗi hệ thống', sel: '#appCrashBanner' }
+      ];
+
+      const coreFunctions = [
+        { name: 'saveLessons (cổng lưu thống nhất)', fn: typeof window.saveLessons === 'function' },
+        { name: 'saveLocalLessons (lưu local)', fn: typeof window.saveLocalLessons === 'function' },
+        { name: 'updateLessonField (cập nhật bài)', fn: typeof window.updateLessonField === 'function' },
+        { name: 'renderCategoriesAndLessons', fn: typeof window.renderCategoriesAndLessons === 'function' },
+        { name: 'stepLesson (chuyển bài Trước/Sau)', fn: typeof window.stepLesson === 'function' },
+        { name: 'reportError (xử lý lỗi an toàn)', fn: typeof window.reportError === 'function' },
+        { name: 'safe (tiện ích bọc lỗi)', fn: typeof window.safe === 'function' }
+      ];
+
+      console.log('%c--- Kiểm tra Phần tử DOM Cốt lõi ---', 'font-weight:bold;color:#0ea5e9;');
+      let domPass = 0;
+      coreElements.forEach(item => {
+        const exists = Boolean(document.querySelector(item.sel));
+        if (exists) domPass++;
+        console.log(`${exists ? '  [✓ PASS]' : '  [✗ FAIL]'} ${item.name} (${item.sel})`);
+      });
+
+      console.log('%c--- Kiểm tra Hàm Logic Cốt lõi ---', 'font-weight:bold;color:#0ea5e9;');
+      let fnPass = 0;
+      coreFunctions.forEach(item => {
+        if (item.fn) fnPass++;
+        console.log(`${item.fn ? '  [✓ PASS]' : '  [✗ FAIL]'} ${item.name}`);
+      });
+
+      const totalPass = domPass + fnPass;
+      const totalTests = coreElements.length + coreFunctions.length;
+      console.log(`%c Tổng kết Self-Test: ${totalPass}/${totalTests} mục đạt (${Math.round(totalPass/totalTests*100)}%) `, totalPass === totalTests ? 'background:#10B981;color:#fff;font-weight:bold;padding:2px 6px;border-radius:3px;' : 'background:#EF4444;color:#fff;font-weight:bold;padding:2px 6px;border-radius:3px;');
+      console.groupEnd();
+      return totalPass === totalTests;
+    }
+    window.selfTest = selfTest;
+    window.safe = safe;
+
     async function bootApp() {
       // Khởi tạo từng phân hệ độc lập qua safeRun để không phân hệ nào làm nghẽn phân hệ khác
       safeRun('initHeader', initHeader);
@@ -23376,7 +23537,11 @@
       bootApp();
     }
 
-    console.log("%c Thư viện Sách HTML v4.7.1 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+          // Chạy selfTest nếu có tham số ?debug=1
+      if (new URLSearchParams(window.location.search).get('debug') === '1') {
+        setTimeout(selfTest, 500);
+      }
+    console.log("%c Thư viện Sách HTML v4.7.2 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
