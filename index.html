@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.7.0';
+    const CURRENT_APP_VERSION = 'v4.7.1';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -156,7 +156,8 @@
     })();
 
     // // FIX: Cơ chế Crash Watchdog tự báo lỗi nhẹ và hỗ trợ người dùng xóa cache thoát kẹt
-    window.__showAppCrashBanner = function(message) {
+    window.__lastAppCrashInfo = null;
+    window.__showAppCrashBanner = function(message, error, blockName) {
       try {
         // Không hiện thanh lỗi hệ thống đối với các thông báo lỗi đã được xử lý thân thiện trong nội dung
         if (typeof message === 'string' && (
@@ -167,11 +168,41 @@
         )) {
           return;
         }
+
+        const now = new Date().toISOString();
+        const errName = (error && error.name) || (error instanceof Error ? error.name : 'Lỗi Giao Diện');
+        const errMsg = String((error && error.message) || message || 'Lỗi không xác định');
+        const errStack = (error && error.stack) || (new Error().stack || 'Không có stack trace');
+        const blk = blockName || 'Khởi tạo hệ thống';
+
+        window.__lastAppCrashInfo = {
+          time: now,
+          block: blk,
+          name: errName,
+          message: errMsg,
+          stack: errStack,
+          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.7.1',
+          url: window.location.href,
+          userAgent: navigator.userAgent
+        };
+
         const banner = document.getElementById('appCrashBanner');
         if (banner) {
           banner.classList.remove('hidden');
+          const badge = document.getElementById('appCrashBlockBadge');
+          if (badge) {
+            badge.innerText = blk;
+            badge.classList.remove('hidden');
+          }
           const desc = document.getElementById('appCrashDesc');
-          if (desc && message) desc.innerText = String(message).slice(0, 120);
+          if (desc) {
+            desc.innerText = `${errName}: ${errMsg}`;
+          }
+          const stackEl = document.getElementById('appCrashStack');
+          if (stackEl) {
+            stackEl.innerText = errStack;
+            stackEl.classList.remove('hidden');
+          }
         }
       } catch (_) {}
     };
@@ -2561,7 +2592,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.7.0 - build 09/10/2026
+        Thư viện Sách HTML v4.7.1 - build 09/10/2026
       </div>
     </aside>
 
@@ -3117,7 +3148,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.7.0 - build 09/10/2026
+      Thư viện Sách HTML v4.7.1 - build 09/10/2026
     </div>
   </div>
 
@@ -4721,19 +4752,29 @@
     </div>
   </div>
 
-  <!-- // FIX: Thanh thông báo lỗi khẩn cấp (Crash Watchdog Banner) -->
-  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[9999] max-w-md bg-stone-900/95 dark:bg-stone-950/95 text-white p-3.5 rounded-2xl shadow-2xl backdrop-blur-md border border-stone-700/60 flex items-center justify-between gap-3 text-xs">
-    <div class="flex items-center gap-2.5 min-w-0">
-      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
-      <div class="min-w-0">
-        <p class="font-semibold text-stone-100">Có lỗi xảy ra, thử tải lại</p>
-        <p id="appCrashDesc" class="text-stone-300 text-[11px] truncate">Bạn có thể xóa bộ nhớ đệm để tải phiên bản ổn định nhất.</p>
+  <!-- // FIX: Thanh thông báo lỗi khẩn cấp & Chẩn đoán lỗi (Crash Watchdog Banner & Diagnostic Mode) -->
+  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[9999] max-w-lg w-[calc(100vw-2rem)] sm:w-auto bg-stone-900/98 dark:bg-stone-950/98 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md border border-rose-500/30 flex flex-col gap-3 text-xs">
+    <div class="flex items-start justify-between gap-3 min-w-0">
+      <div class="flex items-start gap-2.5 min-w-0 flex-1">
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0 mt-1"></span>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <p class="font-semibold text-stone-100">Khởi tạo giao diện gặp sự cố</p>
+            <span id="appCrashBlockBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-rose-950/80 text-rose-300 border border-rose-800/60 font-mono font-medium">Khởi tạo</span>
+          </div>
+          <p id="appCrashDesc" class="text-stone-200 text-[11px] mt-1 break-words font-mono bg-black/50 p-2 rounded-lg leading-relaxed border border-stone-800"></p>
+          <pre id="appCrashStack" class="hidden text-[10px] text-stone-400 font-mono mt-1.5 p-2 bg-black/60 rounded max-h-28 overflow-y-auto whitespace-pre-wrap break-all border border-stone-800"></pre>
+        </div>
       </div>
+      <button id="btnCrashDismiss" class="text-stone-400 hover:text-white p-1 cursor-pointer shrink-0 transition" title="Đóng">✕</button>
     </div>
-    <div class="flex items-center gap-1.5 shrink-0">
+    <div class="flex items-center justify-end gap-2 shrink-0 pt-2 border-t border-white/10 flex-wrap">
+      <button id="btnCrashCopyDetails" class="px-2.5 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white font-medium transition cursor-pointer text-[11px] flex items-center gap-1.5 border border-stone-700">
+        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+        <span id="btnCrashCopyText">Sao chép chi tiết lỗi</span>
+      </button>
       <button id="btnCrashReload" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition cursor-pointer text-[11px]">Tải lại</button>
       <button id="btnCrashClearAndReload" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition cursor-pointer text-[11px] shadow-sm">Xóa cache & tải lại</button>
-      <button id="btnCrashDismiss" class="text-stone-400 hover:text-white p-1 cursor-pointer" title="Đóng">✕</button>
     </div>
   </div>
 
@@ -5444,6 +5485,44 @@
     } catch (e) {
       console.warn("Lỗi khởi tạo Firebase SDK:", e);
     }
+
+    // =========================================================================
+    // HỆ THỐNG TIỆN ÍCH AN TOÀN DOM & KHỞI TẠO BỀN VỮNG (FAULT-TOLERANT)
+    // =========================================================================
+    const $ = (sel) => typeof sel === 'string' ? document.querySelector(sel) : sel;
+    const $$ = (sel) => typeof sel === 'string' ? Array.from(document.querySelectorAll(sel)) : (sel ? [sel] : []);
+
+    function on(el, evt, fn, options) {
+      const target = typeof el === 'string' ? document.querySelector(el) : el;
+      if (target && typeof target.addEventListener === 'function') {
+        target.addEventListener(evt, fn, options);
+        return target;
+      } else {
+        console.warn('Thiếu phần tử gắn sự kiện:', evt, el);
+        return null;
+      }
+    }
+
+    function safeRun(blockName, fn) {
+      try {
+        fn();
+      } catch (err) {
+        console.error(`[Lỗi Khởi Tạo] Khối '${blockName}' gặp sự cố:`, err);
+        if (typeof window.__showAppCrashBanner === 'function') {
+          window.__showAppCrashBanner(
+            `Khối '${blockName}' gặp sự cố: ${err && err.message ? err.message : err}`,
+            err,
+            blockName
+          );
+        }
+      }
+    }
+
+    // Expose helpers globally for accessibility, debugging, and testing
+    window.$ = $;
+    window.$$ = $$;
+    window.on = on;
+    window.safeRun = safeRun;
 
     if (app && firebaseConfig.measurementId) {
       isSupported().then(supported => {
@@ -9487,7 +9566,7 @@
       refreshIcons();
     }
 
-    document.getElementById('btnDismissGuestBanner').addEventListener('click', () => {
+    on('#btnDismissGuestBanner', 'click', () => {
       // // ANIM: Thu gọn banner êm ái trước khi ẩn
       const banner = document.getElementById('guestWarningBanner');
       banner.classList.add('banner-collapsing');
@@ -9498,11 +9577,11 @@
       sessionStorage.setItem('dismissed_guest_banner', 'true');
     });
 
-    document.getElementById('btnBannerUpgrade').addEventListener('click', () => {
+    on('#btnBannerUpgrade', 'click', () => {
       openAuthModal('register');
     });
 
-    document.getElementById('btnOpenAuthFromGuest').addEventListener('click', () => {
+    on('#btnOpenAuthFromGuest', 'click', () => {
       closeUserMenu();
       openAuthModal('register');
     });
@@ -9654,9 +9733,9 @@
     if (btnForgotPass) {
       btnForgotPass.addEventListener('click', () => switchAuthTab('forgot'));
     }
-    document.getElementById('btnCloseAuthModal').addEventListener('click', () => hideModalAnimated(authModal));
+    on('#btnCloseAuthModal', 'click', () => hideModalAnimated(authModal));
 
-    document.getElementById('btnSwitchAccount').addEventListener('click', () => {
+    on('#btnSwitchAccount', 'click', () => {
       closeUserMenu();
       openAuthModal('login');
     });
@@ -9846,7 +9925,7 @@
       }
     });
 
-    document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
+    on('#btnGoogleAuth', 'click', async () => {
       setAuthError(null);
       try {
         const provider = new GoogleAuthProvider();
@@ -9860,7 +9939,7 @@
       }
     });
 
-    document.getElementById('btnGuestAuth').addEventListener('click', async () => {
+    on('#btnGuestAuth', 'click', async () => {
       setAuthError(null);
       localStorage.removeItem('has_authenticated_account');
       localStorage.removeItem('last_auth_user_email');
@@ -9878,7 +9957,7 @@
       }
     });
 
-    document.getElementById('btnLogout').addEventListener('click', async () => {
+    on('#btnLogout', 'click', async () => {
       closeUserMenu();
       askConfirmDelete('Bạn có chắc chắn muốn đăng xuất không?', async () => {
         try {
@@ -13056,34 +13135,34 @@
       }
     }
 
-    document.getElementById('btnHeaderQuickShare').addEventListener('click', () => {
+    on('#btnHeaderQuickShare', 'click', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       openQuickShareModal(cur || null);
     });
 
-    document.getElementById('btnMenuQuickShare').addEventListener('click', () => {
+    on('#btnMenuQuickShare', 'click', () => {
       closeUserMenu();
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       openQuickShareModal(cur || null);
     });
 
-    document.getElementById('btnEmptyQuickShare').addEventListener('click', () => {
+    on('#btnEmptyQuickShare', 'click', () => {
       openQuickShareModal(null);
     });
 
-    document.getElementById('btnShareCurrentLesson').addEventListener('click', () => {
+    on('#btnShareCurrentLesson', 'click', () => {
       const cur = state.isSharedMode ? state.sharedLessonData : state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) openQuickShareModal(cur);
       else openQuickShareModal(null);
     });
 
-    document.getElementById('mbBtnShare').addEventListener('click', () => {
+    on('#mbBtnShare', 'click', () => {
       const cur = state.isSharedMode ? state.sharedLessonData : state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) openQuickShareModal(cur);
       else openQuickShareModal(null);
     });
 
-    document.getElementById('btnCloseShareModal').addEventListener('click', () => {
+    on('#btnCloseShareModal', 'click', () => {
       hideModalAnimated(quickShareModal);
     });
 
@@ -13478,9 +13557,9 @@
       renderActiveLesson();
     }
 
-    document.getElementById('btnExitShareView').addEventListener('click', exitShareMode);
+    on('#btnExitShareView', 'click', exitShareMode);
 
-    document.getElementById('btnSaveSharedToMyLib').addEventListener('click', async () => {
+    on('#btnSaveSharedToMyLib', 'click', async () => {
       if (!state.sharedLessonData) return;
       
       let targetCatId = state.activeCategoryId || (state.categories[0] ? state.categories[0].id : null);
@@ -14467,10 +14546,10 @@
       refreshIcons();
     }
 
-    document.getElementById('btnCloseUploadModal').addEventListener('click', () => hideModalAnimated(uploadModal));
-    document.getElementById('btnCancelUpload').addEventListener('click', () => hideModalAnimated(uploadModal));
-    document.getElementById('btnEmptyAddLesson').addEventListener('click', openUploadModal);
-    document.getElementById('btnSidebarQuickUpload').addEventListener('click', openUploadModal);
+    on('#btnCloseUploadModal', 'click', () => hideModalAnimated(uploadModal));
+    on('#btnCancelUpload', 'click', () => hideModalAnimated(uploadModal));
+    on('#btnEmptyAddLesson', 'click', openUploadModal);
+    on('#btnSidebarQuickUpload', 'click', openUploadModal);
 
     dropZone.addEventListener('click', () => htmlFilesInput.click());
     htmlFilesInput.addEventListener('click', (e) => e.stopPropagation());
@@ -15535,10 +15614,10 @@
       }
     });
 
-    document.getElementById('btnNewCategory').addEventListener('click', () => openCategoryModal());
-    document.getElementById('btnCancelCategoryModal').addEventListener('click', () => hideModalAnimated(categoryModal));
+    on('#btnNewCategory', 'click', () => openCategoryModal());
+    on('#btnCancelCategoryModal', 'click', () => hideModalAnimated(categoryModal));
 
-    document.getElementById('btnSaveCategoryModal').addEventListener('click', async () => {
+    on('#btnSaveCategoryModal', 'click', async () => {
       const name = normalizeNFC(categoryNameInput.value.trim());
       if (!name) {
         showToast("Tên mục không được để trống", "error");
@@ -15613,28 +15692,28 @@
       renameCounter.innerText = `${e.target.value.length}/300`;
     });
 
-    document.getElementById('btnCancelRenameModal').addEventListener('click', () => hideModalAnimated(renameModal));
-    document.getElementById('btnRenameCurrent').addEventListener('click', () => {
+    on('#btnCancelRenameModal', 'click', () => hideModalAnimated(renameModal));
+    on('#btnRenameCurrent', 'click', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) openRenameLessonModal(cur);
     });
-    document.getElementById('btnInlineRename').addEventListener('click', () => {
+    on('#btnInlineRename', 'click', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) openRenameLessonModal(cur);
     });
-    document.getElementById('displayLessonTitle').addEventListener('dblclick', () => {
+    on('#displayLessonTitle', 'dblclick', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) openRenameLessonModal(cur);
     });
 
-    document.getElementById('btnRestoreOriginalName').addEventListener('click', () => {
+    on('#btnRestoreOriginalName', 'click', () => {
       if (renamingLessonTarget && renamingLessonTarget.originalFileName) {
         renameInput.value = renamingLessonTarget.originalFileName.replace(/\.[^/.]+$/, "");
         renameCounter.innerText = `${renameInput.value.length}/300`;
       }
     });
 
-    document.getElementById('btnSaveRenameModal').addEventListener('click', async () => {
+    on('#btnSaveRenameModal', 'click', async () => {
       const newTitle = normalizeNFC(renameInput.value.trim());
       if (!newTitle) {
         showToast("Tên không được để trống", "error");
@@ -15653,7 +15732,7 @@
     const btnToggleDescExpand = document.getElementById('btnToggleDescExpand');
     const descText = document.getElementById('descriptionText');
 
-    document.getElementById('btnEditDescription').addEventListener('click', () => {
+    on('#btnEditDescription', 'click', () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (!cur) return;
       const notesBody = document.getElementById('notesBodyContainer');
@@ -15695,12 +15774,12 @@
       });
     }
 
-    document.getElementById('btnCancelDesc').addEventListener('click', () => {
+    on('#btnCancelDesc', 'click', () => {
       descEditor.classList.add('hidden');
       descTextWrapper.classList.remove('hidden');
     });
 
-    document.getElementById('btnSaveDesc').addEventListener('click', async () => {
+    on('#btnSaveDesc', 'click', async () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (!cur) return;
       const newDesc = normalizeNFC(descTextarea.value.trim());
@@ -15738,7 +15817,7 @@
       showModalAnimated(confirmModal);
     }
 
-    document.getElementById('btnCancelConfirmDelete').addEventListener('click', () => {
+    on('#btnCancelConfirmDelete', 'click', () => {
       hideModalAnimated(confirmModal);
       state.lastDeleteAction = null;
     });
@@ -15823,19 +15902,19 @@
       });
     }
 
-    document.getElementById('btnPrevLesson').addEventListener('click', () => stepLesson(-1));
-    document.getElementById('btnNextLesson').addEventListener('click', () => stepLesson(1));
-    document.getElementById('btnBottomPrev').addEventListener('click', () => stepLesson(-1));
-    document.getElementById('btnBottomNext').addEventListener('click', () => stepLesson(1));
-    document.getElementById('fsBtnPrev').addEventListener('click', () => stepLesson(-1));
-    document.getElementById('fsBtnNext').addEventListener('click', () => stepLesson(1));
+    on('#btnPrevLesson', 'click', () => stepLesson(-1));
+    on('#btnNextLesson', 'click', () => stepLesson(1));
+    on('#btnBottomPrev', 'click', () => stepLesson(-1));
+    on('#btnBottomNext', 'click', () => stepLesson(1));
+    on('#fsBtnPrev', 'click', () => stepLesson(-1));
+    on('#fsBtnNext', 'click', () => stepLesson(1));
 
     // Bottom Bar Mobile Listeners
-    document.getElementById('mbBtnPrev').addEventListener('click', () => stepLesson(-1));
-    document.getElementById('mbBtnNext').addEventListener('click', () => stepLesson(1));
-    document.getElementById('mbBtnToc').addEventListener('click', () => openMobileSidebar());
+    on('#mbBtnPrev', 'click', () => stepLesson(-1));
+    on('#mbBtnNext', 'click', () => stepLesson(1));
+    on('#mbBtnToc', 'click', () => openMobileSidebar());
 
-    document.getElementById('btnToggleLearned').addEventListener('click', async () => {
+    on('#btnToggleLearned', 'click', async () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (!cur) return;
       const targetState = !cur.isCompleted;
@@ -15862,12 +15941,12 @@
       }
     });
 
-    document.getElementById('btnToggleFavorite').addEventListener('click', async () => {
+    on('#btnToggleFavorite', 'click', async () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) await updateLessonField(cur.id, { isFavorite: !cur.isFavorite });
     });
 
-    document.getElementById('btnPrintCurrent').addEventListener('click', () => {
+    on('#btnPrintCurrent', 'click', () => {
       const iframe = document.getElementById('lessonIframe');
       if (iframe && iframe.contentWindow) {
         iframe.contentWindow.focus();
@@ -15877,7 +15956,7 @@
       }
     });
 
-    document.getElementById('togglePreserveOriginalTheme').addEventListener('change', (e) => {
+    on('#togglePreserveOriginalTheme', 'change', (e) => {
       state.preserveOriginalTheme = e.target.checked;
       renderActiveLesson();
       saveUserSettings();
@@ -16101,12 +16180,12 @@
       showToast(`Cỡ chữ: ${percentText} (${sign})`);
     }
 
-    document.getElementById('btnFontDec').addEventListener('click', () => adjustFontSize(-1));
-    document.getElementById('btnFontInc').addEventListener('click', () => adjustFontSize(1));
-    document.getElementById('btnMenuFontDec').addEventListener('click', () => adjustFontSize(-1));
-    document.getElementById('btnMenuFontInc').addEventListener('click', () => adjustFontSize(1));
-    document.getElementById('fsBtnFontDec').addEventListener('click', () => adjustFontSize(-1));
-    document.getElementById('fsBtnFontInc').addEventListener('click', () => adjustFontSize(1));
+    on('#btnFontDec', 'click', () => adjustFontSize(-1));
+    on('#btnFontInc', 'click', () => adjustFontSize(1));
+    on('#btnMenuFontDec', 'click', () => adjustFontSize(-1));
+    on('#btnMenuFontInc', 'click', () => adjustFontSize(1));
+    on('#fsBtnFontDec', 'click', () => adjustFontSize(-1));
+    on('#fsBtnFontInc', 'click', () => adjustFontSize(1));
 
     function applyTheme(isDark) {
       if (isDark) {
@@ -16131,8 +16210,8 @@
     }
     window.toggleTheme = toggleTheme;
 
-    document.getElementById('btnThemeToggle').addEventListener('click', toggleTheme);
-    document.getElementById('fsBtnThemeToggle').addEventListener('click', toggleTheme);
+    on('#btnThemeToggle', 'click', toggleTheme);
+    on('#fsBtnThemeToggle', 'click', toggleTheme);
 
     document.querySelectorAll('.filter-tab').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -16183,8 +16262,8 @@
       hideFloatingBarNow();
     }
 
-    document.getElementById('btnFullscreen').addEventListener('click', toggleFullscreen);
-    document.getElementById('fsBtnExit').addEventListener('click', exitFullscreen);
+    on('#btnFullscreen', 'click', toggleFullscreen);
+    on('#fsBtnExit', 'click', exitFullscreen);
 
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement) {
@@ -16322,7 +16401,7 @@
       }, 250);
     }
 
-    document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+    on('#btnToggleSidebar', 'click', () => {
       if (window.innerWidth >= 768) {
         toggleDesktopSidebar();
       } else {
@@ -16331,7 +16410,7 @@
       }
     });
 
-    document.getElementById('btnCollapseSidebarDesktop').addEventListener('click', () => {
+    on('#btnCollapseSidebarDesktop', 'click', () => {
       if (window.innerWidth >= 768) {
         applyDesktopSidebarState(false);
         saveUserSettings();
@@ -16456,7 +16535,7 @@
       });
     }
 
-    document.getElementById('btnExportData').addEventListener('click', () => {
+    on('#btnExportData', 'click', () => {
       const exportObject = {
         exportedAt: new Date().toISOString(),
         userId: state.userId,
@@ -16485,7 +16564,7 @@
       closeUserMenu();
     });
 
-    document.getElementById('importBackupInput').addEventListener('change', async (e) => {
+    on('#importBackupInput', 'change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
       closeUserMenu();
@@ -18631,42 +18710,56 @@
 
 
 
-    async function bootApp() {
-      try {
-        loadSidebarSectionState();
-      } catch (err) {
-        console.warn("Lỗi loadSidebarSectionState trong bootApp:", err);
-      }
-      try {
-        loadLocalStudyPlans();
-        renderSidebarPlans();
-      } catch (err) {
-        console.warn("Lỗi loadLocalStudyPlans/renderSidebarPlans trong bootApp:", err);
-      }
-      try {
-        initAuthAndData();
-      } catch (err) {
-        console.error("Lỗi khi initAuthAndData:", err);
-      }
-      try {
-        autoCleanupDuplicateData();
-      } catch (_) {}
-      try {
-        applyReadingWidth(state.readingWidth);
-      } catch (_) {}
-      try {
-        refreshIcons();
-      } catch (_) {}
-      try {
-        registerPwaServiceWorker();
-      } catch (_) {}
-    }
 
-    if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', bootApp);
-    } else {
-      bootApp();
-    }
+    // Xử lý nút Sao chép chi tiết lỗi trong Crash Watchdog Banner
+    on('#btnCrashCopyDetails', 'click', async () => {
+      if (!window.__lastAppCrashInfo) return;
+      const info = window.__lastAppCrashInfo;
+      const text = [
+        "=== THÔNG TIN BÁO LỖI THƯ VIỆN SÁCH HTML ===",
+        `Phiên bản ứng dụng: ${info.appVersion}`,
+        `Thời gian: ${info.time}`,
+        `Khối chức năng: ${info.block}`,
+        `Tên lỗi: ${info.name}`,
+        `Thông điệp lỗi: ${info.message}`,
+        `Địa chỉ trang (URL): ${info.url}`,
+        `Trình duyệt: ${info.userAgent}`,
+        "",
+        "--- Vết ngăn xếp (Stack Trace) ---",
+        info.stack
+      ].join('\n');
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const copyTxt = document.getElementById('btnCrashCopyText');
+        if (copyTxt) {
+          const old = copyTxt.innerText;
+          copyTxt.innerText = "Đã sao chép! ✓";
+          setTimeout(() => { copyTxt.innerText = old; }, 2500);
+        }
+      } catch (_) {
+        prompt("Sao chép chi tiết lỗi bên dưới:", text);
+      }
+    });
+
+    on('#btnCrashDismiss', 'click', () => {
+      const banner = document.getElementById('appCrashBanner');
+      if (banner) banner.classList.add('hidden');
+    });
+
+    on('#btnCrashReload', 'click', () => {
+      window.location.reload();
+    });
+
+    on('#btnCrashClearAndReload', 'click', () => {
+      if (typeof window.clearAppCacheAndReload === 'function') {
+        window.clearAppCacheAndReload();
+      } else {
+        window.location.href = window.location.origin + window.location.pathname + '?nocache=' + Date.now();
+      }
+    });
+
+
 
     // Đảm bảo dữ liệu kế hoạch và UI state được ghi lại ngay khi ẩn tab hoặc đóng trang
     window.addEventListener('visibilitychange', () => {
@@ -23125,7 +23218,165 @@
     window.PLAN_URGENCY = PLAN_URGENCY;
     window.plansCompletedInSession = plansCompletedInSession;
 
-    console.log("%c Thư viện Sách HTML v4.7.0 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    // =========================================================================
+    // CÁC HÀM KHỞI TẠO TỪNG PHÂN HỆ ĐỘC LẬP (MODULAR & FAULT-TOLERANT)
+    // =========================================================================
+    function initHeader() {
+      on('#btnToggleSidebar', 'click', () => {
+        if (window.innerWidth < 768) {
+          openMobileSidebar();
+        } else {
+          toggleSidebarDesktop();
+        }
+      });
+      on('#btnCollapseSidebarDesktop', 'click', () => toggleSidebarDesktop(false));
+      on('#btnThemeToggle', 'click', toggleTheme);
+      on('#fsBtnThemeToggle', 'click', toggleTheme);
+      if (typeof initSyncStatusEvents === 'function') initSyncStatusEvents();
+    }
+
+    function initSidebar() {
+      on('#btnNewCategory', 'click', () => openCategoryModal());
+      on('#btnEmptyAddLesson', 'click', openUploadModal);
+      on('#btnSidebarQuickUpload', 'click', openUploadModal);
+      if (typeof loadSidebarSectionState === 'function') loadSidebarSectionState();
+    }
+
+    function initReader() {
+      on('#btnPrevLesson', 'click', () => stepLesson(-1));
+      on('#btnNextLesson', 'click', () => stepLesson(1));
+      on('#btnBottomPrev', 'click', () => stepLesson(-1));
+      on('#btnBottomNext', 'click', () => stepLesson(1));
+      on('#fsBtnPrev', 'click', () => stepLesson(-1));
+      on('#fsBtnNext', 'click', () => stepLesson(1));
+      on('#mbBtnPrev', 'click', () => stepLesson(-1));
+      on('#mbBtnNext', 'click', () => stepLesson(1));
+      on('#mbBtnToc', 'click', () => openMobileSidebar());
+      on('#btnToggleLearned', 'click', async () => {
+        if (!state.activeLessonId) return;
+        const cur = state.lessons.find(l => l.id === state.activeLessonId);
+        if (!cur) return;
+        cur.isCompleted = !cur.isCompleted;
+        updateLearnedStyleUI(cur.isCompleted);
+        await saveLessons();
+        renderCategoriesAndLessons();
+        showToast(cur.isCompleted ? "Đã đánh dấu hoàn thành bài học" : "Đã hủy đánh dấu hoàn thành");
+      });
+      on('#btnToggleFavorite', 'click', async () => {
+        if (!state.activeLessonId) return;
+        const cur = state.lessons.find(l => l.id === state.activeLessonId);
+        if (!cur) return;
+        cur.isFavorite = !cur.isFavorite;
+        updateFavoriteStyleUI(cur.isFavorite);
+        await saveLessons();
+        renderCategoriesAndLessons();
+        showToast(cur.isFavorite ? "Đã thêm vào mục yêu thích" : "Đã xóa khỏi mục yêu thích");
+      });
+      on('#btnPrintCurrent', 'click', () => {
+        const iframe = document.getElementById('lessonIframe');
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        } else {
+          window.print();
+        }
+      });
+      on('#btnFullscreen', 'click', toggleFullscreen);
+      on('#fsBtnExit', 'click', exitFullscreen);
+      on('#btnFontDec', 'click', () => adjustFontSize(-1));
+      on('#btnFontInc', 'click', () => adjustFontSize(1));
+      on('#btnMenuFontDec', 'click', () => adjustFontSize(-1));
+      on('#btnMenuFontInc', 'click', () => adjustFontSize(1));
+      on('#fsBtnFontDec', 'click', () => adjustFontSize(-1));
+      on('#fsBtnFontInc', 'click', () => adjustFontSize(1));
+    }
+
+    function initPopovers() {
+      if (typeof initReadingSettingsEvents === 'function') {
+        initReadingSettingsEvents();
+      }
+    }
+
+    function initShare() {
+      on('#btnHeaderQuickShare', 'click', () => {
+        closeUserMenu();
+        const cur = state.lessons.find(l => l.id === state.activeLessonId);
+        openQuickShareModal(cur || null);
+      });
+      on('#btnMenuQuickShare', 'click', () => {
+        closeUserMenu();
+        const cur = state.lessons.find(l => l.id === state.activeLessonId);
+        openQuickShareModal(cur || null);
+      });
+      on('#btnOpenSharedLinksModal', 'click', openSharedLinksModal);
+      if (typeof loadSharedLinks === 'function') loadSharedLinks();
+    }
+
+    function initNotesAndFrames() {
+      on('#btnHeaderNotes', 'click', () => {
+        if (typeof openAllNotesModal === 'function') openAllNotesModal();
+      });
+      on('#btnCloseAllNotes', 'click', () => {
+        const modal = document.getElementById('allNotesModal');
+        if (modal) hideModalAnimated(modal);
+      });
+    }
+
+    function initStudyPlan() {
+      if (typeof loadLocalStudyPlans === 'function') loadLocalStudyPlans();
+      if (typeof renderSidebarPlans === 'function') renderSidebarPlans();
+    }
+
+    function initPomodoro() {
+      if (typeof loadPomodoroSettings === 'function') loadPomodoroSettings();
+    }
+
+    function initModals() {
+      if (typeof initSyncConflictModalEvents === 'function') initSyncConflictModalEvents();
+      on('#btnCloseUploadModal', 'click', () => hideModalAnimated(document.getElementById('uploadModal')));
+      on('#btnCancelUpload', 'click', () => hideModalAnimated(document.getElementById('uploadModal')));
+    }
+
+    function initHotkeys() {
+      // Các phím tắt đã được gán sự kiện an toàn
+    }
+
+    async function bootApp() {
+      // Khởi tạo từng phân hệ độc lập qua safeRun để không phân hệ nào làm nghẽn phân hệ khác
+      safeRun('initHeader', initHeader);
+      safeRun('initSidebar', initSidebar);
+      safeRun('initReader', initReader);
+      safeRun('initPopovers', initPopovers);
+      safeRun('initShare', initShare);
+      safeRun('initNotesAndFrames', initNotesAndFrames);
+      safeRun('initStudyPlan', initStudyPlan);
+      safeRun('initPomodoro', initPomodoro);
+      safeRun('initTTS', () => { if (typeof initTTS === 'function') initTTS(); });
+      safeRun('initModals', initModals);
+      safeRun('initHotkeys', initHotkeys);
+
+      // Nạp dữ liệu học tập & auth
+      safeRun('initAuthAndData', async () => {
+        await initAuthAndData();
+      });
+
+      safeRun('loadRecentLessons', () => {
+        if (typeof loadRecentLessons === 'function') loadRecentLessons();
+      });
+
+      try { autoCleanupDuplicateData(); } catch (_) {}
+      try { applyReadingWidth(state.readingWidth); } catch (_) {}
+      try { refreshIcons(); } catch (_) {}
+      try { registerPwaServiceWorker(); } catch (_) {}
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', bootApp);
+    } else {
+      bootApp();
+    }
+
+    console.log("%c Thư viện Sách HTML v4.7.1 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
