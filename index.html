@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.4.2';
+    const CURRENT_APP_VERSION = 'v4.5.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1231,6 +1231,204 @@
       }
     }
 
+  
+    /* =========================================================================
+       // DESIGN V4.5.0: HEADER CSS GRID, SEARCH COMMAND PALETTE & PINNED PLANS
+       ========================================================================= */
+    :root {
+      --z-search: 10000;
+      --z-search-backdrop: 9999;
+      --search-bg: #FFFFFF;
+      --search-input-bg: #FAF7F0;
+      --search-border: #E7E5DF;
+      --search-text: #1C1917;
+      --search-subtext: #6E6B65;
+      --search-highlight: #FEF08A;
+      --search-highlight-text: #854D0E;
+    }
+    body.theme-warm-paper {
+      --search-bg: #FDFBF7;
+      --search-input-bg: #F4EFE6;
+      --search-border: #E3DDD1;
+      --search-text: #2D2820;
+      --search-subtext: #786F62;
+      --search-highlight: #FDE68A;
+      --search-highlight-text: #78350F;
+    }
+    body.theme-sepia {
+      --search-bg: #FBF0D9;
+      --search-input-bg: #F3E5C8;
+      --search-border: #DECDB0;
+      --search-text: #3B2E1E;
+      --search-subtext: #7A6953;
+      --search-highlight: #FCD34D;
+      --search-highlight-text: #78350F;
+    }
+    html.dark, body.theme-dark {
+      --search-bg: #161A22;
+      --search-input-bg: #1B1F29;
+      --search-border: #272C38;
+      --search-text: #ECEEF2;
+      --search-subtext: #979DA8;
+      --search-highlight: #854D0E;
+      --search-highlight-text: #FEF08A;
+    }
+    body.theme-deep-dark {
+      --search-bg: #0D1017;
+      --search-input-bg: #131720;
+      --search-border: #202531;
+      --search-text: #E6EDF3;
+      --search-subtext: #8B949E;
+      --search-highlight: #713F12;
+      --search-highlight-text: #FEF08A;
+    }
+
+    /* Header CSS Grid: Giữ ô search chính giữa hoàn hảo */
+    @media (min-width: 901px) {
+      .editorial-header {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 560px) minmax(0, 1fr) !important;
+        align-items: center !important;
+        column-gap: 12px !important;
+      }
+      .editorial-header > .header-left-cluster {
+        justify-self: start;
+      }
+      .editorial-header > .header-search-center-slot {
+        justify-self: center;
+        width: 100%;
+        max-width: 560px;
+      }
+      .editorial-header > .header-right-cluster {
+        justify-self: end;
+      }
+    }
+    @media (max-width: 900px) {
+      .header-search-center-slot {
+        display: none !important;
+      }
+    }
+
+    /* Search Palette Container */
+    #searchCommandPaletteBackdrop {
+      z-index: var(--z-search-backdrop, 9999);
+      background-color: rgba(10, 12, 16, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    #searchCommandPalette {
+      z-index: var(--z-search, 10000);
+      background-color: var(--search-bg);
+      border-color: var(--search-border);
+      color: var(--search-text);
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--search-border);
+      transform-origin: top center;
+    }
+    @media (min-width: 901px) {
+      #searchCommandPalette {
+        position: fixed !important;
+        top: 56px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: min(680px, calc(100vw - 32px)) !important;
+        max-height: calc(100dvh - 96px) !important;
+        border-radius: 16px !important;
+      }
+      #searchCommandPalette.palette-entering {
+        animation: searchPaletteScaleDown 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    }
+    @keyframes searchPaletteScaleDown {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -8px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+      }
+    }
+
+    @media (max-width: 900px) {
+      #searchCommandPalette {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      #searchCommandPalette.palette-entering {
+        animation: searchPaletteSlideUp 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    }
+    @keyframes searchPaletteSlideUp {
+      0% {
+        transform: translateY(100%);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #searchCommandPalette.palette-entering {
+        animation: none !important;
+      }
+    }
+
+    /* Result Snippet Highlight & Keyboard Selection Bar */
+    .search-result-snippet mark {
+      background-color: var(--search-highlight);
+      color: var(--search-highlight-text);
+      font-weight: 600;
+      padding: 1px 3px;
+      border-radius: 3px;
+    }
+    .search-result-item {
+      position: relative;
+      transition: background-color 140ms ease, border-color 140ms ease;
+    }
+    .search-result-item.is-selected {
+      background-color: rgba(79, 70, 229, 0.08) !important;
+      border-color: rgba(79, 70, 229, 0.3) !important;
+    }
+    .search-result-item.is-selected::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background-color: #4F46E5;
+    }
+    html.dark .search-result-item.is-selected::before,
+    body.theme-dark .search-result-item.is-selected::before {
+      background-color: #818CF8;
+    }
+
+    /* Thẻ Kế hoạch ghim ở Sidebar (tối đa 3 thẻ + nút unpin) */
+    .sidebar-plan-card {
+      transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+    .sidebar-plan-card:hover {
+      transform: translateY(-1px);
+    }
+    .sidebar-plan-pin-btn {
+      opacity: 0.85;
+      transition: opacity 140ms ease, transform 140ms ease;
+    }
+    .sidebar-plan-card:hover .sidebar-plan-pin-btn {
+      opacity: 1;
+    }
+    .sidebar-plan-pin-btn:hover {
+      transform: scale(1.1);
+    }
+
   </style>
   <!-- // FEATURE-11: Đăng ký Service Worker và PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -1629,6 +1827,42 @@
     <symbol id="icon-shield-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 1l22 22M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.11 1.17M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/>
     </symbol>
+    <!-- // SVG SYMBOLS V4.5.0: GHIM & TÌM KIẾM ĐỘC BẢN (CHỈ DÙNG CUSTOM SVG 24x24 STROKE-WIDTH 1.6) -->
+    <symbol id="pin-glyph" viewBox="0 0 24 24">
+      <path d="M16 10V4.5C16 3.67 15.33 3 14.5 3H9.5C8.67 3 8 3.67 8 4.5V10C6.5 11.5 5 13 5 14.5C5 15.33 5.67 16 6.5 16H11V21L12 22L13 21V16H17.5C18.33 16 19 15.33 19 14.5C19 13 17.5 11.5 16 10Z" fill="var(--pin-fill, currentColor)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-search" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 21L16.2 16.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-close" viewBox="0 0 24 24">
+      <path d="M18 6L6 18M6 6L18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-back" viewBox="0 0 24 24">
+      <path d="M19 12H5M12 19L5 12L12 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-chevron" viewBox="0 0 24 24">
+      <path d="M6 9L12 15L18 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-page" viewBox="0 0 24 24">
+      <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 2V8H20M8 13H16M8 17H13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-question" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.5 9C9.5 7.6 10.6 6.5 12 6.5C13.4 6.5 14.5 7.6 14.5 9C14.5 10.5 12 11.5 12 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="16.5" r="0.75" fill="currentColor"/>
+    </symbol>
+    <symbol id="s-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="12 6.5 12 12 15.5 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-arrow-up" viewBox="0 0 24 24">
+      <path d="M12 19V5M5 12L12 5L19 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="s-arrow-down" viewBox="0 0 24 24">
+      <path d="M12 5V19M19 12L12 19L5 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
   </svg>
   <!-- // REDESIGN: TOÀN BỘ KHU VỰC ĐỈNH - HEADER TINH GỌN 1 HÀNG, BANNER MẢNH, THANH TIẾN ĐỘ DÍNH -->
   <div id="unifiedTopBar" class="w-full shrink-0 z-40 bg-[#FAF9F5]/95 dark:bg-[#111317]/95 border-b border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md pt-[env(safe-area-inset-top,0px)] transition-colors">
@@ -1668,7 +1902,7 @@
     <header class="editorial-header h-[58px] min-h-[58px] max-h-[58px] px-2.5 sm:px-4 md:px-6 flex items-center justify-between gap-1 sm:gap-2 flex-nowrap shrink-0 sticky top-0 z-50 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] overflow-visible select-none">
       
       <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif (Không bao giờ rớt dòng) -->
-      <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
+      <div class="header-left-cluster flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
         <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" title="Mục lục bài học" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0">
           <svg class="w-5 h-5"><use href="#icon-panel-left"></use></svg>
         </button>
@@ -1684,29 +1918,26 @@
         </div>
       </div>
 
-      <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (Tự co giãn mượt mà theo không gian còn lại) -->
-      <div class="hidden min-[840px]:block relative flex-1 min-w-0 max-w-[420px] mx-1 sm:mx-2">
-        <div class="relative flex items-center">
-          <svg class="w-4 h-4 absolute left-3 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
-          <input 
-            id="globalSearchInput" 
-            type="text" 
-            placeholder="Tìm kiếm bài học, câu hỏi ôn tập..." 
-            class="w-full bg-[#F2F0EB] dark:bg-[#16181E] text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] pl-9 pr-14 py-1.5 sm:py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] focus:border-indigo-500 focus:bg-white dark:focus:bg-[#181B20] focus:ring-2 focus:ring-indigo-500/10 transition placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/60"
-          />
-          <span class="absolute right-3 hidden lg:flex items-center text-[10px] font-medium text-[#6E6B65] dark:text-[#979DA8] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36]">
-            Ctrl K
-          </span>
-        </div>
-        <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-2xl z-[100] p-2 text-sm"></div>
+      <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (CSS Grid cân bằng chính giữa tuyệt đối trên Desktop) -->
+      <div class="header-search-center-slot hidden min-[901px]:flex items-center justify-center w-full min-w-0 px-1 sm:px-2">
+        <button id="headerSearchTriggerBtn" type="button" aria-label="Tìm kiếm bài học, câu hỏi ôn tập (Ctrl K hoặc ⌘ K)" class="w-full h-10 px-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#181B20] hover:border-indigo-500/40 flex items-center justify-between cursor-pointer transition select-none group shadow-2xs">
+          <div class="flex items-center min-w-0 gap-2.5">
+            <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors"><use href="#s-search"></use></svg>
+            <span class="text-xs sm:text-sm text-[#6E6B65]/80 dark:text-[#979DA8]/80 font-normal truncate">Tìm kiếm bài học, câu hỏi ôn tập...</span>
+          </div>
+          <span id="headerSearchKeycap" class="text-[10px] font-medium font-mono text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36] bg-black/5 dark:bg-white/5 shrink-0 ml-2">Ctrl K</span>
+        </button>
+        <!-- Giữ input ẩn tương thích các script cũ nếu có -->
+        <input id="globalSearchInput" type="text" class="hidden" tabindex="-1" aria-hidden="true" />
+        <div id="searchResultsDropdown" class="hidden"></div>
       </div>
 
       <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0, ml-auto) -->
-      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap ml-auto">
+      <div class="header-right-cluster flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap ml-auto">
         
-        <!-- Nút Tìm kiếm khi màn hình nhỏ (< 840px) -->
-        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[840px]:hidden touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Tìm kiếm">
-          <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
+        <!-- Nút Tìm kiếm khi màn hình nhỏ (≤ 900px, vùng chạm chuẩn ≥ 44x44px) -->
+        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[901px]:hidden touch-target w-11 h-11 flex items-center justify-center p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" title="Tìm kiếm">
+          <svg class="w-5 h-5"><use href="#s-search"></use></svg>
         </button>
 
         <!-- Nút Tạo link nhanh (>= 1180px hiện chữ, < 1180px thu gọn icon) -->
@@ -2147,28 +2378,17 @@
         </div>
       </div>
 
-      <!-- // WIDGET LỊCH THI & KẾ HOẠCH Ở SIDEBAR (v4.4.1 CẬP NHẬT MÀU SẮC THEO MỨC KHẨN CẤP & TIẾN ĐỘ) -->
-      <div id="sidebarStudyPlanWidget" class="hidden mx-3 mt-2 p-2.5 rounded-xl border shadow-2xs cursor-pointer hover:opacity-95 transition shrink-0 select-none" data-urgency="safe" role="region" aria-label="Kế hoạch học tập sắp tới">
-        <div class="flex items-center justify-between mb-1.5">
-          <div class="flex items-center gap-1.5 text-xs font-semibold truncate">
-            <svg class="w-[18px] h-[18px] shrink-0" style="color: var(--plan-fg); fill: none;"><use href="#plan-glyph"></use></svg>
-            <span id="sidebarPlanName" class="truncate max-w-[125px]">Kế hoạch thi</span>
-          </div>
-          <span id="sidebarPlanCountdownBadge" class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono shrink-0 flex items-center justify-center">
-            còn 0 ngày
-          </span>
-        </div>
-        <div class="flex items-center justify-between text-[11px] opacity-90 mb-1.5">
-          <span id="sidebarPlanTodayText">Hôm nay: 0 bài</span>
-          <span id="sidebarPlanProgressText" class="font-mono font-medium">0/0</span>
-        </div>
-        <!-- Thanh tiến độ 6px với vạch chia nhỏ khi ≤ 10 bài -->
-        <div id="sidebarPlanProgressBarTrack" class="w-full h-1.5 rounded-full overflow-hidden relative" style="background-color: var(--plan-track);">
-          <div id="sidebarPlanProgressBar" class="h-full rounded-full transition-all duration-500" style="width: 0%; background-color: var(--plan-bar);" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Tiến độ kế hoạch"></div>
-          <div id="sidebarPlanProgressDividers" class="absolute inset-0 flex pointer-events-none"></div>
-        </div>
-        <!-- Dòng phụ khi có thêm các kế hoạch khác -->
-        <div id="sidebarPlanOtherCountNotice" class="hidden text-[10px] opacity-75 pt-1.5 text-right font-medium hover:underline"></div>
+      <!-- // WIDGET LỊCH THI & KẾ HOẠCH Ở SIDEBAR (v4.5.0: HỖ TRỢ TỐI ĐA 3 THẺ ĐƯỢC GHIM + NÚT BỎ GHIM VÙNG CHẠM ≥44PX) -->
+      <div id="sidebarStudyPlanWidget" class="hidden mx-3 mt-2 space-y-2 shrink-0 select-none" role="region" aria-label="Kế hoạch học tập sắp tới">
+        <div id="sidebarPinnedPlansList" class="space-y-2"></div>
+        <div id="sidebarPlanOtherCountNotice" class="hidden text-[10px] opacity-75 pt-1 text-right font-medium hover:underline cursor-pointer"></div>
+        <!-- Vùng giữ tương thích DOM legacy -->
+        <span id="sidebarPlanName" class="hidden"></span>
+        <span id="sidebarPlanCountdownBadge" class="hidden"></span>
+        <span id="sidebarPlanTodayText" class="hidden"></span>
+        <span id="sidebarPlanProgressText" class="hidden"></span>
+        <div id="sidebarPlanProgressBar" class="hidden"></div>
+        <div id="sidebarPlanProgressDividers" class="hidden"></div>
       </div>
 
       <!-- // FEATURE-3: Thẻ Cần ôn hôm nay ở Sidebar -->
@@ -3605,8 +3825,13 @@
       <!-- MODAL BODY: Cuộn nội dung bên trong -->
       <div id="planDetailContentArea" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
         
-        <!-- 2. THẺ ĐẾM NGƯỢC CHÍNH (HERO) -->
+        <!-- 2. THẺ ĐẾM NGƯỢC CHÍNH (HERO: CÓ NÚT PILL GHIM/BỎ GHIM GÓC TRÊN PHẢI) -->
         <div id="planHeroCard" class="relative rounded-[14px] bg-[#F5F6FF] dark:bg-[#1A1D28] border border-[#DFE2FF] dark:border-[#2A3045] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all duration-200">
+          <!-- Nút Pill Ghim/Bỏ ghim thanh mục lục góc trên phải (vùng chạm ≥44px, tooltip rõ ràng) -->
+          <button id="btnHeroPinToggle" type="button" class="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer select-none z-10 min-h-[36px]" aria-pressed="true" title="Hiện ở thanh mục lục">
+            <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--pin-fg, currentColor);"><use href="#pin-glyph"></use></svg>
+            <span id="heroPinToggleText">Đã ghim</span>
+          </button>
           <!-- Vòng SVG đếm ngược 72x72 -->
           <div class="relative w-[72px] h-[72px] shrink-0 flex items-center justify-center">
             <svg class="w-[72px] h-[72px] -rotate-90" viewBox="0 0 72 72">
@@ -3880,6 +4105,23 @@
               <span class="text-[#6E6B65] dark:text-[#979DA8]">bài/ngày</span>
             </div>
           </div>
+        </div>
+
+        <!-- Tùy chọn Ghim lên thanh mục lục (v4.5.0, mặc định bật) -->
+        <div class="flex items-center justify-between p-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317]">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4"><use href="#pin-glyph"></use></svg>
+            </div>
+            <div>
+              <div class="text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8]">Ghim lên thanh mục lục</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Hiển thị thẻ tiến độ nhanh ở thanh bài học bên trái</div>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer min-w-[44px] min-h-[44px] justify-end">
+            <input type="checkbox" id="planInputPinned" class="sr-only peer" checked>
+            <div class="w-10 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[11px] after:right-[18px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#4F46E5]"></div>
+          </label>
         </div>
 
         <!-- 5. Bài cần học: danh sách nhóm theo mục, có ô lọc nhanh, có chọn cả mục -->
@@ -4231,61 +4473,77 @@
     </div>
   </div>
 
-  <!-- // FEATURE: COMMAND PALETTE TÌM KIẾM NỔI TẦNG TRÊN CÙNG (Z-[95]) -->
-  <div id="searchCommandPaletteBackdrop" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-[90] hidden transition-opacity" aria-hidden="true"></div>
-  <div id="searchCommandPalette" class="fixed z-[95] hidden flex-col bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl overflow-hidden transition-all duration-200
-       inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:top-[72px] sm:left-1/2 sm:-translate-x-1/2 w-full sm:w-[min(680px,calc(100vw-32px))] max-w-full max-h-[92dvh] sm:max-h-[calc(100dvh-120px)] rounded-t-2xl sm:rounded-2xl pb-[env(safe-area-inset-bottom,0px)] sm:pb-0"
-       role="dialog" aria-modal="true" aria-label="Bảng tìm kiếm bài học">
-    <!-- Mobile Drag handle -->
-    <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mt-2.5 mb-1 shrink-0"></div>
+  <!-- // FEATURE V4.5.0: COMMAND PALETTE TÌM KIẾM MỞ TRỰC TIẾP TỪ HEADER TRIGGER -->
+  <div id="searchCommandPaletteBackdrop" class="fixed inset-0 hidden transition-opacity" aria-hidden="true"></div>
+  <div id="searchCommandPalette" class="fixed hidden flex-col border shadow-2xl overflow-hidden select-none"
+       role="dialog" aria-modal="true" aria-label="Bảng tìm kiếm bài học và câu hỏi">
     
-    <!-- Thanh nhập tìm kiếm trên cùng của Palette -->
-    <div class="p-3 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex flex-col gap-2.5 shrink-0 bg-[#FAF9F5]/90 dark:bg-[#16181E]/90">
-      <div class="flex items-center gap-2.5">
-        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-search"></use></svg>
-        <input 
-          id="paletteSearchInput" 
-          type="text" 
-          placeholder="Tìm kiếm bài học, câu hỏi ôn tập, từ khóa..." 
-          class="flex-1 bg-transparent text-sm sm:text-base font-medium text-[#1C1917] dark:text-[#EDECE8] placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/60 focus:outline-none"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <button id="btnPaletteSearchClear" type="button" class="hidden touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Xóa từ khóa" aria-label="Xóa từ khóa">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
-        </button>
-        <button id="btnClosePaletteSearch" type="button" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng tìm kiếm (Esc)" aria-label="Đóng tìm kiếm">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
-        </button>
-      </div>
+    <!-- 1. Hàng nhập tìm kiếm chuẩn 56px (Input Row), nền kem/giấy nhẹ ấm áp -->
+    <div class="h-14 min-h-[56px] max-h-[56px] px-3 sm:px-4 border-b border-[#E7E5DF] dark:border-[#272C38] flex items-center gap-2.5 shrink-0 bg-[var(--search-input-bg)]">
+      <!-- Nút quay lại trên mobile (vùng chạm ≥ 44x44px) -->
+      <button id="btnPaletteSearchBack" type="button" class="min-[901px]:hidden touch-target w-11 h-11 flex items-center justify-center -ml-1 text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#ECEEF2] transition cursor-pointer" aria-label="Quay lại" title="Quay lại">
+        <svg class="w-5 h-5"><use href="#s-back"></use></svg>
+      </button>
 
-      <!-- Hàng phạm vi & số kết quả -->
-      <div class="flex items-center justify-between pt-1">
-        <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
-          <button type="button" id="paletteScopeLibrary" class="palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400" data-scope="library">
-            Thư viện
-          </button>
-          <button type="button" id="paletteScopeCurrent" class="palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8]" data-scope="current">
-            Bài này
-          </button>
-        </div>
-        <div id="paletteSearchCountBadge" class="text-xs text-[#6E6B65] dark:text-[#979DA8]"></div>
-      </div>
+      <!-- Icon kính lúp custom 24px trên Desktop -->
+      <svg class="hidden min-[901px]:block w-6 h-6 text-[#6E6B65] dark:text-[#979DA8] shrink-0 pointer-events-none"><use href="#s-search"></use></svg>
+
+      <!-- Input 17px, font rõ, không viền, không auto-zoom -->
+      <input 
+        id="paletteSearchInput" 
+        type="text" 
+        placeholder="Tìm kiếm bài học, câu hỏi ôn tập, từ khóa..." 
+        class="flex-1 bg-transparent text-[16px] sm:text-[17px] font-normal text-[var(--search-text)] placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/60 focus:outline-none min-w-0"
+        autocomplete="off"
+        spellcheck="false"
+      />
+
+      <!-- Nút xóa X (touch target ≥ 44x44px) -->
+      <button id="btnPaletteSearchClear" type="button" class="hidden touch-target w-10 h-10 flex items-center justify-center rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Xóa từ khóa" aria-label="Xóa từ khóa">
+        <svg class="w-4 h-4"><use href="#s-close"></use></svg>
+      </button>
+
+      <!-- Keycap Esc trên desktop -->
+      <kbd id="paletteEscKeycap" class="hidden min-[901px]:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono border border-[#E7E5DF] dark:border-[#272C38] text-[#6E6B65] dark:text-[#979DA8] bg-black/5 dark:bg-white/5 cursor-pointer hover:bg-black/10 transition" title="Đóng tìm kiếm (Esc)">Esc</kbd>
+      
+      <!-- Nút đóng trên mobile nếu cần -->
+      <button id="btnClosePaletteSearch" type="button" class="hidden" aria-label="Đóng tìm kiếm"></button>
     </div>
 
-    <!-- Danh sách kết quả cuộn được -->
-    <div id="paletteSearchResultsList" class="flex-1 overflow-y-auto p-2 sm:p-3 space-y-2 text-sm select-none">
-      <div class="p-8 text-center text-[#6E6B65] dark:text-[#979DA8] text-xs">
-        Nhập từ khóa để tìm kiếm bài học và nội dung...
+    <!-- 2. Hàng phạm vi (Scope Pills: Thư viện | Bài này) & Bộ đếm kết quả (Sticky Bar) -->
+    <div class="px-3 sm:px-4 py-2 border-b border-[#E7E5DF]/70 dark:border-[#272C38]/70 flex items-center justify-between bg-[var(--search-bg)] shrink-0">
+      <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
+        <button type="button" id="paletteScopeLibrary" class="palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer" data-scope="library">
+          Thư viện
+        </button>
+        <button type="button" id="paletteScopeCurrent" class="palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer" data-scope="current">
+          Bài này
+        </button>
       </div>
+      <div id="paletteSearchCountBadge" class="text-xs font-mono font-medium text-[#6E6B65] dark:text-[#979DA8]"></div>
     </div>
 
-    <!-- Chân Palette: Gợi ý phím tắt -->
-    <div class="hidden sm:flex items-center justify-between px-4 py-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0">
+    <!-- 3. Danh sách kết quả cuộn được -->
+    <div id="paletteSearchResultsList" class="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 text-sm select-none">
+      <!-- Mặc định được sinh ra qua JS (Empty State hoặc Results) -->
+    </div>
+
+    <!-- 4. Chân Palette 40px (Footer) với gợi ý phím tắt -->
+    <div class="h-10 min-h-[40px] max-h-[40px] hidden min-[901px]:flex items-center justify-between px-4 border-t border-[#E7E5DF] dark:border-[#272C38] bg-[var(--search-input-bg)] text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0">
       <div class="flex items-center gap-3">
-        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[10px]">↑</kbd><kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[10px]">↓</kbd> Chọn</span>
-        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[10px]">Enter</kbd> Mở</span>
-        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-[#20242C] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[10px]">Esc</kbd> Đóng</span>
+        <span class="flex items-center gap-1">
+          <kbd class="px-1 py-0.5 rounded bg-white dark:bg-[#202531] border border-[#E7E5DF] dark:border-[#272C38] font-mono text-[10px] inline-flex items-center justify-center"><svg class="w-3 h-3"><use href="#s-arrow-up"></use></svg></kbd>
+          <kbd class="px-1 py-0.5 rounded bg-white dark:bg-[#202531] border border-[#E7E5DF] dark:border-[#272C38] font-mono text-[10px] inline-flex items-center justify-center"><svg class="w-3 h-3"><use href="#s-arrow-down"></use></svg></kbd>
+          <span class="ml-0.5">Chọn</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-[#202531] border border-[#E7E5DF] dark:border-[#272C38] font-mono text-[10px]">Enter</kbd>
+          <span>Mở</span>
+        </span>
+        <span class="flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-[#202531] border border-[#E7E5DF] dark:border-[#272C38] font-mono text-[10px]">Esc</kbd>
+          <span>Đóng</span>
+        </span>
       </div>
       <span class="text-[10px] opacity-75 font-serif">Sách HTML</span>
     </div>
@@ -9621,6 +9879,7 @@
           }
           renderCategoriesAndLessons();
           renderActiveLesson();
+          try { renderSidebarPlans(); } catch (_) {}
         }
       }, (error) => {
         console.warn("Firestore Lessons error:", error);
@@ -13026,30 +13285,67 @@
     });
 
     // =========================================================================
-    // // COMMAND PALETTE TÌM KIẾM NỔI TẦNG TRÊN CÙNG (Z-[95])
+    // // COMMAND PALETTE TÌM KIẾM V4.5.0: NHẬN DIỆN NỀN TẢNG, TÌM GẦN ĐÂY, VỊ TRÍ CHUẨN
     // =========================================================================
     let searchDebounceTimer = null;
     const searchInput = document.getElementById('globalSearchInput');
-    const searchDropdown = document.getElementById('searchResultsDropdown');
-    const mobileSearchInput = document.getElementById('mobileSearchInput');
-    const mobileSearchDropdown = document.getElementById('mobileSearchResultsDropdown');
-    const mobileSearchExpandable = document.getElementById('mobileSearchExpandable');
+    const headerSearchTriggerBtn = document.getElementById('headerSearchTriggerBtn');
+    const headerSearchKeycap = document.getElementById('headerSearchKeycap');
+    const btnMobileSearchToggle = document.getElementById('btnMobileSearchToggle');
+    const mbBtnSearch = document.getElementById('mbBtnSearch');
 
     const searchCommandPaletteBackdrop = document.getElementById('searchCommandPaletteBackdrop');
     const searchCommandPalette = document.getElementById('searchCommandPalette');
     const paletteSearchInput = document.getElementById('paletteSearchInput');
     const btnPaletteSearchClear = document.getElementById('btnPaletteSearchClear');
+    const btnPaletteSearchBack = document.getElementById('btnPaletteSearchBack');
     const btnClosePaletteSearch = document.getElementById('btnClosePaletteSearch');
+    const paletteEscKeycap = document.getElementById('paletteEscKeycap');
     const paletteSearchResultsList = document.getElementById('paletteSearchResultsList');
     const paletteScopeLibrary = document.getElementById('paletteScopeLibrary');
     const paletteScopeCurrent = document.getElementById('paletteScopeCurrent');
     const paletteSearchCountBadge = document.getElementById('paletteSearchCountBadge');
 
+    // Tự động nhận diện hệ điều hành để đổi nhãn phím tắt (macOS/iOS: ⌘ K, khác: Ctrl K)
+    const isApplePlatform = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform || navigator.userAgent || '');
+    if (headerSearchKeycap) {
+      headerSearchKeycap.innerText = isApplePlatform ? '⌘ K' : 'Ctrl K';
+    }
+
+    // Quản lý từ khóa tìm kiếm gần đây (tối đa 6 từ, deduplicated)
+    function getRecentSearches() {
+      try {
+        const raw = localStorage.getItem('searchRecent');
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr.slice(0, 6) : [];
+      } catch (_) { return []; }
+    }
+
+    function addRecentSearch(term) {
+      if (!term || !term.trim()) return;
+      const clean = term.trim();
+      try {
+        let arr = getRecentSearches().filter(x => x.toLowerCase() !== clean.toLowerCase());
+        arr.unshift(clean);
+        arr = arr.slice(0, 6);
+        localStorage.setItem('searchRecent', JSON.stringify(arr));
+      } catch (_) {}
+    }
+
+    function clearRecentSearches() {
+      try {
+        localStorage.removeItem('searchRecent');
+      } catch (_) {}
+      renderPaletteEmptyPrompt();
+    }
+    window.clearRecentSearches = clearRecentSearches;
+
     function openSearchCommandPalette(initialQuery = '') {
-      // Đóng sidebar nếu đang mở trên mobile để tránh chồng lớp
+      // Đóng mobile sidebar drawer nếu đang mở
       const mainSidebar = document.getElementById('mainSidebar');
       const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-      if (mainSidebar && (state.mobileSidebarOpen || window.innerWidth < 768)) {
+      if (mainSidebar && (state.mobileSidebarOpen || window.innerWidth <= 900)) {
         mainSidebar.classList.add('-translate-x-full');
         if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
         state.mobileSidebarOpen = false;
@@ -13059,16 +13355,20 @@
         searchCommandPaletteBackdrop.classList.remove('hidden');
         searchCommandPalette.classList.remove('hidden');
         searchCommandPalette.classList.add('flex');
+        searchCommandPalette.classList.add('palette-entering');
+        setTimeout(() => {
+          if (searchCommandPalette) searchCommandPalette.classList.remove('palette-entering');
+        }, 250);
       }
 
-      const q = initialQuery || (searchInput ? searchInput.value : '') || '';
+      const q = initialQuery || (paletteSearchInput ? paletteSearchInput.value : '') || '';
       if (paletteSearchInput) {
         paletteSearchInput.value = q;
         updatePaletteClearButton();
         setTimeout(() => {
           paletteSearchInput.focus();
           paletteSearchInput.select();
-        }, 30);
+        }, 40);
       }
 
       updatePaletteScopeButtons();
@@ -13101,55 +13401,86 @@
     function updatePaletteScopeButtons() {
       if (!paletteScopeLibrary || !paletteScopeCurrent) return;
       if (searchScope === 'library') {
-        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400";
-        paletteScopeCurrent.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8]";
+        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer";
+        paletteScopeCurrent.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer";
       } else {
-        paletteScopeCurrent.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400";
-        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8]";
+        paletteScopeCurrent.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer";
+        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer";
       }
     }
 
     function renderPaletteEmptyPrompt() {
       if (!paletteSearchResultsList) return;
+      const recents = getRecentSearches();
+      let recentsHtml = '';
+      if (recents.length > 0) {
+        recentsHtml = `
+          <div class="mt-4 pt-4 border-t border-[#E7E5DF]/70 dark:border-[#272C38]/70 text-left">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8]">Tìm gần đây</span>
+              <button type="button" onclick="window.clearRecentSearches()" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] hover:text-rose-600 dark:hover:text-rose-400 transition cursor-pointer">Xóa lịch sử</button>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${recents.map(term => `
+                <button type="button" class="btn-recent-search-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer" data-term="${escapeAttr(term)}">
+                  <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#s-clock"></use></svg>
+                  <span>${escapeHtml(term)}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       paletteSearchResultsList.innerHTML = `
-        <div class="p-8 text-center text-[#6E6B65] dark:text-[#979DA8] text-xs">
-          <p class="font-medium text-sm text-[#1C1917] dark:text-[#EDECE8] mb-1">Tìm kiếm bài học & câu hỏi</p>
-          <p>Nhập từ khóa bất kỳ để tìm nhanh trong thư viện hoặc trong bài đang đọc.</p>
+        <div class="py-8 px-4 text-center text-[#6E6B65] dark:text-[#979DA8]">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 shadow-xs">
+            <svg class="w-7 h-7"><use href="#s-search"></use></svg>
+          </div>
+          <p class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] mb-1">Tìm kiếm bài học và câu hỏi</p>
+          <p class="text-xs max-w-sm mx-auto leading-relaxed">Nhập từ khóa bất kỳ để tìm nhanh bài học, câu hỏi trắc nghiệm hoặc nội dung trong thư viện.</p>
+          ${recentsHtml}
         </div>
       `;
+
+      paletteSearchResultsList.querySelectorAll('.btn-recent-search-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const term = btn.getAttribute('data-term');
+          if (term && paletteSearchInput) {
+            paletteSearchInput.value = term;
+            updatePaletteClearButton();
+            performSearch(term, paletteSearchResultsList);
+          }
+        });
+      });
+
       if (paletteSearchCountBadge) paletteSearchCountBadge.innerText = '';
+      searchActiveIndex = -1;
     }
+    window.renderPaletteEmptyPrompt = renderPaletteEmptyPrompt;
 
-    // Kết nối các trigger mở Command Palette
-    if (searchInput) {
-      searchInput.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openSearchCommandPalette(searchInput.value.trim());
-      });
-      searchInput.addEventListener('focus', () => {
-        openSearchCommandPalette(searchInput.value.trim());
-      });
+    // Gắn sự kiện kích hoạt Palette
+    if (headerSearchTriggerBtn) {
+      headerSearchTriggerBtn.addEventListener('click', () => openSearchCommandPalette());
     }
-
-    const btnMobileSearchToggle = document.getElementById('btnMobileSearchToggle');
     if (btnMobileSearchToggle) {
-      btnMobileSearchToggle.addEventListener('click', () => {
-        openSearchCommandPalette();
-      });
+      btnMobileSearchToggle.addEventListener('click', () => openSearchCommandPalette());
     }
-
-    const mbBtnSearch = document.getElementById('mbBtnSearch');
     if (mbBtnSearch) {
-      mbBtnSearch.addEventListener('click', () => {
-        openSearchCommandPalette();
-      });
+      mbBtnSearch.addEventListener('click', () => openSearchCommandPalette());
     }
 
     if (searchCommandPaletteBackdrop) {
       searchCommandPaletteBackdrop.addEventListener('click', closeSearchCommandPalette);
     }
+    if (btnPaletteSearchBack) {
+      btnPaletteSearchBack.addEventListener('click', closeSearchCommandPalette);
+    }
     if (btnClosePaletteSearch) {
       btnClosePaletteSearch.addEventListener('click', closeSearchCommandPalette);
+    }
+    if (paletteEscKeycap) {
+      paletteEscKeycap.addEventListener('click', closeSearchCommandPalette);
     }
 
     if (btnPaletteSearchClear) {
@@ -13159,7 +13490,6 @@
           updatePaletteClearButton();
           paletteSearchInput.focus();
         }
-        if (searchInput) searchInput.value = '';
         renderPaletteEmptyPrompt();
       });
     }
@@ -13188,7 +13518,6 @@
       paletteSearchInput.addEventListener('input', (e) => {
         updatePaletteClearButton();
         const val = e.target.value.trim();
-        if (searchInput) searchInput.value = val;
         clearTimeout(searchDebounceTimer);
         searchDebounceTimer = setTimeout(() => {
           if (val) {
@@ -13214,12 +13543,9 @@
           searchActiveIndex = (searchActiveIndex + 1) % items.length;
           items.forEach((it, idx) => {
             const isAct = (idx === searchActiveIndex);
-            it.classList.toggle('bg-indigo-50/80', isAct);
-            it.classList.toggle('dark:bg-indigo-950/60', isAct);
-            it.classList.toggle('border-l-4', isAct);
-            it.classList.toggle('border-l-indigo-600', isAct);
-            it.classList.toggle('dark:border-l-indigo-400', isAct);
-            it.classList.toggle('pl-3', isAct);
+            it.classList.toggle('is-selected', isAct);
+            const enterHint = it.querySelector('.enter-to-open-hint');
+            if (enterHint) enterHint.classList.toggle('hidden', !isAct);
           });
           items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'ArrowUp') {
@@ -13227,12 +13553,9 @@
           searchActiveIndex = (searchActiveIndex - 1 + items.length) % items.length;
           items.forEach((it, idx) => {
             const isAct = (idx === searchActiveIndex);
-            it.classList.toggle('bg-indigo-50/80', isAct);
-            it.classList.toggle('dark:bg-indigo-950/60', isAct);
-            it.classList.toggle('border-l-4', isAct);
-            it.classList.toggle('border-l-indigo-600', isAct);
-            it.classList.toggle('dark:border-l-indigo-400', isAct);
-            it.classList.toggle('pl-3', isAct);
+            it.classList.toggle('is-selected', isAct);
+            const enterHint = it.querySelector('.enter-to-open-hint');
+            if (enterHint) enterHint.classList.toggle('hidden', !isAct);
           });
           items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter') {
@@ -13245,6 +13568,14 @@
         }
       });
     }
+
+    // Bắt phím tắt toàn cục Ctrl+K / ⌘K
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openSearchCommandPalette();
+      }
+    });
 
     // =========================================================================
     // // FEATURE-10: TÌM KIẾM TOÀN THƯ VIỆN / TRONG BÀI CÓ TRÍCH ĐOẠN, TỰ NHẢY & KHUNG NỔI BẬT
@@ -13633,74 +13964,100 @@
       lessonMatches.forEach(lm => {
         const topSnippets = lm.occurrences.slice(0, 3);
         const remainingCount = lm.occurrences.length - 3;
+        const cat = (state.categories || []).find(c => c.id === lm.lesson.categoryId);
+        const catTitle = cat ? cat.title : 'Chung';
 
         groupsHtml += `
-          <div class="mb-3 bg-black/[0.02] dark:bg-white/[0.02] p-2.5 sm:p-3 rounded-xl border border-[#E7E5DF]/70 dark:border-[#262C36]/70">
-            <!-- Tiêu đề nhóm bài học: không cắt bên trái, truncate bằng ellipsis ở cuối, số kết quả bên phải -->
-            <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-2 px-1">
-              <span class="truncate max-w-[calc(100%-85px)] font-serif font-bold text-[#1C1917] dark:text-[#EDECE8]" title="${escapeHtml(lm.lesson.title)}">
-                ${escapeHtml(lm.lesson.title)}
-              </span>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0 ml-auto font-mono">
+          <div class="mb-3 bg-black/[0.02] dark:bg-white/[0.02] p-2.5 sm:p-3 rounded-xl border border-[#E7E5DF]/70 dark:border-[#272C38]/70">
+            <!-- Tiêu đề nhóm bài học: Icon 28x28 (#s-page), Serif 15px, ellipsis ở cuối, số kết quả bên phải -->
+            <div class="flex items-center justify-between text-xs sm:text-sm font-semibold mb-2 px-1 gap-2">
+              <div class="flex items-center gap-2 min-w-0 flex-1">
+                <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4"><use href="#s-page"></use></svg>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-serif font-bold text-[15px] text-[#1C1917] dark:text-[#EDECE8] truncate leading-snug" title="${escapeAttr(lm.lesson.title)}">
+                    ${escapeHtml(lm.lesson.title)}
+                  </div>
+                  <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-normal truncate mt-0.5">
+                    Mục: ${escapeHtml(catTitle)}
+                  </div>
+                </div>
+              </div>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0 font-mono">
                 ${lm.matchCount} kết quả
               </span>
             </div>
 
             <div class="space-y-1.5">
-              ${topSnippets.length > 0 ? topSnippets.map((occ, oIdx) => `
-                <div class="search-result-item p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
-                     data-lesson-id="${lm.lesson.id}" 
-                     data-occ-idx="${occ.occurrenceIndex}" 
-                     data-prefix="${escapeHtml(occ.prefix)}" 
-                     data-suffix="${escapeHtml(occ.suffix)}" 
-                     data-kw="${escapeHtml(query)}"
-                     role="button"
-                     tabindex="0">
-                  <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed">
-                    ${occ.snippet}
-                  </p>
-                </div>
-              `).join('') : `
-                <div class="search-result-item p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
+              ${topSnippets.length > 0 ? topSnippets.map((occ, oIdx) => {
+                const isQ = occ.snippet.includes('?') || occ.snippet.toLowerCase().includes('câu ');
+                const iconHref = isQ ? '#s-question' : '#s-page';
+                return `
+                  <div class="search-result-item p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex items-start gap-2.5" 
+                       data-lesson-id="${lm.lesson.id}" 
+                       data-occ-idx="${occ.occurrenceIndex}" 
+                       data-prefix="${escapeAttr(occ.prefix)}" 
+                       data-suffix="${escapeAttr(occ.suffix)}" 
+                       data-kw="${escapeAttr(query)}"
+                       role="button"
+                       tabindex="0">
+                    <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0 mt-0.5"><use href="${iconHref}"></use></svg>
+                    <p class="search-result-snippet text-xs text-[#1C1917] dark:text-[#EDECE8] line-clamp-2 leading-relaxed flex-1">
+                      ${occ.snippet}
+                    </p>
+                    <span class="enter-to-open-hint hidden text-[10px] text-indigo-600 dark:text-indigo-400 font-mono shrink-0 ml-1">Enter để mở</span>
+                  </div>
+                `;
+              }).join('') : `
+                <div class="search-result-item p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex items-center gap-2" 
                      data-lesson-id="${lm.lesson.id}" 
                      data-occ-idx="0" 
                      data-prefix="" 
                      data-suffix="" 
-                     data-kw="${escapeHtml(query)}"
+                     data-kw="${escapeAttr(query)}"
                      role="button"
                      tabindex="0">
-                  <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed italic">
+                  <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#s-page"></use></svg>
+                  <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] italic flex-1">
                     Khớp từ khóa trong tiêu đề bài học
                   </p>
+                  <span class="enter-to-open-hint hidden text-[10px] text-indigo-600 dark:text-indigo-400 font-mono shrink-0 ml-1">Enter để mở</span>
                 </div>
               `}
 
               ${remainingCount > 0 ? `
                 <div class="hidden remaining-snippets-box space-y-1.5 mt-1.5" id="remainingSnippets_${lm.lesson.id}">
-                  ${lm.occurrences.slice(3).map((occ, oIdx) => `
-                    <div class="search-result-item p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
-                         data-lesson-id="${lm.lesson.id}" 
-                         data-occ-idx="${occ.occurrenceIndex}" 
-                         data-prefix="${escapeHtml(occ.prefix)}" 
-                         data-suffix="${escapeHtml(occ.suffix)}" 
-                         data-kw="${escapeHtml(query)}"
-                         role="button"
-                         tabindex="0">
-                      <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed">
-                        ${occ.snippet}
-                      </p>
-                    </div>
-                  `).join('')}
+                  ${lm.occurrences.slice(3).map((occ, oIdx) => {
+                    const isQ = occ.snippet.includes('?') || occ.snippet.toLowerCase().includes('câu ');
+                    const iconHref = isQ ? '#s-question' : '#s-page';
+                    return `
+                      <div class="search-result-item p-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex items-start gap-2.5" 
+                           data-lesson-id="${lm.lesson.id}" 
+                           data-occ-idx="${occ.occurrenceIndex}" 
+                           data-prefix="${escapeAttr(occ.prefix)}" 
+                           data-suffix="${escapeAttr(occ.suffix)}" 
+                           data-kw="${escapeAttr(query)}"
+                           role="button"
+                           tabindex="0">
+                        <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] shrink-0 mt-0.5"><use href="${iconHref}"></use></svg>
+                        <p class="search-result-snippet text-xs text-[#1C1917] dark:text-[#EDECE8] line-clamp-2 leading-relaxed flex-1">
+                          ${occ.snippet}
+                        </p>
+                        <span class="enter-to-open-hint hidden text-[10px] text-indigo-600 dark:text-indigo-400 font-mono shrink-0 ml-1">Enter để mở</span>
+                      </div>
+                    `;
+                  }).join('')}
                 </div>
-                <button type="button" class="btn-expand-snippets text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline px-1 py-1 block w-full text-left cursor-pointer" data-target="remainingSnippets_${lm.lesson.id}">
-                  Xem thêm ${remainingCount} kết quả trong bài này...
+                <button type="button" class="btn-expand-snippets text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline px-1 py-1.5 flex items-center gap-1 w-full text-left cursor-pointer" data-target="remainingSnippets_${lm.lesson.id}">
+                  <svg class="w-3.5 h-3.5 rotate-90 shrink-0"><use href="#s-chevron"></use></svg>
+                  <span>Xem thêm ${remainingCount} kết quả trong bài này...</span>
                 </button>
               ` : ''}
             </div>
           </div>
         `;
       });
-
       targetEl.innerHTML = countLimitNotice + groupsHtml;
       targetEl.classList.remove('hidden');
 
@@ -13717,7 +14074,7 @@
         });
       });
 
-      // Bấm vào kết quả -> Đóng Command Palette, mở bài, cuộn tới chỗ và vẽ khung
+      // Bấm vào kết quả -> Lưu từ khóa gần đây, Đóng Command Palette, mở bài, cuộn tới chỗ và vẽ khung
       targetEl.querySelectorAll('.search-result-item').forEach(el => {
         el.addEventListener('click', () => {
           const lId = el.getAttribute('data-lesson-id');
@@ -13725,6 +14082,10 @@
           const prefix = el.getAttribute('data-prefix') || '';
           const suffix = el.getAttribute('data-suffix') || '';
           const kw = el.getAttribute('data-kw') || query;
+
+          if (query && query.trim()) {
+            addRecentSearch(query.trim());
+          }
 
           closeSearchCommandPalette();
           if (searchInput) searchInput.value = query;
@@ -14585,9 +14946,10 @@
             completedLessonIds: Array.isArray(plan.completedLessonIds) ? plan.completedLessonIds : [],
             reminderTime: plan.reminderTime || '19:00',
             reminderEnabled: plan.reminderEnabled !== false,
+            pinned: plan.pinned !== false, // // v4.5.0: Kế hoạch cũ migrate mặc định pinned = true
             archived: !!plan.archived,
             deleted: !!plan.deleted,
-            schemaVersion: plan.schemaVersion || 1
+            schemaVersion: Math.max(plan.schemaVersion || 1, 2)
           })).filter(p => !p.deleted);
           plansDebugLog(`Nạp thành công ${state.studyPlans.length} kế hoạch:`, state.studyPlans);
         } else {
@@ -16364,9 +16726,21 @@
       return `${day}/${month}`;
     }
 
-    function renderStudyPlanWidget() {
+    function renderSidebarPlans() {
+      const sidebarContainer = document.getElementById('sidebarStudyPlanWidget');
+      const pinnedListEl = document.getElementById('sidebarPinnedPlansList');
+      const otherNoticeEl = document.getElementById('sidebarPlanOtherCountNotice');
+      const emptyWidget = document.getElementById('emptyStudyPlanWidget');
+      const headerBadge = document.getElementById('planHeaderBadge');
+
+      if (!sidebarContainer) return;
+
       const allActivePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
       const todayStr = getTodayDateStr();
+
+      if (isPlansDebugEnabled()) {
+        console.log('[StudyPlansDebug] renderSidebarPlans. Total active:', allActivePlans.length);
+      }
 
       // Check badge on toolbar button
       if (headerBadge) {
@@ -16374,144 +16748,177 @@
           const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
           return (sc.daysLeft <= PLAN_URGENCY.urgentDays && !sc.isPast) || sc.todayRequiredCount > 0;
         });
-        if (hasUrgent) headerBadge.classList.remove('hidden');
-        else headerBadge.classList.add('hidden');
+        headerBadge.classList.toggle('hidden', !hasUrgent);
       }
 
-      if (allActivePlans.length === 0) {
-        if (sidebarWidget) sidebarWidget.classList.add('hidden');
+      // Quy tắc v4.5.0: Hiển thị tối đa 3 thẻ cho các kế hoạch có pinned = true VÀ chưa kết thúc (!sched.isPast),
+      // sắp xếp theo ngày thi gần nhất. Nếu không có kế hoạch nào được ghim: ẩn hoàn toàn khối widget.
+      const activePinnedPlans = allActivePlans.filter(p => {
+        if (p.pinned === false) return false;
+        const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
+        return !sc.isPast;
+      }).sort((a, b) => {
+        const scA = calculateStudyPlanSchedule(a, todayStr, a.completedLessonIds || []);
+        const scB = calculateStudyPlanSchedule(b, todayStr, b.completedLessonIds || []);
+        return scA.daysLeft - scB.daysLeft;
+      });
+
+      if (activePinnedPlans.length === 0) {
+        sidebarContainer.classList.add('hidden');
         if (emptyWidget) emptyWidget.classList.add('hidden');
         return;
       }
 
-      // Sắp xếp: Kế hoạch chưa kết thúc có ngày thi gần nhất lên trước
-      const activePlans = [...allActivePlans].sort((a, b) => {
-        const schedA = calculateStudyPlanSchedule(a, todayStr, a.completedLessonIds || []);
-        const schedB = calculateStudyPlanSchedule(b, todayStr, b.completedLessonIds || []);
-        if (schedA.isPast && !schedB.isPast) return 1;
-        if (!schedA.isPast && schedB.isPast) return -1;
-        return schedA.daysLeft - schedB.daysLeft;
-      });
+      sidebarContainer.classList.remove('hidden');
 
-      const plan = activePlans[0];
-      const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
-      const urgency = getPlanUrgencyLevel(plan, sched);
-
-      // Sidebar widget
-      if (sidebarWidget) {
-        sidebarWidget.classList.remove('hidden');
-        sidebarWidget.setAttribute('data-urgency', urgency);
-
-        const nameEl = document.getElementById('sidebarPlanName');
-        const badgeEl = document.getElementById('sidebarPlanCountdownBadge');
-        const todayEl = document.getElementById('sidebarPlanTodayText');
-        const progTextEl = document.getElementById('sidebarPlanProgressText');
-        const barEl = document.getElementById('sidebarPlanProgressBar');
-        const dividersEl = document.getElementById('sidebarPlanProgressDividers');
-        const otherNoticeEl = document.getElementById('sidebarPlanOtherCountNotice');
-
-        if (nameEl) {
-          nameEl.innerText = plan.name;
-          nameEl.setAttribute('title', plan.name);
-        }
-
-        if (badgeEl) {
+      const displayPlans = activePinnedPlans.slice(0, 3);
+      if (pinnedListEl) {
+        pinnedListEl.innerHTML = displayPlans.map(plan => {
+          const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+          const urgency = getPlanUrgencyLevel(plan, sched);
           const isPop = plansCompletedInSession.has(plan.id);
+
+          let badgeHtml = '';
           if (urgency === 'done') {
-            badgeEl.innerHTML = `<svg class="w-3 h-3 inline-block mr-0.5 ${isPop ? 'anim-check-pop' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hoàn thành`;
+            badgeHtml = `<svg class="w-3 h-3 inline-block mr-0.5 ${isPop ? 'anim-check-pop' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hoàn thành`;
           } else if (sched.isTodayExam) {
-            badgeEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Hôm nay thi`;
+            badgeHtml = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Hôm nay thi`;
           } else if (sched.daysLeft === 1) {
-            badgeEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Ngày mai thi`;
-          } else if (sched.isPast) {
-            badgeEl.innerText = "Đã kết thúc";
+            badgeHtml = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Ngày mai thi`;
           } else {
             const warningDot = (urgency === 'urgent') ? `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>` : '';
-            badgeEl.innerHTML = `${warningDot}còn ${sched.daysLeft} ngày`;
+            badgeHtml = `${warningDot}còn ${sched.daysLeft} ngày`;
           }
-        }
 
-        if (todayEl) {
-          if (urgency === 'done') {
-            todayEl.innerText = "Đã xong toàn bộ";
-          } else {
-            todayEl.innerText = `Hôm nay: ${sched.todayRequiredCount} bài`;
+          let todayText = (urgency === 'done') ? "Đã xong toàn bộ" : `Hôm nay: ${sched.todayRequiredCount} bài`;
+
+          let dividersHtml = '';
+          if (sched.totalLessons <= 10 && sched.totalLessons > 1) {
+            for (let i = 1; i < sched.totalLessons; i++) {
+              const leftPct = (i / sched.totalLessons) * 100;
+              dividersHtml += `<div class="absolute top-0 bottom-0 w-[1px] bg-white/70 dark:bg-black/40" style="left: ${leftPct}%;"></div>`;
+            }
           }
-        }
-        if (progTextEl) progTextEl.innerText = `${sched.completedCount}/${sched.totalLessons}`;
-        if (barEl) {
-          barEl.style.width = `${sched.percentCompleted}%`;
-          barEl.setAttribute('aria-valuenow', sched.percentCompleted);
-        }
-        if (dividersEl) {
-          updateProgressDividers(dividersEl, sched.totalLessons);
-        }
 
-        if (otherNoticeEl) {
-          if (activePlans.length > 1) {
-            otherNoticeEl.classList.remove('hidden');
-            otherNoticeEl.innerText = `+${activePlans.length - 1} kế hoạch khác`;
-            otherNoticeEl.onclick = (e) => {
-              e.stopPropagation();
-              openStudyPlanModal();
-            };
-          } else {
-            otherNoticeEl.classList.add('hidden');
-          }
-        }
+          return `
+            <div class="sidebar-plan-card p-2.5 rounded-xl border shadow-2xs cursor-pointer hover:opacity-95 transition relative select-none" data-plan-id="${plan.id}" data-urgency="${urgency}" role="button" tabindex="0">
+              <div class="flex items-center justify-between mb-1.5 gap-1.5">
+                <div class="flex items-center gap-1.5 text-xs font-semibold truncate min-w-0 flex-1">
+                  <svg class="w-[18px] h-[18px] shrink-0" style="color: var(--plan-fg); fill: none;"><use href="#plan-glyph"></use></svg>
+                  <span class="truncate max-w-[110px]" title="${escapeAttr(plan.name)}">${escapeHtml(plan.name)}</span>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono flex items-center justify-center bg-black/5 dark:bg-white/10">
+                    ${badgeHtml}
+                  </span>
+                  <!-- Nút icon bỏ ghim vùng chạm chuẩn ≥ 44x44px trên mobile, hover trên desktop -->
+                  <button type="button" class="sidebar-plan-pin-btn touch-target w-8 h-8 -mr-1 rounded-lg flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" data-unpin-id="${plan.id}" aria-label="Bỏ ghim khỏi thanh mục lục" title="Bỏ ghim khỏi thanh mục lục">
+                    <svg class="w-3.5 h-3.5" style="--pin-fill: currentColor;"><use href="#pin-glyph"></use></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-[11px] opacity-90 mb-1.5">
+                <span>${todayText}</span>
+                <span class="font-mono font-medium">${sched.completedCount}/${sched.totalLessons}</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full overflow-hidden relative" style="background-color: var(--plan-track);">
+                <div class="h-full rounded-full transition-all duration-500" style="width: ${sched.percentCompleted}%; background-color: var(--plan-bar);" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${sched.percentCompleted}" aria-label="Tiến độ kế hoạch"></div>
+                <div class="absolute inset-0 flex pointer-events-none">${dividersHtml}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
 
-        sidebarWidget.onclick = () => openStudyPlanModal(plan.id);
+        pinnedListEl.querySelectorAll('.sidebar-plan-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.sidebar-plan-pin-btn')) return;
+            const pId = card.getAttribute('data-plan-id');
+            openStudyPlanModal(pId);
+          });
+        });
+
+        pinnedListEl.querySelectorAll('.sidebar-plan-pin-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const pId = btn.getAttribute('data-unpin-id');
+            const targetPlan = (state.studyPlans || []).find(p => p.id === pId);
+            if (targetPlan) {
+              targetPlan.pinned = false;
+              targetPlan.updatedAt = new Date().toISOString();
+              saveLocalStudyPlans();
+              renderSidebarPlans();
+              if (typeof showToastWithAction === 'function') {
+                showToastWithAction("Đã bỏ ghim khỏi thanh mục lục", "Hoàn tác", () => {
+                  targetPlan.pinned = true;
+                  targetPlan.updatedAt = new Date().toISOString();
+                  saveLocalStudyPlans();
+                  renderSidebarPlans();
+                }, 5000);
+              } else {
+                showToast("Đã bỏ ghim khỏi thanh mục lục");
+              }
+            }
+          });
+        });
       }
 
-      // Empty State widget
-      if (emptyWidget) {
-        emptyWidget.classList.remove('hidden');
-        const eTitle = document.getElementById('emptyPlanTitle');
-        const eDays = document.getElementById('emptyPlanDaysCount');
-        const eToday = document.getElementById('emptyPlanTodayTarget');
-        const ePace = document.getElementById('emptyPlanPaceBadge');
-        const eBar = document.getElementById('emptyPlanProgressBar');
-        const eBtn = document.getElementById('btnOpenPlanDetailFromEmpty');
-
-        if (eTitle) eTitle.innerText = plan.name;
-        if (eDays) eDays.innerText = sched.daysLeft >= 0 ? sched.daysLeft : 0;
-        if (eToday) eToday.innerText = (urgency === 'done') ? "Đã xong toàn bộ" : `Hôm nay cần học: ${sched.todayRequiredCount} bài`;
-        if (ePace) {
-          if (urgency === 'done') {
-            ePace.innerText = "Hoàn thành";
-            ePace.className = "text-[10px] px-1.5 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300";
-          } else {
-            ePace.innerText = sched.paceText;
-            ePace.className = `text-[10px] px-1.5 py-0.5 rounded font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'}`;
-          }
+      if (otherNoticeEl) {
+        const extraCount = activePinnedPlans.length - 3;
+        if (extraCount > 0) {
+          otherNoticeEl.classList.remove('hidden');
+          otherNoticeEl.innerText = `+${extraCount} kế hoạch đã ghim khác`;
+          otherNoticeEl.onclick = (e) => {
+            e.stopPropagation();
+            openStudyPlanModal();
+          };
+        } else {
+          otherNoticeEl.classList.add('hidden');
         }
-        if (eBar) eBar.style.width = `${sched.percentCompleted}%`;
-        if (eBtn) eBtn.onclick = () => openStudyPlanModal(plan.id);
+      }
+
+      // Empty State widget trong trường hợp không có bài
+      if (emptyWidget) {
+        if (activePinnedPlans.length > 0) {
+          emptyWidget.classList.remove('hidden');
+          const p = activePinnedPlans[0];
+          const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
+          const eTitle = document.getElementById('emptyPlanTitle');
+          const eDays = document.getElementById('emptyPlanDaysCount');
+          const eToday = document.getElementById('emptyPlanTodayTarget');
+          if (eTitle) eTitle.innerText = p.name;
+          if (eDays) eDays.innerText = sc.daysLeft >= 0 ? sc.daysLeft : 0;
+          if (eToday) eToday.innerText = `Hôm nay cần học: ${sc.todayRequiredCount} bài`;
+        } else {
+          emptyWidget.classList.add('hidden');
+        }
       }
     }
+    const renderStudyPlanWidget = renderSidebarPlans;
+    window.renderSidebarPlans = renderSidebarPlans;
+    window.renderStudyPlanWidget = renderSidebarPlans;
 
     function openStudyPlanModal(planId = null) {
-      const allPlans = (state.studyPlans || []).filter(p => !p.deleted);
-      const activePlans = allPlans.filter(p => !p.archived);
-
-      if (allPlans.length === 0) {
-        document.getElementById('planDetailContentArea').classList.add('hidden');
-        document.getElementById('planEmptyPlaceholder').classList.remove('hidden');
+      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
+      if (activePlans.length === 0) {
+        const area = document.getElementById('planDetailContentArea');
+        const tabs = document.getElementById('planTabsContainer');
+        const empty = document.getElementById('planEmptyPlaceholder');
+        if (area) area.classList.add('hidden');
+        if (tabs) tabs.classList.add('hidden');
+        if (empty) empty.classList.remove('hidden');
       } else {
-        document.getElementById('planDetailContentArea').classList.remove('hidden');
-        document.getElementById('planEmptyPlaceholder').classList.add('hidden');
-        selectedActivePlanId = planId || (activePlans[0] ? activePlans[0].id : allPlans[0].id);
-        selectedWeekDateOffset = 0;
-        selectedViewingDateStr = getTodayDateStr();
-        const now = new Date();
-        planViewedYear = now.getFullYear();
-        planViewedMonth = now.getMonth();
-        renderStudyPlanDetail(selectedActivePlanId, true);
-        const savedViewMode = localStorage.getItem('cfg_study_plan_cal_view') || 'week';
-        setStudyPlanCalendarView(savedViewMode);
+        const area = document.getElementById('planDetailContentArea');
+        const tabs = document.getElementById('planTabsContainer');
+        const empty = document.getElementById('planEmptyPlaceholder');
+        if (area) area.classList.remove('hidden');
+        if (tabs) tabs.classList.remove('hidden');
+        if (empty) empty.classList.add('hidden');
+        selectedActivePlanId = planId || (activePlans[0] ? activePlans[0].id : null);
+        renderStudyPlanDetail(selectedActivePlanId);
       }
       showModalAnimated(studyPlanModal);
     }
+    window.openStudyPlanModal = openStudyPlanModal;
 
     function renderStudyPlanDetail(planId, isInitialOpen = false) {
       const allPlans = (state.studyPlans || []).filter(p => !p.deleted);
@@ -16560,6 +16967,31 @@
       // Gắn data-urgency lên heroCard
       if (heroCard) {
         heroCard.setAttribute('data-urgency', urgency);
+      }
+
+      // v4.5.0: Nút Pill Ghim/Bỏ ghim trên Hero card
+      const btnHeroPin = document.getElementById('btnHeroPinToggle');
+      const heroPinText = document.getElementById('heroPinToggleText');
+      if (btnHeroPin && heroPinText) {
+        const isPinned = plan.pinned !== false;
+        btnHeroPin.setAttribute('aria-pressed', isPinned ? 'true' : 'false');
+        btnHeroPin.style.setProperty('--pin-fill', isPinned ? 'currentColor' : 'none');
+        if (isPinned) {
+          btnHeroPin.className = 'absolute top-2.5 right-2.5 sm:top-3 sm:right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition cursor-pointer select-none z-10 min-h-[36px] shadow-2xs';
+          heroPinText.innerText = 'Đã ghim';
+        } else {
+          btnHeroPin.className = 'absolute top-2.5 right-2.5 sm:top-3 sm:right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] border border-black/10 dark:border-white/10 hover:border-indigo-400 transition cursor-pointer select-none z-10 min-h-[36px]';
+          heroPinText.innerText = 'Ghim';
+        }
+        btnHeroPin.onclick = (e) => {
+          e.stopPropagation();
+          plan.pinned = !isPinned;
+          plan.updatedAt = new Date().toISOString();
+          saveLocalStudyPlans();
+          renderStudyPlanDetail(plan.id);
+          renderSidebarPlans();
+          showToast(plan.pinned ? "Đã ghim lên thanh mục lục" : "Đã bỏ ghim khỏi thanh mục lục");
+        };
       }
 
       // Viền xanh hoàn thành bao quanh khung popup modal
@@ -17223,7 +17655,10 @@
             <div class="flex items-center justify-between gap-2.5">
               <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${p.color || '#4F46E5'}"></span>
-                <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate">${escapeHtml(p.name)}</span>
+                <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-1.5">
+                  ${escapeHtml(p.name)}
+                  ${p.pinned !== false ? '<svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0 inline" title="Đang ghim ở thanh mục lục" style="--pin-fill: currentColor;"><use href="#pin-glyph"></use></svg>' : ''}
+                </span>
               </div>
               <div class="flex items-center gap-2 shrink-0">
                 ${badgeHtml}
@@ -17235,6 +17670,10 @@
                     <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/></svg>
                   </button>
                   <div class="plan-action-dropdown hidden absolute right-0 top-full mt-1 z-30 w-36 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-lg py-1 text-xs select-none">
+                    <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-toggle-pin" data-plan-id="${p.id}">
+                      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" style="--pin-fill: ${p.pinned !== false ? 'none' : 'currentColor'};"><use href="#pin-glyph"></use></svg>
+                      <span>${p.pinned !== false ? 'Bỏ ghim thanh mục lục' : 'Ghim lên thanh mục lục'}</span>
+                    </button>
                     <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-edit" data-plan-id="${p.id}">
                       <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                       <span>Sửa kế hoạch</span>
@@ -17288,6 +17727,22 @@
           const pId = btn.getAttribute('data-plan-id');
           const targetPlan = allPlans.find(p => p.id === pId);
           if (targetPlan) openCreatePlanModal(targetPlan);
+        });
+      });
+
+      allList.querySelectorAll('.plan-opt-toggle-pin').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const pId = btn.getAttribute('data-plan-id');
+          const targetPlan = allPlans.find(p => p.id === pId);
+          if (targetPlan) {
+            targetPlan.pinned = !(targetPlan.pinned !== false);
+            targetPlan.updatedAt = new Date().toISOString();
+            saveLocalStudyPlans();
+            renderSidebarPlans();
+            renderStudyPlanDetail(selectedActivePlanId);
+            showToast(targetPlan.pinned ? "Đã ghim lên thanh mục lục" : "Đã bỏ ghim khỏi thanh mục lục");
+          }
         });
       });
 
@@ -17537,12 +17992,14 @@
       let selectedLessonIds = new Set(editingPlan && Array.isArray(editingPlan.lessonIds) ? editingPlan.lessonIds : []);
       let activeStudyDays = editingPlan && Array.isArray(editingPlan.studyDays) ? [...editingPlan.studyDays] : [1, 2, 3, 4, 5, 6, 0];
 
+      const pinnedToggle = document.getElementById('planInputPinned');
       if (editingPlan) {
         if (titleEl) titleEl.innerText = "Chỉnh sửa Kế hoạch & Lịch thi";
         if (nameInput) nameInput.value = editingPlan.name || '';
         if (dateInput) dateInput.value = editingPlan.examDate || '';
         if (bufferInput) bufferInput.value = typeof editingPlan.bufferDays === 'number' ? editingPlan.bufferDays : 2;
         if (capInput) capInput.value = editingPlan.dailyCap || '';
+        if (pinnedToggle) pinnedToggle.checked = (editingPlan.pinned !== false);
       } else {
         if (titleEl) titleEl.innerText = "Tạo Kế hoạch & Lịch thi mới";
         if (nameInput) nameInput.value = '';
@@ -17551,6 +18008,7 @@
         if (dateInput) dateInput.value = formatDateOnly(defaultDate);
         if (bufferInput) bufferInput.value = 2;
         if (capInput) capInput.value = '';
+        if (pinnedToggle) pinnedToggle.checked = true; // Mặc định kế hoạch mới được ghim
         selectedLessonIds = new Set((state.lessons || []).map(l => l.id));
       }
 
@@ -17765,6 +18223,7 @@
             return;
           }
 
+          const isPinnedVal = document.getElementById('planInputPinned') ? document.getElementById('planInputPinned').checked : true;
           if (editingPlan) {
             editingPlan.name = name;
             editingPlan.examDate = dateVal;
@@ -17772,6 +18231,7 @@
             editingPlan.dailyCap = capVal;
             editingPlan.studyDays = activeStudyDays;
             editingPlan.lessonIds = Array.from(selectedLessonIds);
+            editingPlan.pinned = isPinnedVal;
             editingPlan.updatedAt = new Date().toISOString();
             showToast("Đã cập nhật kế hoạch học tập!");
           } else {
@@ -17785,6 +18245,7 @@
               lessonIds: Array.from(selectedLessonIds),
               completedLessonIds: [],
               color: '#4F46E5',
+              pinned: isPinnedVal,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
               reminderTime: '19:00',
@@ -17864,17 +18325,22 @@
     window.calculateStudyPlanSchedule = calculateStudyPlanSchedule;
     window.openStudyPlanModal = openStudyPlanModal;
     window.openCreatePlanModal = openCreatePlanModal;
-    window.renderStudyPlanWidget = renderStudyPlanWidget;
+    window.loadLocalStudyPlans = loadLocalStudyPlans;
+    window.saveLocalStudyPlans = saveLocalStudyPlans;
+    window.renderSidebarPlans = renderSidebarPlans;
+    window.renderStudyPlanWidget = renderSidebarPlans;
     window.renderStudyPlanDetail = renderStudyPlanDetail;
     window.togglePlanLessonDone = togglePlanLessonDone;
+    window.state = state;
 
 
 
     async function bootApp() {
       try {
         loadLocalStudyPlans();
+        renderSidebarPlans();
       } catch (err) {
-        console.warn("Lỗi loadLocalStudyPlans trong bootApp:", err);
+        console.warn("Lỗi loadLocalStudyPlans/renderSidebarPlans trong bootApp:", err);
       }
       try {
         initAuthAndData();
@@ -21948,7 +22414,7 @@
     window.PLAN_URGENCY = PLAN_URGENCY;
     window.plansCompletedInSession = plansCompletedInSession;
 
-    console.log("%c Thư viện Sách HTML v4.4.2 - build 09/10/2026 15:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.5.0 - build 09/10/2026 15:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
