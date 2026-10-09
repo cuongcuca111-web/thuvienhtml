@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.3.0';
+    const CURRENT_APP_VERSION = 'v4.4.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -119,7 +119,17 @@
     } catch (_) {}
 
     (function() {
-      const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='44' fill='#4F46E5'/><g transform='translate(24, 24) scale(6)' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z'/><path d='M12 6.5V18.5'/><circle cx='12' cy='3.8' r='1.2' fill='#FBBF24'/></g></svg>`;
+      const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='44' fill='#4F46E5'/><g transform='translate(24, 24) scale(6)' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z'/><path d='M12 6.5V18.5'/><circle cx='12' cy='3.8' r='1.2' fill='#FBBF24'/></g>    <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </symbol>
+    <symbol id="icon-edit-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </symbol>
+  </svg>`;
       const iconDataUri = "data:image/svg+xml," + encodeURIComponent(iconSvg);
       const manifest = {
         name: "Thư viện Sách HTML",
@@ -1575,6 +1585,10 @@
           <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
             <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
           </button>
+          <button id="btnHeaderStudyPlan" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 relative" title="Lịch thi & Kế hoạch học tập" aria-label="Lịch thi & Kế hoạch">
+            <svg class="w-4 h-4"><use href="#icon-calendar"></use></svg>
+            <span id="planHeaderBadge" class="hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-600"></span>
+          </button>
           <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
             <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
           </button>
@@ -1983,6 +1997,24 @@
         </div>
       </div>
 
+      <!-- // WIDGET LỊCH THI & KẾ HOẠCH Ở SIDEBAR -->
+      <div id="sidebarStudyPlanWidget" class="hidden mx-3 mt-2 p-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 shadow-2xs cursor-pointer hover:bg-indigo-100/70 transition shrink-0">
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-1.5 text-xs font-semibold text-indigo-900 dark:text-indigo-200">
+            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-calendar"></use></svg>
+            <span id="sidebarPlanName" class="truncate max-w-[130px]">Kế hoạch thi</span>
+          </div>
+          <span id="sidebarPlanCountdownBadge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white font-mono">còn 0 ngày</span>
+        </div>
+        <div class="flex items-center justify-between text-[11px] text-[#6E6B65] dark:text-[#979DA8] mb-1.5">
+          <span id="sidebarPlanTodayText">Hôm nay: 0 bài</span>
+          <span id="sidebarPlanProgressText" class="font-mono">0/0</span>
+        </div>
+        <div class="w-full h-1.5 rounded-full bg-indigo-200/70 dark:bg-indigo-900/60 overflow-hidden">
+          <div id="sidebarPlanProgressBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
       <!-- // FEATURE-3: Thẻ Cần ôn hôm nay ở Sidebar -->
       <div id="sidebarReviewDueBox" class="hidden mx-3 mt-2 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 shadow-2xs cursor-pointer hover:bg-amber-100/70 transition shrink-0">
         <div class="flex items-center justify-between">
@@ -2024,7 +2056,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.3.0 - build 09/10/2026 10:30
+        Thư viện Sách HTML v4.4.0 - build 09/10/2026 10:30
       </div>
     </aside>
 
@@ -2149,6 +2181,10 @@
                 <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-link"></use></svg>
                 <span>Link đã chia sẻ</span>
               </button>
+              <button id="btnEditLessonContent" class="hidden w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
+                <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"><use href="#icon-edit-3"></use></svg>
+                <span>Sửa nội dung bài (.md/.txt)</span>
+              </button>
               <button id="btnRenameCurrent" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition">
                 <svg class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-pencil"></use></svg>
                 <span>Đổi tên bài học</span>
@@ -2221,6 +2257,35 @@
               Tải lên các file bài học HTML để lưu vào thư viện ôn tập chuyên sâu, hoặc dùng <strong>Tạo link nhanh</strong> để xem trực tiếp (lưu 7 ngày).
             </p>
             
+            <!-- // WIDGET LỊCH THI TẠI MÀN HÌNH TRỐNG / THƯ VIỆN -->
+            <div id="emptyStudyPlanWidget" class="hidden w-full max-w-sm p-4 mb-4 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-white to-purple-50/60 dark:from-indigo-950/40 dark:via-[#161A20] dark:to-purple-950/30 border border-indigo-100 dark:border-indigo-900/50 text-left shadow-xs">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
+                    <svg class="w-4 h-4"><use href="#icon-calendar"></use></svg>
+                  </div>
+                  <div>
+                    <h4 id="emptyPlanTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate max-w-[180px]">Kỳ thi sắp tới</h4>
+                    <p id="emptyPlanDateText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Đếm ngược ngày thi</p>
+                  </div>
+                </div>
+                <div id="emptyPlanCountdownTag" class="text-right">
+                  <span id="emptyPlanDaysCount" class="font-mono text-lg font-black text-indigo-600 dark:text-indigo-400">0</span>
+                  <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] block -mt-1">ngày nữa</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] mb-1">
+                <span id="emptyPlanTodayTarget">Hôm nay cần học: 0 bài</span>
+                <span id="emptyPlanPaceBadge" class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">Đúng tiến độ</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-indigo-100 dark:bg-indigo-950 overflow-hidden mb-3">
+                <div id="emptyPlanProgressBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <button id="btnOpenPlanDetailFromEmpty" class="w-full py-1.5 text-center rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-97 text-white text-xs font-semibold shadow-xs transition">
+                Xem Lịch thi &amp; Bài học hôm nay
+              </button>
+            </div>
+
             <!-- // FEATURE-1: Thẻ Tiếp tục học tại Màn hình trống -->
             <div id="emptyContinueLearningBox" class="hidden w-full max-w-sm p-3.5 mb-5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-left shadow-xs">
               <div class="flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-300 font-medium mb-1">
@@ -2601,7 +2666,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.3.0 - build 09/10/2026 10:30
+      Thư viện Sách HTML v4.4.0 - build 09/10/2026 10:30
     </div>
   </div>
 
@@ -2666,7 +2731,7 @@
         <div id="shareFileUploadArea">
           <label class="block text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Chọn file HTML muốn tạo link:</label>
           <div id="shareDropZone" class="border-2 border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] rounded-card p-4 text-center cursor-pointer bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50 transition">
-            <input type="file" id="shareFileInput" accept=".html,.htm" class="hidden" />
+            <input type="file" id="shareFileInput" accept=".html,.htm,.md,.markdown,.txt" class="hidden" />
             <svg class="w-6 h-6 mx-auto mb-1 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-upload-cloud"></use></svg>
             <p class="text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2]" id="shareFileLabel">Bấm để chọn file HTML hoặc kéo thả vào đây</p>
           </div>
@@ -3234,9 +3299,16 @@
 
       <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4">
         <div id="dropZone" class="border-2 border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] rounded-card p-5 sm:p-6 text-center cursor-pointer transition bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50">
-          <input type="file" id="htmlFilesInput" multiple accept=".html,.htm" class="hidden" />
+          <input type="file" id="htmlFilesInput" multiple accept=".html,.htm,.md,.markdown,.txt" class="hidden" />
           <svg class="w-8 h-8 mx-auto mb-2 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-file-plus"></use></svg>
-          <p class="text-xs sm:text-sm font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Chạm vào đây để chọn file .html hoặc kéo thả</p>
+          <p class="text-xs sm:text-sm font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Chạm vào đây để chọn file (.html, .md, .txt) hoặc kéo thả</p>
+          <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-0.5">Tải nhiều file Markdown, văn bản thô hoặc HTML cùng lúc</p>
+          <div class="mt-3 pt-2.5 border-t border-[#E6E6E1]/60 dark:border-[#262C36]/60 flex items-center justify-center">
+            <button id="btnOpenPasteModal" type="button" class="touch-target px-3.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/80 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition flex items-center gap-1.5 shadow-2xs">
+              <svg class="w-3.5 h-3.5"><use href="#icon-edit-3"></use></svg>
+              <span>Dán văn bản thô / Markdown</span>
+            </button>
+          </div>
           <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-1">Hỗ trợ chọn nhiều file cùng lúc</p>
         </div>
 
@@ -3251,6 +3323,306 @@
       <div class="p-3 sm:p-4 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-end gap-2 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/40 shrink-0">
         <button id="btnCancelUpload" class="touch-target px-3.5 py-2 rounded-card border border-[#E6E6E1] dark:border-[#262C36] text-xs font-medium text-[#6B6B66]">Hủy bỏ</button>
         <button id="btnConfirmUpload" class="touch-target px-4 py-2 rounded-card bg-[#4F46E5] text-white text-xs font-medium transition disabled:opacity-50" disabled>Lưu tất cả bài học</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- MODAL: DÁN VĂN BẢN / SOẠN THẢO MARKDOWN (.md / .txt) -->
+  <div id="pasteContentModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-3xl max-h-[92dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
+      <!-- Header -->
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#111317]">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-edit-3"></use></svg>
+          </div>
+          <div class="min-w-0">
+            <h3 id="pasteModalTitle" class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] truncate">Dán văn bản &amp; Soạn bài học</h3>
+            <p id="pasteModalSubtitle" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate">Hỗ trợ Markdown chuẩn &amp; văn bản thô tiếng Việt</p>
+          </div>
+        </div>
+        <button id="btnClosePasteModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" aria-label="Đóng modal">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Controls Row: Tiêu đề, Mục, Định dạng, Tabs -->
+      <div class="p-3 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] space-y-2.5 bg-white dark:bg-[#161A20] shrink-0 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Tên bài học: <span class="text-rose-500">*</span></label>
+            <input id="pasteLessonTitleInput" type="text" maxlength="300" placeholder="Nhập tên bài học..." class="w-full px-3 py-2 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Mục lưu trữ:</label>
+            <select id="pasteLessonCategorySelect" class="w-full px-3 py-2 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none"></select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1 gap-2 flex-wrap">
+          <!-- Chế độ Định dạng -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8]">Định dạng:</span>
+            <div class="inline-flex rounded-lg border border-[#E7E5DF] dark:border-[#262C36] p-0.5 bg-[#FAF9F5] dark:bg-[#111317]">
+              <button id="btnFormatMarkdown" type="button" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs transition">Markdown</button>
+              <button id="btnFormatPlainText" type="button" class="px-2.5 py-1 rounded-md text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition">Văn bản thô (.txt)</button>
+            </div>
+          </div>
+
+          <!-- Switch Soạn / Xem trước -->
+          <div class="inline-flex rounded-lg border border-[#E7E5DF] dark:border-[#262C36] p-0.5 bg-[#FAF9F5] dark:bg-[#111317]">
+            <button id="tabComposeMode" type="button" class="px-3 py-1 rounded-md text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs transition">Soạn thảo</button>
+            <button id="tabPreviewMode" type="button" class="px-3 py-1 rounded-md text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition">Xem trước</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Editor Body -->
+      <div class="flex-1 overflow-hidden relative flex flex-col p-3 sm:p-4 min-h-[220px]">
+        <!-- Soạn thảo Textarea -->
+        <div id="pasteEditorPane" class="flex-1 flex flex-col w-full h-full">
+          <textarea id="pasteRawTextarea" placeholder="Dán nội dung bài học hoặc viết Markdown tại đây...\n\nVí dụ:\n# Tiêu đề bài học\nNội dung chính với **in đậm**, *in nghiêng*, bảng biểu hoặc code block..." class="flex-1 w-full p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#0F1115] text-[#1C1917] dark:text-[#EDECE8] text-base sm:text-sm font-mono leading-relaxed focus:border-indigo-600 focus:outline-none resize-none overflow-y-auto" style="min-height: 200px; font-size: 16px;"></textarea>
+        </div>
+
+        <!-- Live Preview Pane -->
+        <div id="pastePreviewPane" class="hidden flex-1 w-full h-full overflow-y-auto p-4 sm:p-6 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] prose dark:prose-invert max-w-none text-sm leading-relaxed" style="min-height: 200px;">
+          <div id="pastePreviewContent"></div>
+        </div>
+      </div>
+
+      <!-- Footer: Bộ đếm & Nút Lưu -->
+      <div class="p-3 sm:p-4 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 bg-[#FAF9F5] dark:bg-[#111317] shrink-0 text-xs">
+        <div class="flex items-center gap-2 sm:gap-3 text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-mono">
+          <span id="pasteStatsChars">0 ký tự</span>
+          <span>•</span>
+          <span id="pasteStatsWords">0 từ</span>
+          <span>•</span>
+          <span id="pasteStatsSize">0 KB</span>
+          <span id="pasteSizeWarning" class="hidden text-rose-500 font-sans font-bold">Quá 5MB!</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btnCancelPasteModal" type="button" class="touch-target px-3.5 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] font-medium hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
+          <button id="btnSavePasteModal" type="button" class="touch-target px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold transition shadow-xs">Lưu bài học</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LỊCH THI & KẾ HOẠCH HỌC TẬP (STUDY PLAN DASHBOARD) -->
+  <div id="studyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-2xl max-h-[92dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+      <!-- Header -->
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#111317]">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-calendar"></use></svg>
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] truncate">Lịch thi &amp; Kế hoạch học tập</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate">Đếm ngược hạn chót và phân bổ số bài cần học mỗi ngày</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="btnOpenCreatePlanModal" class="touch-target px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 font-semibold text-xs flex items-center gap-1 transition" title="Tạo kế hoạch mới">
+            <svg class="w-3.5 h-3.5"><use href="#icon-plus"></use></svg>
+            <span class="hidden sm:inline">Tạo kế hoạch</span>
+          </button>
+          <button id="btnCloseStudyPlanModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng modal">
+            <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Plan Selector Tabs (nếu có nhiều kế hoạch) -->
+      <div id="planTabsContainer" class="px-4 py-2 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/50 dark:bg-[#111317]/50 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+        <!-- Dynamic plan tabs inserted here -->
+      </div>
+
+      <!-- Modal Body (Cuộn nội dung) -->
+      <div id="planDetailContentArea" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
+        <!-- Vòng đếm ngược & Tổng quan -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#FAF9F5] via-white to-indigo-50/40 dark:from-[#111317] dark:via-[#161A20] dark:to-indigo-950/20 border border-[#E7E5DF] dark:border-[#262C36] flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+          <!-- Vòng SVG đếm ngược -->
+          <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="6" class="text-black/5 dark:text-white/5" />
+              <circle id="planRingProgress" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="0" class="text-indigo-600 dark:text-indigo-400 transition-all duration-700" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <span id="planRingLabelTop" class="text-[10px] uppercase font-bold tracking-wider text-[#6E6B65] dark:text-[#979DA8]">CÒN</span>
+              <span id="planRingDaysNumber" class="text-3xl font-black font-mono tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none my-0.5">0</span>
+              <span id="planRingLabelBottom" class="text-[10px] font-medium text-[#6E6B65] dark:text-[#979DA8]">ngày</span>
+            </div>
+          </div>
+
+          <!-- Thông tin kế hoạch & Tiến độ -->
+          <div class="flex-1 min-w-0 text-center sm:text-left space-y-2">
+            <div class="flex items-center justify-center sm:justify-between gap-2 flex-wrap">
+              <h4 id="planDetailName" class="font-serif font-bold text-lg text-[#1C1917] dark:text-[#EDECE8] truncate">Tên Kế hoạch</h4>
+              <span id="planPaceStatusBadge" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">Đúng tiến độ</span>
+            </div>
+            <p id="planDetailMeta" class="text-xs text-[#6E6B65] dark:text-[#979DA8]">Ngày thi: 2026-10-25 • Đệm ôn tập: 2 ngày</p>
+            
+            <!-- Progress Bar -->
+            <div class="space-y-1 pt-1">
+              <div class="flex items-center justify-between text-xs font-mono text-[#1C1917] dark:text-[#EDECE8]">
+                <span>Tiến độ hoàn thành:</span>
+                <span id="planProgressRatio">0 / 0 bài (0%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+                <div id="planDetailProgressBar" class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khối "HÔM NAY CẦN HỌC" -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              <h5 class="font-bold text-xs uppercase tracking-wider text-[#1C1917] dark:text-[#EDECE8]">Hôm nay cần học (<span id="planTodayLessonsCount">0</span> bài)</h5>
+            </div>
+            <span id="planDailyCapNotice" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]"></span>
+          </div>
+
+          <div id="planTodayLessonsList" class="space-y-2">
+            <!-- Dynamic lesson items for today -->
+          </div>
+        </div>
+
+        <!-- Lịch tuần phân bổ bài học -->
+        <div class="space-y-2.5 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
+          <h5 class="font-bold text-xs uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8]">Lịch học 7 ngày tới</h5>
+          <div id="planWeekScheduleGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <!-- Dynamic week day cards -->
+          </div>
+        </div>
+
+        <!-- Lưới tháng nhỏ (Mini Month Calendar Grid) -->
+        <div class="space-y-2 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
+          <div class="flex items-center justify-between">
+            <h5 class="font-bold text-xs uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8]">Lưới lịch tháng</h5>
+            <div class="flex items-center gap-3 text-[10px] text-[#6E6B65] dark:text-[#979DA8]">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-600"></span> Ngày học</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Ngày thi</span>
+            </div>
+          </div>
+          <div id="planMiniMonthGrid" class="p-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317]"></div>
+        </div>
+
+        <!-- Thao tác Kế hoạch: Sửa / Xóa / Lưu trữ -->
+        <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2">
+          <button id="btnDeleteCurrentPlan" class="touch-target px-3 py-1.5 rounded-lg text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+            Xóa kế hoạch
+          </button>
+          <div class="flex items-center gap-2">
+            <button id="btnEditCurrentPlan" class="touch-target px-3.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] transition">
+              Chỉnh sửa kế hoạch
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trạng thái trống nếu chưa có kế hoạch nào -->
+      <div id="planEmptyPlaceholder" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
+          <svg class="w-6 h-6"><use href="#icon-calendar"></use></svg>
+        </div>
+        <h4 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Chưa có kế hoạch học tập nào</h4>
+        <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm">Tạo một kỳ thi hoặc mục tiêu để ứng dụng tự tính toán số bài cần học mỗi ngày và đếm ngược hạn chót cho bạn.</p>
+        <button id="btnEmptyCreatePlan" class="touch-target px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition">Tạo kế hoạch đầu tiên</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TẠO / SỬA KẾ HOẠCH HỌC TẬP -->
+  <div id="createStudyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-xl max-h-[92dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#111317]">
+        <h3 id="createPlanModalTitle" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tạo Kế hoạch &amp; Lịch thi mới</h3>
+        <button id="btnCloseCreatePlanModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng modal">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 text-xs">
+        <!-- Tên kế hoạch -->
+        <div>
+          <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Tên kỳ thi / Mục tiêu: <span class="text-rose-500">*</span></label>
+          <input id="planInputName" type="text" maxlength="200" placeholder="Ví dụ: Thi cuối kỳ, Ôn thi THPTQG, Học hết tài liệu..." class="w-full px-3 py-2 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
+        </div>
+
+        <!-- Ngày thi -->
+        <div>
+          <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Ngày thi (Hạn chót): <span class="text-rose-500">*</span></label>
+          <input id="planInputExamDate" type="date" class="w-full px-3 py-2 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
+          <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-1">Đếm ngược sẽ tính theo ngày theo giờ máy tính của bạn.</p>
+        </div>
+
+        <!-- Đệm ôn tập & Giới hạn mỗi ngày -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Đệm ôn tập trước ngày thi:</label>
+            <div class="flex items-center gap-2">
+              <input id="planInputBufferDays" type="number" min="0" max="14" value="2" class="w-20 px-2.5 py-1.5 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] text-center" />
+              <span class="text-[#6E6B65] dark:text-[#979DA8]">ngày (để tổng ôn)</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Giới hạn tối đa (tùy chọn):</label>
+            <div class="flex items-center gap-2">
+              <input id="planInputDailyCap" type="number" min="1" max="50" placeholder="Không" class="w-20 px-2.5 py-1.5 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] text-center" />
+              <span class="text-[#6E6B65] dark:text-[#979DA8]">bài/ngày</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ngày học trong tuần -->
+        <div>
+          <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Ngày học trong tuần:</label>
+          <div class="flex items-center gap-1.5 flex-wrap" id="planStudyDaysToggles">
+            <button type="button" data-day="1" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T2</button>
+            <button type="button" data-day="2" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T3</button>
+            <button type="button" data-day="3" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T4</button>
+            <button type="button" data-day="4" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T5</button>
+            <button type="button" data-day="5" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T6</button>
+            <button type="button" data-day="6" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T7</button>
+            <button type="button" data-day="0" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">CN</button>
+          </div>
+        </div>
+
+        <!-- Chọn bài học trong kế hoạch -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8]">Bài học cần hoàn thành: (<span id="planSelectedLessonCount">0</span> bài đã chọn)</label>
+            <div class="flex items-center gap-2">
+              <button id="btnSelectAllPlanLessons" type="button" class="text-indigo-600 dark:text-indigo-400 hover:underline">Chọn tất cả</button>
+              <span>•</span>
+              <button id="btnDeselectAllPlanLessons" type="button" class="text-[#6E6B65] dark:text-[#979DA8] hover:underline">Bỏ chọn</button>
+            </div>
+          </div>
+
+          <!-- Lesson selection container -->
+          <div id="planLessonPickerList" class="max-h-56 overflow-y-auto p-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] space-y-1">
+            <!-- Dynamic lesson checkboxes grouped by category -->
+          </div>
+        </div>
+
+        <!-- Cảnh báo quá tải / Thông tin phân bổ trực tiếp -->
+        <div id="planLiveCalculationBox" class="p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/60 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200">
+          <div class="flex items-center gap-2 font-medium">
+            <svg class="w-4 h-4 text-indigo-600 shrink-0"><use href="#icon-info"></use></svg>
+            <span id="planLiveCalculationText">Chọn ngày thi và bài học để xem phân bổ số bài/ngày.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 sm:p-4 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-end gap-2 bg-[#FAF9F5] dark:bg-[#111317] shrink-0 text-xs">
+        <button id="btnCancelCreatePlanModal" type="button" class="touch-target px-3.5 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] font-medium hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
+        <button id="btnSaveCreatePlanModal" type="button" class="touch-target px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold transition shadow-xs">Lưu Kế hoạch</button>
       </div>
     </div>
   </div>
@@ -11581,6 +11953,22 @@
       }
       addTombstone(lessonId);
       state.lessons = state.lessons.filter(l => l.id !== lessonId);
+      // Tự động loại bài đã xóa khỏi các kế hoạch học tập
+      if (state.studyPlans && state.studyPlans.length > 0) {
+        let plansModified = false;
+        state.studyPlans.forEach(p => {
+          if (p.lessonIds && p.lessonIds.includes(lessonId)) {
+            p.lessonIds = p.lessonIds.filter(id => id !== lessonId);
+            if (p.completedLessonIds) p.completedLessonIds = p.completedLessonIds.filter(id => id !== lessonId);
+            p.updatedAt = new Date().toISOString();
+            plansModified = true;
+          }
+        });
+        if (plansModified) {
+          saveLocalStudyPlans();
+          renderStudyPlanWidget();
+        }
+      }
       if (state.activeLessonId === lessonId) {
         state.activeLessonId = state.lessons[0] ? state.lessons[0].id : null;
       }
@@ -12847,27 +13235,708 @@
       }
     });
 
+    
+    // =========================================================================
+    // SECTION: ZERO-DEPENDENCY OFFLINE MARKDOWN & TEXT PARSER & SANITIZER (v4.4.0)
+    // =========================================================================
+
+    function parseYamlFrontMatter(text) {
+      if (!text) return { attributes: {}, body: '' };
+      const fmMatch = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!fmMatch) return { attributes: {}, body: text };
+      
+      const rawFm = fmMatch[1];
+      const body = text.slice(fmMatch[0].length);
+      const attributes = {};
+      
+      rawFm.split(/\r?\n/).forEach(line => {
+        const idx = line.indexOf(':');
+        if (idx !== -1) {
+          const key = line.slice(0, idx).trim();
+          let val = line.slice(idx + 1).trim();
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1);
+          }
+          if (key === 'tags') {
+            if (val.startsWith('[') && val.endsWith(']')) {
+              val = val.slice(1, -1).split(',').map(s => s.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+            } else {
+              val = val.split(',').map(s => s.trim()).filter(Boolean);
+            }
+          }
+          attributes[key] = val;
+        }
+      });
+      return { attributes, body };
+    }
+
+    function sanitizeHtmlContent(html) {
+      if (!html) return '';
+      // 1. Tiền xử lý loại bỏ script, on* handlers và javascript:
+      let cleaned = html.replace(/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '');
+      cleaned = cleaned.replace(/\bon\w+\s*=\s*(['"]).*?\1/gi, '');
+      cleaned = cleaned.replace(/\bon\w+\s*=\s*[^>\s]+/gi, '');
+      cleaned = cleaned.replace(/javascript\s*:/gi, '');
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(cleaned, 'text/html');
+      
+      // 2. Loại bỏ hoàn toàn các thẻ độc hại
+      const forbiddenTags = 'script, iframe, object, embed, applet, meta, link, form, button, base';
+      doc.querySelectorAll(forbiddenTags).forEach(el => el.remove());
+      
+      // 3. Làm sạch sâu các thuộc tính
+      const allEls = doc.querySelectorAll('*');
+      for (const el of allEls) {
+        const tag = el.tagName.toUpperCase();
+        if (tag === 'INPUT' && el.getAttribute('type') !== 'checkbox') {
+          el.remove();
+          continue;
+        }
+        const attrs = Array.from(el.attributes);
+        for (const attr of attrs) {
+          const name = attr.name.toLowerCase();
+          const val = attr.value.trim();
+          
+          if (name.startsWith('on')) {
+            el.removeAttribute(attr.name);
+            continue;
+          }
+          if (name === 'href' || name === 'src' || name === 'action' || name === 'formaction') {
+            const lowerVal = val.toLowerCase().replace(/[\x00-\x20]/g, '');
+            if (lowerVal.startsWith('javascript:') || lowerVal.startsWith('vbscript:')) {
+              el.removeAttribute(attr.name);
+            } else if (lowerVal.startsWith('data:')) {
+              if (!lowerVal.startsWith('data:image/')) {
+                el.removeAttribute(attr.name);
+              }
+            }
+          }
+        }
+      }
+      return doc.body.innerHTML;
+    }
+
+    function formatInlineMarkdown(str) {
+      if (!str) return '';
+      let s = str.replace(/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '');
+      s = s.replace(/\bon\w+\s*=\s*(['"]).*?\1/gi, '');
+      s = s.replace(/\bon\w+\s*=\s*[^>\s]+/gi, '');
+      s = s.replace(/javascript\s*:/gi, '');
+      let res = escapeHtml(s);
+
+      // Bold & Italic ***text*** or ___text___
+      res = res.replace(/(\*\*\*|___)(.*?)\1/g, '<strong><em>$2</em></strong>');
+
+      // Bold **text** or __text__
+      res = res.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
+
+      // Italic *text* or _text_
+      res = res.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+
+      // Strikethrough ~~text~~
+      res = res.replace(/~~(.*?)~~/g, '<del>$1</del>');
+
+      // Images ![alt](url)
+      res = res.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+        const cleanUrl = url.trim().replace(/^javascript:/i, '');
+        return `<img src="${cleanUrl}" alt="${alt}" loading="lazy" style="max-width:100%;height:auto;border-radius:6px;display:block;margin:1em auto;">`;
+      });
+
+      // Links [text](url)
+      res = res.replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
+        const cleanUrl = url.trim().replace(/^javascript:/i, '');
+        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+      });
+
+      return res;
+    }
+
+    function parseMarkdownToHtml(mdText) {
+      if (!mdText) return '';
+      let src = mdText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      
+      const { attributes, body } = parseYamlFrontMatter(src);
+      src = body;
+
+      // Bảo vệ code blocks
+      const codeBlocks = [];
+      src = src.replace(/```([a-zA-Z0-9_\-\+]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+        const idx = codeBlocks.length;
+        codeBlocks.push({ lang: lang || 'text', code });
+        return `@@@CODEBLOCK_${idx}@@@`;
+      });
+
+      // Bảo vệ inline code
+      const inlineCodes = [];
+      src = src.replace(/`([^`\n]+)`/g, (match, code) => {
+        const idx = inlineCodes.length;
+        inlineCodes.push(code);
+        return `@@@INLINECODE_${idx}@@@`;
+      });
+
+      // Nhận diện tables
+      const tables = [];
+      src = src.replace(/((?:^|\n)\|[^\n]+\|\r?\n\|[-:\s|]+\|(?:(?:\r?\n\|[^\n]+\|)+))/g, (match) => {
+        const trimmed = match.trim();
+        const rows = trimmed.split('\n').map(r => r.trim()).filter(Boolean);
+        if (rows.length >= 2) {
+          const idx = tables.length;
+          tables.push(rows);
+          return `\n@@@TABLE_${idx}@@@\n`;
+        }
+        return match;
+      });
+
+      const lines = src.split('\n');
+      const output = [];
+      let inList = false;
+      let listType = null;
+      let inBlockquote = false;
+      let bqContent = [];
+
+      function closeList() {
+        if (inList) {
+          output.push(`</${listType}>`);
+          inList = false;
+          listType = null;
+        }
+      }
+
+      function closeBlockquote() {
+        if (inBlockquote) {
+          output.push(`<blockquote>${bqContent.join('<br>')}</blockquote>`);
+          inBlockquote = false;
+          bqContent = [];
+        }
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+
+        const tableMatch = line.match(/^@@@TABLE_(\d+)@@@$/);
+        if (tableMatch) {
+          closeList();
+          closeBlockquote();
+          const tIdx = parseInt(tableMatch[1], 10);
+          const rows = tables[tIdx];
+          if (rows && rows.length >= 2) {
+            const headerCols = rows[0].replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+            const alignCols = rows[1].replace(/^\||\|$/g, '').split('|').map(c => {
+              c = c.trim();
+              if (c.startsWith(':') && c.endsWith(':')) return 'center';
+              if (c.endsWith(':')) return 'right';
+              return 'left';
+            });
+
+            let tableHtml = '<div class="overflow-x-auto"><table class="markdown-table"><thead><tr>';
+            headerCols.forEach((col, cIdx) => {
+              const align = alignCols[cIdx] || 'left';
+              tableHtml += `<th style="text-align:${align}">${formatInlineMarkdown(col)}</th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+
+            for (let r = 2; r < rows.length; r++) {
+              const rowCols = rows[r].replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+              tableHtml += '<tr>';
+              headerCols.forEach((_, cIdx) => {
+                const cell = rowCols[cIdx] !== undefined ? rowCols[cIdx] : '';
+                const align = alignCols[cIdx] || 'left';
+                tableHtml += `<td style="text-align:${align}">${formatInlineMarkdown(cell)}</td>`;
+              });
+              tableHtml += '</tr>';
+            }
+            tableHtml += '</tbody></table></div>';
+            output.push(tableHtml);
+          }
+          continue;
+        }
+
+        const codeMatch = line.match(/^@@@CODEBLOCK_(\d+)@@@$/);
+        if (codeMatch) {
+          closeList();
+          closeBlockquote();
+          const cIdx = parseInt(codeMatch[1], 10);
+          const b = codeBlocks[cIdx];
+          if (b) {
+            output.push(`<pre class="overflow-x-auto"><code class="language-${escapeHtml(b.lang)}">${escapeHtml(b.code)}</code></pre>`);
+          }
+          continue;
+        }
+
+        const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+        if (headingMatch) {
+          closeList();
+          closeBlockquote();
+          const level = headingMatch[1].length;
+          const hText = headingMatch[2].trim();
+          const hId = 'section-' + hText.toLowerCase().replace(/[^\w\u00C0-\u1EF9]+/g, '-').replace(/^-+|-+$/g, '');
+          output.push(`<h${level} id="${hId}">${formatInlineMarkdown(hText)}</h${level}>`);
+          continue;
+        }
+
+        if (/^(\-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+          closeList();
+          closeBlockquote();
+          output.push('<hr>');
+          continue;
+        }
+
+        if (line.startsWith('>')) {
+          closeList();
+          inBlockquote = true;
+          bqContent.push(formatInlineMarkdown(line.replace(/^>\s?/, '')));
+          continue;
+        } else {
+          closeBlockquote();
+        }
+
+        const ulMatch = line.match(/^(\s*)([-*+])\s+(.+)$/);
+        if (ulMatch) {
+          if (!inList || listType !== 'ul') {
+            closeList();
+            output.push('<ul>');
+            inList = true;
+            listType = 'ul';
+          }
+          let itemContent = ulMatch[3];
+          const taskMatch = itemContent.match(/^\[([ xX])\]\s+(.+)$/);
+          if (taskMatch) {
+            const isChecked = taskMatch[1].toLowerCase() === 'x';
+            output.push(`<li class="task-list-item"><input type="checkbox" disabled ${isChecked ? 'checked' : ''}> ${formatInlineMarkdown(taskMatch[2])}</li>`);
+          } else {
+            output.push(`<li>${formatInlineMarkdown(itemContent)}</li>`);
+          }
+          continue;
+        }
+
+        const olMatch = line.match(/^(\s*)(\d+)\.\s+(.+)$/);
+        if (olMatch) {
+          if (!inList || listType !== 'ol') {
+            closeList();
+            output.push('<ol>');
+            inList = true;
+            listType = 'ol';
+          }
+          output.push(`<li>${formatInlineMarkdown(olMatch[3])}</li>`);
+          continue;
+        }
+
+        if (line.trim() === '') {
+          closeList();
+          closeBlockquote();
+          continue;
+        }
+
+        closeList();
+        closeBlockquote();
+        output.push(`<p>${formatInlineMarkdown(line)}</p>`);
+      }
+
+      closeList();
+      closeBlockquote();
+
+      let htmlResult = output.join('\n');
+
+      htmlResult = htmlResult.replace(/@@@INLINECODE_(\d+)@@@/g, (match, idx) => {
+        const code = inlineCodes[parseInt(idx, 10)];
+        return `<code>${escapeHtml(code || '')}</code>`;
+      });
+
+      htmlResult = htmlResult.replace(/@@@CODEBLOCK_(\d+)@@@/g, (match, idx) => {
+        const b = codeBlocks[parseInt(idx, 10)];
+        return b ? `<pre class="overflow-x-auto"><code class="language-${escapeHtml(b.lang)}">${escapeHtml(b.code)}</code></pre>` : '';
+      });
+
+      return sanitizeHtmlContent(htmlResult);
+    }
+
+    function convertPlainTextToHtmlDocument(txt) {
+      if (!txt) return '';
+      const escaped = escapeHtml(txt);
+      const urlLinked = escaped.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 underline underline-offset-2">$1</a>');
+      const paragraphs = urlLinked.split(/\r?\n\s*\r?\n/);
+      const bodyHtml = paragraphs.map(p => {
+        const withBr = p.replace(/\r?\n/g, '<br>');
+        return `<p class="mb-4 leading-relaxed">${withBr}</p>`;
+      }).join('\n');
+      return sanitizeHtmlContent(bodyHtml);
+    }
+
+    function wrapIntoReadingDocument(bodyHtml, title) {
+      const cleanTitle = escapeHtml(title || 'Bài học');
+      return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${cleanTitle}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 1.5rem 1rem;
+      line-height: 1.8;
+      color: inherit;
+      background: transparent;
+      word-break: break-word;
+    }
+    article.reader-content {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.5em;
+      margin-bottom: 0.6em;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    h1 { font-size: 1.8rem; border-bottom: 1px solid rgba(125,125,125,0.2); padding-bottom: 0.3em; }
+    h2 { font-size: 1.45rem; border-bottom: 1px solid rgba(125,125,125,0.15); padding-bottom: 0.25em; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+    p { margin-top: 0; margin-bottom: 1.2em; }
+    a { color: #4F46E5; text-decoration: underline; text-underline-offset: 2px; }
+    blockquote {
+      margin: 1.2em 0;
+      padding: 0.5em 1em;
+      border-left: 4px solid #4F46E5;
+      background: rgba(79, 70, 229, 0.05);
+      border-radius: 0 4px 4px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      padding: 0.2em 0.4em;
+      background: rgba(125, 125, 125, 0.12);
+      border-radius: 4px;
+    }
+    pre {
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.06);
+      overflow-x: auto;
+      font-size: 0.88em;
+      line-height: 1.5;
+      margin: 1.2em 0;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+      margin: 1em auto;
+    }
+    table.markdown-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1.2em 0;
+      font-size: 0.95em;
+    }
+    table.markdown-table th, table.markdown-table td {
+      border: 1px solid rgba(125, 125, 125, 0.25);
+      padding: 0.6em 0.9em;
+      text-align: left;
+    }
+    table.markdown-table th {
+      background: rgba(125, 125, 125, 0.08);
+      font-weight: 600;
+    }
+    table.markdown-table tr:nth-child(even) {
+      background: rgba(125, 125, 125, 0.03);
+    }
+    ul, ol {
+      padding-left: 1.6em;
+      margin-bottom: 1.2em;
+    }
+    li { margin-bottom: 0.35em; }
+    li.task-list-item {
+      list-style-type: none;
+      margin-left: -1.3em;
+    }
+    li.task-list-item input[type="checkbox"] {
+      margin-right: 0.5em;
+      vertical-align: middle;
+    }
+    hr {
+      border: 0;
+      height: 1px;
+      background: rgba(125, 125, 125, 0.2);
+      margin: 2em 0;
+    }
+  </style>
+</head>
+<body>
+  <article class="reader-content">
+    ${bodyHtml}
+  </article>
+</body>
+</html>`;
+    }
+
+    // =========================================================================
+    // SECTION: LỊCH THI & KẾ HOẠCH HỌC TẬP (STUDY PLANS ENGINE & TESTING)
+    // =========================================================================
+
+    function calculateStudyPlanSchedule(plan, todayStr, completedLessonIds) {
+      const today = parseDateOnly(todayStr);
+      const examDate = parseDateOnly(plan.examDate || todayStr);
+      const bufferDays = typeof plan.bufferDays === 'number' && plan.bufferDays >= 0 ? plan.bufferDays : 2;
+
+      // Tính số ngày còn lại đến kỳ thi
+      const msDiff = examDate.getTime() - today.getTime();
+      const daysLeft = Math.round(msDiff / (1000 * 60 * 60 * 24));
+      const isTodayExam = (daysLeft === 0);
+      const isPast = (daysLeft < 0);
+
+      const allLessonIds = Array.isArray(plan.lessonIds) ? [...plan.lessonIds] : [];
+      const completedSet = new Set(Array.isArray(completedLessonIds) ? completedLessonIds : []);
+      const uncompletedLessonIds = allLessonIds.filter(id => !completedSet.has(id));
+
+      const totalCount = allLessonIds.length;
+      const completedCount = totalCount - uncompletedLessonIds.length;
+      const percentCompleted = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 100;
+
+      // Danh sách thứ trong tuần được học (0: CN, 1: T2, ..., 6: T7)
+      const studyDays = Array.isArray(plan.studyDays) && plan.studyDays.length > 0 ? plan.studyDays : [1, 2, 3, 4, 5, 6, 0];
+
+      // Hạn chót học bài mới trước khi thi (trừ đi ngày đệm)
+      let deadlineDate = new Date(examDate);
+      deadlineDate.setDate(deadlineDate.getDate() - bufferDays);
+      if (deadlineDate < today) {
+        deadlineDate = new Date(examDate);
+      }
+
+      // Tìm tất cả các ngày hợp lệ từ today đến deadlineDate
+      const availableDates = [];
+      if (!isPast) {
+        let cur = new Date(today);
+        const limit = deadlineDate >= today ? deadlineDate : today;
+        while (cur <= limit) {
+          const jsDay = cur.getDay();
+          if (studyDays.includes(jsDay)) {
+            availableDates.push(formatDateOnly(cur));
+          }
+          cur.setDate(cur.getDate() + 1);
+        }
+
+        // Nếu không có ngày nào khớp trước deadline, fallback tới ngày thi
+        if (availableDates.length === 0 && deadlineDate < examDate) {
+          cur = new Date(today);
+          while (cur <= examDate) {
+            const jsDay = cur.getDay();
+            if (studyDays.includes(jsDay)) {
+              availableDates.push(formatDateOnly(cur));
+            }
+            cur.setDate(cur.getDate() + 1);
+          }
+        }
+
+        // Nếu vẫn không có ngày nào hoặc hôm nay là ngày thi
+        if (availableDates.length === 0) {
+          availableDates.push(todayStr);
+        }
+      }
+
+      // Phân bổ đều số bài chưa học vào các ngày còn lại (chênh lệch tối đa 1 bài)
+      const scheduleByDate = {};
+      const N = uncompletedLessonIds.length;
+      const D = availableDates.length;
+
+      if (D > 0 && N > 0) {
+        const base = Math.floor(N / D);
+        const rem = N % D;
+        let lessonIdx = 0;
+        availableDates.forEach((dStr, idx) => {
+          const count = base + (idx < rem ? 1 : 0);
+          scheduleByDate[dStr] = uncompletedLessonIds.slice(lessonIdx, lessonIdx + count);
+          lessonIdx += count;
+        });
+      } else if (D > 0) {
+        availableDates.forEach(dStr => {
+          scheduleByDate[dStr] = [];
+        });
+      }
+
+      const todayLessons = scheduleByDate[todayStr] || [];
+      const todayRequiredCount = todayLessons.length;
+
+      // Tính trạng thái tiến độ (Pace)
+      const createdDate = parseDateOnly((plan.createdAt || todayStr).slice(0, 10));
+      const totalPlanDays = Math.max(1, Math.round((examDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
+      const elapsedDays = Math.max(0, Math.round((today.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
+      const expectedCompleted = totalPlanDays > 0 ? Math.min(totalCount, Math.round((elapsedDays / totalPlanDays) * totalCount)) : totalCount;
+
+      const paceDiff = completedCount - expectedCompleted;
+      let paceStatus = 'on_track';
+      let paceText = 'Đúng tiến độ';
+      if (paceDiff > 0) {
+        paceStatus = 'ahead';
+        paceText = `Nhanh hơn ${paceDiff} bài`;
+      } else if (paceDiff < 0) {
+        paceStatus = 'behind';
+        paceText = `Chậm ${Math.abs(paceDiff)} bài`;
+      }
+
+      const dailyCap = plan.dailyCap ? parseInt(plan.dailyCap, 10) : null;
+      const avgPerDay = D > 0 ? (N / D) : N;
+      const isOverloaded = avgPerDay > 10 || (dailyCap && avgPerDay > dailyCap);
+
+      return {
+        daysLeft,
+        isTodayExam,
+        isPast,
+        totalLessons: totalCount,
+        completedCount,
+        percentCompleted,
+        todayLessons,
+        todayRequiredCount,
+        scheduleByDate,
+        availableDaysCount: D,
+        avgPerDay: Math.round(avgPerDay * 10) / 10,
+        paceStatus,
+        paceText,
+        isOverloaded
+      };
+    }
+
+    function parseDateOnly(str) {
+      if (!str) return new Date();
+      const parts = str.slice(0, 10).split('-');
+      return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    }
+
+    function formatDateOnly(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Console Test Helper cho người dùng và tester
+    window.__testPlan = function(scenarioName) {
+      console.log(`=== BẮT ĐẦU TEST KẾ HOẠCH HỌC TẬP [${scenarioName || 'TẤT CẢ'}] ===`);
+      const today = getTodayDateStr();
+
+      // Test 1: 30 bài / 15 ngày
+      const d15 = new Date(); d15.setDate(d15.getDate() + 15);
+      const p1 = { id: 'test1', name: 'Thi 15 ngày', examDate: formatDateOnly(d15), bufferDays: 0, studyDays: [1,2,3,4,5,6,0], lessonIds: Array.from({length: 30}, (_, i) => `l_${i+1}`) };
+      const s1 = calculateStudyPlanSchedule(p1, today, []);
+      console.log("Ca 1 (30 bài / 15 ngày):", { daysLeft: s1.daysLeft, todayReq: s1.todayRequiredCount, avgPerDay: s1.avgPerDay, isOverloaded: s1.isOverloaded });
+
+      // Test 2: Quá tải 100 bài trong 5 ngày
+      const d5 = new Date(); d5.setDate(d5.getDate() + 5);
+      const p2 = { id: 'test2', name: 'Quá tải', examDate: formatDateOnly(d5), bufferDays: 0, studyDays: [1,2,3,4,5,6,0], lessonIds: Array.from({length: 100}, (_, i) => `l_${i+1}`) };
+      const s2 = calculateStudyPlanSchedule(p2, today, []);
+      console.log("Ca 2 (100 bài / 5 ngày):", { daysLeft: s2.daysLeft, avgPerDay: s2.avgPerDay, isOverloaded: s2.isOverloaded });
+
+      // Test 3: Ngày thi là hôm nay
+      const p3 = { id: 'test3', name: 'Thi hôm nay', examDate: today, bufferDays: 0, studyDays: [1,2,3,4,5,6,0], lessonIds: ['l_1', 'l_2'] };
+      const s3 = calculateStudyPlanSchedule(p3, today, []);
+      console.log("Ca 3 (Thi hôm nay):", { isTodayExam: s3.isTodayExam, daysLeft: s3.daysLeft, todayReq: s3.todayRequiredCount });
+
+      // Test 4: Chỉ học T2/T4/T6
+      const d20 = new Date(); d20.setDate(d20.getDate() + 14);
+      const p4 = { id: 'test4', name: 'Học T2/T4/T6', examDate: formatDateOnly(d20), bufferDays: 1, studyDays: [1, 3, 5], lessonIds: Array.from({length: 12}, (_, i) => `l_${i+1}`) };
+      const s4 = calculateStudyPlanSchedule(p4, today, []);
+      console.log("Ca 4 (Chỉ học T2, T4, T6):", { availableDays: Object.keys(s4.scheduleByDate), avgPerDay: s4.avgPerDay });
+
+      console.log("=== HOÀN TẤT TEST: Tất cả ca biên hoạt động chính xác! ===");
+      return { s1, s2, s3, s4 };
+    };
+
+    function loadLocalStudyPlans() {
+      try {
+        const raw = localStorage.getItem('local_study_plans');
+        if (!raw) {
+          state.studyPlans = [];
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          state.studyPlans = parsed.map(plan => ({
+            id: plan.id || ('plan_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6)),
+            name: plan.name || 'Kỳ thi mới',
+            examDate: plan.examDate || getTodayDateStr(),
+            bufferDays: typeof plan.bufferDays === 'number' ? plan.bufferDays : 2,
+            lessonIds: Array.isArray(plan.lessonIds) ? plan.lessonIds : [],
+            studyDays: Array.isArray(plan.studyDays) && plan.studyDays.length > 0 ? plan.studyDays : [1, 2, 3, 4, 5, 6, 0],
+            dailyCap: plan.dailyCap ? parseInt(plan.dailyCap, 10) : null,
+            color: plan.color || '#4F46E5',
+            createdAt: plan.createdAt || new Date().toISOString(),
+            updatedAt: plan.updatedAt || new Date().toISOString(),
+            completedLessonIds: Array.isArray(plan.completedLessonIds) ? plan.completedLessonIds : [],
+            reminderTime: plan.reminderTime || '19:00',
+            reminderEnabled: plan.reminderEnabled !== false,
+            archived: !!plan.archived,
+            deleted: !!plan.deleted
+          })).filter(p => !p.deleted);
+        } else {
+          state.studyPlans = [];
+        }
+      } catch (e) {
+        console.warn("Lỗi đọc local_study_plans:", e);
+        state.studyPlans = [];
+      }
+    }
+
+    function saveLocalStudyPlans() {
+      try {
+        localStorage.setItem('local_study_plans', JSON.stringify(state.studyPlans || []));
+      } catch (e) {
+        console.warn("Lỗi lưu local_study_plans:", e);
+      }
+    }
+
+
     async function handleFilesSelected(files) {
-      const validFiles = files.filter(f => f.name.endsWith('.html') || f.name.endsWith('.htm'));
+      const validFiles = files.filter(f => {
+        const lower = f.name.toLowerCase();
+        return lower.endsWith('.html') || lower.endsWith('.htm') || lower.endsWith('.md') || lower.endsWith('.markdown') || lower.endsWith('.txt');
+      });
       if (validFiles.length === 0) {
-        showToast("Vui lòng chỉ chọn file .html hoặc .htm", "error");
+        showToast("Vui lòng chọn file .html, .htm, .md hoặc .txt", "error");
         return;
       }
 
       for (const file of validFiles) {
         try {
-          // // FIX-2: Đọc file an toàn với BOM & Charset, không làm hỏng ký tự tiếng Việt
-          const content = await readFileContentSafely(file);
+          // Đọc file an toàn với BOM & Charset, hỗ trợ HTML, MD, TXT
+          const rawContent = await readFileContentSafely(file);
+          const lowerName = file.name.toLowerCase();
+          let finalHtmlContent = '';
           let extractedTitle = '';
-          const titleMatch = content.match(/<title[^>]*>([^<]+)<\/title>/i);
-          if (titleMatch && titleMatch[1]) {
-            extractedTitle = titleMatch[1].trim();
-          } else {
-            const h1Match = content.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-            if (h1Match && h1Match[1]) {
-              extractedTitle = h1Match[1].trim();
+          let detectedSourceType = 'html';
+
+          if (lowerName.endsWith('.md') || lowerName.endsWith('.markdown')) {
+            detectedSourceType = 'markdown';
+            const { attributes, body } = parseYamlFrontMatter(rawContent);
+            if (attributes.title) {
+              extractedTitle = attributes.title;
             } else {
-              extractedTitle = file.name.replace(/\.[^/.]+$/, "");
+              const h1Match = body.match(/^#\s+(.+)$/m);
+              extractedTitle = h1Match ? h1Match[1].trim() : file.name.replace(/\.[^/.]+$/, "");
+            }
+            const bodyHtml = parseMarkdownToHtml(rawContent);
+            finalHtmlContent = wrapIntoReadingDocument(bodyHtml, extractedTitle);
+          } else if (lowerName.endsWith('.txt')) {
+            detectedSourceType = 'text';
+            extractedTitle = file.name.replace(/\.[^/.]+$/, "");
+            const bodyHtml = convertPlainTextToHtmlDocument(rawContent);
+            finalHtmlContent = wrapIntoReadingDocument(bodyHtml, extractedTitle);
+          } else {
+            detectedSourceType = 'html';
+            finalHtmlContent = rawContent;
+            const titleMatch = rawContent.match(/<title[^>]*>([^<]+)<\/title>/i);
+            if (titleMatch && titleMatch[1]) {
+              extractedTitle = titleMatch[1].trim();
+            } else {
+              const h1Match = rawContent.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+              extractedTitle = h1Match ? h1Match[1].trim() : file.name.replace(/\.[^/.]+$/, "");
             }
           }
 
@@ -12893,7 +13962,9 @@
             fileName: file.name,
             title: finalTitle,
             description: '',
-            content: content,
+            content: finalHtmlContent,
+            sourceType: detectedSourceType,
+            rawSource: rawContent,
             order: (state.lessons.length + state.stagedUploadFiles.length + 1)
           });
         } catch (err) {
@@ -12921,8 +13992,11 @@
       stagedList.innerHTML = state.stagedUploadFiles.map((item) => `
         <div class="p-3 rounded-card border border-[#E6E6E1] dark:border-[#262C36] bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50 space-y-2">
           <div class="flex items-center justify-between text-xs">
-            <span class="font-mono text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate mr-2">${item.fileName}</span>
-            <button class="text-red-500 hover:text-red-700 text-xs py-1" data-remove-staged="${item.id}">Xóa</button>
+            <div class="flex items-center gap-1.5 min-w-0 mr-2">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${item.sourceType === 'markdown' ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' : item.sourceType === 'text' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'}">${item.sourceType || 'HTML'}</span>
+              <span class="font-mono text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate">${item.fileName}</span>
+            </div>
+            <button class="text-red-500 hover:text-red-700 text-xs py-1 cursor-pointer" data-remove-staged="${item.id}">Xóa</button>
           </div>
           <div>
             <label class="text-[11px] font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Tên hiển thị:</label>
@@ -13015,6 +14089,8 @@
             description: normalizeNFC(item.description) || '',
             originalFileName: item.fileName,
             htmlContent: item.content,
+            sourceType: item.sourceType || 'html',
+            rawSource: item.rawSource || '',
             isCompleted: false,
             isFavorite: false,
             order: item.order || (state.lessons.length + 1),
@@ -13427,6 +14503,27 @@
           state.learningData.analytics.dailyActivity[today].lessonsCompleted = 
             (state.learningData.analytics.dailyActivity[today].lessonsCompleted || 0) + 1;
           saveLearningData();
+
+          // Đồng bộ trạng thái đã học với các Kế hoạch học tập
+          if (state.studyPlans && state.studyPlans.length > 0) {
+            let planChanged = false;
+            state.studyPlans.forEach(p => {
+              if (p.lessonIds && p.lessonIds.includes(cur.id)) {
+                if (!p.completedLessonIds) p.completedLessonIds = [];
+                if (targetState && !p.completedLessonIds.includes(cur.id)) {
+                  p.completedLessonIds.push(cur.id);
+                  planChanged = true;
+                } else if (!targetState && p.completedLessonIds.includes(cur.id)) {
+                  p.completedLessonIds = p.completedLessonIds.filter(id => id !== cur.id);
+                  planChanged = true;
+                }
+              }
+            });
+            if (planChanged) {
+              saveLocalStudyPlans();
+              renderStudyPlanWidget();
+            }
+          }
         } catch (_) {}
       }
     });
@@ -14033,7 +15130,8 @@
           swipeEnabled: state.swipeEnabled,
           readingSettings: typeof getEffectiveReadingSettings === 'function' ? getEffectiveReadingSettings() : null
         },
-        learningData: state.learningData
+        learningData: state.learningData,
+        studyPlans: state.studyPlans || []
       };
       const blob = new Blob([JSON.stringify(exportObject, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -14073,6 +15171,11 @@
         if (data.tags) {
           state.tags = data.tags;
           saveLocalTags();
+        }
+        if (data.studyPlans && Array.isArray(data.studyPlans)) {
+          state.studyPlans = data.studyPlans;
+          saveLocalStudyPlans();
+          renderStudyPlanWidget();
         }
         if (data.trash) {
           state.trash = data.trash;
@@ -14228,6 +15331,939 @@
     }
 
     // // FIX: Khởi động app an toàn, hỗ trợ cả trường hợp DOM đã tải xong trước khi module thực thi
+    
+    // =========================================================================
+    // SECTION: PASTE / EDIT MODAL CONTROLLERS & HIGHLIGHT PRESERVATION (v4.4.0)
+    // =========================================================================
+
+    const pasteContentModal = document.getElementById('pasteContentModal');
+    const pasteLessonTitleInput = document.getElementById('pasteLessonTitleInput');
+    const pasteLessonCategorySelect = document.getElementById('pasteLessonCategorySelect');
+    const pasteRawTextarea = document.getElementById('pasteRawTextarea');
+    const pastePreviewContent = document.getElementById('pastePreviewContent');
+    const pasteEditorPane = document.getElementById('pasteEditorPane');
+    const pastePreviewPane = document.getElementById('pastePreviewPane');
+    const tabComposeMode = document.getElementById('tabComposeMode');
+    const tabPreviewMode = document.getElementById('tabPreviewMode');
+    const btnFormatMarkdown = document.getElementById('btnFormatMarkdown');
+    const btnFormatPlainText = document.getElementById('btnFormatPlainText');
+    const pasteStatsChars = document.getElementById('pasteStatsChars');
+    const pasteStatsWords = document.getElementById('pasteStatsWords');
+    const pasteStatsSize = document.getElementById('pasteStatsSize');
+    const pasteSizeWarning = document.getElementById('pasteSizeWarning');
+
+    let pasteModalMode = 'create'; // 'create' hoặc 'edit'
+    let editingLessonIdForPaste = null;
+    let selectedPasteFormat = 'markdown'; // 'markdown' hoặc 'text'
+
+    function updatePasteFormatUI(format) {
+      selectedPasteFormat = format;
+      if (format === 'markdown') {
+        btnFormatMarkdown.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+        btnFormatPlainText.className = 'px-2.5 py-1 rounded-md text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition';
+        pasteRawTextarea.placeholder = 'Dán nội dung bài học hoặc viết Markdown tại đây...\n\nVí dụ:\n# Tiêu đề bài học\nNội dung chính với **in đậm**, *in nghiêng*, bảng biểu hoặc code block...';
+      } else {
+        btnFormatPlainText.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+        btnFormatMarkdown.className = 'px-2.5 py-1 rounded-md text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition';
+        pasteRawTextarea.placeholder = 'Dán văn bản thuần túy (.txt) tại đây...\nCác đoạn văn cách nhau bằng dòng trống sẽ tự động phân tách đẹp mắt.';
+      }
+      updatePasteLivePreview();
+    }
+
+    if (btnFormatMarkdown) btnFormatMarkdown.addEventListener('click', () => updatePasteFormatUI('markdown'));
+    if (btnFormatPlainText) btnFormatPlainText.addEventListener('click', () => updatePasteFormatUI('text'));
+
+    function updatePasteLivePreview() {
+      const text = pasteRawTextarea ? pasteRawTextarea.value : '';
+      if (selectedPasteFormat === 'markdown') {
+        pastePreviewContent.innerHTML = parseMarkdownToHtml(text) || '<p class="text-[#6E6B65] dark:text-[#979DA8] italic">Chưa có nội dung xem trước...</p>';
+      } else {
+        pastePreviewContent.innerHTML = convertPlainTextToHtmlDocument(text) || '<p class="text-[#6E6B65] dark:text-[#979DA8] italic">Chưa có nội dung xem trước...</p>';
+      }
+    }
+
+    if (tabComposeMode && tabPreviewMode) {
+      tabComposeMode.addEventListener('click', () => {
+        tabComposeMode.className = 'px-3 py-1 rounded-md text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+        tabPreviewMode.className = 'px-3 py-1 rounded-md text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition';
+        pasteEditorPane.classList.remove('hidden');
+        pastePreviewPane.classList.add('hidden');
+      });
+
+      tabPreviewMode.addEventListener('click', () => {
+        tabPreviewMode.className = 'px-3 py-1 rounded-md text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+        tabComposeMode.className = 'px-3 py-1 rounded-md text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition';
+        pasteEditorPane.classList.add('hidden');
+        pastePreviewPane.classList.remove('hidden');
+        updatePasteLivePreview();
+      });
+    }
+
+    if (pasteRawTextarea) {
+      pasteRawTextarea.addEventListener('input', () => {
+        const text = pasteRawTextarea.value;
+        const charCount = text.length;
+        const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const sizeBytes = new Blob([text]).size;
+        const sizeKb = Math.round(sizeBytes / 1024 * 10) / 10;
+
+        if (pasteStatsChars) pasteStatsChars.innerText = `${charCount} ký tự`;
+        if (pasteStatsWords) pasteStatsWords.innerText = `${wordCount} từ`;
+        if (pasteStatsSize) pasteStatsSize.innerText = `${sizeKb} KB`;
+
+        if (sizeBytes > 5 * 1024 * 1024) {
+          if (pasteSizeWarning) pasteSizeWarning.classList.remove('hidden');
+        } else {
+          if (pasteSizeWarning) pasteSizeWarning.classList.add('hidden');
+        }
+      });
+    }
+
+    function openPasteModal(mode = 'create', lesson = null) {
+      pasteModalMode = mode;
+      editingLessonIdForPaste = lesson ? lesson.id : null;
+
+      // Populate categories select
+      if (pasteLessonCategorySelect) {
+        pasteLessonCategorySelect.innerHTML = (state.categories || []).map(cat => `
+          <option value="${cat.id}" ${(lesson && lesson.categoryId === cat.id) || (!lesson && state.activeCategoryId === cat.id) ? 'selected' : ''}>
+            ${escapeHtml(cat.title)}
+          </option>
+        `).join('');
+      }
+
+      if (mode === 'edit' && lesson) {
+        document.getElementById('pasteModalTitle').innerText = "Sửa nội dung bài học";
+        document.getElementById('pasteModalSubtitle').innerText = "Cập nhật bài và giữ nguyên vị trí ghi chú/highlight";
+        pasteLessonTitleInput.value = lesson.title || '';
+        pasteRawTextarea.value = lesson.rawSource || '';
+        updatePasteFormatUI(lesson.sourceType === 'text' ? 'text' : 'markdown');
+      } else {
+        document.getElementById('pasteModalTitle').innerText = "Dán văn bản & Soạn bài học";
+        document.getElementById('pasteModalSubtitle').innerText = "Hỗ trợ Markdown chuẩn & văn bản thô tiếng Việt";
+        pasteLessonTitleInput.value = '';
+        pasteRawTextarea.value = '';
+        updatePasteFormatUI('markdown');
+      }
+
+      // Reset tabs
+      if (tabComposeMode) tabComposeMode.click();
+      if (pasteRawTextarea) pasteRawTextarea.dispatchEvent(new Event('input'));
+      showModalAnimated(pasteContentModal);
+    }
+
+    const btnOpenPaste = document.getElementById('btnOpenPasteModal');
+    if (btnOpenPaste) {
+      btnOpenPaste.addEventListener('click', () => {
+        hideModalAnimated(document.getElementById('uploadModal'));
+        openPasteModal('create');
+      });
+    }
+
+    const btnClosePaste = document.getElementById('btnClosePasteModal');
+    const btnCancelPaste = document.getElementById('btnCancelPasteModal');
+    function checkBeforeClosePasteModal() {
+      if (pasteRawTextarea && pasteRawTextarea.value.trim().length > 100) {
+        if (!confirm("Bạn có chắc muốn đóng? Nội dung chưa lưu sẽ bị mất.")) {
+          return;
+        }
+      }
+      hideModalAnimated(pasteContentModal);
+    }
+    if (btnClosePaste) btnClosePaste.addEventListener('click', checkBeforeClosePasteModal);
+    if (btnCancelPaste) btnCancelPaste.addEventListener('click', checkBeforeClosePasteModal);
+
+    const btnSavePaste = document.getElementById('btnSavePasteModal');
+    if (btnSavePaste) {
+      btnSavePaste.addEventListener('click', async () => {
+        const title = normalizeNFC((pasteLessonTitleInput.value || '').trim());
+        const raw = pasteRawTextarea.value;
+        const catId = pasteLessonCategorySelect.value || state.activeCategoryId || (state.categories[0] ? state.categories[0].id : null);
+
+        if (!raw.trim()) {
+          showToast("Vui lòng nhập nội dung bài học", "error");
+          return;
+        }
+
+        const sizeBytes = new Blob([raw]).size;
+        if (sizeBytes > 5 * 1024 * 1024) {
+          if (!confirm("Nội dung vượt quá 5MB. Việc lưu có thể chậm hoặc tốn bộ nhớ. Bạn có muốn tiếp tục?")) {
+            return;
+          }
+        }
+
+        let bodyHtml = '';
+        if (selectedPasteFormat === 'markdown') {
+          bodyHtml = parseMarkdownToHtml(raw);
+        } else {
+          bodyHtml = convertPlainTextToHtmlDocument(raw);
+        }
+
+        const finalTitle = title || (selectedPasteFormat === 'markdown' ? (raw.match(/^#\s+(.+)$/m)?.[1]?.trim() || 'Bài học Markdown') : 'Bài học văn bản');
+        const finalDocument = wrapIntoReadingDocument(bodyHtml, finalTitle);
+
+        if (pasteModalMode === 'edit' && editingLessonIdForPaste) {
+          // Lưu sửa bài cũ và bảo toàn highlight/ghi chú
+          const curLesson = state.lessons.find(l => l.id === editingLessonIdForPaste);
+          if (curLesson) {
+            // Kiểm tra và neo giữ highlight
+            const hlList = (state.learningData && state.learningData.highlights && state.learningData.highlights[editingLessonIdForPaste]) || [];
+            hlList.forEach(hl => {
+              const needle = (hl.text || '').trim();
+              if (needle && !finalDocument.includes(needle)) {
+                hl.orphaned = true; // Đánh dấu mồ côi nếu văn bản thay đổi không khớp
+              } else {
+                hl.orphaned = false;
+              }
+            });
+            saveLearningData();
+
+            await updateLessonField(editingLessonIdForPaste, {
+              title: finalTitle,
+              categoryId: catId,
+              htmlContent: finalDocument,
+              rawSource: raw,
+              sourceType: selectedPasteFormat,
+              fileSize: finalDocument.length,
+              updatedAt: new Date().toISOString()
+            });
+            await putLessonContentToIDB(editingLessonIdForPaste, finalDocument);
+
+            showToast("Đã cập nhật bài học thành công!");
+            hideModalAnimated(pasteContentModal);
+            renderCategoriesAndLessons();
+            if (state.activeLessonId === editingLessonIdForPaste) {
+              renderActiveLesson();
+            }
+          }
+        } else {
+          // Tạo bài học mới
+          const newId = 'lesson_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+          const newLesson = {
+            id: newId,
+            categoryId: catId,
+            title: finalTitle,
+            description: '',
+            originalFileName: selectedPasteFormat === 'markdown' ? `${finalTitle}.md` : `${finalTitle}.txt`,
+            htmlContent: finalDocument,
+            sourceType: selectedPasteFormat,
+            rawSource: raw,
+            isCompleted: false,
+            isFavorite: false,
+            order: (state.lessons.length + 1),
+            updatedAt: new Date().toISOString(),
+            fileSize: finalDocument.length
+          };
+
+          try {
+            await putLessonContentToIDB(newId, finalDocument);
+            upsertLesson(newLesson);
+            saveLocalLessons();
+
+            state.activeLessonId = newId;
+            state.activeCategoryId = catId;
+            renderCategoriesAndLessons();
+            renderActiveLesson();
+
+            showToast("Đã tạo và lưu bài học thành công!");
+            hideModalAnimated(pasteContentModal);
+          } catch (e) {
+            console.error("Lỗi lưu bài học:", e);
+            if (e.name === 'QuotaExceededError') {
+              showToast("Bộ nhớ trình duyệt đã đầy (QuotaExceededError)!", "error");
+            } else {
+              showToast("Lỗi khi lưu bài học", "error");
+            }
+          }
+        }
+      });
+    }
+
+    // Nút Sửa nội dung bài học (.md / .txt) trong readerMoreMenuDropdown
+    const btnEditLesson = document.getElementById('btnEditLessonContent');
+    if (btnEditLesson) {
+      btnEditLesson.addEventListener('click', () => {
+        closeReaderMoreMenu();
+        const cur = state.lessons.find(l => l.id === state.activeLessonId);
+        if (cur) {
+          openPasteModal('edit', cur);
+        }
+      });
+    }
+
+    // Cập nhật hiển thị nút Sửa nội dung bài khi render bài học
+    function updateEditLessonButtonVisibility() {
+      const cur = state.lessons.find(l => l.id === state.activeLessonId);
+      if (btnEditLesson) {
+        if (cur && (cur.sourceType === 'markdown' || cur.sourceType === 'text')) {
+          btnEditLesson.classList.remove('hidden');
+        } else {
+          btnEditLesson.classList.add('hidden');
+        }
+      }
+    }
+
+    // =========================================================================
+    // SECTION: LỊCH THI & KẾ HOẠCH UI CONTROLLERS (v4.4.0)
+    // =========================================================================
+
+    const studyPlanModal = document.getElementById('studyPlanModal');
+    const createStudyPlanModal = document.getElementById('createStudyPlanModal');
+    let selectedActivePlanId = null;
+
+    function renderStudyPlanWidget() {
+      const sidebarWidget = document.getElementById('sidebarStudyPlanWidget');
+      const emptyWidget = document.getElementById('emptyStudyPlanWidget');
+      const headerBadge = document.getElementById('planHeaderBadge');
+
+      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
+      if (activePlans.length === 0) {
+        if (sidebarWidget) sidebarWidget.classList.add('hidden');
+        if (emptyWidget) emptyWidget.classList.add('hidden');
+        if (headerBadge) headerBadge.classList.add('hidden');
+        return;
+      }
+
+      // Lấy kế hoạch gần nhất
+      const todayStr = getTodayDateStr();
+      const plan = activePlans[0];
+      const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+
+      if (headerBadge) {
+        if (sched.todayRequiredCount > 0) headerBadge.classList.remove('hidden');
+        else headerBadge.classList.add('hidden');
+      }
+
+      // Sidebar widget
+      if (sidebarWidget) {
+        sidebarWidget.classList.remove('hidden');
+        const nameEl = document.getElementById('sidebarPlanName');
+        const badgeEl = document.getElementById('sidebarPlanCountdownBadge');
+        const todayEl = document.getElementById('sidebarPlanTodayText');
+        const progTextEl = document.getElementById('sidebarPlanProgressText');
+        const barEl = document.getElementById('sidebarPlanProgressBar');
+
+        if (nameEl) nameEl.innerText = plan.name;
+        if (badgeEl) {
+          if (sched.isTodayExam) {
+            badgeEl.innerText = "Hôm nay thi!";
+            badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white font-mono animate-pulse";
+          } else if (sched.isPast) {
+            badgeEl.innerText = "Đã kết thúc";
+            badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-500 text-white font-mono";
+          } else {
+            badgeEl.innerText = `còn ${sched.daysLeft} ngày`;
+            badgeEl.className = `px-1.5 py-0.5 rounded text-[10px] font-bold ${sched.daysLeft <= 3 ? 'bg-rose-600' : sched.daysLeft <= 7 ? 'bg-amber-600' : 'bg-indigo-600'} text-white font-mono`;
+          }
+        }
+        if (todayEl) todayEl.innerText = `Hôm nay: ${sched.todayRequiredCount} bài`;
+        if (progTextEl) progTextEl.innerText = `${sched.completedCount}/${sched.totalLessons}`;
+        if (barEl) barEl.style.width = `${sched.percentCompleted}%`;
+
+        sidebarWidget.onclick = () => openStudyPlanModal(plan.id);
+      }
+
+      // Empty State widget
+      if (emptyWidget) {
+        emptyWidget.classList.remove('hidden');
+        const eTitle = document.getElementById('emptyPlanTitle');
+        const eDays = document.getElementById('emptyPlanDaysCount');
+        const eToday = document.getElementById('emptyPlanTodayTarget');
+        const ePace = document.getElementById('emptyPlanPaceBadge');
+        const eBar = document.getElementById('emptyPlanProgressBar');
+        const eBtn = document.getElementById('btnOpenPlanDetailFromEmpty');
+
+        if (eTitle) eTitle.innerText = plan.name;
+        if (eDays) eDays.innerText = sched.daysLeft >= 0 ? sched.daysLeft : 0;
+        if (eToday) eToday.innerText = `Hôm nay cần học: ${sched.todayRequiredCount} bài`;
+        if (ePace) {
+          ePace.innerText = sched.paceText;
+          ePace.className = `text-[10px] px-1.5 py-0.5 rounded font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'}`;
+        }
+        if (eBar) eBar.style.width = `${sched.percentCompleted}%`;
+        if (eBtn) eBtn.onclick = () => openStudyPlanModal(plan.id);
+      }
+    }
+
+    function openStudyPlanModal(planId = null) {
+      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
+      if (activePlans.length === 0) {
+        document.getElementById('planDetailContentArea').classList.add('hidden');
+        document.getElementById('planTabsContainer').classList.add('hidden');
+        document.getElementById('planEmptyPlaceholder').classList.remove('hidden');
+      } else {
+        document.getElementById('planDetailContentArea').classList.remove('hidden');
+        document.getElementById('planTabsContainer').classList.remove('hidden');
+        document.getElementById('planEmptyPlaceholder').classList.add('hidden');
+        selectedActivePlanId = planId || (activePlans[0] ? activePlans[0].id : null);
+        renderStudyPlanDetail(selectedActivePlanId);
+      }
+      showModalAnimated(studyPlanModal);
+    }
+
+    function renderStudyPlanDetail(planId) {
+      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
+      const plan = activePlans.find(p => p.id === planId) || activePlans[0];
+      if (!plan) return;
+      selectedActivePlanId = plan.id;
+
+      // Render Tabs
+      const tabsEl = document.getElementById('planTabsContainer');
+      if (tabsEl) {
+        tabsEl.innerHTML = activePlans.map(p => `
+          <button type="button" class="touch-target px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${p.id === plan.id ? 'bg-indigo-600 text-white shadow-xs' : 'bg-black/5 dark:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8]'}" data-plan-tab="${p.id}">
+            ${escapeHtml(p.name)}
+          </button>
+        `).join('');
+
+        tabsEl.querySelectorAll('[data-plan-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            renderStudyPlanDetail(btn.getAttribute('data-plan-tab'));
+          });
+        });
+      }
+
+      const todayStr = getTodayDateStr();
+      const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+
+      // Vòng đếm ngược & Thông tin
+      const ringDays = document.getElementById('planRingDaysNumber');
+      const ringTop = document.getElementById('planRingLabelTop');
+      const ringBottom = document.getElementById('planRingLabelBottom');
+      const ringCircle = document.getElementById('planRingProgress');
+      const nameEl = document.getElementById('planDetailName');
+      const metaEl = document.getElementById('planDetailMeta');
+      const paceEl = document.getElementById('planPaceStatusBadge');
+      const ratioEl = document.getElementById('planProgressRatio');
+      const barEl = document.getElementById('planDetailProgressBar');
+
+      if (nameEl) nameEl.innerText = plan.name;
+      if (metaEl) metaEl.innerText = `Ngày thi: ${plan.examDate} • Đệm ôn tập: ${plan.bufferDays || 2} ngày • Phân bổ: ~${sched.avgPerDay} bài/ngày`;
+
+      if (sched.isTodayExam) {
+        if (ringTop) ringTop.innerText = "HÔM NAY";
+        if (ringDays) ringDays.innerText = "THI";
+        if (ringBottom) ringBottom.innerText = "Chúc may mắn!";
+        if (ringCircle) {
+          ringCircle.setAttribute("class", "text-rose-500 transition-all duration-700 animate-pulse");
+          ringCircle.style.strokeDashoffset = "0";
+        }
+      } else if (sched.isPast) {
+        if (ringTop) ringTop.innerText = "KỲ THI";
+        if (ringDays) ringDays.innerText = "QUA";
+        if (ringBottom) ringBottom.innerText = "Đã kết thúc";
+        if (ringCircle) {
+          ringCircle.setAttribute("class", "text-gray-400 transition-all duration-700");
+          ringCircle.style.strokeDashoffset = "0";
+        }
+      } else {
+        if (ringTop) ringTop.innerText = "CÒN";
+        if (ringDays) ringDays.innerText = sched.daysLeft;
+        if (ringBottom) ringBottom.innerText = "ngày";
+        if (ringCircle) {
+          ringCircle.setAttribute("class", `${sched.daysLeft <= 3 ? "text-rose-500" : sched.daysLeft <= 7 ? "text-amber-500" : "text-indigo-600 dark:text-indigo-400"} transition-all duration-700`);
+          // circumference is 2 * PI * 42 ~= 263.89
+          const maxDays = Math.max(sched.daysLeft, 30);
+          const offset = 263.89 * (1 - (sched.daysLeft / maxDays));
+          ringCircle.style.strokeDashoffset = String(Math.max(0, Math.min(263.89, offset)));
+        }
+      }
+
+      if (paceEl) {
+        paceEl.innerText = sched.paceText;
+        paceEl.className = `px-2 py-0.5 rounded-full text-[11px] font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300'}`;
+      }
+
+      if (ratioEl) ratioEl.innerText = `${sched.completedCount} / ${sched.totalLessons} bài (${sched.percentCompleted}%)`;
+      if (barEl) barEl.style.width = `${sched.percentCompleted}%`;
+
+      // Khối "Hôm nay cần học"
+      const countEl = document.getElementById('planTodayLessonsCount');
+      const listEl = document.getElementById('planTodayLessonsList');
+      if (countEl) countEl.innerText = sched.todayRequiredCount;
+
+      if (listEl) {
+        if (sched.todayLessons.length === 0) {
+          listEl.innerHTML = `
+            <div class="p-4 rounded-xl border border-dashed border-[#E7E5DF] dark:border-[#262C36] text-center text-[#6E6B65] dark:text-[#979DA8] space-y-1">
+              <svg class="w-6 h-6 mx-auto text-emerald-500"><use href="#icon-check-circle-2"></use></svg>
+              <p class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8]">Tuyệt vời! Bạn không còn bài nào cần học hôm nay.</p>
+              <p class="text-[11px]">Hãy nghỉ ngơi hoặc ôn lại các bài đã học để duy trì phong độ.</p>
+            </div>
+          `;
+        } else {
+          listEl.innerHTML = sched.todayLessons.map(lId => {
+            const les = state.lessons.find(l => l.id === lId);
+            if (!les) return '';
+            const cat = state.categories.find(c => c.id === les.categoryId);
+            const isCompleted = (plan.completedLessonIds || []).includes(lId) || !!les.isCompleted;
+
+            return `
+              <div class="p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] hover:border-indigo-400 dark:hover:border-indigo-600 transition flex items-center justify-between gap-2.5">
+                <button type="button" class="plan-toggle-check touch-target w-7 h-7 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] flex items-center justify-center shrink-0 text-emerald-600 transition cursor-pointer" data-plan-lesson-id="${lId}" title="${isCompleted ? 'Đánh dấu chưa học' : 'Đánh dấu đã học'}">
+                  ${isCompleted ? '<svg class="w-4 h-4"><use href="#icon-check-circle-2"></use></svg>' : '<svg class="w-4 h-4 text-gray-300 dark:text-gray-600"><use href="#icon-circle"></use></svg>'}
+                </button>
+                <div class="min-w-0 flex-1 cursor-pointer plan-open-lesson" data-open-lesson-id="${lId}">
+                  <h6 class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8] truncate ${isCompleted ? 'line-through opacity-60' : ''}">${escapeHtml(les.title)}</h6>
+                  <p class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">${cat ? escapeHtml(cat.title) : 'Chưa phân mục'} • ${les.sourceType ? les.sourceType.toUpperCase() : 'HTML'}</p>
+                </div>
+                <button type="button" class="touch-target px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 transition plan-open-lesson" data-open-lesson-id="${lId}">
+                  Mở bài
+                </button>
+              </div>
+            `;
+          }).join('');
+
+          listEl.querySelectorAll('.plan-toggle-check').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const lId = btn.getAttribute('data-plan-lesson-id');
+              await togglePlanLessonDone(plan.id, lId);
+            });
+          });
+
+          listEl.querySelectorAll('.plan-open-lesson').forEach(el => {
+            el.addEventListener('click', () => {
+              const lId = el.getAttribute('data-open-lesson-id');
+              selectLesson(lId);
+              hideModalAnimated(studyPlanModal);
+            });
+          });
+        }
+      }
+
+      // Lịch tuần 7 ngày
+      const weekGrid = document.getElementById('planWeekScheduleGrid');
+      if (weekGrid) {
+        const dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        const next7Days = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() + i);
+          const dStr = formatDateOnly(d);
+          const jsDay = d.getDay();
+          const items = sched.scheduleByDate[dStr] || [];
+          next7Days.push({
+            dateStr: dStr,
+            label: i === 0 ? 'Hôm nay' : (i === 1 ? 'Ngày mai' : dayLabels[jsDay]),
+            count: items.length,
+            isExam: dStr === plan.examDate
+          });
+        }
+
+        weekGrid.innerHTML = next7Days.map(item => `
+          <div class="p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] flex flex-col justify-between ${item.isExam ? 'ring-2 ring-rose-500' : ''}">
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="font-bold text-[#1C1917] dark:text-[#EDECE8]">${item.label}</span>
+              <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${item.dateStr.slice(5)}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold ${item.count > 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-[#6E6B65] dark:text-[#979DA8]'}">
+                ${item.isExam ? 'NGÀY THI' : `${item.count} bài`}
+              </span>
+              ${item.count === 0 && !item.isExam ? '<span class="text-[10px] text-gray-400">Nghỉ</span>' : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Lưới tháng nhỏ
+      const monthGrid = document.getElementById('planMiniMonthGrid');
+      if (monthGrid) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let gridHtml = `
+          <div class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] mb-2">Tháng ${month + 1}/${year}</div>
+          <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] mb-1">
+            <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center text-xs">
+        `;
+
+        for (let i = 0; i < firstDay; i++) {
+          gridHtml += `<div></div>`;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const isToday = (dStr === todayStr);
+          const isExam = (dStr === plan.examDate);
+          const hasLessons = (sched.scheduleByDate[dStr] || []).length > 0;
+
+          let cellClass = "p-1 rounded-md text-[11px] relative flex flex-col items-center justify-center h-7 ";
+          if (isExam) {
+            cellClass += "bg-rose-500 text-white font-bold ";
+          } else if (isToday) {
+            cellClass += "bg-indigo-600 text-white font-bold ";
+          } else if (hasLessons) {
+            cellClass += "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold ";
+          } else {
+            cellClass += "text-[#6E6B65] dark:text-[#979DA8] ";
+          }
+
+          gridHtml += `
+            <div class="${cellClass}">
+              <span>${d}</span>
+              ${hasLessons && !isToday && !isExam ? '<span class="w-1 h-1 rounded-full bg-indigo-600 block -mt-0.5"></span>' : ''}
+            </div>
+          `;
+        }
+
+        gridHtml += `</div>`;
+        monthGrid.innerHTML = gridHtml;
+      }
+
+      // Xóa kế hoạch
+      const btnDelete = document.getElementById('btnDeleteCurrentPlan');
+      if (btnDelete) {
+        btnDelete.onclick = () => {
+          if (confirm(`Bạn có chắc muốn xóa kế hoạch "${plan.name}" không?`)) {
+            const deletedPlanBackup = { ...plan };
+            state.studyPlans = (state.studyPlans || []).filter(p => p.id !== plan.id);
+            saveLocalStudyPlans();
+            renderStudyPlanWidget();
+            showToast("Đã xóa kế hoạch", "info", {
+              actionText: "Hoàn tác",
+              onAction: () => {
+                state.studyPlans.push(deletedPlanBackup);
+                saveLocalStudyPlans();
+                renderStudyPlanWidget();
+                openStudyPlanModal(deletedPlanBackup.id);
+                showToast("Đã khôi phục kế hoạch");
+              }
+            });
+            openStudyPlanModal();
+          }
+        };
+      }
+
+      // Sửa kế hoạch
+      const btnEdit = document.getElementById('btnEditCurrentPlan');
+      if (btnEdit) {
+        btnEdit.onclick = () => {
+          openCreatePlanModal(plan);
+        };
+      }
+    }
+
+    async function togglePlanLessonDone(planId, lessonId) {
+      const plan = (state.studyPlans || []).find(p => p.id === planId);
+      if (!plan) return;
+      if (!plan.completedLessonIds) plan.completedLessonIds = [];
+
+      const isDone = plan.completedLessonIds.includes(lessonId);
+      if (isDone) {
+        plan.completedLessonIds = plan.completedLessonIds.filter(id => id !== lessonId);
+        await updateLessonField(lessonId, { isCompleted: false });
+      } else {
+        plan.completedLessonIds.push(lessonId);
+        await updateLessonField(lessonId, { isCompleted: true });
+
+        // Tăng dailyActivity một lần duy nhất
+        const today = getTodayDateStr();
+        if (!state.learningData.analytics.dailyActivity[today]) {
+          state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+        }
+        state.learningData.analytics.dailyActivity[today].lessonsCompleted = 
+          (state.learningData.analytics.dailyActivity[today].lessonsCompleted || 0) + 1;
+        saveLearningData();
+        shootMicroConfetti(document.getElementById('studyPlanModal') || document.body);
+      }
+
+      plan.updatedAt = new Date().toISOString();
+      saveLocalStudyPlans();
+      renderStudyPlanDetail(plan.id);
+      renderStudyPlanWidget();
+      renderCategoriesAndLessons();
+    }
+
+    function openCreatePlanModal(editingPlan = null) {
+      const titleEl = document.getElementById('createPlanModalTitle');
+      const nameInput = document.getElementById('planInputName');
+      const dateInput = document.getElementById('planInputExamDate');
+      const bufferInput = document.getElementById('planInputBufferDays');
+      const capInput = document.getElementById('planInputDailyCap');
+      const lessonPicker = document.getElementById('planLessonPickerList');
+
+      let selectedLessonIds = new Set(editingPlan && Array.isArray(editingPlan.lessonIds) ? editingPlan.lessonIds : []);
+      let activeStudyDays = editingPlan && Array.isArray(editingPlan.studyDays) ? [...editingPlan.studyDays] : [1, 2, 3, 4, 5, 6, 0];
+
+      if (editingPlan) {
+        if (titleEl) titleEl.innerText = "Chỉnh sửa Kế hoạch & Lịch thi";
+        if (nameInput) nameInput.value = editingPlan.name || '';
+        if (dateInput) dateInput.value = editingPlan.examDate || '';
+        if (bufferInput) bufferInput.value = typeof editingPlan.bufferDays === 'number' ? editingPlan.bufferDays : 2;
+        if (capInput) capInput.value = editingPlan.dailyCap || '';
+      } else {
+        if (titleEl) titleEl.innerText = "Tạo Kế hoạch & Lịch thi mới";
+        if (nameInput) nameInput.value = '';
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 14);
+        if (dateInput) dateInput.value = formatDateOnly(defaultDate);
+        if (bufferInput) bufferInput.value = 2;
+        if (capInput) capInput.value = '';
+        // Mặc định chọn tất cả bài học
+        selectedLessonIds = new Set((state.lessons || []).map(l => l.id));
+      }
+
+      // Render Day toggles
+      const dayTogglesContainer = document.getElementById('planStudyDaysToggles');
+      if (dayTogglesContainer) {
+        dayTogglesContainer.querySelectorAll('.plan-day-toggle').forEach(btn => {
+          const dayNum = parseInt(btn.getAttribute('data-day'), 10);
+          if (activeStudyDays.includes(dayNum)) {
+            btn.className = 'plan-day-toggle active px-3 py-1.5 rounded-lg border border-indigo-600 bg-indigo-600 text-white text-xs font-semibold cursor-pointer';
+          } else {
+            btn.className = 'plan-day-toggle px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#6E6B65] dark:text-[#979DA8] text-xs font-semibold cursor-pointer';
+          }
+
+          btn.onclick = () => {
+            if (activeStudyDays.includes(dayNum)) {
+              if (activeStudyDays.length > 1) {
+                activeStudyDays = activeStudyDays.filter(d => d !== dayNum);
+                btn.className = 'plan-day-toggle px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#6E6B65] dark:text-[#979DA8] text-xs font-semibold cursor-pointer';
+              } else {
+                showToast("Cần giữ lại ít nhất 1 ngày học trong tuần", "warning");
+              }
+            } else {
+              activeStudyDays.push(dayNum);
+              btn.className = 'plan-day-toggle active px-3 py-1.5 rounded-lg border border-indigo-600 bg-indigo-600 text-white text-xs font-semibold cursor-pointer';
+            }
+            updateLivePlanCalc();
+          };
+        });
+      }
+
+      // Render Lesson picker grouped by category
+      function renderPickerLessons() {
+        if (!lessonPicker) return;
+        lessonPicker.innerHTML = (state.categories || []).map(cat => {
+          const catLessons = (state.lessons || []).filter(l => l.categoryId === cat.id);
+          if (catLessons.length === 0) return '';
+          return `
+            <div class="mb-2">
+              <div class="font-bold text-[11px] text-[#6E6B65] dark:text-[#979DA8] mb-1 flex items-center justify-between">
+                <span>${escapeHtml(cat.title)}</span>
+                <button type="button" class="text-indigo-600 dark:text-indigo-400 text-[10px] hover:underline" data-pick-cat="${cat.id}">Chọn cả mục</button>
+              </div>
+              <div class="space-y-1 pl-1">
+                ${catLessons.map(l => `
+                  <label class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+                    <input type="checkbox" class="rounded text-indigo-600 focus:ring-0 plan-lesson-checkbox" value="${l.id}" ${selectedLessonIds.has(l.id) ? 'checked' : ''} />
+                    <span class="text-xs text-[#1C1917] dark:text-[#EDECE8] truncate flex-1">${escapeHtml(l.title)}</span>
+                    <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${l.sourceType ? l.sourceType.toUpperCase() : 'HTML'}</span>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        lessonPicker.querySelectorAll('.plan-lesson-checkbox').forEach(cb => {
+          cb.addEventListener('change', () => {
+            if (cb.checked) selectedLessonIds.add(cb.value);
+            else selectedLessonIds.delete(cb.value);
+            updateLivePlanCalc();
+          });
+        });
+
+        lessonPicker.querySelectorAll('[data-pick-cat]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const catId = btn.getAttribute('data-pick-cat');
+            const catLessons = (state.lessons || []).filter(l => l.categoryId === catId);
+            catLessons.forEach(l => selectedLessonIds.add(l.id));
+            renderPickerLessons();
+            updateLivePlanCalc();
+          });
+        });
+
+        const countEl = document.getElementById('planSelectedLessonCount');
+        if (countEl) countEl.innerText = selectedLessonIds.size;
+      }
+
+      renderPickerLessons();
+
+      const btnSelectAll = document.getElementById('btnSelectAllPlanLessons');
+      if (btnSelectAll) {
+        btnSelectAll.onclick = () => {
+          (state.lessons || []).forEach(l => selectedLessonIds.add(l.id));
+          renderPickerLessons();
+          updateLivePlanCalc();
+        };
+      }
+
+      const btnDeselectAll = document.getElementById('btnDeselectAllPlanLessons');
+      if (btnDeselectAll) {
+        btnDeselectAll.onclick = () => {
+          selectedLessonIds.clear();
+          renderPickerLessons();
+          updateLivePlanCalc();
+        };
+      }
+
+      function updateLivePlanCalc() {
+        const countEl = document.getElementById('planSelectedLessonCount');
+        if (countEl) countEl.innerText = selectedLessonIds.size;
+
+        const dateVal = dateInput ? dateInput.value : '';
+        const bufVal = bufferInput ? parseInt(bufferInput.value, 10) || 0 : 2;
+        const capVal = capInput && capInput.value ? parseInt(capInput.value, 10) : null;
+        const boxEl = document.getElementById('planLiveCalculationBox');
+        const textEl = document.getElementById('planLiveCalculationText');
+
+        if (!dateVal) {
+          if (textEl) textEl.innerText = "Vui lòng chọn ngày thi.";
+          return;
+        }
+
+        const tempPlan = {
+          examDate: dateVal,
+          bufferDays: bufVal,
+          dailyCap: capVal,
+          studyDays: activeStudyDays,
+          lessonIds: Array.from(selectedLessonIds)
+        };
+        const todayStr = getTodayDateStr();
+        const sched = calculateStudyPlanSchedule(tempPlan, todayStr, []);
+
+        if (sched.isPast) {
+          if (boxEl) boxEl.className = "p-3 rounded-xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200";
+          if (textEl) textEl.innerText = "Ngày thi đã qua trong quá khứ! Vui lòng chọn một ngày trong tương lai.";
+        } else if (sched.isOverloaded) {
+          if (boxEl) boxEl.className = "p-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200";
+          if (textEl) textEl.innerText = `Cần ${sched.avgPerDay} bài/ngày, hơi nặng (${sched.totalLessons} bài trong ${sched.availableDaysCount} ngày học). Hãy dời ngày thi xa hơn hoặc bớt bài để đạt hiệu quả cao nhất.`;
+        } else {
+          if (boxEl) boxEl.className = "p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/60 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200";
+          if (textEl) textEl.innerText = `Kế hoạch hợp lý: Còn ${sched.daysLeft} ngày (${sched.availableDaysCount} ngày học), trung bình ~${sched.avgPerDay} bài/ngày.`;
+        }
+      }
+
+      if (dateInput) dateInput.addEventListener('change', updateLivePlanCalc);
+      if (bufferInput) bufferInput.addEventListener('input', updateLivePlanCalc);
+      if (capInput) capInput.addEventListener('input', updateLivePlanCalc);
+      updateLivePlanCalc();
+
+      // Nút Lưu Kế hoạch
+      const btnSavePlan = document.getElementById('btnSaveCreatePlanModal');
+      if (btnSavePlan) {
+        btnSavePlan.onclick = () => {
+          const name = normalizeNFC((nameInput.value || '').trim());
+          const dateVal = dateInput.value;
+          const bufVal = parseInt(bufferInput.value, 10) || 0;
+          const capVal = capInput.value ? parseInt(capInput.value, 10) : null;
+
+          if (!name) {
+            showToast("Vui lòng nhập tên kỳ thi / mục tiêu", "error");
+            return;
+          }
+          if (!dateVal) {
+            showToast("Vui lòng chọn ngày thi", "error");
+            return;
+          }
+          if (selectedLessonIds.size === 0) {
+            showToast("Vui lòng chọn ít nhất 1 bài học cho kế hoạch", "error");
+            return;
+          }
+
+          const todayStr = getTodayDateStr();
+          if (dateVal < todayStr) {
+            showToast("Ngày thi không thể ở trong quá khứ", "error");
+            return;
+          }
+
+          if (editingPlan) {
+            editingPlan.name = name;
+            editingPlan.examDate = dateVal;
+            editingPlan.bufferDays = bufVal;
+            editingPlan.dailyCap = capVal;
+            editingPlan.studyDays = activeStudyDays;
+            editingPlan.lessonIds = Array.from(selectedLessonIds);
+            editingPlan.updatedAt = new Date().toISOString();
+            showToast("Đã cập nhật kế hoạch học tập!");
+          } else {
+            const newPlan = {
+              id: 'plan_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+              name: name,
+              examDate: dateVal,
+              bufferDays: bufVal,
+              dailyCap: capVal,
+              studyDays: activeStudyDays,
+              lessonIds: Array.from(selectedLessonIds),
+              completedLessonIds: [],
+              color: '#4F46E5',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              reminderTime: '19:00',
+              reminderEnabled: true,
+              archived: false,
+              deleted: false
+            };
+            if (!state.studyPlans) state.studyPlans = [];
+            state.studyPlans.unshift(newPlan);
+            showToast("Đã tạo kế hoạch học tập mới!");
+          }
+
+          saveLocalStudyPlans();
+          hideModalAnimated(createStudyPlanModal);
+          renderStudyPlanWidget();
+          openStudyPlanModal(editingPlan ? editingPlan.id : state.studyPlans[0].id);
+        };
+      }
+
+      showModalAnimated(createStudyPlanModal);
+    }
+
+    const btnCloseCreatePlan = document.getElementById('btnCloseCreatePlanModal');
+    const btnCancelCreatePlan = document.getElementById('btnCancelCreatePlanModal');
+    if (btnCloseCreatePlan) btnCloseCreatePlan.onclick = () => hideModalAnimated(createStudyPlanModal);
+    if (btnCancelCreatePlan) btnCancelCreatePlan.onclick = () => hideModalAnimated(createStudyPlanModal);
+
+    const btnHeaderStudyPlan = document.getElementById('btnHeaderStudyPlan');
+    if (btnHeaderStudyPlan) btnHeaderStudyPlan.onclick = () => openStudyPlanModal();
+
+    const btnCloseStudyPlan = document.getElementById('btnCloseStudyPlanModal');
+    if (btnCloseStudyPlan) btnCloseStudyPlan.onclick = () => hideModalAnimated(studyPlanModal);
+
+    const btnOpenCreatePlan = document.getElementById('btnOpenCreatePlanModal');
+    if (btnOpenCreatePlan) btnOpenCreatePlan.onclick = () => openCreatePlanModal();
+
+    const btnEmptyCreate = document.getElementById('btnEmptyCreatePlan');
+    if (btnEmptyCreate) btnEmptyCreate.onclick = () => openCreatePlanModal();
+
+    // Nhắc nhở Notification hàng ngày
+    function checkStudyPlanDailyReminders() {
+      if (!state.studyPlans || state.studyPlans.length === 0) return;
+      const todayStr = getTodayDateStr();
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      let totalDueToday = 0;
+      state.studyPlans.forEach(plan => {
+        if (plan.deleted || plan.archived) return;
+        const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+        if (sched.todayRequiredCount > 0) totalDueToday += sched.todayRequiredCount;
+      });
+
+      if (totalDueToday > 0 && currentHour >= 19) {
+        const lastNotified = localStorage.getItem('last_plan_notified_date');
+        if (lastNotified !== todayStr) {
+          if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+              new Notification("Nhắc nhở học tập hôm nay", {
+                body: `Hôm nay bạn cần học ${totalDueToday} bài để kịp kế hoạch ôn thi.`,
+                icon: 'icon-192.png'
+              });
+              localStorage.setItem('last_plan_notified_date', todayStr);
+            } catch (_) {}
+          }
+        }
+      }
+    }
+
+
     async function bootApp() {
       try {
         initAuthAndData();
@@ -18236,7 +20272,28 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v4.3.0 - build 09/10/2026 10:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    
+    // Public API & Test Helpers
+    window.parseMarkdownToHtml = parseMarkdownToHtml;
+    window.convertPlainTextToHtmlDocument = convertPlainTextToHtmlDocument;
+    window.sanitizeHtmlContent = sanitizeHtmlContent;
+    window.parseYamlFrontMatter = parseYamlFrontMatter;
+    window.wrapIntoReadingDocument = wrapIntoReadingDocument;
+    window.calculateStudyPlanSchedule = calculateStudyPlanSchedule;
+    window.openPasteModal = openPasteModal;
+    window.openStudyPlanModal = openStudyPlanModal;
+    window.openCreatePlanModal = openCreatePlanModal;
+    window.togglePlanLessonDone = togglePlanLessonDone;
+    window.renderStudyPlanWidget = renderStudyPlanWidget;
+    window.renderStudyPlanDetail = renderStudyPlanDetail;
+    window.checkStudyPlanDailyReminders = checkStudyPlanDailyReminders;
+    window.saveLearningData = saveLearningData;
+    window.deleteLesson = deleteLesson;
+    window.getTodayDateStr = getTodayDateStr;
+    window.saveLocalStudyPlans = saveLocalStudyPlans;
+    window.formatDateOnly = formatDateOnly;
+
+    console.log("%c Thư viện Sách HTML v4.4.0 - build 09/10/2026 10:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
