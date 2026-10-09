@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.7.3';
+    const CURRENT_APP_VERSION = 'v4.8.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -213,7 +213,7 @@
           name: errName,
           message: errMsg,
           stack: errStack,
-          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.7.3',
+          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.8.0',
           url: window.location.href,
           userAgent: navigator.userAgent
         };
@@ -352,6 +352,8 @@
       --accent: #4F46E5;
       --accent-soft: rgba(79, 70, 229, 0.08);
       --highlight: #FEF3C7;
+      --ico-tint: rgba(79, 70, 229, 0.10);
+      --ico-spark: #6366f1;
       --reading-size: 16px;
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
@@ -359,7 +361,7 @@
       --sar: env(safe-area-inset-right, 0px);
     }
 
-    .dark {
+    .dark, html[data-theme="dark"] {
       --bg-app: #111317;
       --bg-card: #181B20;
       --bg-card-sub: #1F232B;
@@ -369,6 +371,30 @@
       --accent: #818CF8;
       --accent-soft: rgba(129, 140, 248, 0.12);
       --highlight: #78350F;
+      --ico-tint: rgba(129, 140, 248, 0.16);
+      --ico-spark: #a5b4fc;
+    }
+
+    @keyframes uploadFloatIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .upload-float-idle {
+      animation: uploadFloatIdle 3s ease-in-out infinite;
+    }
+
+    .caret {
+      animation: blink 1.1s steps(1) infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .upload-float-idle,
+      .caret {
+        animation: none !important;
+      }
     }
 
     /* ===== MOTION SYSTEM ===== */
@@ -3876,46 +3902,236 @@
     </div>
   </div>
 
-  <!-- MODAL: TẢI FILE VÀO THƯ VIỆN (BOTTOM SHEET TRÊN MOBILE) -->
-  <div id="uploadModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-card w-full max-w-2xl max-h-[85dvh] sm:max-h-[90dvh] overflow-y-auto overscroll-contain flex flex-col shadow-2xl pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
-      <div class="p-4 border-b border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-upload"></use></svg>
-          <h3 class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">Thêm bài học HTML vào thư viện</h3>
+  <!-- ========================================================================= -->
+  <!-- MODAL: THÊM BÀI HỌC VÀO THƯ VIỆN (EDITORIAL REDESIGN v4.8.0) -->
+  <!-- ========================================================================= -->
+  <div id="uploadModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle">
+    <!-- Nút ẩn tương thích ngược cho btnOpenPasteModal -->
+    <button id="btnOpenPasteModal" type="button" class="hidden" aria-hidden="true"></button>
+
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#252932] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[640px] max-h-[92vh] flex flex-col shadow-2xl overflow-hidden pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] transition-all">
+      
+      <!-- Thanh kéo trên mobile (<640px) -->
+      <div class="sm:hidden pt-2 pb-1 flex justify-center shrink-0">
+        <div class="w-12 h-1.5 rounded-full bg-[#E7E5DF] dark:bg-[#2A2E39]"></div>
+      </div>
+
+      <!-- 1. HEADER -->
+      <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#E7E5DF] dark:border-[#252932] flex items-center justify-between shrink-0 bg-[#FAF9F5]/70 dark:bg-[#111317]/70">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-center shrink-0 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true">
+            <!-- Icon thương hiệu (c): Sách mở & tia sáng -->
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7c2.6-1 5.2-1 9 1v11c-3.8-2-6.4-2-9-1z" fill="var(--ico-tint)"/>
+              <path d="M21 7c-2.6-1-5.2-1-9 1v11c3.8-2 6.4-2 9-1z" fill="var(--ico-tint)"/>
+              <path d="M19 1.5v4M17 3.5h4" stroke="var(--ico-spark)"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <h3 id="uploadModalTitle" class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-tight truncate">Thêm bài học vào thư viện</h3>
+            <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5 truncate">Hỗ trợ HTML, Markdown và văn bản thô.</p>
+          </div>
         </div>
-        <button id="btnCloseUploadModal" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2]" aria-label="Đóng modal">
-          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
+
+        <!-- Nút đóng (Esc) -->
+        <button id="btnCloseUploadModal" type="button" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" aria-label="Đóng hộp thoại (Esc)">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 5l10 10M15 5L5 15"/>
+          </svg>
         </button>
       </div>
 
-      <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4">
-        <div id="dropZone" class="border-2 border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] rounded-card p-5 sm:p-6 text-center cursor-pointer transition bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50">
-          <input type="file" id="htmlFilesInput" multiple accept=".html,.htm,.md,.markdown,.txt" class="hidden" />
-          <svg class="w-8 h-8 mx-auto mb-2 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-file-plus"></use></svg>
-          <p class="text-xs sm:text-sm font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Chạm vào đây để chọn file (.html, .md, .txt) hoặc kéo thả</p>
-          <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-0.5">Tải nhiều file Markdown, văn bản thô hoặc HTML cùng lúc</p>
-          <div class="mt-3 pt-2.5 border-t border-[#E6E6E1]/60 dark:border-[#262C36]/60 flex items-center justify-center">
-            <button id="btnOpenPasteModal" type="button" class="touch-target px-3.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/80 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition flex items-center gap-1.5 shadow-2xs">
-              <svg class="w-3.5 h-3.5"><use href="#icon-edit-3"></use></svg>
-              <span>Dán văn bản thô / Markdown</span>
+      <!-- 2. THANH CHỌN CÁCH NHẬP (SEGMENTED CONTROL, 2 TAB) -->
+      <div class="px-4 sm:px-6 pt-3.5 pb-2 shrink-0 bg-white dark:bg-[#161A20]">
+        <div class="relative flex items-center p-1 rounded-full bg-[#F4F2EB] dark:bg-[#1E222A] border border-[#E7E5DF] dark:border-[#2A2E39] select-none" role="tablist" aria-label="Phương thức nạp bài học">
+          <!-- Nút trượt (Slider Pill) -->
+          <div id="uploadTabSlider" class="absolute top-1 bottom-1 left-1 rounded-full bg-white dark:bg-[#2C313C] shadow-sm transition-transform duration-250 ease-out pointer-events-none" style="width: calc(50% - 4px); transform: translateX(0);"></div>
+          
+          <button id="tabBtnUpload" type="button" role="tab" aria-selected="true" aria-controls="tabContentUpload" tabindex="0" class="relative z-1 flex-1 py-1.5 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition text-indigo-600 dark:text-indigo-400 cursor-pointer">
+            <!-- Icon Tải file nhỏ -->
+            <svg viewBox="0 0 48 48" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 6h16l8 8v22a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z" fill="var(--ico-tint)"/>
+              <path d="M28 6v6a2 2 0 0 0 2 2h6"/>
+              <path d="M24 33V21"/><path d="M19 25.5l5-5 5 5"/>
+            </svg>
+            <span>Tải file</span>
+          </button>
+
+          <button id="tabBtnPaste" type="button" role="tab" aria-selected="false" aria-controls="tabContentPaste" tabindex="-1" class="relative z-1 flex-1 py-1.5 px-3 rounded-full text-xs font-medium flex items-center justify-center gap-2 transition text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] cursor-pointer">
+            <!-- Icon Dán văn bản nhỏ -->
+            <svg viewBox="0 0 48 48" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="30" height="33" rx="5" fill="var(--ico-tint)"/>
+              <rect x="17" y="4" width="14" height="9" rx="3" fill="currentColor" fill-opacity="0.1"/>
+              <path d="M16 23h16M16 29h16M16 35h8"/>
+            </svg>
+            <span>Dán văn bản</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PHẦN CUỘN THÂN HỘP THOẠI (TAB CONTENT + CHỜ LƯU) -->
+      <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-4" style="-webkit-overflow-scrolling: touch;">
+        
+        <!-- 3. TAB 1: TẢI FILE -->
+        <div id="tabContentUpload" role="tabpanel" aria-labelledby="tabBtnUpload" class="space-y-3 transition-all duration-200">
+          <!-- Vùng thả file duy nhất (~190px) -->
+          <div id="dropZone" tabindex="0" role="button" aria-label="Kéo thả hoặc chọn file từ thiết bị" class="group relative min-h-[185px] sm:min-h-[195px] flex flex-col items-center justify-center text-center p-5 border-[1.5px] border-dashed border-[#E7E5DF] dark:border-[#2A2E39] hover:border-indigo-500 dark:hover:border-indigo-400 rounded-2xl bg-[#FAF9F5]/70 dark:bg-[#13161C]/50 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 transition cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-[#161A20]">
+            <input type="file" id="htmlFilesInput" multiple accept=".html,.htm,.md,.markdown,.txt" class="hidden" />
+            
+            <!-- Icon Tải file lớn 48px với hiệu ứng nổi nhẹ lặp chậm (±3px, 3s) -->
+            <div id="dropZoneIcon" class="w-14 h-14 rounded-2xl bg-white dark:bg-[#1D212A] shadow-xs border border-[#E7E5DF]/70 dark:border-[#2A2E39]/70 flex items-center justify-center text-[#4F46E5] dark:text-[#818CF8] mb-3 upload-float-idle transition-transform duration-200">
+              <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 6h16l8 8v22a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z" fill="var(--ico-tint)"/>
+                <path d="M28 6v6a2 2 0 0 0 2 2h6"/>
+                <path d="M22 33V21"/><path d="M17 25.5l5-5 5 5"/>
+                <path d="M15 37h14" opacity=".45"/>
+                <circle cx="38" cy="8" r="2.2" fill="var(--ico-spark)" stroke="none"/>
+              </svg>
+            </div>
+
+            <p id="dropZonePrompt" class="text-sm font-semibold text-[#1C1917] dark:text-[#EDECE8]">Kéo thả file vào đây</p>
+            <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-1">
+              hoặc <span class="text-indigo-600 dark:text-indigo-400 font-semibold underline underline-offset-2">chọn từ thiết bị</span>
+            </p>
+          </div>
+
+          <!-- Hàng chip định dạng hỗ trợ & dòng gợi ý duy nhất -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-0.5 text-xs">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#2A2E39] font-mono text-[11px] text-[#1C1917] dark:text-[#EDECE8]">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#EA580C]"></span>.html
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#2A2E39] font-mono text-[11px] text-[#1C1917] dark:text-[#EDECE8]">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#EA580C]"></span>.htm
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#2A2E39] font-mono text-[11px] text-[#1C1917] dark:text-[#EDECE8]">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]"></span>.md
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#2A2E39] font-mono text-[11px] text-[#1C1917] dark:text-[#EDECE8]">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#6B7280]"></span>.txt
+              </span>
+            </div>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Chọn nhiều file cùng lúc · tối đa 5 MB mỗi file</p>
+          </div>
+        </div>
+
+        <!-- 4. TAB 2: DÁN VĂN BẢN -->
+        <div id="tabContentPaste" role="tabpanel" aria-labelledby="tabBtnPaste" class="hidden space-y-3 transition-all duration-200">
+          <!-- Tên bài học -->
+          <div>
+            <label for="pasteInputTitle" class="block text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Tên bài học</label>
+            <input type="text" id="pasteInputTitle" maxlength="300" placeholder="Tự lấy từ tiêu đề đầu tiên nếu để trống" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] bg-[#FAF9F5] dark:bg-[#13161C] text-[#1C1917] dark:text-[#EDECE8] placeholder-[#979DA8] focus:border-indigo-500 focus:outline-none transition" />
+          </div>
+
+          <!-- Thanh chọn loại nội dung & badge nhận diện -->
+          <div class="flex items-center justify-between gap-2 flex-wrap pt-0.5">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-medium text-[#6E6B65] dark:text-[#979DA8]">Loại nội dung:</span>
+              <div class="inline-flex rounded-lg border border-[#E7E5DF] dark:border-[#2A2E39] p-0.5 bg-[#FAF9F5] dark:bg-[#181B21]">
+                <button type="button" class="paste-format-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-white dark:bg-[#282D37] text-indigo-600 dark:text-indigo-400 shadow-2xs transition cursor-pointer" data-format="auto">Tự nhận diện</button>
+                <button type="button" class="paste-format-btn px-2 py-1 rounded-md text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition cursor-pointer" data-format="markdown">Markdown</button>
+                <button type="button" class="paste-format-btn px-2 py-1 rounded-md text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition cursor-pointer" data-format="text">Văn bản thô</button>
+                <button type="button" class="paste-format-btn px-2 py-1 rounded-md text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition cursor-pointer" data-format="html">HTML</button>
+              </div>
+            </div>
+
+            <!-- Badge tự phát hiện -->
+            <span id="detectedFormatBadge" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/40">
+              Đã nhận diện: Văn bản thô
+            </span>
+          </div>
+
+          <!-- Textarea soạn thảo lớn (tối thiểu 220px, tự giãn đến 40vh, font monospace) -->
+          <div class="space-y-1.5">
+            <div class="relative">
+              <textarea id="pasteInputTextarea" rows="8" placeholder="Dán nội dung bài học vào đây…" class="w-full min-h-[220px] max-h-[40vh] p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] text-xs sm:text-sm font-mono leading-relaxed focus:border-indigo-500 focus:outline-none resize-y transition"></textarea>
+            </div>
+            
+            <div class="flex items-center justify-between text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
+              <span id="pasteStatsLabel">0 ký tự · ~0 phút đọc</span>
+              <span class="text-[10px] opacity-75">Ctrl+Enter để thêm vào danh sách</span>
+            </div>
+          </div>
+
+          <!-- Khung xem trước kết xuất (Preview Pane) -->
+          <div id="pastePreviewContainer" class="hidden p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] bg-white dark:bg-[#15181F] max-h-52 overflow-y-auto text-xs leading-relaxed">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8] mb-2 pb-1 border-b border-[#E7E5DF]/60 dark:border-[#2A2E39]/60">Xem trước kết xuất</div>
+            <div id="pastePreviewHtml" class="prose dark:prose-invert max-w-none text-xs"></div>
+          </div>
+
+          <!-- Hàng nút bên dưới -->
+          <div class="flex items-center justify-between pt-1 gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
+              <button id="btnPasteFromClipboard" type="button" class="px-3 py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-1.5 cursor-pointer">
+                <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="5" y="4" width="10" height="13" rx="2"/>
+                  <path d="M8 2h4a1 1 0 0 1 1 1v1H7V3a1 1 0 0 1 1-1z"/>
+                </svg>
+                <span>Dán từ clipboard</span>
+              </button>
+
+              <button id="btnTogglePastePreview" type="button" class="px-3 py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
+                Xem trước
+              </button>
+            </div>
+
+            <button id="btnAddPastedToStaged" type="button" disabled class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:pointer-events-none text-white text-xs font-semibold shadow-xs transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+              <span>Thêm vào danh sách</span>
+              <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 4v12M4 10h12"/>
+              </svg>
             </button>
           </div>
-          <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] mt-1">Hỗ trợ chọn nhiều file cùng lúc</p>
         </div>
 
-        <div id="stagedFilesContainer" class="space-y-3 hidden">
+        <!-- 5. DANH SÁCH CHỜ LƯU (DÙNG CHUNG CHO CẢ 2 TAB) -->
+        <div id="stagedFilesContainer" class="hidden pt-3 border-t border-[#E7E5DF] dark:border-[#252932] space-y-2.5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">File chuẩn bị nạp (<span id="stagedCount">0</span>)</span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">Chờ lưu (<span id="stagedCount">0</span>)</span>
+              <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Kéo thẻ để đổi thứ tự lưu</span>
+            </div>
+            <button id="btnClearAllStaged" type="button" class="text-[11px] font-medium text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 p-1 transition cursor-pointer">
+              Xóa tất cả
+            </button>
           </div>
-          <div id="stagedFilesList" class="space-y-3 max-h-56 overflow-y-auto pr-1"></div>
+
+          <!-- Danh sách thẻ cuộn riêng -->
+          <div id="stagedFilesList" class="space-y-2 max-h-[28vh] sm:max-h-[32vh] overflow-y-auto pr-1"></div>
+        </div>
+
+      </div>
+
+      <!-- 6. CHỌN NƠI LƯU & 7. FOOTER CỐ ĐỊNH -->
+      <div class="border-t border-[#E7E5DF] dark:border-[#252932] bg-[#FAF9F5]/80 dark:bg-[#111317]/80 backdrop-blur-xs p-3.5 sm:p-4 shrink-0 space-y-3">
+        <!-- 6. Chọn nơi lưu -->
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <label for="uploadTargetCategorySelect" class="font-medium text-[#6E6B65] dark:text-[#979DA8] shrink-0">Lưu vào mục:</label>
+          <div class="flex-1 max-w-[280px] sm:max-w-[320px]">
+            <select id="uploadTargetCategorySelect" class="w-full px-2.5 py-1.5 text-xs rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] bg-white dark:bg-[#181B21] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none transition cursor-pointer"></select>
+          </div>
+        </div>
+
+        <!-- 7. Footer cố định -->
+        <div class="flex items-center justify-between gap-3 pt-1">
+          <!-- Trái: Tóm tắt bài & dung lượng -->
+          <div id="uploadSummaryStats" class="text-xs font-mono text-[#6E6B65] dark:text-[#979DA8]">
+            0 bài · 0 KB
+          </div>
+
+          <!-- Phải: Nút Hủy và Nút Lưu -->
+          <div class="flex items-center gap-2">
+            <button id="btnCancelUpload" type="button" class="px-3.5 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#2A2E39] text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
+              Hủy bỏ
+            </button>
+            <button id="btnConfirmUpload" type="button" disabled class="relative px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:pointer-events-none text-white text-xs font-semibold shadow-xs transition active:scale-95 flex items-center justify-center min-w-[130px] overflow-hidden cursor-pointer">
+              <span id="btnConfirmUploadProgress" class="absolute inset-0 bg-indigo-500/40 -translate-x-full transition-transform duration-300 pointer-events-none"></span>
+              <span id="btnConfirmUploadText" class="relative z-1">Lưu 0 bài học</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="p-3 sm:p-4 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-end gap-2 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/40 shrink-0">
-        <button id="btnCancelUpload" class="touch-target px-3.5 py-2 rounded-card border border-[#E6E6E1] dark:border-[#262C36] text-xs font-medium text-[#6B6B66]">Hủy bỏ</button>
-        <button id="btnConfirmUpload" class="touch-target px-4 py-2 rounded-card bg-[#4F46E5] text-white text-xs font-medium transition disabled:opacity-50" disabled>Lưu tất cả bài học</button>
-      </div>
     </div>
   </div>
 
@@ -15283,45 +15499,428 @@
     const stagedList = document.getElementById('stagedFilesList');
     const btnConfirmUpload = document.getElementById('btnConfirmUpload');
 
-    function openUploadModal() {
-      state.stagedUploadFiles = [];
-      stagedList.innerHTML = '';
-      stagedContainer.classList.add('hidden');
-      btnConfirmUpload.disabled = true;
-      showModalAnimated(uploadModal);
-      refreshIcons();
+    const tabBtnUpload = document.getElementById('tabBtnUpload');
+    const tabBtnPaste = document.getElementById('tabBtnPaste');
+    const uploadTabSlider = document.getElementById('uploadTabSlider');
+    const tabContentUpload = document.getElementById('tabContentUpload');
+    const tabContentPaste = document.getElementById('tabContentPaste');
+
+    const pasteInputTitle = document.getElementById('pasteInputTitle');
+    const pasteInputTextarea = document.getElementById('pasteInputTextarea');
+    const pasteStatsLabel = document.getElementById('pasteStatsLabel');
+    const detectedFormatBadge = document.getElementById('detectedFormatBadge');
+    const pastePreviewContainer = document.getElementById('pastePreviewContainer');
+    const pastePreviewHtml = document.getElementById('pastePreviewHtml');
+    const btnPasteFromClipboard = document.getElementById('btnPasteFromClipboard');
+    const btnTogglePastePreview = document.getElementById('btnTogglePastePreview');
+    const btnAddPastedToStaged = document.getElementById('btnAddPastedToStaged');
+    const btnClearAllStaged = document.getElementById('btnClearAllStaged');
+    const uploadTargetCategorySelect = document.getElementById('uploadTargetCategorySelect');
+
+    let activeUploadTab = 'upload';
+    let selectedPasteFormatOption = 'auto';
+
+    function setUploadTab(tab = 'upload') {
+      activeUploadTab = tab;
+      if (!uploadTabSlider || !tabBtnUpload || !tabBtnPaste) return;
+
+      if (tab === 'upload') {
+        uploadTabSlider.style.transform = 'translateX(0)';
+        tabBtnUpload.classList.add('text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+        tabBtnUpload.classList.remove('text-[#6E6B65]', 'dark:text-[#979DA8]', 'font-medium');
+        tabBtnUpload.setAttribute('aria-selected', 'true');
+        tabBtnUpload.tabIndex = 0;
+
+        tabBtnPaste.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+        tabBtnPaste.classList.add('text-[#6E6B65]', 'dark:text-[#979DA8]', 'font-medium');
+        tabBtnPaste.setAttribute('aria-selected', 'false');
+        tabBtnPaste.tabIndex = -1;
+
+        if (tabContentUpload) tabContentUpload.classList.remove('hidden');
+        if (tabContentPaste) tabContentPaste.classList.add('hidden');
+      } else {
+        uploadTabSlider.style.transform = 'translateX(100%)';
+        tabBtnPaste.classList.add('text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+        tabBtnPaste.classList.remove('text-[#6E6B65]', 'dark:text-[#979DA8]', 'font-medium');
+        tabBtnPaste.setAttribute('aria-selected', 'true');
+        tabBtnPaste.tabIndex = 0;
+
+        tabBtnUpload.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+        tabBtnUpload.classList.add('text-[#6E6B65]', 'dark:text-[#979DA8]', 'font-medium');
+        tabBtnUpload.setAttribute('aria-selected', 'false');
+        tabBtnUpload.tabIndex = -1;
+
+        if (tabContentPaste) tabContentPaste.classList.remove('hidden');
+        if (tabContentUpload) tabContentUpload.classList.add('hidden');
+
+        if (pasteInputTextarea) {
+          setTimeout(() => pasteInputTextarea.focus(), 120);
+        }
+      }
     }
 
-    on('#btnCloseUploadModal', 'click', () => hideModalAnimated(uploadModal));
-    on('#btnCancelUpload', 'click', () => hideModalAnimated(uploadModal));
-    on('#btnEmptyAddLesson', 'click', openUploadModal);
-    on('#btnSidebarQuickUpload', 'click', openUploadModal);
+    if (tabBtnUpload) tabBtnUpload.addEventListener('click', () => setUploadTab('upload'));
+    if (tabBtnPaste) tabBtnPaste.addEventListener('click', () => setUploadTab('paste'));
 
-    dropZone.addEventListener('click', () => htmlFilesInput.click());
-    htmlFilesInput.addEventListener('click', (e) => e.stopPropagation());
-
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('border-[#4F46E5]');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('border-[#4F46E5]');
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('border-[#4F46E5]');
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFilesSelected(Array.from(e.dataTransfer.files));
+    // Bàn phím điều hướng qua lại giữa 2 tab (ArrowLeft / ArrowRight)
+    [tabBtnUpload, tabBtnPaste].forEach(btn => {
+      if (btn) {
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            setUploadTab('paste');
+            if (tabBtnPaste) tabBtnPaste.focus();
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            setUploadTab('upload');
+            if (tabBtnUpload) tabBtnUpload.focus();
+          }
+        });
       }
     });
 
-    htmlFilesInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files.length > 0) {
-        handleFilesSelected(Array.from(e.target.files));
+    function populateUploadCategoriesDropdown() {
+      if (!uploadTargetCategorySelect) return;
+      const categories = state.categories || [];
+      const currentActiveId = state.activeCategoryId || (categories[0] ? categories[0].id : '');
+
+      let html = categories.map(c => `
+        <option value="${c.id}" ${c.id === currentActiveId ? 'selected' : ''}>${escapeHtml(c.title)}</option>
+      `).join('');
+
+      html += `<option value="__new_category__">+ Tạo mục mới…</option>`;
+      uploadTargetCategorySelect.innerHTML = html;
+    }
+
+    if (uploadTargetCategorySelect) {
+      uploadTargetCategorySelect.addEventListener('change', async (e) => {
+        if (e.target.value === '__new_category__') {
+          const newName = prompt('Nhập tên mục mới:');
+          if (newName && newName.trim()) {
+            const trimmed = normalizeNFC(newName.trim());
+            const newCatId = 'cat_' + Date.now();
+            const newCat = {
+              id: newCatId,
+              title: trimmed,
+              order: ((state.categories?.length || 0) + 1) * 10,
+              createdAt: new Date().toISOString()
+            };
+            if (!state.categories) state.categories = [];
+            state.categories.push(newCat);
+            state.activeCategoryId = newCatId;
+            saveLocalCategories();
+            if (!state.useLocalFallback && db && state.userId) {
+              try {
+                await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', newCatId), newCat);
+              } catch (_) {}
+            }
+            populateUploadCategoriesDropdown();
+            renderCategoriesAndLessons();
+            showToast(`Đã tạo mục "${trimmed}"`);
+          } else {
+            populateUploadCategoriesDropdown();
+          }
+        }
+      });
+    }
+
+    function openUploadModal(initialTab = 'upload') {
+      state.stagedUploadFiles = [];
+      populateUploadCategoriesDropdown();
+      setUploadTab(initialTab);
+      if (pasteInputTitle) pasteInputTitle.value = '';
+      if (pasteInputTextarea) {
+        pasteInputTextarea.value = '';
+        pasteInputTextarea.dispatchEvent(new Event('input'));
       }
+      if (pastePreviewContainer) pastePreviewContainer.classList.add('hidden');
+      renderStagedFiles();
+      showModalAnimated(uploadModal);
+    }
+    window.openUploadModal = openUploadModal;
+
+    // Tương thích ngược: Khi có nút cũ gọi btnOpenPasteModal, chuyển ngay sang tab Dán văn bản
+    on('#btnOpenPasteModal', 'click', () => {
+      openUploadModal('paste');
     });
+
+    on('#btnCloseUploadModal', 'click', handleCloseUploadModal);
+    on('#btnCancelUpload', 'click', handleCloseUploadModal);
+    on('#btnEmptyAddLesson', 'click', () => openUploadModal('upload'));
+    on('#btnSidebarQuickUpload', 'click', () => openUploadModal('upload'));
+
+    function handleCloseUploadModal() {
+      if (state.stagedUploadFiles && state.stagedUploadFiles.length > 0) {
+        if (!confirm(`Bỏ ${state.stagedUploadFiles.length} mục chưa lưu?`)) {
+          return;
+        }
+      }
+      state.stagedUploadFiles = [];
+      hideModalAnimated(uploadModal);
+    }
+
+    // Đóng bằng phím Esc và bẫy phím trong modal
+    if (uploadModal) {
+      uploadModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          handleCloseUploadModal();
+        }
+      });
+    }
+
+    // Tương tác Vùng kéo thả (Dropzone)
+    if (dropZone && htmlFilesInput) {
+      dropZone.addEventListener('click', (e) => {
+        if (e.target.closest('#btnBrowseDevice') || e.target === dropZone || dropZone.contains(e.target)) {
+          htmlFilesInput.click();
+        }
+      });
+
+      dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          htmlFilesInput.click();
+        }
+      });
+
+      htmlFilesInput.addEventListener('click', (e) => e.stopPropagation());
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-solid', 'border-indigo-500', 'dark:border-indigo-400', 'bg-indigo-50/40', 'dark:bg-indigo-950/30');
+        const promptEl = document.getElementById('dropZonePrompt');
+        if (promptEl) promptEl.innerText = 'Thả để thêm';
+        const iconEl = document.getElementById('dropZoneIcon');
+        if (iconEl) iconEl.style.transform = 'scale(1.08)';
+      });
+
+      const resetDropZoneStyle = () => {
+        dropZone.classList.remove('border-solid', 'border-indigo-500', 'dark:border-indigo-400', 'bg-indigo-50/40', 'dark:bg-indigo-950/30');
+        const promptEl = document.getElementById('dropZonePrompt');
+        if (promptEl) promptEl.innerText = 'Kéo thả file vào đây';
+        const iconEl = document.getElementById('dropZoneIcon');
+        if (iconEl) iconEl.style.transform = '';
+      };
+
+      dropZone.addEventListener('dragleave', resetDropZoneStyle);
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        resetDropZoneStyle();
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          handleFilesSelected(Array.from(e.dataTransfer.files));
+        }
+      });
+
+      htmlFilesInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          handleFilesSelected(Array.from(e.target.files));
+        }
+      });
+    }
+
+    // Xử lý Tab 2: Dán văn bản
+    document.querySelectorAll('.paste-format-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedPasteFormatOption = btn.getAttribute('data-format') || 'auto';
+        document.querySelectorAll('.paste-format-btn').forEach(b => {
+          if (b === btn) {
+            b.className = 'paste-format-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-white dark:bg-[#282D37] text-indigo-600 dark:text-indigo-400 shadow-2xs transition cursor-pointer';
+          } else {
+            b.className = 'paste-format-btn px-2 py-1 rounded-md text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition cursor-pointer';
+          }
+        });
+        updatePasteContentAnalysis();
+      });
+    });
+
+    function detectContentType(text) {
+      if (!text || !text.trim()) return 'text';
+      if (selectedPasteFormatOption !== 'auto') return selectedPasteFormatOption;
+      
+      const isHtml = /<(html|head|body|div|p|h[1-6]|article|section|table|pre)\b/i.test(text);
+      if (isHtml) return 'html';
+
+      const isMarkdown = /(^#+\s|(\*\*|__).+(\*\*|__)|^-\s|^\*\s|```|> )/m.test(text);
+      if (isMarkdown) return 'markdown';
+
+      return 'text';
+    }
+
+    function updatePasteContentAnalysis() {
+      const text = pasteInputTextarea ? pasteInputTextarea.value : '';
+      const charCount = text.length;
+      const wordCount = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+      const readMinutes = Math.max(1, Math.round(wordCount / 200));
+
+      if (pasteStatsLabel) {
+        pasteStatsLabel.innerText = `${charCount.toLocaleString('vi-VN')} ký tự · ~${charCount > 0 ? readMinutes : 0} phút đọc`;
+      }
+
+      const detected = detectContentType(text);
+      if (detectedFormatBadge) {
+        const typeNames = {
+          html: 'HTML',
+          markdown: 'Markdown',
+          text: 'Văn bản thô'
+        };
+        detectedFormatBadge.innerText = `Đã nhận diện: ${typeNames[detected] || 'Văn bản thô'}`;
+      }
+
+      if (btnAddPastedToStaged) {
+        btnAddPastedToStaged.disabled = !text.trim();
+      }
+
+      // Cập nhật khung xem trước nếu đang mở
+      if (pastePreviewContainer && !pastePreviewContainer.classList.contains('hidden')) {
+        updatePastePreviewHtml();
+      }
+    }
+
+    if (pasteInputTextarea) {
+      pasteInputTextarea.addEventListener('input', updatePasteContentAnalysis);
+
+      // Phím tắt Ctrl+Enter thêm nhanh
+      pasteInputTextarea.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          if (btnAddPastedToStaged && !btnAddPastedToStaged.disabled) {
+            btnAddPastedToStaged.click();
+          }
+        }
+      });
+    }
+
+    function updatePastePreviewHtml() {
+      if (!pastePreviewHtml || !pasteInputTextarea) return;
+      const text = pasteInputTextarea.value.trim();
+      if (!text) {
+        pastePreviewHtml.innerHTML = '<p class="text-[#6E6B65] dark:text-[#979DA8] italic">Chưa có nội dung để xem trước...</p>';
+        return;
+      }
+
+      const type = detectContentType(text);
+      if (type === 'html') {
+        pastePreviewHtml.innerHTML = typeof sanitizeHtmlContent === 'function' ? sanitizeHtmlContent(text) : escapeHtml(text);
+      } else if (type === 'markdown') {
+        pastePreviewHtml.innerHTML = typeof parseMarkdownToHtml === 'function' ? parseMarkdownToHtml(text) : escapeHtml(text);
+      } else {
+        pastePreviewHtml.innerHTML = typeof convertPlainTextToHtmlDocument === 'function' ? convertPlainTextToHtmlDocument(text) : escapeHtml(text).replace(/\n/g, '<br>');
+      }
+    }
+
+    if (btnTogglePastePreview) {
+      btnTogglePastePreview.addEventListener('click', () => {
+        if (!pastePreviewContainer) return;
+        const isHidden = pastePreviewContainer.classList.contains('hidden');
+        if (isHidden) {
+          pastePreviewContainer.classList.remove('hidden');
+          btnTogglePastePreview.innerText = 'Ẩn xem trước';
+          updatePastePreviewHtml();
+        } else {
+          pastePreviewContainer.classList.add('hidden');
+          btnTogglePastePreview.innerText = 'Xem trước';
+        }
+      });
+    }
+
+    if (btnPasteFromClipboard) {
+      btnPasteFromClipboard.addEventListener('click', async () => {
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.readText) {
+            throw new Error('Clipboard API không hỗ trợ');
+          }
+          const text = await navigator.clipboard.readText();
+          if (pasteInputTextarea) {
+            pasteInputTextarea.value = text;
+            pasteInputTextarea.dispatchEvent(new Event('input'));
+            showToast('Đã dán văn bản từ Clipboard');
+          }
+        } catch (_) {
+          showToast('Trình duyệt chặn truy cập Clipboard, vui lòng nhấn Ctrl+V để dán trực tiếp', 'warning');
+          if (pasteInputTextarea) pasteInputTextarea.focus();
+        }
+      });
+    }
+
+    if (btnAddPastedToStaged) {
+      btnAddPastedToStaged.addEventListener('click', () => {
+        if (!pasteInputTextarea) return;
+        const rawContent = pasteInputTextarea.value.trim();
+        if (!rawContent) return;
+
+        const rawTitle = (pasteInputTitle ? pasteInputTitle.value : '').trim();
+        const detectedType = detectContentType(rawContent);
+
+        let extractedTitle = rawTitle;
+        let finalHtml = '';
+
+        if (detectedType === 'markdown') {
+          if (!extractedTitle) {
+            const h1Match = rawContent.match(/^#\s+(.+)$/m);
+            extractedTitle = h1Match ? h1Match[1].trim() : `Bài học ${new Date().toLocaleTimeString('vi-VN')}`;
+          }
+          const bodyHtml = typeof parseMarkdownToHtml === 'function' ? parseMarkdownToHtml(rawContent) : escapeHtml(rawContent);
+          finalHtml = typeof wrapIntoReadingDocument === 'function' ? wrapIntoReadingDocument(bodyHtml, extractedTitle) : bodyHtml;
+        } else if (detectedType === 'html') {
+          if (!extractedTitle) {
+            const titleMatch = rawContent.match(/<title[^>]*>([^<]+)<\/title>/i) || rawContent.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+            extractedTitle = titleMatch ? titleMatch[1].trim() : `Bài học HTML ${new Date().toLocaleTimeString('vi-VN')}`;
+          }
+          finalHtml = rawContent;
+        } else {
+          if (!extractedTitle) {
+            const firstLine = rawContent.split('\n')[0].trim().substring(0, 50);
+            extractedTitle = firstLine || `Bài học văn bản ${new Date().toLocaleTimeString('vi-VN')}`;
+          }
+          const bodyHtml = typeof convertPlainTextToHtmlDocument === 'function' ? convertPlainTextToHtmlDocument(rawContent) : escapeHtml(rawContent).replace(/\n/g, '<br>');
+          finalHtml = typeof wrapIntoReadingDocument === 'function' ? wrapIntoReadingDocument(bodyHtml, extractedTitle) : bodyHtml;
+        }
+
+        const stableId = 'staged_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+        const finalTitle = normalizeNFC(extractedTitle);
+        const sizeBytes = new Blob([finalHtml]).size;
+
+        const isDuplicate = (state.lessons || []).some(l => 
+          (l.title && l.title.trim().toLowerCase() === finalTitle.trim().toLowerCase())
+        );
+
+        if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+        state.stagedUploadFiles.push({
+          id: stableId,
+          lessonId: stableId,
+          fileName: detectedType === 'markdown' ? `${finalTitle}.md` : detectedType === 'html' ? `${finalTitle}.html` : `${finalTitle}.txt`,
+          title: finalTitle,
+          originalTitle: finalTitle,
+          description: '',
+          content: finalHtml,
+          sourceType: detectedType,
+          rawSource: rawContent,
+          size: sizeBytes,
+          isError: sizeBytes > 5 * 1024 * 1024,
+          errorMessage: sizeBytes > 5 * 1024 * 1024 ? 'Nội dung vượt quá 5 MB' : null,
+          isDuplicate: isDuplicate,
+          order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
+        });
+
+        // Xóa ô nhập sau khi thêm thành công
+        if (pasteInputTitle) pasteInputTitle.value = '';
+        pasteInputTextarea.value = '';
+        updatePasteContentAnalysis();
+
+        renderStagedFiles();
+        showToast('Đã thêm bài vào danh sách chờ lưu!');
+      });
+    }
+
+    if (btnClearAllStaged) {
+      btnClearAllStaged.addEventListener('click', () => {
+        state.stagedUploadFiles = [];
+        renderStagedFiles();
+        showToast('Đã xóa tất cả mục chờ lưu');
+      });
+    }
 
     
     // =========================================================================
@@ -16072,26 +16671,74 @@
     }
 
 
-    async function handleFilesSelected(files) {
-      const validFiles = files.filter(f => {
-        const lower = f.name.toLowerCase();
-        return lower.endsWith('.html') || lower.endsWith('.htm') || lower.endsWith('.md') || lower.endsWith('.markdown') || lower.endsWith('.txt');
-      });
-      if (validFiles.length === 0) {
-        showToast("Vui lòng chọn file .html, .htm, .md hoặc .txt", "error");
-        return;
-      }
+    function formatFileSize(bytes) {
+      if (!bytes || bytes <= 0) return '0 KB';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
 
-      for (const file of validFiles) {
+    async function handleFilesSelected(files) {
+      if (!files || files.length === 0) return;
+
+      for (const file of files) {
+        const lowerName = file.name.toLowerCase();
+        const isHtml = lowerName.endsWith('.html') || lowerName.endsWith('.htm');
+        const isMd = lowerName.endsWith('.md') || lowerName.endsWith('.markdown');
+        const isTxt = lowerName.endsWith('.txt');
+
+        const stableLessonId = 'lesson_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+
+        // 1. Kiểm tra định dạng hỗ trợ
+        if (!isHtml && !isMd && !isTxt) {
+          if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+          state.stagedUploadFiles.push({
+            id: stableLessonId,
+            lessonId: stableLessonId,
+            fileName: file.name,
+            title: file.name,
+            originalTitle: file.name,
+            description: '',
+            content: '',
+            sourceType: 'unknown',
+            size: file.size,
+            isError: true,
+            errorMessage: 'Định dạng file không được hỗ trợ (.html, .htm, .md, .txt)',
+            isDuplicate: false,
+            order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
+          });
+          continue;
+        }
+
+        // 2. Kiểm tra dung lượng tối đa 5 MB
+        if (file.size > 5 * 1024 * 1024) {
+          if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+          state.stagedUploadFiles.push({
+            id: stableLessonId,
+            lessonId: stableLessonId,
+            fileName: file.name,
+            title: file.name,
+            originalTitle: file.name,
+            description: '',
+            content: '',
+            sourceType: isMd ? 'markdown' : isTxt ? 'text' : 'html',
+            size: file.size,
+            isError: true,
+            errorMessage: `Dung lượng vượt quá 5 MB (${formatFileSize(file.size)})`,
+            isDuplicate: false,
+            order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
+          });
+          continue;
+        }
+
+        // 3. Đọc nội dung an toàn với UTF-8 / UTF-16
         try {
-          // Đọc file an toàn với BOM & Charset, hỗ trợ HTML, MD, TXT
           const rawContent = await readFileContentSafely(file);
-          const lowerName = file.name.toLowerCase();
           let finalHtmlContent = '';
           let extractedTitle = '';
           let detectedSourceType = 'html';
 
-          if (lowerName.endsWith('.md') || lowerName.endsWith('.markdown')) {
+          if (isMd) {
             detectedSourceType = 'markdown';
             const { attributes, body } = parseYamlFrontMatter(rawContent);
             if (attributes.title) {
@@ -16100,163 +16747,422 @@
               const h1Match = body.match(/^#\s+(.+)$/m);
               extractedTitle = h1Match ? h1Match[1].trim() : file.name.replace(/\.[^/.]+$/, "");
             }
-            const bodyHtml = parseMarkdownToHtml(rawContent);
-            finalHtmlContent = wrapIntoReadingDocument(bodyHtml, extractedTitle);
-          } else if (lowerName.endsWith('.txt')) {
+            const bodyHtml = typeof parseMarkdownToHtml === 'function' ? parseMarkdownToHtml(rawContent) : escapeHtml(rawContent);
+            finalHtmlContent = typeof wrapIntoReadingDocument === 'function' ? wrapIntoReadingDocument(bodyHtml, extractedTitle) : bodyHtml;
+          } else if (isTxt) {
             detectedSourceType = 'text';
             extractedTitle = file.name.replace(/\.[^/.]+$/, "");
-            const bodyHtml = convertPlainTextToHtmlDocument(rawContent);
-            finalHtmlContent = wrapIntoReadingDocument(bodyHtml, extractedTitle);
+            const bodyHtml = typeof convertPlainTextToHtmlDocument === 'function' ? convertPlainTextToHtmlDocument(rawContent) : escapeHtml(rawContent).replace(/\n/g, '<br>');
+            finalHtmlContent = typeof wrapIntoReadingDocument === 'function' ? wrapIntoReadingDocument(bodyHtml, extractedTitle) : bodyHtml;
           } else {
             detectedSourceType = 'html';
             finalHtmlContent = rawContent;
-            const titleMatch = rawContent.match(/<title[^>]*>([^<]+)<\/title>/i);
-            if (titleMatch && titleMatch[1]) {
-              extractedTitle = titleMatch[1].trim();
-            } else {
-              const h1Match = rawContent.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-              extractedTitle = h1Match ? h1Match[1].trim() : file.name.replace(/\.[^/.]+$/, "");
-            }
+            const titleMatch = rawContent.match(/<title[^>]*>([^<]+)<\/title>/i) || rawContent.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+            extractedTitle = titleMatch ? titleMatch[1].trim() : file.name.replace(/\.[^/.]+$/, "");
           }
 
-          // FIX-3: Kiểm tra nếu bài đã có trong thư viện để hỏi xác nhận tránh nhân đôi vô ý
           const finalTitle = normalizeNFC(extractedTitle) || file.name;
-          const isDuplicate = state.lessons.some(l => 
+          const isDuplicate = (state.lessons || []).some(l => 
             (l.originalFileName && l.originalFileName.toLowerCase() === file.name.toLowerCase()) ||
             (l.title && l.title.trim().toLowerCase() === finalTitle.trim().toLowerCase())
           );
-          if (isDuplicate) {
-            const allowCopy = confirm(`Bài "${finalTitle}" (${file.name}) đã có trong thư viện.\nBạn có muốn thêm bản sao không?\n(Bấm OK để thêm bản sao, Cancel để bỏ qua)`);
-            if (!allowCopy) {
-              continue;
-            }
-          }
 
-          // FIX-3: Khởi tạo ID duy nhất cố định ngay từ lúc stage để dùng xuyên suốt
-          const stableLessonId = 'lesson_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-
+          if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
           state.stagedUploadFiles.push({
             id: stableLessonId,
             lessonId: stableLessonId,
             fileName: file.name,
             title: finalTitle,
+            originalTitle: finalTitle,
             description: '',
             content: finalHtmlContent,
             sourceType: detectedSourceType,
             rawSource: rawContent,
-            order: (state.lessons.length + state.stagedUploadFiles.length + 1)
+            size: file.size,
+            isError: false,
+            errorMessage: null,
+            isDuplicate: isDuplicate,
+            order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
           });
         } catch (err) {
-          console.error("Lỗi đọc file:", err);
-          showToast(`Lỗi file ${file.name}`, "error");
+          console.error('[Upload] Lỗi đọc file:', err);
+          if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+          state.stagedUploadFiles.push({
+            id: stableLessonId,
+            lessonId: stableLessonId,
+            fileName: file.name,
+            title: file.name,
+            originalTitle: file.name,
+            description: '',
+            content: '',
+            sourceType: 'unknown',
+            size: file.size,
+            isError: true,
+            errorMessage: `Không thể đọc nội dung file: ${err.message || 'Lỗi đọc'}`,
+            isDuplicate: false,
+            order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
+          });
         }
       }
 
-      // Reset input value để có thể chọn lại file cùng tên nếu muốn
-      try { htmlFilesInput.value = ''; } catch (_) {}
+      try {
+        if (htmlFilesInput) htmlFilesInput.value = '';
+      } catch (_) {}
+
       renderStagedFiles();
     }
 
+    let draggedStagedIndex = null;
+
     function renderStagedFiles() {
-      if (state.stagedUploadFiles.length === 0) {
+      const stagedContainer = document.getElementById('stagedFilesContainer');
+      const stagedList = document.getElementById('stagedFilesList');
+      const stagedCount = document.getElementById('stagedCount');
+      const summaryStats = document.getElementById('uploadSummaryStats');
+      const btnConfirmUpload = document.getElementById('btnConfirmUpload');
+      const btnConfirmText = document.getElementById('btnConfirmUploadText');
+
+      if (!stagedContainer || !stagedList) return;
+
+      const list = state.stagedUploadFiles || [];
+      if (list.length === 0) {
         stagedContainer.classList.add('hidden');
-        btnConfirmUpload.disabled = true;
+        if (summaryStats) summaryStats.innerText = '0 bài · 0 KB';
+        if (btnConfirmUpload) {
+          btnConfirmUpload.disabled = true;
+          btnConfirmUpload.title = 'Vui lòng thêm ít nhất một bài học để lưu';
+        }
+        if (btnConfirmText) btnConfirmText.innerText = 'Lưu 0 bài học';
         return;
       }
 
       stagedContainer.classList.remove('hidden');
-      document.getElementById('stagedCount').innerText = state.stagedUploadFiles.length;
-      btnConfirmUpload.disabled = false;
+      if (stagedCount) stagedCount.innerText = list.length;
 
-      stagedList.innerHTML = state.stagedUploadFiles.map((item) => `
-        <div class="p-3 rounded-card border border-[#E6E6E1] dark:border-[#262C36] bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50 space-y-2">
-          <div class="flex items-center justify-between text-xs">
-            <div class="flex items-center gap-1.5 min-w-0 mr-2">
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${item.sourceType === 'markdown' ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' : item.sourceType === 'text' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'}">${item.sourceType || 'HTML'}</span>
-              <span class="font-mono text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate">${item.fileName}</span>
+      const validItems = list.filter(i => !i.isError);
+      const errorItems = list.filter(i => i.isError);
+      const totalSizeBytes = validItems.reduce((acc, i) => acc + (i.size || (i.content ? i.content.length : 0)), 0);
+
+      if (summaryStats) {
+        summaryStats.innerText = `${validItems.length} bài · ${formatFileSize(totalSizeBytes)}`;
+      }
+
+      if (btnConfirmUpload) {
+        if (errorItems.length > 0) {
+          btnConfirmUpload.disabled = true;
+          btnConfirmUpload.title = `Có ${errorItems.length} file bị lỗi cần xử lý hoặc xóa trước khi lưu!`;
+          if (btnConfirmText) btnConfirmText.innerText = `Lỗi (${errorItems.length} mục)`;
+        } else if (validItems.length === 0) {
+          btnConfirmUpload.disabled = true;
+          btnConfirmUpload.title = 'Chưa có bài học hợp lệ nào';
+          if (btnConfirmText) btnConfirmText.innerText = 'Lưu 0 bài học';
+        } else {
+          btnConfirmUpload.disabled = false;
+          btnConfirmUpload.title = '';
+          if (btnConfirmText) btnConfirmText.innerText = `Lưu ${validItems.length} bài học`;
+        }
+      }
+
+      // Render các thẻ bài chờ lưu
+      stagedList.innerHTML = list.map((item, idx) => {
+        const isError = Boolean(item.isError);
+        const isDup = Boolean(item.isDuplicate);
+        const sType = item.sourceType || 'html';
+        const itemSize = formatFileSize(item.size || (item.content ? item.content.length : 0));
+
+        let iconSvg = '';
+        if (isError) {
+          // Icon lỗi (dấu chấm than đỏ)
+          iconSvg = `
+            <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+              <path d="M4 2h7l5 5v10a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V3.5A1.5 1.5 0 0 1 4 2z" fill="rgba(239, 68, 68, 0.1)"/>
+              <path d="M11 2v4a1 1 0 0 0 1 1h4"/>
+              <path d="M10 9v3.5M10 15h.01"/>
+            </svg>
+          `;
+        } else if (sType === 'markdown') {
+          // Icon Markdown tím
+          iconSvg = `
+            <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+              <path d="M4 2h7l5 5v10a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V3.5A1.5 1.5 0 0 1 4 2z" fill="rgba(139, 92, 246, 0.1)"/>
+              <path d="M11 2v4a1 1 0 0 0 1 1h4"/>
+              <path d="M6 14.5v-3l1.5 1.8 1.5-1.8v3M12 11.5v3M10.5 13.5l1.5 1.5 1.5-1.5"/>
+            </svg>
+          `;
+        } else if (sType === 'text') {
+          // Icon Văn bản thô xám
+          iconSvg = `
+            <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#6B7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+              <path d="M4 2h7l5 5v10a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V3.5A1.5 1.5 0 0 1 4 2z" fill="rgba(107, 114, 128, 0.1)"/>
+              <path d="M11 2v4a1 1 0 0 0 1 1h4"/>
+              <path d="M6 11.5h6M6 14h4"/>
+            </svg>
+          `;
+        } else {
+          // Icon HTML cam
+          iconSvg = `
+            <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#EA580C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+              <path d="M4 2h7l5 5v10a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V3.5A1.5 1.5 0 0 1 4 2z" fill="rgba(234, 88, 12, 0.1)"/>
+              <path d="M11 2v4a1 1 0 0 0 1 1h4"/>
+              <path d="M7 11.5L5.5 13 7 14.5M11 11.5l1.5 1.5-1.5 1.5"/>
+            </svg>
+          `;
+        }
+
+        const borderClass = isError
+          ? 'border-rose-300 dark:border-rose-900/60 bg-rose-50/40 dark:bg-rose-950/20'
+          : isDup
+          ? 'border-amber-300 dark:border-amber-900/60 bg-amber-50/30 dark:bg-amber-950/20'
+          : 'border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/70 dark:bg-[#13161C]/60';
+
+        return `
+          <div class="staged-card group relative p-3 rounded-xl border ${borderClass} transition-all space-y-2 select-none" draggable="true" data-stage-index="${idx}" data-stage-id="${item.id}">
+            <div class="flex items-start gap-2.5">
+              <!-- Tay nắm kéo thả (6 chấm) -->
+              <div class="staged-drag-handle mt-1 text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] cursor-grab active:cursor-grabbing p-0.5 shrink-0" title="Kéo để đổi thứ tự lưu">
+                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                  <circle cx="7" cy="5" r="1.2" fill="currentColor"/>
+                  <circle cx="13" cy="5" r="1.2" fill="currentColor"/>
+                  <circle cx="7" cy="10" r="1.2" fill="currentColor"/>
+                  <circle cx="13" cy="10" r="1.2" fill="currentColor"/>
+                  <circle cx="7" cy="15" r="1.2" fill="currentColor"/>
+                  <circle cx="13" cy="15" r="1.2" fill="currentColor"/>
+                </svg>
+              </div>
+
+              <!-- Icon loại file -->
+              <div class="mt-0.5 shrink-0">
+                ${iconSvg}
+              </div>
+
+              <!-- Nội dung chính: Tên bài & dòng phụ -->
+              <div class="flex-1 min-w-0 space-y-1">
+                ${isError ? `
+                  <div class="text-xs font-semibold text-rose-600 dark:text-rose-400 truncate">${escapeHtml(item.fileName)}</div>
+                  <div class="text-[11px] text-rose-500 font-medium">${escapeHtml(item.errorMessage || 'Lỗi không xác định')}</div>
+                ` : `
+                  <input type="text" maxlength="300" class="staged-item-title-input w-full text-xs sm:text-sm font-semibold bg-transparent text-[#1C1917] dark:text-[#EDECE8] border-b border-transparent hover:border-[#E7E5DF] focus:border-indigo-500 focus:outline-none px-0.5 py-0.5 transition" value="${escapeHtml(item.title)}" data-stage-id="${item.id}" placeholder="Tên bài học..." />
+                  
+                  <div class="flex items-center gap-2 flex-wrap text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
+                    <span class="truncate max-w-[200px] font-mono">${escapeHtml(item.fileName)}</span>
+                    <span>•</span>
+                    <span class="font-mono">${itemSize}</span>
+                    <span>•</span>
+                    <span class="uppercase font-medium">${sType}</span>
+
+                    ${isDup ? `
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60">
+                        Trùng tên
+                      </span>
+                    ` : ''}
+                  </div>
+                `}
+
+                ${isDup ? `
+                  <div class="flex items-center gap-2 pt-1">
+                    <span class="text-[11px] text-amber-700 dark:text-amber-400">Đã có bài cùng tên trong thư viện:</span>
+                    <button type="button" class="btn-keep-both text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer" data-stage-id="${item.id}">Giữ cả hai</button>
+                    <span class="text-[#979DA8]">•</span>
+                    <button type="button" class="btn-skip-dup text-[11px] text-rose-500 hover:underline cursor-pointer" data-stage-id="${item.id}">Bỏ qua</button>
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Nút mở rộng mô tả & Nút xóa -->
+              <div class="flex items-center gap-1 shrink-0">
+                ${!isError ? `
+                  <button type="button" class="btn-toggle-desc p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Mô tả & câu hỏi trọng tâm" data-stage-id="${item.id}">
+                    <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 8l4 4 4-4"/>
+                    </svg>
+                  </button>
+                ` : ''}
+
+                <button type="button" class="btn-remove-staged p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer" title="Xóa khỏi danh sách" data-stage-id="${item.id}">
+                  <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 5l10 10M15 5L5 15"/>
+                  </svg>
+                </button>
+              </div>
             </div>
-            <button class="text-red-500 hover:text-red-700 text-xs py-1 cursor-pointer" data-remove-staged="${item.id}">Xóa</button>
-          </div>
-          <div>
-            <label class="text-[11px] font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Tên hiển thị:</label>
-            <input type="text" maxlength="300" class="w-full text-sm px-2.5 py-1.5 rounded border border-[#E6E6E1] dark:border-[#262C36] bg-white dark:bg-[#161A20] text-[#1A1A1A] dark:text-[#ECEEF2]" value="${item.title}" data-stage-field="title" data-stage-id="${item.id}" />
-          </div>
-          <div>
-            <label class="text-[11px] font-medium text-[#1A1A1A] dark:text-[#ECEEF2]">Mô tả & Câu hỏi trọng tâm:</label>
-            <textarea rows="2" maxlength="2000" class="w-full text-sm p-2 rounded border border-[#E6E6E1] dark:border-[#262C36] bg-white dark:bg-[#161A20] text-[#1A1A1A] dark:text-[#ECEEF2]" placeholder="Nhập câu hỏi ôn tập..." data-stage-field="desc" data-stage-id="${item.id}">${item.description}</textarea>
-          </div>
-        </div>
-      `).join('');
 
-      stagedList.querySelectorAll('[data-stage-field]').forEach(input => {
+            <!-- Khung textarea mở rộng sửa mô tả -->
+            <div id="descContainer_${item.id}" class="hidden pt-1 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+              <label class="block text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] mb-1">Mô tả & Câu hỏi trọng tâm:</label>
+              <textarea rows="2" maxlength="2000" placeholder="Nhập câu hỏi hoặc tóm tắt trọng tâm bài học..." class="staged-desc-input w-full p-2 text-xs rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A20] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none" data-stage-id="${item.id}">${escapeHtml(item.description || '')}</textarea>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Gắn sự kiện sửa tiêu đề inline
+      stagedList.querySelectorAll('.staged-item-title-input').forEach(input => {
         input.addEventListener('input', (e) => {
           const id = e.target.getAttribute('data-stage-id');
-          const field = e.target.getAttribute('data-stage-field');
-          const target = state.stagedUploadFiles.find(f => f.id === id);
+          const target = (state.stagedUploadFiles || []).find(f => f.id === id);
           if (target) {
-            if (field === 'title') target.title = normalizeNFC(e.target.value);
-            if (field === 'desc') target.description = normalizeNFC(e.target.value);
+            target.title = normalizeNFC(e.target.value);
+            // Kiểm tra lại trùng tên khi đổi tiêu đề
+            target.isDuplicate = (state.lessons || []).some(l => 
+              l.title && l.title.trim().toLowerCase() === target.title.trim().toLowerCase()
+            );
           }
         });
       });
 
-      stagedList.querySelectorAll('[data-remove-staged]').forEach(btn => {
+      // Sửa mô tả inline
+      stagedList.querySelectorAll('.staged-desc-input').forEach(textarea => {
+        textarea.addEventListener('input', (e) => {
+          const id = e.target.getAttribute('data-stage-id');
+          const target = (state.stagedUploadFiles || []).find(f => f.id === id);
+          if (target) {
+            target.description = normalizeNFC(e.target.value);
+          }
+        });
+      });
+
+      // Bật/tắt textarea mô tả
+      stagedList.querySelectorAll('.btn-toggle-desc').forEach(btn => {
         btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-remove-staged');
-          state.stagedUploadFiles = state.stagedUploadFiles.filter(f => f.id !== id);
+          const id = btn.getAttribute('data-stage-id');
+          const container = document.getElementById(`descContainer_${id}`);
+          if (container) {
+            container.classList.toggle('hidden');
+          }
+        });
+      });
+
+      // Nút "Giữ cả hai" (Đổi tên có thêm đuôi (bản sao))
+      stagedList.querySelectorAll('.btn-keep-both').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-stage-id');
+          const target = (state.stagedUploadFiles || []).find(f => f.id === id);
+          if (target) {
+            target.title = `${target.title} (bản sao)`;
+            target.isDuplicate = false;
+            renderStagedFiles();
+          }
+        });
+      });
+
+      // Nút "Bỏ qua"
+      stagedList.querySelectorAll('.btn-skip-dup').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-stage-id');
+          state.stagedUploadFiles = (state.stagedUploadFiles || []).filter(f => f.id !== id);
           renderStagedFiles();
         });
       });
+
+      // Nút xóa thẻ
+      stagedList.querySelectorAll('.btn-remove-staged').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-stage-id');
+          state.stagedUploadFiles = (state.stagedUploadFiles || []).filter(f => f.id !== id);
+          renderStagedFiles();
+        });
+      });
+
+      // Kéo thả đổi thứ tự bài trong danh sách chờ lưu
+      stagedList.querySelectorAll('.staged-card').forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          draggedStagedIndex = parseInt(card.getAttribute('data-stage-index'), 10);
+          e.dataTransfer.effectAllowed = 'move';
+          card.classList.add('opacity-50');
+        });
+
+        card.addEventListener('dragend', () => {
+          card.classList.remove('opacity-50');
+          draggedStagedIndex = null;
+        });
+
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          card.classList.add('border-indigo-500');
+        });
+
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('border-indigo-500');
+        });
+
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('border-indigo-500');
+          const targetIndex = parseInt(card.getAttribute('data-stage-index'), 10);
+          if (draggedStagedIndex !== null && draggedStagedIndex !== targetIndex && state.stagedUploadFiles) {
+            const [movedItem] = state.stagedUploadFiles.splice(draggedStagedIndex, 1);
+            state.stagedUploadFiles.splice(targetIndex, 0, movedItem);
+            renderStagedFiles();
+          }
+        });
+      });
     }
+    window.handleFilesSelected = handleFilesSelected;
+    window.renderStagedFiles = renderStagedFiles;
 
     btnConfirmUpload.addEventListener('click', async () => {
-      if (state.stagedUploadFiles.length === 0) return;
-      if (btnConfirmUpload.disabled) return;
+      const list = state.stagedUploadFiles || [];
+      if (list.length === 0 || btnConfirmUpload.disabled) return;
 
-      // FIX-3: Chặn click lặp lại ngay lập tức
-      btnConfirmUpload.disabled = true;
-      setSyncStatus(true, "Đang lưu...");
-
-      // Xác định mục mục tiêu an toàn, chỉ dùng mục thực sự tồn tại trong state.categories
-      let targetCat = state.categories.find(c => c.id === state.activeCategoryId);
-      if (!targetCat && state.categories.length > 0) {
-        targetCat = state.categories[0];
+      const validFiles = list.filter(item => !item.isError);
+      if (validFiles.length === 0) {
+        showToast('Không có bài học hợp lệ nào để lưu!', 'warning');
+        return;
       }
 
-      let targetCatId = targetCat ? targetCat.id : null;
+      btnConfirmUpload.disabled = true;
+      const progressEl = document.getElementById('btnConfirmUploadProgress');
+      const textEl = document.getElementById('btnConfirmUploadText');
 
-      // Nếu chưa có mục nào hợp lệ, tạo mục mặc định "Tài liệu của tôi"
+      // Xác định mục lưu từ dropdown
+      const selectEl = document.getElementById('uploadTargetCategorySelect');
+      let targetCatId = selectEl ? selectEl.value : null;
+
+      if (!targetCatId || targetCatId === '__new_category__') {
+        const found = (state.categories || []).find(c => c.id === state.activeCategoryId) || state.categories[0];
+        targetCatId = found ? found.id : null;
+      }
+
+      // Nếu chưa có mục nào, tạo mục mặc định
       if (!targetCatId) {
         targetCatId = 'cat_default_' + Date.now();
         const defaultCat = {
           id: targetCatId,
           title: 'Tài liệu của tôi',
-          order: 1,
+          order: 10,
           createdAt: new Date().toISOString()
         };
+        if (!state.categories) state.categories = [];
         state.categories.push(defaultCat);
         state.activeCategoryId = targetCatId;
         saveLocalCategories();
-
         if (!state.useLocalFallback && db && state.userId) {
           try {
             await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', targetCatId), defaultCat);
-          } catch (e) {
-            console.warn("Lỗi lưu category lên Firestore:", e);
-          }
+          } catch (_) {}
         }
       }
 
+      const catObj = (state.categories || []).find(c => c.id === targetCatId);
+      const catTitle = catObj ? catObj.title : 'Thư viện';
+
       try {
         const addedLessonIds = [];
-        const filesToProcess = [...state.stagedUploadFiles];
+        const total = validFiles.length;
 
-        for (const item of filesToProcess) {
-          // FIX-3: Sử dụng ID duy nhất đã gán từ lúc stage
+        for (let i = 0; i < total; i++) {
+          const item = validFiles[i];
+          if (textEl) textEl.innerText = `Đang lưu ${i + 1}/${total}…`;
+          if (progressEl) {
+            const pct = Math.round(((i + 1) / total) * 100);
+            progressEl.style.transform = `translateX(${pct - 100}%)`;
+          }
+
           const docId = item.lessonId || item.id || ('lesson_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
 
-          // Gỡ bỏ tombstone và dọn khỏi thùng rác nếu trước đó ID này từng bị xóa
-          removeTombstone(docId);
+          // Gỡ bỏ tombstone và dọn khỏi thùng rác nếu có
+          if (typeof removeTombstone === 'function') removeTombstone(docId);
           if (state.trash) {
             state.trash = state.trash.filter(t => !t.item || t.item.id !== docId);
           }
@@ -16272,16 +17178,21 @@
             rawSource: item.rawSource || '',
             isCompleted: false,
             isFavorite: false,
-            order: item.order || (state.lessons.length + 1),
+            order: (state.lessons?.length || 0) + i + 1,
             updatedAt: new Date().toISOString()
           };
 
-          // // HANGMUC-2: Lưu nội dung bài vào IndexedDB song song
-          await putLessonContentToIDB(docId, lessonData.htmlContent);
+          if (typeof putLessonContentToIDB === 'function') {
+            await putLessonContentToIDB(docId, lessonData.htmlContent);
+          }
           lessonData.fileSize = (lessonData.htmlContent || '').length;
 
-          // FIX-3: Sử dụng Upsert by ID thay vì push mù quáng
-          upsertLesson(lessonData);
+          if (typeof upsertLesson === 'function') {
+            upsertLesson(lessonData);
+          } else {
+            if (!state.lessons) state.lessons = [];
+            state.lessons.push(lessonData);
+          }
           addedLessonIds.push(docId);
 
           if (!state.useLocalFallback && db && state.userId) {
@@ -16289,22 +17200,24 @@
               const lRef = doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', docId);
               await setDoc(lRef, lessonData);
             } catch (fsErr) {
-              console.warn("Lỗi lưu bài học lên Firestore:", fsErr);
+              console.warn("[Upload] Lỗi lưu Firestore:", fsErr);
             }
           }
         }
 
-        // Dọn dẹp danh sách staged và reset file input
+        // Tự động tính lại order các bài trong danh mục này để đảm bảo khoảng cách 10
+        if (typeof recalculateOrdersForCategory === 'function') {
+          recalculateOrdersForCategory(targetCatId);
+        }
+
         state.stagedUploadFiles = [];
         renderStagedFiles();
-        try { htmlFilesInput.value = ''; } catch (_) {}
 
         saveLocalLessons();
         saveLocalCategories();
         saveLocalTrash();
-        updateTrashUIBadge();
+        if (typeof updateTrashUIBadge === 'function') updateTrashUIBadge();
 
-        // Tự động trỏ activeLessonId vào bài vừa tải
         if (addedLessonIds.length > 0) {
           state.activeLessonId = addedLessonIds[0];
           state.activeCategoryId = targetCatId;
@@ -16313,15 +17226,29 @@
         renderCategoriesAndLessons();
         renderActiveLesson();
 
-        showToast(`Đã thêm thành công ${addedLessonIds.length} bài học`);
+        showToast(`Đã thêm ${addedLessonIds.length} bài vào "${catTitle}"`);
         hideModalAnimated(uploadModal);
-        setSyncStatus(false);
+
+        // Cuộn tới bài học đầu tiên vừa thêm và nhấp nháy
+        setTimeout(() => {
+          if (addedLessonIds.length > 0) {
+            const firstId = addedLessonIds[0];
+            const el = document.querySelector(`[data-lesson-id="${firstId}"]`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.classList.add('frame-flash-highlight');
+              setTimeout(() => el.classList.remove('frame-flash-highlight'), 2200);
+            }
+          }
+        }, 350);
+
       } catch (err) {
-        console.error("Lỗi khi thêm bài:", err);
-        showToast("Lỗi lưu bài học", "error");
-        setSyncStatus(false);
+        console.error('[Upload] Lỗi khi lưu bài học:', err);
+        showToast('Có lỗi xảy ra khi lưu bài học', 'error');
       } finally {
         btnConfirmUpload.disabled = false;
+        if (progressEl) progressEl.style.transform = 'translateX(-100%)';
+        if (textEl) textEl.innerText = `Lưu bài học`;
       }
     });
 
