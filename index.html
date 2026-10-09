@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.5.0';
+    const CURRENT_APP_VERSION = 'v4.6.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -476,6 +476,14 @@
     }
     .category-lessons-grid.is-expanded {
       grid-template-rows: 1fr;
+    }
+    .category-lessons-grid:not(.is-expanded) {
+      grid-template-rows: 0fr !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+      display: none !important;
     }
     .category-lessons-inner {
       overflow: hidden;
@@ -1203,13 +1211,42 @@
 
     /* Viền xanh hoàn thành bao quanh popup modal */
     .study-plan-modal-completed-border {
-      border: 2px solid #16a34a !important;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18), 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+      border: 1.5px solid #16a34a !important;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.16), 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
       transition: border-color 300ms ease, box-shadow 300ms ease;
     }
     .dark .study-plan-modal-completed-border {
-      border: 2px solid #4ade80 !important;
-      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.22), 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+      border: 1.5px solid #4ade80 !important;
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Giao diện Thẻ Hero Kế hoạch khi đã Hoàn thành */
+    #planHeroCard[data-urgency="done"] {
+      background-color: #ecfdf3 !important;
+      border-color: #86efac !important;
+      transition: background-color 300ms ease, border-color 300ms ease;
+    }
+    .dark #planHeroCard[data-urgency="done"] {
+      background-color: rgba(34, 197, 94, 0.12) !important;
+      border-color: rgba(74, 222, 128, 0.35) !important;
+    }
+    #planHeroCard[data-urgency="done"] #planRingTrack {
+      stroke: #bbf7d0 !important;
+    }
+    .dark #planHeroCard[data-urgency="done"] #planRingTrack {
+      stroke: rgba(34, 197, 94, 0.25) !important;
+    }
+    #planHeroCard[data-urgency="done"] #planDetailProgressBarTrack {
+      background-color: #bbf7d0 !important;
+    }
+    .dark #planHeroCard[data-urgency="done"] #planDetailProgressBarTrack {
+      background-color: rgba(34, 197, 94, 0.2) !important;
+    }
+    #planHeroCard[data-urgency="done"] #planDetailProgressBar {
+      background-color: #16a34a !important;
+    }
+    .dark #planHeroCard[data-urgency="done"] #planDetailProgressBar {
+      background-color: #22c55e !important;
     }
 
     /* Hiệu ứng nảy nhẹ của dấu tích khi hoàn thành */
@@ -1223,7 +1260,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #sidebarStudyPlanWidget, #sidebarStudyPlanWidget #sidebarPlanProgressBar, .study-plan-modal-completed-border {
+      #sidebarStudyPlanWidget, #sidebarStudyPlanWidget #sidebarPlanProgressBar, .study-plan-modal-completed-border, #planHeroCard {
         transition: none !important;
       }
       .anim-check-pop {
@@ -1828,6 +1865,13 @@
       <path d="M1 1l22 22M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.11 1.17M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/>
     </symbol>
     <!-- // SVG SYMBOLS V4.5.0: GHIM & TÌM KIẾM ĐỘC BẢN (CHỈ DÙNG CUSTOM SVG 24x24 STROKE-WIDTH 1.6) -->
+    <symbol id="check-glyph" viewBox="0 0 24 24">
+      <path d="M5 13l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="check-circle-glyph" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M8 12.5l2.5 2.5L16 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
     <symbol id="pin-glyph" viewBox="0 0 24 24">
       <path d="M16 10V4.5C16 3.67 15.33 3 14.5 3H9.5C8.67 3 8 3.67 8 4.5V10C6.5 11.5 5 13 5 14.5C5 15.33 5.67 16 6.5 16H11V21L12 22L13 21V16H17.5C18.33 16 19 15.33 19 14.5C19 13 17.5 11.5 16 10Z" fill="var(--pin-fill, currentColor)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
@@ -2432,7 +2476,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.4.0 - build 09/10/2026 10:30
+        Thư viện Sách HTML v4.6.0 - build 09/10/2026 18:30
       </div>
     </aside>
 
@@ -3042,7 +3086,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.4.0 - build 09/10/2026 10:30
+      Thư viện Sách HTML v4.6.0 - build 09/10/2026 18:30
     </div>
   </div>
 
@@ -3826,20 +3870,20 @@
       <div id="planDetailContentArea" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
         
         <!-- 2. THẺ ĐẾM NGƯỢC CHÍNH (HERO: CÓ NÚT PILL GHIM/BỎ GHIM GÓC TRÊN PHẢI) -->
-        <div id="planHeroCard" class="relative rounded-[14px] bg-[#F5F6FF] dark:bg-[#1A1D28] border border-[#DFE2FF] dark:border-[#2A3045] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all duration-200">
+        <div id="planHeroCard" class="relative rounded-[14px] bg-[#F5F6FF] dark:bg-[#1A1D28] border border-[#DFE2FF] dark:border-[#2A3045] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all duration-300">
           <!-- Nút Pill Ghim/Bỏ ghim thanh mục lục góc trên phải (vùng chạm ≥44px, tooltip rõ ràng) -->
           <button id="btnHeroPinToggle" type="button" class="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer select-none z-10 min-h-[36px]" aria-pressed="true" title="Hiện ở thanh mục lục">
             <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--pin-fg, currentColor);"><use href="#pin-glyph"></use></svg>
             <span id="heroPinToggleText">Đã ghim</span>
           </button>
-          <!-- Vòng SVG đếm ngược 72x72 -->
-          <div class="relative w-[72px] h-[72px] shrink-0 flex items-center justify-center">
-            <svg class="w-[72px] h-[72px] -rotate-90" viewBox="0 0 72 72">
-              <circle cx="36" cy="36" r="30" fill="none" stroke="#E1E4FF" stroke-width="6" class="dark:stroke-white/10" />
+          <!-- Vòng SVG đếm ngược 72x72 (mobile <=480px: 64x64) -->
+          <div class="relative w-[72px] h-[72px] max-[480px]:w-[64px] max-[480px]:h-[64px] shrink-0 flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 72 72">
+              <circle id="planRingTrack" cx="36" cy="36" r="30" fill="none" stroke="#E1E4FF" stroke-width="6" class="dark:stroke-white/10" />
               <circle id="planRingProgress" cx="36" cy="36" r="30" fill="none" stroke="#4F46E5" stroke-width="6" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5" class="text-[#4F46E5] dark:text-indigo-400 transition-[stroke-dashoffset] duration-700 ease-out" />
             </svg>
-            <div id="planRingInnerContent" class="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
-              <span id="planRingDaysNumber" class="text-[22px] font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none">0</span>
+            <div id="planRingInnerContent" class="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none p-1">
+              <span id="planRingDaysNumber" class="text-[22px] font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none flex items-center justify-center">0</span>
               <span id="planRingDaysLabel" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-normal leading-none mt-0.5">ngày</span>
             </div>
             <!-- Hidden Labels for backwards compatibility if needed -->
@@ -3849,9 +3893,9 @@
 
           <!-- Thông tin kế hoạch + Tiến độ + Pill trạng thái -->
           <div class="flex-1 min-w-0 w-full text-center sm:text-left space-y-1.5">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
-              <h4 id="planDetailName" class="font-serif font-bold text-[16px] text-[#1C1917] dark:text-[#EDECE8] truncate">Tên Kế hoạch</h4>
-              <!-- Status pill: Hôm nay 2 bài / Đúng tiến độ / Chậm 1 bài / Nhanh hơn 2 bài -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 pr-20 sm:pr-24">
+              <h4 id="planDetailName" class="font-serif font-bold text-[16px] text-[#1C1917] dark:text-[#EDECE8] truncate min-w-0">Tên Kế hoạch</h4>
+              <!-- Status pill: Hôm nay 2 bài / Đúng tiến độ / Chậm 1 bài / Nhanh hơn 2 bài (Ẩn khi hoàn thành) -->
               <span id="planPaceStatusBadge" class="self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300">Đúng tiến độ</span>
             </div>
             
@@ -3868,52 +3912,70 @@
                 <span id="planDailyCapNotice" class="text-[10px]"></span>
               </div>
               <!-- Dòng chúc mừng hoàn thành 100% trong hero card -->
-              <div id="planDetailCompletedRow" class="hidden items-center gap-1.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 pt-0.5">
-                <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                <span>Bạn đã hoàn thành kế hoạch này</span>
+              <div id="planDetailCompletedRow" class="hidden items-start gap-2.5 text-[13px] border-t border-[#86efac]/60 dark:border-[#22c55e]/30 pt-2.5 mt-2">
+                <span class="w-[22px] h-[22px] rounded-full bg-[#16a34a] dark:bg-[#22c55e] text-white flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                  <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4.5 4.5L19 7"/></svg>
+                </span>
+                <div class="flex-1 min-w-0">
+                  <p class="font-bold text-[13px] text-[#166534] dark:text-[#86efac] leading-tight">Bạn đã hoàn thành kế hoạch này</p>
+                  <p id="planCompletionSubtitle" class="text-[12px] font-medium text-[#15803d] dark:text-[#4ade80] leading-tight mt-0.5"></p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 3. KHU VỰC LỊCH: CHUYỂN ĐỔI CHẾ ĐỘ XEM TUẦN & THÁNG -->
+        <!-- 3. KHU VỰC LỊCH: CHUYỂN ĐỔI CHẾ ĐỘ XEM TUẦN & THÁNG (GOM GỌN 1 HÀNG ~36PX) -->
         <div class="space-y-2 pt-1">
-          <!-- Thanh chuyển chế độ Tuần | Tháng + Bộ lọc kế hoạch -->
-          <div class="flex items-center justify-between pb-1">
-            <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium" role="tablist" aria-label="Chế độ xem lịch">
-              <button id="btnPlanViewWeek" type="button" class="touch-target px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400" role="tab" aria-selected="true">
+          <!-- Thanh điều khiển lịch tích hợp 1 hàng -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-0.5 min-h-[36px]">
+            <!-- Chuyển chế độ Tuần | Tháng -->
+            <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium shrink-0 h-9 items-center" role="tablist" aria-label="Chế độ xem lịch">
+              <button id="btnPlanViewWeek" type="button" class="touch-target px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 h-8 flex items-center" role="tab" aria-selected="true">
                 Tuần
               </button>
-              <button id="btnPlanViewMonth" type="button" class="touch-target px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8]" role="tab" aria-selected="false">
+              <button id="btnPlanViewMonth" type="button" class="touch-target px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] h-8 flex items-center" role="tab" aria-selected="false">
                 Tháng
               </button>
             </div>
 
-            <!-- Bộ lọc kế hoạch (khi xem tháng hoặc có nhiều kế hoạch) -->
-            <div id="planMonthFilterContainer" class="hidden items-center gap-1.5 text-xs">
-              <label for="planMonthFilterSelect" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-medium hidden sm:inline">Kế hoạch:</label>
-              <select id="planMonthFilterSelect" class="bg-[#FAF9F5] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-lg text-xs py-1 px-2 text-[#1C1917] dark:text-[#EDECE8] focus:outline-none focus:ring-1 focus:ring-indigo-500 max-w-[140px] sm:max-w-[180px] truncate" aria-label="Lọc kế hoạch hiển thị">
-                <option value="all">Tất cả kế hoạch</option>
-              </select>
+            <!-- Cụm điều hướng thời gian & Hôm nay -->
+            <div class="flex items-center gap-1.5 shrink-0 ml-auto">
+              <!-- Điều hướng Tuần -->
+              <div id="planWeekNavGroup" class="flex items-center gap-1">
+                <button id="btnPlanPrevWeek" type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tuần trước">
+                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <span id="planWeekRangeLabel" class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] min-w-[76px] text-center">05/10 - 11/10</span>
+                <button id="btnPlanNextWeek" type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tuần sau">
+                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button id="btnPlanJumpToday" type="button" class="touch-target px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#4F46E5] dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition cursor-pointer h-8 flex items-center">Hôm nay</button>
+              </div>
+
+              <!-- Điều hướng Tháng (ẩn khi ở tuần) -->
+              <div id="planMonthNavGroup" class="hidden flex items-center gap-1">
+                <button id="btnPlanPrevMonth" type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tháng trước">
+                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <span id="planMonthTitleLabel" class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] min-w-[96px] text-center">Tháng 10, 2026</span>
+                <button id="btnPlanNextMonth" type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tháng sau">
+                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button id="btnPlanMonthJumpToday" type="button" class="touch-target px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#4F46E5] dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition cursor-pointer h-8 flex items-center">Hôm nay</button>
+              </div>
+
+              <!-- Bộ lọc kế hoạch -->
+              <div id="planMonthFilterContainer" class="hidden items-center gap-1 text-xs">
+                <select id="planMonthFilterSelect" class="bg-[#FAF9F5] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-lg text-xs py-1 px-2 text-[#1C1917] dark:text-[#EDECE8] focus:outline-none focus:ring-1 focus:ring-indigo-500 max-w-[130px] sm:max-w-[170px] truncate h-8" aria-label="Lọc kế hoạch hiển thị">
+                  <option value="all">Tất cả</option>
+                </select>
+              </div>
             </div>
           </div>
 
           <!-- 3A. DẢI TUẦN (WEEK STRIP) -->
           <div id="planWeekViewContainer" class="space-y-2">
-            <!-- Điều hướng tuần -->
-            <div class="flex items-center justify-between px-0.5">
-              <button id="btnPlanPrevWeek" type="button" class="touch-target w-9 h-9 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tuần trước">
-                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-              <div class="flex items-center gap-2">
-                <span id="planWeekRangeLabel" class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8]">05/10 - 11/10</span>
-                <button id="btnPlanJumpToday" type="button" class="touch-target px-2 py-0.5 rounded-md text-[11px] font-medium text-[#4F46E5] dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition cursor-pointer">Hôm nay</button>
-              </div>
-              <button id="btnPlanNextWeek" type="button" class="touch-target w-9 h-9 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tuần sau">
-                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            </div>
-
             <!-- Lưới 7 ngày tuần -->
             <div id="planWeekStripContainer" class="grid grid-cols-7 gap-1 sm:gap-1.5 select-none">
               <!-- 7 day cells dynamic -->
@@ -3922,20 +3984,6 @@
 
           <!-- 3B. LƯỚI THÁNG (MONTH VIEW) -->
           <div id="planMonthViewContainer" class="hidden space-y-2 select-none">
-            <!-- Điều hướng tháng -->
-            <div class="flex items-center justify-between px-0.5">
-              <button id="btnPlanPrevMonth" type="button" class="touch-target w-9 h-9 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tháng trước">
-                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-              <div class="flex items-center gap-2">
-                <span id="planMonthTitleLabel" class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">Tháng 10, 2026</span>
-                <button id="btnPlanMonthJumpToday" type="button" class="touch-target px-2 py-0.5 rounded-md text-[11px] font-medium text-[#4F46E5] dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition cursor-pointer">Hôm nay</button>
-              </div>
-              <button id="btnPlanNextMonth" type="button" class="touch-target w-9 h-9 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tháng sau">
-                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            </div>
-
             <!-- Dòng tóm tắt tháng -->
             <div id="planMonthSummaryLine" class="text-center text-[11px] text-[#6E6B65] dark:text-[#979DA8] pb-0.5">
               Đang tính lịch học...
@@ -8903,63 +8951,160 @@
       }
     }
 
-    const UI_CATEGORY_EXPANDED_KEY = 'ui_category_expanded';
+    // =========================================================================
+    // SIDEBAR SECTION COLLAPSE / EXPAND STATE (OFFLINE-FIRST, DEVICE-LOCAL)
+    // =========================================================================
+    const SIDEBAR_SECTION_STATE_KEY = 'sidebar_section_state_v1';
+    let sidebarSectionState = {
+      v: 1,
+      open: {} // { [sectionKey]: boolean }
+    };
+    let searchSectionStateSnapshot = null;
 
-    function loadCategoryExpandedState() {
+    function logSidebarDebug(...args) {
       try {
-        const raw = localStorage.getItem(UI_CATEGORY_EXPANDED_KEY);
-        if (!raw) {
-          state.categoryExpanded = {};
-          return;
+        if (localStorage.getItem('debugSidebar') === '1') {
+          console.log('[SidebarState]', ...args);
         }
-        const data = JSON.parse(raw);
-        if (data && typeof data === 'object') {
-          const exp = data.expanded || data;
-          state.categoryExpanded = (typeof exp === 'object' && exp !== null) ? { ...exp } : {};
+      } catch (_) {}
+    }
+
+    function getNormalizedSectionKey(cat) {
+      if (!cat) return '__uncategorized__';
+      if (typeof cat === 'string') return cat;
+      if (cat.id) return String(cat.id);
+      if (cat.title) return 'cat_' + String(cat.title).trim().toLowerCase().replace(/\s+/g, '_');
+      return '__uncategorized__';
+    }
+
+    function loadSidebarSectionState() {
+      try {
+        const raw = localStorage.getItem(SIDEBAR_SECTION_STATE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object' && parsed.open && typeof parsed.open === 'object') {
+            sidebarSectionState = {
+              v: 1,
+              open: { ...parsed.open }
+            };
+            state.categoryExpanded = { ...sidebarSectionState.open };
+            logSidebarDebug('READ: loaded from v1 store', sidebarSectionState.open);
+            return;
+          }
         }
-      } catch (e) {
-        console.warn("Lỗi đọc ui_category_expanded:", e);
+        // Fallback: Migrate từ ui_category_expanded cũ nếu có
+        const oldRaw = localStorage.getItem('ui_category_expanded');
+        if (oldRaw) {
+          const oldData = JSON.parse(oldRaw);
+          const oldExp = (oldData && typeof oldData === 'object') ? (oldData.expanded || oldData) : null;
+          if (oldExp && typeof oldExp === 'object') {
+            sidebarSectionState = {
+              v: 1,
+              open: { ...oldExp }
+            };
+            state.categoryExpanded = { ...sidebarSectionState.open };
+            saveSidebarSectionState();
+            logSidebarDebug('READ: migrated from legacy ui_category_expanded', sidebarSectionState.open);
+            return;
+          }
+        }
+        sidebarSectionState = { v: 1, open: {} };
+        state.categoryExpanded = {};
+        logSidebarDebug('READ: initialized with empty state');
+      } catch (err) {
+        console.warn("Lỗi loadSidebarSectionState:", err);
+        sidebarSectionState = { v: 1, open: {} };
         state.categoryExpanded = {};
       }
     }
 
-    function saveCategoryExpandedState() {
+    function saveSidebarSectionState() {
       try {
-        const validCatIds = new Set((state.categories || []).map(c => c.id));
-        validCatIds.add('__uncategorized__');
-
-        const cleanedExpanded = {};
-        for (const [cid, val] of Object.entries(state.categoryExpanded || {})) {
-          if (validCatIds.has(cid)) {
-            cleanedExpanded[cid] = Boolean(val);
-          }
+        if (!sidebarSectionState || typeof sidebarSectionState !== 'object') {
+          sidebarSectionState = { v: 1, open: {} };
         }
-        state.categoryExpanded = cleanedExpanded;
+        if (!sidebarSectionState.open || typeof sidebarSectionState.open !== 'object') {
+          sidebarSectionState.open = {};
+        }
+        // Đồng bộ 2 chiều với state.categoryExpanded
+        state.categoryExpanded = { ...sidebarSectionState.open };
 
         const payload = {
-          schemaVersion: 1,
-          expanded: cleanedExpanded,
+          v: 1,
+          open: sidebarSectionState.open,
           updatedAt: Date.now()
         };
-        localStorage.setItem(UI_CATEGORY_EXPANDED_KEY, JSON.stringify(payload));
-      } catch (e) {
-        console.warn("Lỗi lưu ui_category_expanded:", e);
+        localStorage.setItem(SIDEBAR_SECTION_STATE_KEY, JSON.stringify(payload));
+        // Ghi tương thích ngược cho các đoạn mã ngoài nếu có
+        localStorage.setItem('ui_category_expanded', JSON.stringify({
+          schemaVersion: 1,
+          expanded: sidebarSectionState.open,
+          updatedAt: Date.now()
+        }));
+        logSidebarDebug('WRITE: saved state to localStorage', sidebarSectionState.open);
+      } catch (err) {
+        console.warn("Lỗi saveSidebarSectionState:", err);
       }
     }
 
-    function pruneCategoryExpandedState() {
-      if (!state.categoryExpanded) return;
-      const validCatIds = new Set((state.categories || []).map(c => c.id));
-      validCatIds.add('__uncategorized__');
+    function isSectionOpen(key) {
+      if (!sidebarSectionState || !sidebarSectionState.open) return true;
+      if (typeof sidebarSectionState.open[key] === 'boolean') {
+        return sidebarSectionState.open[key];
+      }
+      // Mục mới xuất hiện lần đầu: mặc định MỞ (true) và ghi nhận vào state
+      sidebarSectionState.open[key] = true;
+      if (!state.categoryExpanded) state.categoryExpanded = {};
+      state.categoryExpanded[key] = true;
+      return true;
+    }
+
+    function setSectionOpen(key, isOpen) {
+      if (!sidebarSectionState || !sidebarSectionState.open) {
+        sidebarSectionState = { v: 1, open: {} };
+      }
+      const val = Boolean(isOpen);
+      sidebarSectionState.open[key] = val;
+      if (!state.categoryExpanded) state.categoryExpanded = {};
+      state.categoryExpanded[key] = val;
+      logSidebarDebug(`WRITE: ${key} = ${val ? 'open' : 'closed'}`);
+      saveSidebarSectionState();
+    }
+
+    function pruneSidebarSectionState() {
+      // CHỈ dọn dẹp khi danh sách mục đã nạp đầy đủ (không dọn khi mảng rỗng lúc mới mở app kẻo xóa nhầm)
+      if (!state.categories || state.categories.length === 0) return;
+      if (!sidebarSectionState || !sidebarSectionState.open) return;
+
+      const validKeys = new Set();
+      state.categories.forEach(c => {
+        if (c && c.id) validKeys.add(String(c.id));
+        if (c && c.title) validKeys.add(getNormalizedSectionKey(c));
+      });
+      validKeys.add('__uncategorized__');
+      validKeys.add('__recent__');
+
       let changed = false;
-      for (const cid of Object.keys(state.categoryExpanded)) {
-        if (!validCatIds.has(cid)) {
-          delete state.categoryExpanded[cid];
+      for (const key of Object.keys(sidebarSectionState.open)) {
+        if (!validKeys.has(key)) {
+          delete sidebarSectionState.open[key];
+          if (state.categoryExpanded) delete state.categoryExpanded[key];
           changed = true;
         }
       }
-      if (changed) saveCategoryExpandedState();
+      if (changed) {
+        logSidebarDebug('PRUNE: removed orphaned section keys');
+        saveSidebarSectionState();
+      }
     }
+
+    // Tương thích ngược với các tên hàm cũ
+    function loadCategoryExpandedState() { return loadSidebarSectionState(); }
+    function saveCategoryExpandedState() { return saveSidebarSectionState(); }
+    function pruneCategoryExpandedState() { return pruneSidebarSectionState(); }
+
+    // Đọc trạng thái đồng bộ ngay khi nạp script
+    loadSidebarSectionState();
 
     function loadLocalState() {
       state.useLocalFallback = true;
@@ -11763,11 +11908,12 @@
         const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
         const filteredLessons = filterLessonsList(allCatLessons);
-        const isExpanded = state.categoryExpanded[cat.id] !== false;
+        const isExpanded = isSectionOpen(cat.id);
+        logSidebarDebug(`RENDER: ${cat.id} applying ${isExpanded ? 'open' : 'closed'}`);
 
         html += `
           <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-all duration-200 ${progressPercent === 100 && totalCount > 0 ? 'is-group-completed' : ''}" data-cat-id="${cat.id}">
-            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isExpanded ? 'is-expanded' : ''}" data-toggle-cat="${cat.id}">
+            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isExpanded ? 'is-expanded' : ''}" data-toggle-cat="${cat.id}" role="button" tabindex="0" aria-expanded="${isExpanded ? 'true' : 'false'}" aria-controls="cat-grid-${cat.id}">
               <div class="flex items-center gap-1.5 flex-1 min-w-0 pr-1">
                 <div class="flex items-center text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-up="${cat.id}" title="Di chuyển mục lên"><svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg></button>
@@ -11801,7 +11947,7 @@
               <div class="category-progress-fill" style="width: ${progressPercent}%;"></div>
             </div>
 
-            <div class="category-lessons-grid ${isExpanded ? 'is-expanded' : ''}" data-cat-grid="${cat.id}">
+            <div id="cat-grid-${cat.id}" class="category-lessons-grid ${isExpanded ? 'is-expanded' : ''}" data-cat-grid="${cat.id}" ${!isExpanded ? 'hidden inert' : ''}>
               <div class="category-lessons-inner p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredLessons.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Mục này chưa có bài học phù hợp.</p>
@@ -11825,11 +11971,12 @@
         const filteredUncat = filterLessonsList(uncategorizedLessons);
         const completedUncat = uncategorizedLessons.filter(l => l.isCompleted).length;
         const totalUncat = uncategorizedLessons.length;
-        const isUncatExpanded = state.categoryExpanded['__uncategorized__'] !== false;
+        const isUncatExpanded = isSectionOpen('__uncategorized__');
+        logSidebarDebug(`RENDER: __uncategorized__ applying ${isUncatExpanded ? 'open' : 'closed'}`);
 
         html += `
           <div class="border border-dashed border-indigo-300 dark:border-indigo-800 rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-shadow duration-200" data-cat-id="__uncategorized__">
-            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isUncatExpanded ? 'is-expanded' : ''}" data-toggle-cat="__uncategorized__">
+            <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isUncatExpanded ? 'is-expanded' : ''}" data-toggle-cat="__uncategorized__" role="button" tabindex="0" aria-expanded="${isUncatExpanded ? 'true' : 'false'}" aria-controls="cat-grid-__uncategorized__">
               <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
                 <svg class="cat-chevron w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"><use href="#icon-chevron-right"></use></svg>
                 <span class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] leading-tight break-words">
@@ -11851,7 +11998,7 @@
               <div class="category-progress-fill" style="width: ${totalUncat > 0 ? Math.round((completedUncat / totalUncat) * 100) : 0}%;"></div>
             </div>
 
-            <div class="category-lessons-grid ${isUncatExpanded ? 'is-expanded' : ''}" data-cat-grid="__uncategorized__">
+            <div id="cat-grid-__uncategorized__" class="category-lessons-grid ${isUncatExpanded ? 'is-expanded' : ''}" data-cat-grid="__uncategorized__" ${!isUncatExpanded ? 'hidden inert' : ''}>
               <div class="category-lessons-inner p-1 space-y-1 bg-[#F7F7F5]/40 dark:bg-[#0F1115]/30">
                 ${filteredUncat.length === 0 ? `
                   <p class="text-[11px] text-center text-[#6B6B66] dark:text-[#9AA3B2] py-2">Không có bài học phù hợp bộ lọc.</p>
@@ -11937,18 +12084,23 @@
           if (e.target.closest('button')) return;
           const catId = el.getAttribute('data-toggle-cat');
           const gridEl = container.querySelector(`[data-cat-grid="${catId}"]`);
-          const currentlyExpanded = gridEl ? gridEl.classList.contains('is-expanded') : (state.categoryExpanded[catId] !== false);
+          const currentlyExpanded = isSectionOpen(catId);
           const nextExpanded = !currentlyExpanded;
-          state.categoryExpanded[catId] = nextExpanded;
-          saveCategoryExpandedState();
+          
+          setSectionOpen(catId, nextExpanded);
 
           if (gridEl) {
+            el.setAttribute('aria-expanded', nextExpanded ? 'true' : 'false');
             if (nextExpanded) {
+              gridEl.removeAttribute('hidden');
+              gridEl.removeAttribute('inert');
               gridEl.classList.add('is-expanded');
               el.classList.add('is-expanded');
             } else {
               gridEl.classList.remove('is-expanded');
               el.classList.remove('is-expanded');
+              gridEl.setAttribute('hidden', '');
+              gridEl.setAttribute('inert', '');
             }
           } else {
             renderCategoriesAndLessons();
@@ -13736,11 +13888,18 @@
       const targetLesson = state.lessons.find(l => l.id === lessonId);
       if (targetLesson) {
         const catId = targetLesson.categoryId || '__uncategorized__';
-        if (state.categoryExpanded[catId] === false) {
+        if (!isSectionOpen(catId)) {
           const gridEl = document.querySelector(`[data-cat-grid="${catId}"]`);
           const headerEl = document.querySelector(`[data-toggle-cat="${catId}"]`);
-          if (gridEl) gridEl.classList.add('is-expanded');
-          if (headerEl) headerEl.classList.add('is-expanded');
+          if (gridEl) {
+            gridEl.removeAttribute('hidden');
+            gridEl.removeAttribute('inert');
+            gridEl.classList.add('is-expanded');
+          }
+          if (headerEl) {
+            headerEl.setAttribute('aria-expanded', 'true');
+            headerEl.classList.add('is-expanded');
+          }
         }
       }
 
@@ -16780,7 +16939,7 @@
 
           let badgeHtml = '';
           if (urgency === 'done') {
-            badgeHtml = `<svg class="w-3 h-3 inline-block mr-0.5 ${isPop ? 'anim-check-pop' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hoàn thành`;
+            badgeHtml = `<svg class="w-3 h-3 inline-block mr-0.5 ${isPop ? 'anim-check-pop' : ''}"><use href="#check-glyph"></use></svg>Hoàn thành`;
           } else if (sched.isTodayExam) {
             badgeHtml = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Hôm nay thi`;
           } else if (sched.daysLeft === 1) {
@@ -17003,11 +17162,24 @@
         }
       }
 
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isPop = plansCompletedInSession.has(plan.id);
+
       // Dòng chúc mừng hoàn thành trong hero
       if (completedRow) {
         if (urgency === 'done') {
           completedRow.classList.remove('hidden');
           completedRow.classList.add('flex');
+          const subtitleEl = document.getElementById('planCompletionSubtitle');
+          if (subtitleEl) {
+            if (sched.isTodayExam) {
+              subtitleEl.innerText = "Hôm nay là ngày thi! Chúc bạn làm bài thật tốt!";
+            } else if (sched.isPast) {
+              subtitleEl.innerText = `Kỳ thi đã diễn ra (${formatVietnameseDateOnly(plan.examDate)})`;
+            } else {
+              subtitleEl.innerText = `Còn ${sched.daysLeft} ngày để ôn lại trước ngày thi (${formatVietnameseDateOnly(plan.examDate)})`;
+            }
+          }
           const announcer = document.getElementById('planCompletionLiveAnnouncer');
           if (announcer) {
             announcer.innerText = `Chúc mừng! Bạn đã hoàn thành toàn bộ bài học trong kế hoạch ${plan.name}.`;
@@ -17020,43 +17192,44 @@
 
       // Màu viền vòng đếm ngược theo urgency
       const isDark = document.documentElement.classList.contains('dark');
-      let ringStrokeColor = '#16a34a';
+      let ringStrokeColor = isDark ? '#22c55e' : '#16a34a';
       if (urgency === 'soon') {
         ringStrokeColor = isDark ? '#fbbf24' : '#f59e0b';
       } else if (urgency === 'urgent') {
         ringStrokeColor = isDark ? '#f43f5e' : '#e11d48';
       } else if (urgency === 'passed') {
         ringStrokeColor = isDark ? '#94a3b8' : '#9ca3af';
-      } else {
-        ringStrokeColor = isDark ? '#22c55e' : '#16a34a';
       }
 
+      // Pill trạng thái góc trên phải: ẨN HOÀN TOÀN khi đã hoàn thành để tránh lặp nhãn
       if (paceBadge) {
         if (urgency === 'done') {
-          paceBadge.innerHTML = `<svg class="w-3 h-3 inline-block mr-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hoàn thành`;
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/60 dark:text-emerald-300";
-        } else if (sched.isTodayExam) {
-          paceBadge.innerText = "Hôm nay thi!";
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#9F1239] dark:bg-rose-950/60 dark:text-rose-300";
-        } else if (sched.isPast) {
-          paceBadge.innerText = "Đã kết thúc";
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
-        } else if (sched.todayRequiredCount > 0) {
-          paceBadge.innerText = `Hôm nay ${sched.todayRequiredCount} bài`;
-          paceBadge.className = `self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${urgency === 'urgent' ? 'bg-[#FFE4E6] text-[#9F1239] dark:bg-rose-950/50 dark:text-rose-300' : 'bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950/50 dark:text-amber-300'}`;
-        } else if (sched.paceStatus === 'ahead') {
-          paceBadge.innerText = sched.paceText;
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E0F2FE] text-[#0369A1] dark:bg-sky-950/50 dark:text-sky-300";
-        } else if (sched.paceStatus === 'behind') {
-          paceBadge.innerText = sched.paceText;
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#BE123C] dark:bg-rose-950/50 dark:text-rose-300";
+          paceBadge.classList.add('hidden');
         } else {
-          paceBadge.innerText = "Đúng tiến độ";
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300";
+          paceBadge.classList.remove('hidden');
+          if (sched.isTodayExam) {
+            paceBadge.innerText = "Hôm nay thi!";
+            paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#9F1239] dark:bg-rose-950/60 dark:text-rose-300";
+          } else if (sched.isPast) {
+            paceBadge.innerText = "Đã kết thúc";
+            paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+          } else if (sched.todayRequiredCount > 0) {
+            paceBadge.innerText = `Hôm nay ${sched.todayRequiredCount} bài`;
+            paceBadge.className = `self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${urgency === 'urgent' ? 'bg-[#FFE4E6] text-[#9F1239] dark:bg-rose-950/50 dark:text-rose-300' : 'bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950/50 dark:text-amber-300'}`;
+          } else if (sched.paceStatus === 'ahead') {
+            paceBadge.innerText = sched.paceText;
+            paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E0F2FE] text-[#0369A1] dark:bg-sky-950/50 dark:text-sky-300";
+          } else if (sched.paceStatus === 'behind') {
+            paceBadge.innerText = sched.paceText;
+            paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#BE123C] dark:bg-rose-950/50 dark:text-rose-300";
+          } else {
+            paceBadge.innerText = "Đúng tiến độ";
+            paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300";
+          }
         }
       }
 
-      // Countdown SVG circle (circumference 2 * PI * 30 ~= 188.495)
+      // Countdown SVG circle (chu vi 2 * PI * 30 ~= 188.495)
       const C = 188.5;
       const createdDate = parseDateOnly((plan.createdAt || todayStr).slice(0, 10));
       const examDateObj = parseDateOnly(plan.examDate);
@@ -17068,40 +17241,64 @@
 
       if (ringDaysNumber && ringDaysLabel) {
         if (urgency === 'done') {
-          const isPop = plansCompletedInSession.has(plan.id);
-          ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-7 h-7 text-emerald-600 dark:text-emerald-400 mx-auto ${isPop ? 'anim-check-pop' : ''}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
-          ringDaysLabel.innerText = "HOÀN THÀNH";
-          ringDaysLabel.className = "text-[10px] font-bold text-emerald-700 dark:text-emerald-400 leading-none mt-1";
-        } else if (sched.isTodayExam) {
-          ringDaysNumber.innerText = "Hôm nay";
-          ringDaysNumber.className = "text-[14px] font-bold text-rose-600 dark:text-rose-400 leading-none";
-          ringDaysLabel.innerText = "THI";
-        } else if (sched.isPast) {
-          ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-6 h-6 text-gray-500 dark:text-gray-400 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`;
-          ringDaysLabel.innerText = "Đã qua";
+          // BÊN TRONG VÒNG TRÒN: CHỈ DẤU TÍCH SVG 24x37.5l8.5 8.5L49 28, HOÀN TOÀN KHÔNG CÓ CHỮ
+          ringDaysNumber.innerHTML = `<svg viewBox="0 0 72 72" class="w-full h-full text-emerald-600 dark:text-emerald-400 ${isPop && !prefersReduced ? 'anim-check-pop' : ''}" fill="none"><path d="M24 37.5l8.5 8.5L49 28" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+          ringDaysNumber.className = "w-full h-full flex items-center justify-center p-1";
+          ringDaysLabel.innerText = "";
+          ringDaysLabel.className = "hidden";
+
+          if (progressRatio) {
+            progressRatio.innerHTML = `<span class="font-medium">${sched.completedCount}/${sched.totalLessons} bài đã học</span><span class="font-bold text-emerald-700 dark:text-emerald-400">100%</span>`;
+          }
         } else {
-          ringDaysNumber.innerText = sched.daysLeft;
-          ringDaysNumber.className = "text-[22px] font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none";
-          ringDaysLabel.innerText = "ngày";
+          ringDaysLabel.className = "text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-normal leading-none mt-0.5";
+          if (sched.isTodayExam) {
+            ringDaysNumber.innerText = "Hôm nay";
+            ringDaysNumber.className = "text-[14px] font-bold text-rose-600 dark:text-rose-400 leading-none";
+            ringDaysLabel.innerText = "THI";
+          } else if (sched.isPast) {
+            ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-6 h-6 text-gray-500 dark:text-gray-400 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`;
+            ringDaysNumber.className = "w-full h-full flex items-center justify-center";
+            ringDaysLabel.innerText = "Đã qua";
+          } else {
+            ringDaysNumber.innerText = sched.daysLeft;
+            ringDaysNumber.className = "text-[22px] font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none";
+            ringDaysLabel.innerText = "ngày";
+          }
         }
       }
 
       if (ringCircle) {
         ringCircle.style.stroke = ringStrokeColor;
         ringCircle.style.strokeDasharray = `${C}`;
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (isInitialOpen && !prefersReduced) {
-          ringCircle.style.transition = 'none';
-          ringCircle.style.strokeDashoffset = `${C}`;
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              ringCircle.style.transition = 'stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1)';
-              ringCircle.style.strokeDashoffset = `${targetOffset}`;
-            }, 40);
-          });
+        if (urgency === 'done') {
+          if (isPop && !prefersReduced) {
+            ringCircle.style.transition = 'none';
+            ringCircle.style.strokeDashoffset = `${C}`;
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                ringCircle.style.transition = 'stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1)';
+                ringCircle.style.strokeDashoffset = '0';
+              }, 40);
+            });
+          } else {
+            ringCircle.style.transition = 'none';
+            ringCircle.style.strokeDashoffset = '0';
+          }
         } else {
-          ringCircle.style.transition = prefersReduced ? 'none' : 'stroke-dashoffset 400ms ease';
-          ringCircle.style.strokeDashoffset = `${targetOffset}`;
+          if (isInitialOpen && !prefersReduced) {
+            ringCircle.style.transition = 'none';
+            ringCircle.style.strokeDashoffset = `${C}`;
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                ringCircle.style.transition = 'stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1)';
+                ringCircle.style.strokeDashoffset = `${targetOffset}`;
+              }, 40);
+            });
+          } else {
+            ringCircle.style.transition = prefersReduced ? 'none' : 'stroke-dashoffset 400ms ease';
+            ringCircle.style.strokeDashoffset = `${targetOffset}`;
+          }
         }
       }
 
@@ -17132,17 +17329,22 @@
       const monthContainer = document.getElementById('planMonthViewContainer');
       const filterContainer = document.getElementById('planMonthFilterContainer');
 
+      const weekNav = document.getElementById('planWeekNavGroup');
+      const monthNav = document.getElementById('planMonthNavGroup');
+
       if (mode === 'month') {
         if (btnMonth) {
-          btnMonth.className = "touch-target px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400";
+          btnMonth.className = "touch-target px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 h-8 flex items-center";
           btnMonth.setAttribute('aria-selected', 'true');
         }
         if (btnWeek) {
-          btnWeek.className = "touch-target px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8]";
+          btnWeek.className = "touch-target px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] h-8 flex items-center";
           btnWeek.setAttribute('aria-selected', 'false');
         }
         if (weekContainer) weekContainer.classList.add('hidden');
         if (monthContainer) monthContainer.classList.remove('hidden');
+        if (weekNav) weekNav.classList.add('hidden');
+        if (monthNav) monthNav.classList.remove('hidden');
 
         const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
         if (filterContainer) {
@@ -17156,15 +17358,17 @@
         }
       } else {
         if (btnWeek) {
-          btnWeek.className = "touch-target px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400";
+          btnWeek.className = "touch-target px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 h-8 flex items-center";
           btnWeek.setAttribute('aria-selected', 'true');
         }
         if (btnMonth) {
-          btnMonth.className = "touch-target px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8]";
+          btnMonth.className = "touch-target px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] h-8 flex items-center";
           btnMonth.setAttribute('aria-selected', 'false');
         }
         if (weekContainer) weekContainer.classList.remove('hidden');
         if (monthContainer) monthContainer.classList.add('hidden');
+        if (monthNav) monthNav.classList.add('hidden');
+        if (weekNav) weekNav.classList.remove('hidden');
         if (filterContainer) {
           filterContainer.classList.add('hidden');
           filterContainer.classList.remove('flex');
@@ -17632,7 +17836,7 @@
 
         let badgeHtml = '';
         if (pUrgency === 'done') {
-          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300">Hoàn thành</span>`;
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300"><svg class="w-3 h-3 shrink-0"><use href="#check-glyph"></use></svg>Hoàn thành</span>`;
         } else if (sc.isTodayExam) {
           badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300">Hôm nay thi</span>`;
         } else if (sc.isPast) {
@@ -18336,6 +18540,11 @@
 
 
     async function bootApp() {
+      try {
+        loadSidebarSectionState();
+      } catch (err) {
+        console.warn("Lỗi loadSidebarSectionState trong bootApp:", err);
+      }
       try {
         loadLocalStudyPlans();
         renderSidebarPlans();
@@ -22408,13 +22617,19 @@
     window.loadCategoryExpandedState = loadCategoryExpandedState;
     window.saveCategoryExpandedState = saveCategoryExpandedState;
     window.pruneCategoryExpandedState = pruneCategoryExpandedState;
+    window.loadSidebarSectionState = loadSidebarSectionState;
+    window.saveSidebarSectionState = saveSidebarSectionState;
+    window.pruneSidebarSectionState = pruneSidebarSectionState;
+    window.isSectionOpen = isSectionOpen;
+    window.setSectionOpen = setSectionOpen;
+    window.sidebarSectionState = sidebarSectionState;
     window.getPlanUrgencyLevel = getPlanUrgencyLevel;
     window.renderCategoriesAndLessons = renderCategoriesAndLessons;
     window.updateLessonField = updateLessonField;
     window.PLAN_URGENCY = PLAN_URGENCY;
     window.plansCompletedInSession = plansCompletedInSession;
 
-    console.log("%c Thư viện Sách HTML v4.5.0 - build 09/10/2026 15:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.6.0 - build 09/10/2026 18:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
