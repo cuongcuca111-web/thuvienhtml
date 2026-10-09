@@ -1130,6 +1130,18 @@
 <body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
   <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
   <svg id="icon-sprite" style="display: none;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="plan-glyph" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="4.5" width="17" height="16.5" rx="4"/>
+        <path d="M3.5 9.5h17M8 2.8v3.4M16 2.8v3.4"/>
+      </g>
+      <g fill="currentColor">
+        <circle cx="8" cy="13.5" r="1"/><circle cx="12" cy="13.5" r="1"/><circle cx="16" cy="13.5" r="1"/>
+        <circle cx="8" cy="17" r="1"/><circle cx="12" cy="17" r="1"/>
+      </g>
+      <circle cx="16" cy="17" r="2" fill="var(--dot,currentColor)"/>
+    </symbol>
+
     <symbol id="icon-logo" viewBox="0 0 24 24">
       <path d="M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M12 6.5V18.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
@@ -1585,9 +1597,9 @@
           <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
             <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
           </button>
-          <button id="btnHeaderStudyPlan" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 relative" title="Lịch thi & Kế hoạch học tập" aria-label="Lịch thi & Kế hoạch">
-            <svg class="w-4 h-4"><use href="#icon-calendar"></use></svg>
-            <span id="planHeaderBadge" class="hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-600"></span>
+          <button id="btnHeaderStudyPlan" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 relative" title="Lịch thi & Kế hoạch" aria-label="Lịch thi và kế hoạch học tập">
+            <svg class="w-4 h-4"><use href="#plan-glyph"></use></svg>
+            <span id="planHeaderBadge" class="hidden absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
           </button>
           <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
             <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
@@ -3411,219 +3423,290 @@
   </div>
 
   <!-- MODAL: LỊCH THI & KẾ HOẠCH HỌC TẬP (STUDY PLAN DASHBOARD) -->
-  <div id="studyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-2xl max-h-[92dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
-      <!-- Header -->
-      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#111317]">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4"><use href="#icon-calendar"></use></svg>
+    <!-- MODAL: LỊCH THI & KẾ HOẠCH HỌC TẬP (REDESIGNED EDITORIAL / MINIMALIST) -->
+  <div id="studyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#16181E] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-[640px] max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] transition-all">
+      
+      <!-- 1. HEADER (Cố định, nền kem #faf7f0 ở light, #16181E ở dark, đường kẻ dưới mảnh) -->
+      <div class="p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF7F0] dark:bg-[#16181E]">
+        <div class="flex items-center gap-3 min-w-0">
+          <!-- Logo 40x40 rounded-12px bg-indigo-600 with plan-glyph and amber exam dot -->
+          <div class="w-10 h-10 rounded-[12px] bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-2xs">
+            <svg class="w-6 h-6 text-white" style="--dot: #FCD34D;"><use href="#plan-glyph"></use></svg>
           </div>
           <div class="min-w-0">
-            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] truncate">Lịch thi &amp; Kế hoạch học tập</h3>
-            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate">Đếm ngược hạn chót và phân bổ số bài cần học mỗi ngày</p>
+            <h3 class="font-serif font-bold text-[17px] text-[#1C1917] dark:text-[#EDECE8] tracking-tight leading-snug truncate">Lịch thi &amp; Kế hoạch học tập</h3>
+            <p class="text-[12px] text-[#6E6B65] dark:text-[#979DA8] leading-tight truncate">Đếm ngược ngày thi, chia đều bài mỗi ngày</p>
           </div>
         </div>
-        <div class="flex items-center gap-1.5 shrink-0">
-          <button id="btnOpenCreatePlanModal" class="touch-target px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 font-semibold text-xs flex items-center gap-1 transition" title="Tạo kế hoạch mới">
-            <svg class="w-3.5 h-3.5"><use href="#icon-plus"></use></svg>
+        
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Nút Tạo kế hoạch pill nhạt, chữ chàm, nền #eef0ff, touch >= 44px -->
+          <button id="btnOpenCreatePlanModal" type="button" class="touch-target inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#EEF0FF] dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-[#4F46E5] dark:text-indigo-400 font-semibold text-xs transition cursor-pointer" title="Tạo kế hoạch mới">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             <span class="hidden sm:inline">Tạo kế hoạch</span>
           </button>
-          <button id="btnCloseStudyPlanModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng modal">
-            <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+          
+          <!-- Nút Đóng (X tự vẽ 44x44px) -->
+          <button id="btnCloseStudyPlanModal" type="button" class="touch-target w-11 h-11 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" aria-label="Đóng bảng kế hoạch">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- Plan Selector Tabs (nếu có nhiều kế hoạch) -->
-      <div id="planTabsContainer" class="px-4 py-2 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/50 dark:bg-[#111317]/50 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
-        <!-- Dynamic plan tabs inserted here -->
-      </div>
+      <!-- Hidden tabs container for backwards compatibility with existing logic -->
+      <div id="planTabsContainer" class="hidden"></div>
 
-      <!-- Modal Body (Cuộn nội dung) -->
+      <!-- MODAL BODY: Cuộn nội dung bên trong -->
       <div id="planDetailContentArea" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
-        <!-- Vòng đếm ngược & Tổng quan -->
-        <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#FAF9F5] via-white to-indigo-50/40 dark:from-[#111317] dark:via-[#161A20] dark:to-indigo-950/20 border border-[#E7E5DF] dark:border-[#262C36] flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-          <!-- Vòng SVG đếm ngược -->
-          <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
-            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="6" class="text-black/5 dark:text-white/5" />
-              <circle id="planRingProgress" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="0" class="text-indigo-600 dark:text-indigo-400 transition-all duration-700" />
+        
+        <!-- 2. THẺ ĐẾM NGƯỢC CHÍNH (HERO) -->
+        <div id="planHeroCard" class="relative rounded-[14px] bg-[#F5F6FF] dark:bg-[#1A1D28] border border-[#DFE2FF] dark:border-[#2A3045] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all duration-200">
+          <!-- Vòng SVG đếm ngược 72x72 -->
+          <div class="relative w-[72px] h-[72px] shrink-0 flex items-center justify-center">
+            <svg class="w-[72px] h-[72px] -rotate-90" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="#E1E4FF" stroke-width="6" class="dark:stroke-white/10" />
+              <circle id="planRingProgress" cx="36" cy="36" r="30" fill="none" stroke="#4F46E5" stroke-width="6" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5" class="text-[#4F46E5] dark:text-indigo-400 transition-[stroke-dashoffset] duration-700 ease-out" />
             </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span id="planRingLabelTop" class="text-[10px] uppercase font-bold tracking-wider text-[#6E6B65] dark:text-[#979DA8]">CÒN</span>
-              <span id="planRingDaysNumber" class="text-3xl font-black font-mono tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none my-0.5">0</span>
-              <span id="planRingLabelBottom" class="text-[10px] font-medium text-[#6E6B65] dark:text-[#979DA8]">ngày</span>
+            <div id="planRingInnerContent" class="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+              <span id="planRingDaysNumber" class="text-[22px] font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none">0</span>
+              <span id="planRingDaysLabel" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-normal leading-none mt-0.5">ngày</span>
             </div>
+            <!-- Hidden Labels for backwards compatibility if needed -->
+            <span id="planRingLabelTop" class="hidden"></span>
+            <span id="planRingLabelBottom" class="hidden"></span>
           </div>
 
-          <!-- Thông tin kế hoạch & Tiến độ -->
-          <div class="flex-1 min-w-0 text-center sm:text-left space-y-2">
-            <div class="flex items-center justify-center sm:justify-between gap-2 flex-wrap">
-              <h4 id="planDetailName" class="font-serif font-bold text-lg text-[#1C1917] dark:text-[#EDECE8] truncate">Tên Kế hoạch</h4>
-              <span id="planPaceStatusBadge" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">Đúng tiến độ</span>
+          <!-- Thông tin kế hoạch + Tiến độ + Pill trạng thái -->
+          <div class="flex-1 min-w-0 w-full text-center sm:text-left space-y-1.5">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+              <h4 id="planDetailName" class="font-serif font-bold text-[16px] text-[#1C1917] dark:text-[#EDECE8] truncate">Tên Kế hoạch</h4>
+              <!-- Status pill: Hôm nay 2 bài / Đúng tiến độ / Chậm 1 bài / Nhanh hơn 2 bài -->
+              <span id="planPaceStatusBadge" class="self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300">Đúng tiến độ</span>
             </div>
-            <p id="planDetailMeta" class="text-xs text-[#6E6B65] dark:text-[#979DA8]">Ngày thi: 2026-10-25 • Đệm ôn tập: 2 ngày</p>
             
-            <!-- Progress Bar -->
+            <p id="planDetailMeta" class="text-[12px] text-[#6E6B65] dark:text-[#979DA8] truncate">Thi thứ Bảy, 10/10/2026</p>
+            
+            <!-- Progress Bar mỏng 6px & tỉ lệ bài học -->
             <div class="space-y-1 pt-1">
-              <div class="flex items-center justify-between text-xs font-mono text-[#1C1917] dark:text-[#EDECE8]">
-                <span>Tiến độ hoàn thành:</span>
-                <span id="planProgressRatio">0 / 0 bài (0%)</span>
+              <div class="w-full h-1.5 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
+                <div id="planDetailProgressBar" class="h-full bg-[#4F46E5] dark:bg-indigo-400 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
-              <div class="w-full h-2 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
-                <div id="planDetailProgressBar" class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div class="flex items-center justify-between text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
+                <span id="planProgressRatio">0/0 bài đã học</span>
+                <span id="planDailyCapNotice" class="text-[10px]"></span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Khối "HÔM NAY CẦN HỌC" -->
-        <div class="space-y-2.5">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
-              <h5 class="font-bold text-xs uppercase tracking-wider text-[#1C1917] dark:text-[#EDECE8]">Hôm nay cần học (<span id="planTodayLessonsCount">0</span> bài)</h5>
+        <!-- 3. DẢI TUẦN (WEEK STRIP - 7 Ô THỨ HAI -> CHỦ NHẬT) -->
+        <div class="space-y-2 pt-1">
+          <!-- Điều hướng tuần -->
+          <div class="flex items-center justify-between px-0.5">
+            <button id="btnPlanPrevWeek" type="button" class="touch-target w-9 h-9 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tuần trước">
+              <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="flex items-center gap-2">
+              <span id="planWeekRangeLabel" class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8]">05/10 - 11/10</span>
+              <button id="btnPlanJumpToday" type="button" class="touch-target px-2 py-0.5 rounded-md text-[11px] font-medium text-[#4F46E5] dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition cursor-pointer">Hôm nay</button>
             </div>
-            <span id="planDailyCapNotice" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]"></span>
-          </div>
-
-          <div id="planTodayLessonsList" class="space-y-2">
-            <!-- Dynamic lesson items for today -->
-          </div>
-        </div>
-
-        <!-- Lịch tuần phân bổ bài học -->
-        <div class="space-y-2.5 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
-          <h5 class="font-bold text-xs uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8]">Lịch học 7 ngày tới</h5>
-          <div id="planWeekScheduleGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <!-- Dynamic week day cards -->
-          </div>
-        </div>
-
-        <!-- Lưới tháng nhỏ (Mini Month Calendar Grid) -->
-        <div class="space-y-2 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
-          <div class="flex items-center justify-between">
-            <h5 class="font-bold text-xs uppercase tracking-wider text-[#6E6B65] dark:text-[#979DA8]">Lưới lịch tháng</h5>
-            <div class="flex items-center gap-3 text-[10px] text-[#6E6B65] dark:text-[#979DA8]">
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-600"></span> Ngày học</span>
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Ngày thi</span>
-            </div>
-          </div>
-          <div id="planMiniMonthGrid" class="p-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317]"></div>
-        </div>
-
-        <!-- Thao tác Kế hoạch: Sửa / Xóa / Lưu trữ -->
-        <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2">
-          <button id="btnDeleteCurrentPlan" class="touch-target px-3 py-1.5 rounded-lg text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
-            Xóa kế hoạch
-          </button>
-          <div class="flex items-center gap-2">
-            <button id="btnEditCurrentPlan" class="touch-target px-3.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] transition">
-              Chỉnh sửa kế hoạch
+            <button id="btnPlanNextWeek" type="button" class="touch-target w-9 h-9 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center transition cursor-pointer" aria-label="Tuần sau">
+              <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
           </div>
+
+          <!-- Lưới 7 ngày tuần -->
+          <div id="planWeekStripContainer" class="grid grid-cols-7 gap-1 sm:gap-1.5 select-none">
+            <!-- 7 day cells dynamic -->
+          </div>
+          <div id="planWeekScheduleGrid" class="hidden"></div>
+          <div id="planMiniMonthGrid" class="hidden"></div>
         </div>
+
+        <!-- 4. HÔM NAY CẦN HỌC (DANH SÁCH BÀI THEO HÀNG GỌN GÀNG) -->
+        <div class="space-y-1.5 pt-1">
+          <div class="flex items-center justify-between pb-1 border-b border-[#E7E5DF] dark:border-[#262C36]">
+            <h5 id="planDayLessonsTitle" class="font-bold text-[13px] text-[#1C1917] dark:text-[#EDECE8]">Hôm nay cần học</h5>
+            <span id="planDayLessonsCounter" class="text-xs font-semibold text-[#4F46E5] dark:text-indigo-400 font-mono">0/0</span>
+          </div>
+          <!-- Hidden count el for backwards compatibility -->
+          <span id="planTodayLessonsCount" class="hidden">0</span>
+
+          <div id="planTodayLessonsList" class="divide-y divide-[#E7E5DF] dark:divide-[#262C36]">
+            <!-- Dynamic lesson rows -->
+          </div>
+        </div>
+
+        <!-- 5. TẤT CẢ KẾ HOẠCH -->
+        <div class="space-y-2 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
+          <div class="flex items-center justify-between">
+            <h5 class="font-bold text-[13px] text-[#1C1917] dark:text-[#EDECE8]">Tất cả kế hoạch</h5>
+          </div>
+
+          <!-- Danh sách các kế hoạch -->
+          <div id="planAllPlansList" class="divide-y divide-[#E7E5DF] dark:divide-[#262C36]">
+            <!-- Dynamic plan rows -->
+          </div>
+
+          <!-- Hàng nét đứt tạo kế hoạch mới -->
+          <button id="btnDottedCreatePlan" type="button" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#C7C5BE] dark:border-[#384050] hover:border-[#4F46E5] dark:hover:border-indigo-400 hover:bg-[#EEF0FF]/50 dark:hover:bg-indigo-950/20 text-[#4F46E5] dark:text-indigo-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer">
+            <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Tạo kế hoạch mới</span>
+          </button>
+
+          <!-- Phần kế hoạch đã kết thúc (Collapsible) -->
+          <div id="planEndedGroupContainer" class="hidden pt-1">
+            <button id="btnToggleEndedPlans" type="button" class="w-full flex items-center justify-between text-xs text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] py-1 transition cursor-pointer">
+              <span class="font-medium">Đã kết thúc (<span id="planEndedCount">0</span>)</span>
+              <svg id="planEndedChevron" viewBox="0 0 24 24" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div id="planEndedPlansList" class="hidden divide-y divide-[#E7E5DF] dark:divide-[#262C36] mt-1 opacity-75">
+              <!-- Ended plan rows -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden legacy buttons for backwards compatibility if needed -->
+        <div class="hidden">
+          <button id="btnDeleteCurrentPlan"></button>
+          <button id="btnEditCurrentPlan"></button>
+        </div>
+
       </div>
 
-      <!-- Trạng thái trống nếu chưa có kế hoạch nào -->
-      <div id="planEmptyPlaceholder" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
-          <svg class="w-6 h-6"><use href="#icon-calendar"></use></svg>
+      <!-- TRẠNG THÁI TRỐNG (KHI CHƯA CÓ KẾ HOẠCH NÀO) -->
+      <div id="planEmptyPlaceholder" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4 my-auto">
+        <!-- 72x72 rounded-20px light indigo box with 42px glyph -->
+        <div class="w-[72px] h-[72px] rounded-[20px] bg-[#EEF0FF] dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center shadow-2xs">
+          <svg class="w-[42px] h-[42px]"><use href="#plan-glyph"></use></svg>
         </div>
-        <h4 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Chưa có kế hoạch học tập nào</h4>
-        <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm">Tạo một kỳ thi hoặc mục tiêu để ứng dụng tự tính toán số bài cần học mỗi ngày và đếm ngược hạn chót cho bạn.</p>
-        <button id="btnEmptyCreatePlan" class="touch-target px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition">Tạo kế hoạch đầu tiên</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: TẠO / SỬA KẾ HOẠCH HỌC TẬP -->
-  <div id="createStudyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-xl max-h-[92dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
-      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#111317]">
-        <h3 id="createPlanModalTitle" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tạo Kế hoạch &amp; Lịch thi mới</h3>
-        <button id="btnCloseCreatePlanModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng modal">
-          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        <div class="space-y-1">
+          <h4 class="font-serif font-bold text-[17px] text-[#1C1917] dark:text-[#EDECE8]">Chưa có kế hoạch học tập nào</h4>
+          <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-xs mx-auto leading-relaxed">Tạo một kỳ thi hoặc mục tiêu để phân bổ số bài cần học mỗi ngày và đếm ngược hạn chót.</p>
+        </div>
+        <button id="btnEmptyCreatePlan" type="button" class="touch-target inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#4F46E5] hover:bg-indigo-700 active:scale-95 text-white font-semibold text-xs shadow-xs transition cursor-pointer">
+          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Tạo kế hoạch đầu tiên</span>
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL: TẠO / SỬA KẾ HOẠCH HỌC TẬP (REDESIGNED) -->
+  <div id="createStudyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-[60] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#16181E] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-xl max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+      
+      <!-- Header -->
+      <div class="p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF7F0] dark:bg-[#16181E]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg bg-[#4F46E5] text-white flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-white" style="--dot: #FCD34D;"><use href="#plan-glyph"></use></svg>
+          </div>
+          <h3 id="createPlanModalTitle" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tạo Kế hoạch &amp; Lịch thi mới</h3>
+        </div>
+        <button id="btnCloseCreatePlanModal" type="button" class="touch-target w-10 h-10 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" aria-label="Đóng modal">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Body cuộn -->
       <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 text-xs">
-        <!-- Tên kế hoạch -->
+        <!-- 1. Tên kế hoạch -->
         <div>
-          <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Tên kỳ thi / Mục tiêu: <span class="text-rose-500">*</span></label>
-          <input id="planInputName" type="text" maxlength="200" placeholder="Ví dụ: Thi cuối kỳ, Ôn thi THPTQG, Học hết tài liệu..." class="w-full px-3 py-2 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
+          <label class="block text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Tên kỳ thi / Mục tiêu <span class="text-rose-500">*</span></label>
+          <input id="planInputName" type="text" maxlength="200" placeholder="Ví dụ: Thi cuối kỳ, Ôn thi THPTQG, Học hết tài liệu..." class="w-full px-3 py-2 text-sm rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-[#4F46E5] focus:outline-none" />
         </div>
 
-        <!-- Ngày thi -->
+        <!-- 2. Ngày thi -->
         <div>
-          <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Ngày thi (Hạn chót): <span class="text-rose-500">*</span></label>
-          <input id="planInputExamDate" type="date" class="w-full px-3 py-2 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
-          <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-1">Đếm ngược sẽ tính theo ngày theo giờ máy tính của bạn.</p>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8]">Ngày thi (Hạn chót) <span class="text-rose-500">*</span></label>
+            <span id="planExamDaysCountdownText" class="text-[11px] font-medium text-[#4F46E5] dark:text-indigo-400"></span>
+          </div>
+          <input id="planInputExamDate" type="date" class="w-full px-3 py-2 text-sm rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-[#4F46E5] focus:outline-none" />
         </div>
 
-        <!-- Đệm ôn tập & Giới hạn mỗi ngày -->
+        <!-- 3. Ngày học trong tuần: 7 nút tròn T2-CN >= 44px -->
+        <div>
+          <label class="block text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Ngày học trong tuần</label>
+          <div class="grid grid-cols-7 gap-1.5" id="planStudyDaysToggles">
+            <button type="button" data-day="1" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">T2</button>
+            <button type="button" data-day="2" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">T3</button>
+            <button type="button" data-day="3" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">T4</button>
+            <button type="button" data-day="4" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">T5</button>
+            <button type="button" data-day="5" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">T6</button>
+            <button type="button" data-day="6" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">T7</button>
+            <button type="button" data-day="0" class="plan-day-toggle active min-h-[44px] rounded-xl border text-xs font-semibold flex items-center justify-center transition">CN</button>
+          </div>
+        </div>
+
+        <!-- 4. Đệm ôn tập & Giới hạn mỗi ngày -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Đệm ôn tập trước ngày thi:</label>
-            <div class="flex items-center gap-2">
-              <input id="planInputBufferDays" type="number" min="0" max="14" value="2" class="w-20 px-2.5 py-1.5 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] text-center" />
-              <span class="text-[#6E6B65] dark:text-[#979DA8]">ngày (để tổng ôn)</span>
+            <label class="block text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Đệm ôn tập trước ngày thi</label>
+            <div class="inline-flex items-center rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] p-0.5">
+              <button type="button" id="btnBufferDec" class="touch-target w-9 h-9 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] cursor-pointer" aria-label="Giảm ngày đệm">
+                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+              </button>
+              <input id="planInputBufferDays" type="number" min="0" max="14" value="2" class="w-12 text-center text-sm font-semibold bg-transparent border-0 focus:outline-none text-[#1C1917] dark:text-[#EDECE8]" />
+              <button type="button" id="btnBufferInc" class="touch-target w-9 h-9 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] cursor-pointer" aria-label="Tăng ngày đệm">
+                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
             </div>
+            <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] ml-2">ngày để tổng ôn</span>
           </div>
+
           <div>
-            <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Giới hạn tối đa (tùy chọn):</label>
+            <label class="block text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">Giới hạn tối đa (tùy chọn)</label>
             <div class="flex items-center gap-2">
-              <input id="planInputDailyCap" type="number" min="1" max="50" placeholder="Không" class="w-20 px-2.5 py-1.5 text-sm rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] text-center" />
+              <input id="planInputDailyCap" type="number" min="1" max="50" placeholder="Không" class="w-24 px-3 py-1.5 text-sm rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] text-center focus:border-[#4F46E5] focus:outline-none" />
               <span class="text-[#6E6B65] dark:text-[#979DA8]">bài/ngày</span>
             </div>
           </div>
         </div>
 
-        <!-- Ngày học trong tuần -->
-        <div>
-          <label class="block text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Ngày học trong tuần:</label>
-          <div class="flex items-center gap-1.5 flex-wrap" id="planStudyDaysToggles">
-            <button type="button" data-day="1" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T2</button>
-            <button type="button" data-day="2" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T3</button>
-            <button type="button" data-day="3" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T4</button>
-            <button type="button" data-day="4" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T5</button>
-            <button type="button" data-day="5" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T6</button>
-            <button type="button" data-day="6" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">T7</button>
-            <button type="button" data-day="0" class="plan-day-toggle active px-3 py-1.5 rounded-lg border text-xs font-semibold">CN</button>
-          </div>
-        </div>
-
-        <!-- Chọn bài học trong kế hoạch -->
+        <!-- 5. Bài cần học: danh sách nhóm theo mục, có ô lọc nhanh, có chọn cả mục -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label class="text-[11px] font-semibold text-[#1C1917] dark:text-[#EDECE8]">Bài học cần hoàn thành: (<span id="planSelectedLessonCount">0</span> bài đã chọn)</label>
-            <div class="flex items-center gap-2">
-              <button id="btnSelectAllPlanLessons" type="button" class="text-indigo-600 dark:text-indigo-400 hover:underline">Chọn tất cả</button>
-              <span>•</span>
-              <button id="btnDeselectAllPlanLessons" type="button" class="text-[#6E6B65] dark:text-[#979DA8] hover:underline">Bỏ chọn</button>
+            <label class="text-[12px] font-semibold text-[#1C1917] dark:text-[#EDECE8]">Bài học cần hoàn thành (<span id="planSelectedLessonCount">0</span> bài đã chọn)</label>
+            <div class="flex items-center gap-2 text-xs">
+              <button id="btnSelectAllPlanLessons" type="button" class="text-[#4F46E5] dark:text-indigo-400 hover:underline cursor-pointer">Chọn tất cả</button>
+              <span class="text-gray-300 dark:text-gray-600">•</span>
+              <button id="btnDeselectAllPlanLessons" type="button" class="text-[#6E6B65] dark:text-[#979DA8] hover:underline cursor-pointer">Bỏ chọn</button>
             </div>
           </div>
 
+          <!-- Quick filter input -->
+          <div class="relative mb-2">
+            <input id="planLessonFilterInput" type="text" placeholder="Lọc bài học theo tên..." class="w-full pl-3 pr-8 py-1.5 text-xs rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] focus:border-[#4F46E5] focus:outline-none" />
+          </div>
+
           <!-- Lesson selection container -->
-          <div id="planLessonPickerList" class="max-h-56 overflow-y-auto p-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] space-y-1">
+          <div id="planLessonPickerList" class="max-h-52 overflow-y-auto p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] space-y-2">
             <!-- Dynamic lesson checkboxes grouped by category -->
           </div>
         </div>
 
-        <!-- Cảnh báo quá tải / Thông tin phân bổ trực tiếp -->
-        <div id="planLiveCalculationBox" class="p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/60 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200">
-          <div class="flex items-center gap-2 font-medium">
-            <svg class="w-4 h-4 text-indigo-600 shrink-0"><use href="#icon-info"></use></svg>
+      </div>
+
+      <!-- Footer dính đáy (Sticky footer) chứa Preview và nút Lưu không bị bàn phím che -->
+      <div class="p-3.5 sm:p-4 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF7F0] dark:bg-[#16181E] shrink-0 space-y-2.5">
+        <!-- Dòng xem trước trực tiếp ngay phía trên nút Lưu -->
+        <div id="planLiveCalculationBox" class="p-2.5 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/70 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200 text-xs">
+          <div class="flex items-center gap-2">
+            <svg viewBox="0 0 24 24" class="w-4 h-4 shrink-0 text-[#4F46E5] dark:text-indigo-400" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
             <span id="planLiveCalculationText">Chọn ngày thi và bài học để xem phân bổ số bài/ngày.</span>
           </div>
         </div>
+
+        <div class="flex items-center justify-end gap-2 text-xs">
+          <button id="btnCancelCreatePlanModal" type="button" class="touch-target px-4 py-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] font-medium hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">Hủy</button>
+          <button id="btnSaveCreatePlanModal" type="button" class="touch-target flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-indigo-700 active:scale-95 text-white font-semibold transition shadow-xs text-center cursor-pointer">Lưu Kế hoạch</button>
+        </div>
       </div>
 
-      <div class="p-3 sm:p-4 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-end gap-2 bg-[#FAF9F5] dark:bg-[#111317] shrink-0 text-xs">
-        <button id="btnCancelCreatePlanModal" type="button" class="touch-target px-3.5 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] font-medium hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
-        <button id="btnSaveCreatePlanModal" type="button" class="touch-target px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold transition shadow-xs">Lưu Kế hoạch</button>
-      </div>
     </div>
   </div>
 
@@ -15607,32 +15690,58 @@
     // SECTION: LỊCH THI & KẾ HOẠCH UI CONTROLLERS (v4.4.0)
     // =========================================================================
 
-    const studyPlanModal = document.getElementById('studyPlanModal');
+        const studyPlanModal = document.getElementById('studyPlanModal');
     const createStudyPlanModal = document.getElementById('createStudyPlanModal');
     let selectedActivePlanId = null;
 
-    function renderStudyPlanWidget() {
-      const sidebarWidget = document.getElementById('sidebarStudyPlanWidget');
-      const emptyWidget = document.getElementById('emptyStudyPlanWidget');
-      const headerBadge = document.getElementById('planHeaderBadge');
+    const sidebarWidget = document.getElementById('sidebarStudyPlanWidget');
+    const emptyWidget = document.getElementById('emptyStudyPlanWidget');
+    const headerBadge = document.getElementById('planHeaderBadge');
 
+    let selectedWeekDateOffset = 0; // offset in days (multiples of 7)
+    let selectedViewingDateStr = getTodayDateStr();
+    let isEndedPlansSectionOpen = false;
+
+    function formatVietnameseDateOnly(str) {
+      if (!str) return '';
+      const d = parseDateOnly(str);
+      const dayNames = ['Chủ nhật', 'thứ Hai', 'thứ Ba', 'thứ Tư', 'thứ Năm', 'thứ Sáu', 'thứ Bảy'];
+      const dayName = dayNames[d.getDay()];
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${dayName}, ${day}/${month}/${year}`;
+    }
+
+    function formatShortDate(d) {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return `${day}/${month}`;
+    }
+
+    function renderStudyPlanWidget() {
       const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
+      const todayStr = getTodayDateStr();
+
+      // Check badge on toolbar button
+      if (headerBadge) {
+        const hasUrgent = activePlans.some(p => {
+          const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
+          return (sc.daysLeft <= 3 && !sc.isPast) || sc.todayRequiredCount > 0;
+        });
+        if (hasUrgent) headerBadge.classList.remove('hidden');
+        else headerBadge.classList.add('hidden');
+      }
+
       if (activePlans.length === 0) {
         if (sidebarWidget) sidebarWidget.classList.add('hidden');
         if (emptyWidget) emptyWidget.classList.add('hidden');
-        if (headerBadge) headerBadge.classList.add('hidden');
         return;
       }
 
       // Lấy kế hoạch gần nhất
-      const todayStr = getTodayDateStr();
       const plan = activePlans[0];
       const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
-
-      if (headerBadge) {
-        if (sched.todayRequiredCount > 0) headerBadge.classList.remove('hidden');
-        else headerBadge.classList.add('hidden');
-      }
 
       // Sidebar widget
       if (sidebarWidget) {
@@ -15647,7 +15756,7 @@
         if (badgeEl) {
           if (sched.isTodayExam) {
             badgeEl.innerText = "Hôm nay thi!";
-            badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white font-mono animate-pulse";
+            badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-600 text-white font-mono";
           } else if (sched.isPast) {
             badgeEl.innerText = "Đã kết thúc";
             badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-500 text-white font-mono";
@@ -15678,7 +15787,7 @@
         if (eToday) eToday.innerText = `Hôm nay cần học: ${sched.todayRequiredCount} bài`;
         if (ePace) {
           ePace.innerText = sched.paceText;
-          ePace.className = `text-[10px] px-1.5 py-0.5 rounded font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'}`;
+          ePace.className = `text-[10px] px-1.5 py-0.5 rounded font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'}`;
         }
         if (eBar) eBar.style.width = `${sched.percentCompleted}%`;
         if (eBtn) eBtn.onclick = () => openStudyPlanModal(plan.id);
@@ -15686,267 +15795,554 @@
     }
 
     function openStudyPlanModal(planId = null) {
-      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
-      if (activePlans.length === 0) {
+      const allPlans = (state.studyPlans || []).filter(p => !p.deleted);
+      const activePlans = allPlans.filter(p => !p.archived);
+
+      if (allPlans.length === 0) {
         document.getElementById('planDetailContentArea').classList.add('hidden');
-        document.getElementById('planTabsContainer').classList.add('hidden');
         document.getElementById('planEmptyPlaceholder').classList.remove('hidden');
       } else {
         document.getElementById('planDetailContentArea').classList.remove('hidden');
-        document.getElementById('planTabsContainer').classList.remove('hidden');
         document.getElementById('planEmptyPlaceholder').classList.add('hidden');
-        selectedActivePlanId = planId || (activePlans[0] ? activePlans[0].id : null);
-        renderStudyPlanDetail(selectedActivePlanId);
+        selectedActivePlanId = planId || (activePlans[0] ? activePlans[0].id : allPlans[0].id);
+        selectedWeekDateOffset = 0;
+        selectedViewingDateStr = getTodayDateStr();
+        renderStudyPlanDetail(selectedActivePlanId, true);
       }
       showModalAnimated(studyPlanModal);
     }
 
-    function renderStudyPlanDetail(planId) {
-      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
-      const plan = activePlans.find(p => p.id === planId) || activePlans[0];
-      if (!plan) return;
-      selectedActivePlanId = plan.id;
+    function renderStudyPlanDetail(planId, isInitialOpen = false) {
+      const allPlans = (state.studyPlans || []).filter(p => !p.deleted);
+      const activePlans = allPlans.filter(p => !p.archived);
+      let plan = allPlans.find(p => p.id === planId);
+      if (!plan && activePlans.length > 0) plan = activePlans[0];
+      if (!plan && allPlans.length > 0) plan = allPlans[0];
 
-      // Render Tabs
-      const tabsEl = document.getElementById('planTabsContainer');
-      if (tabsEl) {
-        tabsEl.innerHTML = activePlans.map(p => `
-          <button type="button" class="touch-target px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${p.id === plan.id ? 'bg-indigo-600 text-white shadow-xs' : 'bg-black/5 dark:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8]'}" data-plan-tab="${p.id}">
-            ${escapeHtml(p.name)}
-          </button>
-        `).join('');
-
-        tabsEl.querySelectorAll('[data-plan-tab]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            renderStudyPlanDetail(btn.getAttribute('data-plan-tab'));
-          });
-        });
+      if (!plan) {
+        document.getElementById('planDetailContentArea').classList.add('hidden');
+        document.getElementById('planEmptyPlaceholder').classList.remove('hidden');
+        return;
       }
 
+      selectedActivePlanId = plan.id;
       const todayStr = getTodayDateStr();
       const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
 
-      // Vòng đếm ngược & Thông tin
-      const ringDays = document.getElementById('planRingDaysNumber');
-      const ringTop = document.getElementById('planRingLabelTop');
-      const ringBottom = document.getElementById('planRingLabelBottom');
+      // 1. HERO COUNTDOWN CARD
+      const heroCard = document.getElementById('planHeroCard');
+      const ringDaysNumber = document.getElementById('planRingDaysNumber');
+      const ringDaysLabel = document.getElementById('planRingDaysLabel');
       const ringCircle = document.getElementById('planRingProgress');
-      const nameEl = document.getElementById('planDetailName');
-      const metaEl = document.getElementById('planDetailMeta');
-      const paceEl = document.getElementById('planPaceStatusBadge');
-      const ratioEl = document.getElementById('planProgressRatio');
-      const barEl = document.getElementById('planDetailProgressBar');
+      const planNameEl = document.getElementById('planDetailName');
+      const planMetaEl = document.getElementById('planDetailMeta');
+      const paceBadge = document.getElementById('planPaceStatusBadge');
+      const progressBar = document.getElementById('planDetailProgressBar');
+      const progressRatio = document.getElementById('planProgressRatio');
 
-      if (nameEl) nameEl.innerText = plan.name;
-      if (metaEl) metaEl.innerText = `Ngày thi: ${plan.examDate} • Đệm ôn tập: ${plan.bufferDays || 2} ngày • Phân bổ: ~${sched.avgPerDay} bài/ngày`;
+      if (planNameEl) planNameEl.innerText = plan.name;
+      if (planMetaEl) planMetaEl.innerText = `Thi ${formatVietnameseDateOnly(plan.examDate)}`;
+      if (progressBar) progressBar.style.width = `${sched.percentCompleted}%`;
+      if (progressRatio) progressRatio.innerText = `${sched.completedCount}/${sched.totalLessons} bài đã học`;
 
-      if (sched.isTodayExam) {
-        if (ringTop) ringTop.innerText = "HÔM NAY";
-        if (ringDays) ringDays.innerText = "THI";
-        if (ringBottom) ringBottom.innerText = "Chúc may mắn!";
-        if (ringCircle) {
-          ringCircle.setAttribute("class", "text-rose-500 transition-all duration-700 animate-pulse");
-          ringCircle.style.strokeDashoffset = "0";
-        }
-      } else if (sched.isPast) {
-        if (ringTop) ringTop.innerText = "KỲ THI";
-        if (ringDays) ringDays.innerText = "QUA";
-        if (ringBottom) ringBottom.innerText = "Đã kết thúc";
-        if (ringCircle) {
-          ringCircle.setAttribute("class", "text-gray-400 transition-all duration-700");
-          ringCircle.style.strokeDashoffset = "0";
-        }
-      } else {
-        if (ringTop) ringTop.innerText = "CÒN";
-        if (ringDays) ringDays.innerText = sched.daysLeft;
-        if (ringBottom) ringBottom.innerText = "ngày";
-        if (ringCircle) {
-          ringCircle.setAttribute("class", `${sched.daysLeft <= 3 ? "text-rose-500" : sched.daysLeft <= 7 ? "text-amber-500" : "text-indigo-600 dark:text-indigo-400"} transition-all duration-700`);
-          // circumference is 2 * PI * 42 ~= 263.89
-          const maxDays = Math.max(sched.daysLeft, 30);
-          const offset = 263.89 * (1 - (sched.daysLeft / maxDays));
-          ringCircle.style.strokeDashoffset = String(Math.max(0, Math.min(263.89, offset)));
+      // Hero styling & badge based on status
+      if (heroCard) {
+        heroCard.className = "relative rounded-[14px] bg-[#F5F6FF] dark:bg-[#1A1D28] border border-[#DFE2FF] dark:border-[#2A3045] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all duration-200";
+        if (sched.isTodayExam) {
+          heroCard.classList.add('bg-amber-50/80', 'dark:bg-amber-950/30', '!border-amber-300', 'dark:!border-amber-900/60');
+        } else if (sched.daysLeft <= 3 && !sched.isPast) {
+          heroCard.classList.add('!border-rose-300', 'dark:!border-rose-900/60');
         }
       }
 
-      if (paceEl) {
-        paceEl.innerText = sched.paceText;
-        paceEl.className = `px-2 py-0.5 rounded-full text-[11px] font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300'}`;
-      }
-
-      if (ratioEl) ratioEl.innerText = `${sched.completedCount} / ${sched.totalLessons} bài (${sched.percentCompleted}%)`;
-      if (barEl) barEl.style.width = `${sched.percentCompleted}%`;
-
-      // Khối "Hôm nay cần học"
-      const countEl = document.getElementById('planTodayLessonsCount');
-      const listEl = document.getElementById('planTodayLessonsList');
-      if (countEl) countEl.innerText = sched.todayRequiredCount;
-
-      if (listEl) {
-        if (sched.todayLessons.length === 0) {
-          listEl.innerHTML = `
-            <div class="p-4 rounded-xl border border-dashed border-[#E7E5DF] dark:border-[#262C36] text-center text-[#6E6B65] dark:text-[#979DA8] space-y-1">
-              <svg class="w-6 h-6 mx-auto text-emerald-500"><use href="#icon-check-circle-2"></use></svg>
-              <p class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8]">Tuyệt vời! Bạn không còn bài nào cần học hôm nay.</p>
-              <p class="text-[11px]">Hãy nghỉ ngơi hoặc ôn lại các bài đã học để duy trì phong độ.</p>
-            </div>
-          `;
+      if (paceBadge) {
+        if (sched.isTodayExam) {
+          paceBadge.innerText = "Hôm nay thi!";
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300";
+        } else if (sched.isPast) {
+          paceBadge.innerText = "Đã kết thúc";
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+        } else if (sched.todayRequiredCount > 0) {
+          paceBadge.innerText = `Hôm nay ${sched.todayRequiredCount} bài`;
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950/50 dark:text-amber-300";
+        } else if (sched.paceStatus === 'ahead') {
+          paceBadge.innerText = sched.paceText;
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E0F2FE] text-[#0369A1] dark:bg-sky-950/50 dark:text-sky-300";
+        } else if (sched.paceStatus === 'behind') {
+          paceBadge.innerText = sched.paceText;
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#BE123C] dark:bg-rose-950/50 dark:text-rose-300";
         } else {
-          listEl.innerHTML = sched.todayLessons.map(lId => {
-            const les = state.lessons.find(l => l.id === lId);
-            if (!les) return '';
-            const cat = state.categories.find(c => c.id === les.categoryId);
-            const isCompleted = (plan.completedLessonIds || []).includes(lId) || !!les.isCompleted;
+          paceBadge.innerText = "Đúng tiến độ";
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300";
+        }
+      }
 
-            return `
-              <div class="p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] hover:border-indigo-400 dark:hover:border-indigo-600 transition flex items-center justify-between gap-2.5">
-                <button type="button" class="plan-toggle-check touch-target w-7 h-7 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] flex items-center justify-center shrink-0 text-emerald-600 transition cursor-pointer" data-plan-lesson-id="${lId}" title="${isCompleted ? 'Đánh dấu chưa học' : 'Đánh dấu đã học'}">
-                  ${isCompleted ? '<svg class="w-4 h-4"><use href="#icon-check-circle-2"></use></svg>' : '<svg class="w-4 h-4 text-gray-300 dark:text-gray-600"><use href="#icon-circle"></use></svg>'}
+      // Countdown SVG circle (circumference 2 * PI * 30 ~= 188.495)
+      const C = 188.5;
+      const createdDate = parseDateOnly((plan.createdAt || todayStr).slice(0, 10));
+      const examDateObj = parseDateOnly(plan.examDate);
+      const todayObj = parseDateOnly(todayStr);
+      const totalPlanDays = Math.max(1, Math.round((examDateObj.getTime() - createdDate.getTime()) / 86400000));
+      const elapsedDays = Math.max(0, Math.round((todayObj.getTime() - createdDate.getTime()) / 86400000));
+      const progressFraction = Math.min(1, Math.max(0, elapsedDays / totalPlanDays));
+      const targetOffset = C * (1 - progressFraction);
+
+      if (ringDaysNumber && ringDaysLabel) {
+        if (sched.isTodayExam) {
+          ringDaysNumber.innerText = "Hôm nay";
+          ringDaysNumber.className = "text-[14px] font-bold text-amber-600 dark:text-amber-400 leading-none";
+          ringDaysLabel.innerText = "THI";
+        } else if (sched.isPast) {
+          ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-6 h-6 text-emerald-600 dark:text-emerald-400 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
+          ringDaysLabel.innerText = "Đã qua";
+        } else {
+          ringDaysNumber.innerText = sched.daysLeft;
+          ringDaysNumber.className = "text-[22px] font-bold tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-none";
+          ringDaysLabel.innerText = "ngày";
+        }
+      }
+
+      if (ringCircle) {
+        ringCircle.style.strokeDasharray = `${C}`;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (isInitialOpen && !prefersReduced) {
+          ringCircle.style.transition = 'none';
+          ringCircle.style.strokeDashoffset = `${C}`;
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              ringCircle.style.transition = 'stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1)';
+              ringCircle.style.strokeDashoffset = `${targetOffset}`;
+            }, 40);
+          });
+        } else {
+          ringCircle.style.transition = prefersReduced ? 'none' : 'stroke-dashoffset 400ms ease';
+          ringCircle.style.strokeDashoffset = `${targetOffset}`;
+        }
+      }
+
+      // 2. WEEK STRIP
+      renderWeekStrip(plan, sched);
+
+      // 3. TODAY / SELECTED DAY LESSONS LIST
+      renderDayLessonsList(plan, sched);
+
+      // 4. ALL PLANS LIST
+      renderAllPlansSection(plan);
+    }
+
+    function renderWeekStrip(plan, sched) {
+      const container = document.getElementById('planWeekStripContainer');
+      const rangeLabel = document.getElementById('planWeekRangeLabel');
+      const btnJumpToday = document.getElementById('btnPlanJumpToday');
+      if (!container) return;
+
+      const todayStr = getTodayDateStr();
+      const now = parseDateOnly(todayStr);
+      // Find Monday of the current week
+      const dayOfWeek = (now.getDay() + 6) % 7; // 0 for Mon, 6 for Sun
+      const monday = new Date(now);
+      monday.setDate(monday.getDate() - dayOfWeek + selectedWeekDateOffset);
+
+      const weekDays = [];
+      const dayNames = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(d.getDate() + i);
+        weekDays.push(d);
+      }
+
+      if (rangeLabel) {
+        rangeLabel.innerText = `${formatShortDate(weekDays[0])} – ${formatShortDate(weekDays[6])}`;
+      }
+
+      const studyDays = plan.studyDays || [1, 2, 3, 4, 5, 6, 0];
+
+      container.innerHTML = weekDays.map((d, idx) => {
+        const dStr = formatDateOnly(d);
+        const isToday = (dStr === todayStr);
+        const isExam = (dStr === plan.examDate);
+        const isSelected = (dStr === selectedViewingDateStr);
+        const isPast = (dStr < todayStr);
+        const isStudyDay = studyDays.includes(d.getDay());
+        const dayLessons = sched.scheduleByDate[dStr] || [];
+        const allCompleted = dayLessons.length > 0 && dayLessons.every(id => (plan.completedLessonIds || []).includes(id));
+
+        let bgClass = "bg-[#FAF9F5] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8]";
+        let textNumberClass = "font-bold text-[15px]";
+        let labelSub = "";
+
+        if (isExam) {
+          bgClass = "bg-amber-50 dark:bg-amber-950/40 border-2 border-[#FCD34D] text-amber-900 dark:text-amber-200";
+          labelSub = `<span class="text-[10px] font-bold text-amber-700 dark:text-amber-400">Thi</span>`;
+        } else if (isToday) {
+          bgClass = "bg-[#4F46E5] text-white border border-[#4F46E5] shadow-xs";
+          textNumberClass = "font-bold text-[15px] text-white";
+          labelSub = dayLessons.length > 0 ? `<span class="text-[10px] font-medium text-white/90">${dayLessons.length} bài</span>` : `<span class="text-[10px] text-white/70">Nghỉ</span>`;
+        } else if (isPast) {
+          bgClass = "bg-black/[0.02] dark:bg-white/[0.02] border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] opacity-70";
+          labelSub = allCompleted ? `<svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-emerald-500 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>` : `<span class="text-[10px] text-gray-400">Qua</span>`;
+        } else if (!isStudyDay) {
+          bgClass = "bg-black/[0.01] dark:bg-white/[0.01] border border-dashed border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8]";
+          labelSub = `<span class="text-[10px] text-gray-400 dark:text-gray-500">Nghỉ</span>`;
+        } else {
+          labelSub = dayLessons.length > 0 ? `<span class="text-[10px] font-semibold text-[#4F46E5] dark:text-indigo-400">${dayLessons.length} bài</span>` : `<span class="text-[10px] text-gray-400">0 bài</span>`;
+          if (allCompleted) {
+            labelSub = `<svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-emerald-500 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
+          }
+        }
+
+        if (isSelected && !isToday) {
+          bgClass += " ring-2 ring-[#4F46E5] dark:ring-indigo-400";
+        }
+
+        return `
+          <div class="plan-week-slot touch-target p-1.5 sm:p-2 rounded-xl flex flex-col items-center justify-between text-center cursor-pointer transition-all active:scale-95 ${bgClass}" data-date="${dStr}">
+            <span class="text-[11px] font-medium opacity-80 leading-tight">${dayNames[idx]}</span>
+            <span class="${textNumberClass} leading-tight my-0.5">${d.getDate()}</span>
+            <div class="h-4 flex items-center justify-center">${labelSub}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Attach click listeners to week slots
+      container.querySelectorAll('.plan-week-slot').forEach(el => {
+        el.addEventListener('click', () => {
+          selectedViewingDateStr = el.getAttribute('data-date');
+          renderWeekStrip(plan, sched);
+          renderDayLessonsList(plan, sched);
+        });
+      });
+    }
+
+    function renderDayLessonsList(plan, sched) {
+      const titleEl = document.getElementById('planDayLessonsTitle');
+      const counterEl = document.getElementById('planDayLessonsCounter');
+      const listEl = document.getElementById('planTodayLessonsList');
+      if (!listEl) return;
+
+      const todayStr = getTodayDateStr();
+      const isToday = (selectedViewingDateStr === todayStr);
+
+      if (titleEl) {
+        titleEl.innerText = isToday ? "Hôm nay cần học" : `Bài cần học ${formatVietnameseDateOnly(selectedViewingDateStr).split(',')[0]}, ${selectedViewingDateStr.slice(8)}/${selectedViewingDateStr.slice(5, 7)}`;
+      }
+
+      const scheduledLessonIds = sched.scheduleByDate[selectedViewingDateStr] || [];
+      const completedSet = new Set(plan.completedLessonIds || []);
+      const completedInDay = scheduledLessonIds.filter(id => completedSet.has(id)).length;
+
+      if (counterEl) {
+        counterEl.innerText = `${completedInDay}/${scheduledLessonIds.length}`;
+      }
+
+      if (scheduledLessonIds.length === 0) {
+        listEl.innerHTML = `
+          <div class="py-6 px-4 text-center text-[#6E6B65] dark:text-[#979DA8] space-y-1.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
+            <svg viewBox="0 0 24 24" class="w-7 h-7 mx-auto text-emerald-500" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            <p class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8]">Không có bài cần học vào ngày này</p>
+            <p class="text-[11px]">Bạn đã hoàn thành đủ chỉ tiêu hoặc hôm nay là ngày nghỉ theo kế hoạch.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = scheduledLessonIds.map(lId => {
+        const les = (state.lessons || []).find(l => l.id === lId);
+        if (!les) return '';
+        const cat = (state.categories || []).find(c => c.id === les.categoryId);
+        const isDone = completedSet.has(lId) || !!les.isCompleted;
+
+        return `
+          <div class="py-2.5 px-1 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+            <!-- Vòng tròn đánh dấu 22px, nét 1.5px (touch >= 44px) -->
+            <button type="button" class="plan-toggle-check touch-target w-10 h-10 flex items-center justify-center shrink-0 cursor-pointer text-left" data-lesson-id="${lId}" aria-label="${isDone ? 'Bỏ đánh dấu' : 'Đánh dấu đã học'}">
+              <span class="w-[22px] h-[22px] rounded-full flex items-center justify-center transition-all duration-150 ${isDone ? 'bg-[#4F46E5] text-white border border-[#4F46E5]' : 'border-[1.5px] border-[#C7C5BE] dark:border-[#4B5563] bg-transparent hover:border-[#4F46E5]'}">
+                ${isDone ? '<svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+              </span>
+            </button>
+
+            <!-- Tiêu đề bài học -->
+            <div class="flex-1 min-w-0 cursor-pointer plan-open-lesson" data-lesson-id="${lId}">
+              <div class="text-[13px] font-medium text-[#1C1917] dark:text-[#EDECE8] truncate ${isDone ? 'line-through opacity-60' : ''}">${escapeHtml(les.title)}</div>
+              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">${cat ? escapeHtml(cat.title) : 'Chưa phân mục'} • ${les.sourceType ? les.sourceType.toUpperCase() : 'HTML'}</div>
+            </div>
+
+            <!-- Chevron mở bài tự vẽ -->
+            <button type="button" class="touch-target w-10 h-10 flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] shrink-0 plan-open-lesson" data-lesson-id="${lId}" aria-label="Mở bài học">
+              <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      // Attach listeners
+      listEl.querySelectorAll('.plan-toggle-check').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const lId = btn.getAttribute('data-lesson-id');
+          await togglePlanLessonDone(plan.id, lId);
+        });
+      });
+
+      listEl.querySelectorAll('.plan-open-lesson').forEach(el => {
+        el.addEventListener('click', () => {
+          const lId = el.getAttribute('data-lesson-id');
+          selectLesson(lId);
+          hideModalAnimated(studyPlanModal);
+        });
+      });
+    }
+
+    function renderAllPlansSection(currentPlan) {
+      const allList = document.getElementById('planAllPlansList');
+      const endedGroup = document.getElementById('planEndedGroupContainer');
+      const endedList = document.getElementById('planEndedPlansList');
+      const endedCount = document.getElementById('planEndedCount');
+      if (!allList) return;
+
+      const todayStr = getTodayDateStr();
+      const allPlans = (state.studyPlans || []).filter(p => !p.deleted);
+      const activePlans = allPlans.filter(p => !p.archived);
+      const endedPlans = allPlans.filter(p => p.archived);
+
+      allList.innerHTML = activePlans.map(p => {
+        const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
+        const isSelected = (p.id === currentPlan.id);
+
+        let badgeHtml = '';
+        if (sc.isTodayExam) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">Hôm nay thi</span>`;
+        } else if (sc.isPast) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">Đã kết thúc</span>`;
+        } else if (sc.daysLeft <= 3) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#BE123C] dark:bg-rose-950/50 dark:text-rose-300">còn ${sc.daysLeft} ngày</span>`;
+        } else {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] bg-black/5 dark:bg-white/5">còn ${sc.daysLeft} ngày</span>`;
+        }
+
+        return `
+          <div class="py-2.5 px-2 flex items-center justify-between gap-2.5 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition rounded-xl cursor-pointer ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-950/20' : ''}" data-select-plan="${p.id}">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${p.color || '#4F46E5'}"></span>
+              <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate">${escapeHtml(p.name)}</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              ${badgeHtml}
+              <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${sc.completedCount}/${sc.totalLessons} bài</span>
+              
+              <!-- Nút 3 chấm mở action menu nhỏ -->
+              <div class="relative plan-action-menu-anchor">
+                <button type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] transition plan-action-trigger" data-plan-id="${p.id}" aria-label="Thao tác kế hoạch">
+                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/></svg>
                 </button>
-                <div class="min-w-0 flex-1 cursor-pointer plan-open-lesson" data-open-lesson-id="${lId}">
-                  <h6 class="font-medium text-xs text-[#1C1917] dark:text-[#EDECE8] truncate ${isCompleted ? 'line-through opacity-60' : ''}">${escapeHtml(les.title)}</h6>
-                  <p class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">${cat ? escapeHtml(cat.title) : 'Chưa phân mục'} • ${les.sourceType ? les.sourceType.toUpperCase() : 'HTML'}</p>
+                <div class="plan-action-dropdown hidden absolute right-0 top-full mt-1 z-30 w-36 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-lg py-1 text-xs select-none">
+                  <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-edit" data-plan-id="${p.id}">
+                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <span>Sửa kế hoạch</span>
+                  </button>
+                  <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-archive" data-plan-id="${p.id}">
+                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+                    <span>Lưu trữ</span>
+                  </button>
+                  <button type="button" class="w-full px-3 py-1.5 text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 plan-opt-delete" data-plan-id="${p.id}">
+                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    <span>Xóa</span>
+                  </button>
                 </div>
-                <button type="button" class="touch-target px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 transition plan-open-lesson" data-open-lesson-id="${lId}">
-                  Mở bài
-                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Attach events for plan switching
+      allList.querySelectorAll('[data-select-plan]').forEach(row => {
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('.plan-action-menu-anchor')) return;
+          const pId = row.getAttribute('data-select-plan');
+          renderStudyPlanDetail(pId);
+        });
+      });
+
+      // Attach dropdown triggers
+      allList.querySelectorAll('.plan-action-trigger').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const parent = btn.closest('.plan-action-menu-anchor');
+          const dd = parent ? parent.querySelector('.plan-action-dropdown') : null;
+          document.querySelectorAll('.plan-action-dropdown').forEach(d => {
+            if (d !== dd) d.classList.add('hidden');
+          });
+          if (dd) dd.classList.toggle('hidden');
+        });
+      });
+
+      // Dropdown actions
+      allList.querySelectorAll('.plan-opt-edit').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const pId = btn.getAttribute('data-plan-id');
+          const targetPlan = allPlans.find(p => p.id === pId);
+          if (targetPlan) openCreatePlanModal(targetPlan);
+        });
+      });
+
+      allList.querySelectorAll('.plan-opt-archive').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const pId = btn.getAttribute('data-plan-id');
+          const targetPlan = allPlans.find(p => p.id === pId);
+          if (targetPlan) {
+            targetPlan.archived = true;
+            targetPlan.updatedAt = new Date().toISOString();
+            saveLocalStudyPlans();
+            renderStudyPlanWidget();
+            renderStudyPlanDetail(selectedActivePlanId);
+            showToast("Đã chuyển kế hoạch vào mục Lưu trữ");
+          }
+        });
+      });
+
+      allList.querySelectorAll('.plan-opt-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const pId = btn.getAttribute('data-plan-id');
+          const targetPlan = allPlans.find(p => p.id === pId);
+          if (targetPlan) {
+            const backup = { ...targetPlan };
+            state.studyPlans = (state.studyPlans || []).filter(p => p.id !== pId);
+            saveLocalStudyPlans();
+            renderStudyPlanWidget();
+            if (typeof showToastWithAction === 'function') {
+              showToastWithAction(`Đã xóa "${targetPlan.name}"`, "Hoàn tác", () => {
+                state.studyPlans.push(backup);
+                saveLocalStudyPlans();
+                renderStudyPlanWidget();
+                openStudyPlanModal(backup.id);
+                showToast("Đã khôi phục kế hoạch");
+              });
+            } else {
+              showToast(`Đã xóa "${targetPlan.name}"`);
+            }
+            openStudyPlanModal();
+          }
+        });
+      });
+
+      // Ended plans group
+      if (endedGroup && endedList && endedCount) {
+        if (endedPlans.length > 0) {
+          endedGroup.classList.remove('hidden');
+          endedCount.innerText = endedPlans.length;
+          endedList.innerHTML = endedPlans.map(p => {
+            return `
+              <div class="py-2 px-2 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 truncate">
+                  <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                  <span class="truncate">${escapeHtml(p.name)}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" class="text-indigo-600 dark:text-indigo-400 hover:underline plan-opt-unarchive cursor-pointer" data-plan-id="${p.id}">Khôi phục</button>
+                  <button type="button" class="text-rose-600 dark:text-rose-400 hover:underline plan-opt-delete-ended cursor-pointer" data-plan-id="${p.id}">Xóa</button>
+                </div>
               </div>
             `;
           }).join('');
 
-          listEl.querySelectorAll('.plan-toggle-check').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              const lId = btn.getAttribute('data-plan-lesson-id');
-              await togglePlanLessonDone(plan.id, lId);
-            });
-          });
-
-          listEl.querySelectorAll('.plan-open-lesson').forEach(el => {
-            el.addEventListener('click', () => {
-              const lId = el.getAttribute('data-open-lesson-id');
-              selectLesson(lId);
-              hideModalAnimated(studyPlanModal);
-            });
-          });
-        }
-      }
-
-      // Lịch tuần 7 ngày
-      const weekGrid = document.getElementById('planWeekScheduleGrid');
-      if (weekGrid) {
-        const dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-        const next7Days = [];
-        for (let i = 0; i < 7; i++) {
-          const d = new Date();
-          d.setDate(d.getDate() + i);
-          const dStr = formatDateOnly(d);
-          const jsDay = d.getDay();
-          const items = sched.scheduleByDate[dStr] || [];
-          next7Days.push({
-            dateStr: dStr,
-            label: i === 0 ? 'Hôm nay' : (i === 1 ? 'Ngày mai' : dayLabels[jsDay]),
-            count: items.length,
-            isExam: dStr === plan.examDate
-          });
-        }
-
-        weekGrid.innerHTML = next7Days.map(item => `
-          <div class="p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] flex flex-col justify-between ${item.isExam ? 'ring-2 ring-rose-500' : ''}">
-            <div class="flex items-center justify-between text-[11px] mb-1">
-              <span class="font-bold text-[#1C1917] dark:text-[#EDECE8]">${item.label}</span>
-              <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${item.dateStr.slice(5)}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold ${item.count > 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-[#6E6B65] dark:text-[#979DA8]'}">
-                ${item.isExam ? 'NGÀY THI' : `${item.count} bài`}
-              </span>
-              ${item.count === 0 && !item.isExam ? '<span class="text-[10px] text-gray-400">Nghỉ</span>' : ''}
-            </div>
-          </div>
-        `).join('');
-      }
-
-      // Lưới tháng nhỏ
-      const monthGrid = document.getElementById('planMiniMonthGrid');
-      if (monthGrid) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth();
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        let gridHtml = `
-          <div class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] mb-2">Tháng ${month + 1}/${year}</div>
-          <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] mb-1">
-            <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
-          </div>
-          <div class="grid grid-cols-7 gap-1 text-center text-xs">
-        `;
-
-        for (let i = 0; i < firstDay; i++) {
-          gridHtml += `<div></div>`;
-        }
-
-        for (let d = 1; d <= daysInMonth; d++) {
-          const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-          const isToday = (dStr === todayStr);
-          const isExam = (dStr === plan.examDate);
-          const hasLessons = (sched.scheduleByDate[dStr] || []).length > 0;
-
-          let cellClass = "p-1 rounded-md text-[11px] relative flex flex-col items-center justify-center h-7 ";
-          if (isExam) {
-            cellClass += "bg-rose-500 text-white font-bold ";
-          } else if (isToday) {
-            cellClass += "bg-indigo-600 text-white font-bold ";
-          } else if (hasLessons) {
-            cellClass += "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold ";
-          } else {
-            cellClass += "text-[#6E6B65] dark:text-[#979DA8] ";
-          }
-
-          gridHtml += `
-            <div class="${cellClass}">
-              <span>${d}</span>
-              ${hasLessons && !isToday && !isExam ? '<span class="w-1 h-1 rounded-full bg-indigo-600 block -mt-0.5"></span>' : ''}
-            </div>
-          `;
-        }
-
-        gridHtml += `</div>`;
-        monthGrid.innerHTML = gridHtml;
-      }
-
-      // Xóa kế hoạch
-      const btnDelete = document.getElementById('btnDeleteCurrentPlan');
-      if (btnDelete) {
-        btnDelete.onclick = () => {
-          if (confirm(`Bạn có chắc muốn xóa kế hoạch "${plan.name}" không?`)) {
-            const deletedPlanBackup = { ...plan };
-            state.studyPlans = (state.studyPlans || []).filter(p => p.id !== plan.id);
-            saveLocalStudyPlans();
-            renderStudyPlanWidget();
-            showToast("Đã xóa kế hoạch", "info", {
-              actionText: "Hoàn tác",
-              onAction: () => {
-                state.studyPlans.push(deletedPlanBackup);
+          endedList.querySelectorAll('.plan-opt-unarchive').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const pId = btn.getAttribute('data-plan-id');
+              const target = allPlans.find(p => p.id === pId);
+              if (target) {
+                target.archived = false;
+                target.updatedAt = new Date().toISOString();
                 saveLocalStudyPlans();
                 renderStudyPlanWidget();
-                openStudyPlanModal(deletedPlanBackup.id);
+                renderStudyPlanDetail(target.id);
                 showToast("Đã khôi phục kế hoạch");
               }
             });
-            openStudyPlanModal();
-          }
-        };
-      }
+          });
 
-      // Sửa kế hoạch
-      const btnEdit = document.getElementById('btnEditCurrentPlan');
-      if (btnEdit) {
-        btnEdit.onclick = () => {
-          openCreatePlanModal(plan);
-        };
+          endedList.querySelectorAll('.plan-opt-delete-ended').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const pId = btn.getAttribute('data-plan-id');
+              state.studyPlans = (state.studyPlans || []).filter(p => p.id !== pId);
+              saveLocalStudyPlans();
+              renderStudyPlanWidget();
+              renderStudyPlanDetail(selectedActivePlanId);
+              showToast("Đã xóa vĩnh viễn");
+            });
+          });
+        } else {
+          endedGroup.classList.add('hidden');
+        }
       }
+    }
+
+    // Close open dropdowns when clicking anywhere outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.plan-action-menu-anchor')) {
+        document.querySelectorAll('.plan-action-dropdown').forEach(d => d.classList.add('hidden'));
+      }
+    });
+
+    // Week buttons
+    const btnPlanPrevWeek = document.getElementById('btnPlanPrevWeek');
+    const btnPlanNextWeek = document.getElementById('btnPlanNextWeek');
+    const btnPlanJumpToday = document.getElementById('btnPlanJumpToday');
+
+    if (btnPlanPrevWeek) {
+      btnPlanPrevWeek.onclick = () => {
+        selectedWeekDateOffset -= 7;
+        const plan = (state.studyPlans || []).find(p => p.id === selectedActivePlanId);
+        if (plan) {
+          const todayStr = getTodayDateStr();
+          const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+          renderWeekStrip(plan, sched);
+        }
+      };
+    }
+
+    if (btnPlanNextWeek) {
+      btnPlanNextWeek.onclick = () => {
+        selectedWeekDateOffset += 7;
+        const plan = (state.studyPlans || []).find(p => p.id === selectedActivePlanId);
+        if (plan) {
+          const todayStr = getTodayDateStr();
+          const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+          renderWeekStrip(plan, sched);
+        }
+      };
+    }
+
+    if (btnPlanJumpToday) {
+      btnPlanJumpToday.onclick = () => {
+        selectedWeekDateOffset = 0;
+        selectedViewingDateStr = getTodayDateStr();
+        const plan = (state.studyPlans || []).find(p => p.id === selectedActivePlanId);
+        if (plan) {
+          const todayStr = getTodayDateStr();
+          const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+          renderWeekStrip(plan, sched);
+          renderDayLessonsList(plan, sched);
+        }
+      };
+    }
+
+    // Dotted create button
+    const btnDottedCreatePlan = document.getElementById('btnDottedCreatePlan');
+    if (btnDottedCreatePlan) btnDottedCreatePlan.onclick = () => openCreatePlanModal();
+
+    // Toggle ended plans collapsible
+    const btnToggleEndedPlans = document.getElementById('btnToggleEndedPlans');
+    if (btnToggleEndedPlans) {
+      btnToggleEndedPlans.onclick = () => {
+        isEndedPlansSectionOpen = !isEndedPlansSectionOpen;
+        const endedList = document.getElementById('planEndedPlansList');
+        const chevron = document.getElementById('planEndedChevron');
+        if (endedList) endedList.classList.toggle('hidden', !isEndedPlansSectionOpen);
+        if (chevron) chevron.style.transform = isEndedPlansSectionOpen ? 'rotate(180deg)' : 'none';
+      };
     }
 
     async function togglePlanLessonDone(planId, lessonId) {
@@ -15987,6 +16383,8 @@
       const bufferInput = document.getElementById('planInputBufferDays');
       const capInput = document.getElementById('planInputDailyCap');
       const lessonPicker = document.getElementById('planLessonPickerList');
+      const countdownText = document.getElementById('planExamDaysCountdownText');
+      const filterInput = document.getElementById('planLessonFilterInput');
 
       let selectedLessonIds = new Set(editingPlan && Array.isArray(editingPlan.lessonIds) ? editingPlan.lessonIds : []);
       let activeStudyDays = editingPlan && Array.isArray(editingPlan.studyDays) ? [...editingPlan.studyDays] : [1, 2, 3, 4, 5, 6, 0];
@@ -16005,8 +16403,29 @@
         if (dateInput) dateInput.value = formatDateOnly(defaultDate);
         if (bufferInput) bufferInput.value = 2;
         if (capInput) capInput.value = '';
-        // Mặc định chọn tất cả bài học
         selectedLessonIds = new Set((state.lessons || []).map(l => l.id));
+      }
+
+      // Stepper buttons for buffer days
+      const btnBufferDec = document.getElementById('btnBufferDec');
+      const btnBufferInc = document.getElementById('btnBufferInc');
+      if (btnBufferDec) {
+        btnBufferDec.onclick = () => {
+          let v = parseInt(bufferInput.value, 10) || 0;
+          if (v > 0) {
+            bufferInput.value = v - 1;
+            updateLivePlanCalc();
+          }
+        };
+      }
+      if (btnBufferInc) {
+        btnBufferInc.onclick = () => {
+          let v = parseInt(bufferInput.value, 10) || 0;
+          if (v < 14) {
+            bufferInput.value = v + 1;
+            updateLivePlanCalc();
+          }
+        };
       }
 
       // Render Day toggles
@@ -16014,53 +16433,62 @@
       if (dayTogglesContainer) {
         dayTogglesContainer.querySelectorAll('.plan-day-toggle').forEach(btn => {
           const dayNum = parseInt(btn.getAttribute('data-day'), 10);
-          if (activeStudyDays.includes(dayNum)) {
-            btn.className = 'plan-day-toggle active px-3 py-1.5 rounded-lg border border-indigo-600 bg-indigo-600 text-white text-xs font-semibold cursor-pointer';
-          } else {
-            btn.className = 'plan-day-toggle px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#6E6B65] dark:text-[#979DA8] text-xs font-semibold cursor-pointer';
+          function updateDayBtn() {
+            if (activeStudyDays.includes(dayNum)) {
+              btn.className = 'plan-day-toggle active min-h-[44px] rounded-xl border border-[#4F46E5] bg-[#4F46E5] text-white text-xs font-semibold flex items-center justify-center transition cursor-pointer';
+            } else {
+              btn.className = 'plan-day-toggle min-h-[44px] rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#6E6B65] dark:text-[#979DA8] text-xs font-semibold flex items-center justify-center transition cursor-pointer';
+            }
           }
+          updateDayBtn();
 
           btn.onclick = () => {
             if (activeStudyDays.includes(dayNum)) {
               if (activeStudyDays.length > 1) {
                 activeStudyDays = activeStudyDays.filter(d => d !== dayNum);
-                btn.className = 'plan-day-toggle px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] text-[#6E6B65] dark:text-[#979DA8] text-xs font-semibold cursor-pointer';
+                updateDayBtn();
               } else {
                 showToast("Cần giữ lại ít nhất 1 ngày học trong tuần", "warning");
               }
             } else {
               activeStudyDays.push(dayNum);
-              btn.className = 'plan-day-toggle active px-3 py-1.5 rounded-lg border border-indigo-600 bg-indigo-600 text-white text-xs font-semibold cursor-pointer';
+              updateDayBtn();
             }
             updateLivePlanCalc();
           };
         });
       }
 
-      // Render Lesson picker grouped by category
-      function renderPickerLessons() {
+      // Render Lesson picker grouped by category with filter
+      function renderPickerLessons(filterText = '') {
         if (!lessonPicker) return;
-        lessonPicker.innerHTML = (state.categories || []).map(cat => {
-          const catLessons = (state.lessons || []).filter(l => l.categoryId === cat.id);
-          if (catLessons.length === 0) return '';
+        const filterLower = (filterText || '').toLowerCase().trim();
+
+        const categoriesHtml = (state.categories || []).map(cat => {
+          const allCatLessons = (state.lessons || []).filter(l => l.categoryId === cat.id);
+          const filteredCatLessons = filterLower ? allCatLessons.filter(l => (l.title || '').toLowerCase().includes(filterLower)) : allCatLessons;
+          if (filteredCatLessons.length === 0) return '';
+
           return `
-            <div class="mb-2">
+            <div class="mb-2 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60 pb-1.5 last:border-b-0">
               <div class="font-bold text-[11px] text-[#6E6B65] dark:text-[#979DA8] mb-1 flex items-center justify-between">
-                <span>${escapeHtml(cat.title)}</span>
-                <button type="button" class="text-indigo-600 dark:text-indigo-400 text-[10px] hover:underline" data-pick-cat="${cat.id}">Chọn cả mục</button>
+                <span class="truncate">${escapeHtml(cat.title)} (${filteredCatLessons.length})</span>
+                <button type="button" class="text-[#4F46E5] dark:text-indigo-400 text-[10px] hover:underline cursor-pointer" data-pick-cat="${cat.id}">Chọn cả mục</button>
               </div>
-              <div class="space-y-1 pl-1">
-                ${catLessons.map(l => `
+              <div class="space-y-0.5">
+                ${filteredCatLessons.map(l => `
                   <label class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
-                    <input type="checkbox" class="rounded text-indigo-600 focus:ring-0 plan-lesson-checkbox" value="${l.id}" ${selectedLessonIds.has(l.id) ? 'checked' : ''} />
+                    <input type="checkbox" class="w-4 h-4 rounded text-indigo-600 focus:ring-0 plan-lesson-checkbox cursor-pointer" value="${l.id}" ${selectedLessonIds.has(l.id) ? 'checked' : ''} />
                     <span class="text-xs text-[#1C1917] dark:text-[#EDECE8] truncate flex-1">${escapeHtml(l.title)}</span>
-                    <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${l.sourceType ? l.sourceType.toUpperCase() : 'HTML'}</span>
+                    <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono shrink-0">${l.sourceType ? l.sourceType.toUpperCase() : 'HTML'}</span>
                   </label>
                 `).join('')}
               </div>
             </div>
           `;
         }).join('');
+
+        lessonPicker.innerHTML = categoriesHtml || '<p class="text-center text-[#6E6B65] py-3">Không tìm thấy bài học nào phù hợp</p>';
 
         lessonPicker.querySelectorAll('.plan-lesson-checkbox').forEach(cb => {
           cb.addEventListener('change', () => {
@@ -16075,7 +16503,7 @@
             const catId = btn.getAttribute('data-pick-cat');
             const catLessons = (state.lessons || []).filter(l => l.categoryId === catId);
             catLessons.forEach(l => selectedLessonIds.add(l.id));
-            renderPickerLessons();
+            renderPickerLessons(filterInput ? filterInput.value : '');
             updateLivePlanCalc();
           });
         });
@@ -16086,11 +16514,16 @@
 
       renderPickerLessons();
 
+      if (filterInput) {
+        filterInput.value = '';
+        filterInput.oninput = () => renderPickerLessons(filterInput.value);
+      }
+
       const btnSelectAll = document.getElementById('btnSelectAllPlanLessons');
       if (btnSelectAll) {
         btnSelectAll.onclick = () => {
           (state.lessons || []).forEach(l => selectedLessonIds.add(l.id));
-          renderPickerLessons();
+          renderPickerLessons(filterInput ? filterInput.value : '');
           updateLivePlanCalc();
         };
       }
@@ -16099,7 +16532,7 @@
       if (btnDeselectAll) {
         btnDeselectAll.onclick = () => {
           selectedLessonIds.clear();
-          renderPickerLessons();
+          renderPickerLessons(filterInput ? filterInput.value : '');
           updateLivePlanCalc();
         };
       }
@@ -16115,8 +16548,19 @@
         const textEl = document.getElementById('planLiveCalculationText');
 
         if (!dateVal) {
+          if (countdownText) countdownText.innerText = '';
           if (textEl) textEl.innerText = "Vui lòng chọn ngày thi.";
           return;
+        }
+
+        const todayStr = getTodayDateStr();
+        const today = parseDateOnly(todayStr);
+        const examD = parseDateOnly(dateVal);
+        const diffDays = Math.round((examD.getTime() - today.getTime()) / 86400000);
+        if (countdownText) {
+          if (diffDays < 0) countdownText.innerText = "Đã qua trong quá khứ";
+          else if (diffDays === 0) countdownText.innerText = "Hôm nay thi!";
+          else countdownText.innerText = `Còn ${diffDays} ngày`;
         }
 
         const tempPlan = {
@@ -16126,18 +16570,17 @@
           studyDays: activeStudyDays,
           lessonIds: Array.from(selectedLessonIds)
         };
-        const todayStr = getTodayDateStr();
         const sched = calculateStudyPlanSchedule(tempPlan, todayStr, []);
 
         if (sched.isPast) {
-          if (boxEl) boxEl.className = "p-3 rounded-xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200";
+          if (boxEl) boxEl.className = "p-2.5 rounded-xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/70 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 text-xs";
           if (textEl) textEl.innerText = "Ngày thi đã qua trong quá khứ! Vui lòng chọn một ngày trong tương lai.";
         } else if (sched.isOverloaded) {
-          if (boxEl) boxEl.className = "p-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200";
-          if (textEl) textEl.innerText = `Cần ${sched.avgPerDay} bài/ngày, hơi nặng (${sched.totalLessons} bài trong ${sched.availableDaysCount} ngày học). Hãy dời ngày thi xa hơn hoặc bớt bài để đạt hiệu quả cao nhất.`;
+          if (boxEl) boxEl.className = "p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 text-xs";
+          if (textEl) textEl.innerText = `Cần khoảng ${sched.avgPerDay} bài/ngày, hơi nặng (${sched.totalLessons} bài trong ${sched.availableDaysCount} ngày học). Hãy dời ngày thi xa hơn hoặc bớt bài để đạt hiệu quả cao nhất.`;
         } else {
-          if (boxEl) boxEl.className = "p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/60 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200";
-          if (textEl) textEl.innerText = `Kế hoạch hợp lý: Còn ${sched.daysLeft} ngày (${sched.availableDaysCount} ngày học), trung bình ~${sched.avgPerDay} bài/ngày.`;
+          if (boxEl) boxEl.className = "p-2.5 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/70 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200 text-xs";
+          if (textEl) textEl.innerText = `Khoảng ${sched.avgPerDay} bài/ngày trong ${sched.availableDaysCount} ngày học (${sched.daysLeft} ngày tới kỳ thi).`;
         }
       }
 
@@ -16233,6 +16676,13 @@
     const btnEmptyCreate = document.getElementById('btnEmptyCreatePlan');
     if (btnEmptyCreate) btnEmptyCreate.onclick = () => openCreatePlanModal();
 
+    // Legacy edit/delete buttons attached for safety
+    const legacyBtnEdit = document.getElementById('btnEditCurrentPlan');
+    if (legacyBtnEdit) legacyBtnEdit.onclick = () => {
+      const p = (state.studyPlans || []).find(x => x.id === selectedActivePlanId);
+      if (p) openCreatePlanModal(p);
+    };
+
     // Nhắc nhở Notification hàng ngày
     function checkStudyPlanDailyReminders() {
       if (!state.studyPlans || state.studyPlans.length === 0) return;
@@ -16262,6 +16712,14 @@
         }
       }
     }
+
+    window.calculateStudyPlanSchedule = calculateStudyPlanSchedule;
+    window.openStudyPlanModal = openStudyPlanModal;
+    window.openCreatePlanModal = openCreatePlanModal;
+    window.renderStudyPlanWidget = renderStudyPlanWidget;
+    window.renderStudyPlanDetail = renderStudyPlanDetail;
+    window.togglePlanLessonDone = togglePlanLessonDone;
+
 
 
     async function bootApp() {
