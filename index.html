@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v3.9.5';
+    const CURRENT_APP_VERSION = 'v4.0.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1850,7 +1850,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v3.9.5 - build 08/10/2026 22:30
+        Thư viện Sách HTML v4.0.0 - build 09/10/2026 09:30
       </div>
     </aside>
 
@@ -1858,6 +1858,18 @@
     <main id="readingArea" class="flex-1 overflow-y-auto flex flex-col relative scroll-smooth focus:outline-none min-w-0 pb-[max(5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] md:pb-6">
       
       <!-- // REDESIGN: THANH CÔNG CỤ BÀI ĐỌC (CAO 52PX, 3 NHÓM RÕ RÀNG: ĐIỀU HƯỚNG | HIỂN THỊ | HÀNH ĐỘNG, THANH TIẾN ĐỘ 3PX ĐÁY) -->
+            <!-- // HANGMUC-3: Banner nhắc nhở sao lưu định kỳ 7 ngày -->
+      <div id="jsonExportReminderBanner" class="hidden mx-4 mt-2 mb-2 p-3 rounded-xl bg-amber-50/95 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between gap-3 shadow-xs">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true"><use href="#icon-alert-circle"></use></svg>
+          <span class="truncate">Đã hơn 7 ngày bạn chưa tải bản sao lưu (.json) về máy tính để phòng ngừa rủi ro.</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="btnQuickExportFromReminder" class="px-2.5 py-1 rounded-md bg-amber-600 hover:bg-amber-700 text-white font-medium text-[11px] transition shadow-2xs">Tải .json ngay</button>
+          <button id="btnCloseReminderBanner" class="p-1 text-amber-700 dark:text-amber-300 hover:bg-amber-200/50 dark:hover:bg-amber-900/50 rounded transition" title="Nhắc lại sau"><svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg></button>
+        </div>
+      </div>
+
       <div id="stickyReaderHeader" class="sticky top-0 z-30 h-[52px] min-h-[52px] px-3 sm:px-6 bg-[#FAF9F5]/95 dark:bg-[#111317]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 text-xs sm:text-[13px] flex-nowrap overflow-x-auto no-scrollbar relative transition-colors select-none">
         
         <!-- NHÓM 1: ĐIỀU HƯỚNG (Trước / Bộ đếm tích hợp nhảy bài / Sau) -->
@@ -2197,7 +2209,7 @@
 
               <iframe 
                 id="lessonIframe" 
-                sandbox="allow-scripts allow-same-origin allow-popups" 
+                sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" 
                 scrolling="no" 
                 class="w-full border-0 transition-opacity duration-150 block" 
                 style="min-height: 400px; background-color: transparent;" 
@@ -2335,6 +2347,15 @@
       </button>
     </div>
 
+        <!-- // HANGMUC-3: Nút mở Quản lý Sao lưu & Khôi phục -->
+    <button id="btnOpenBackupRestoreModal" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
+        <span>Sao lưu &amp; Khôi phục</span>
+      </div>
+      <span id="snapshotCountBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">0 bản</span>
+    </button>
+
     <!-- Xuất & Nhập sao lưu (.json) -->
     <button id="btnExportData" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
       <svg class="w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-download"></use></svg>
@@ -2368,7 +2389,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v3.9.5 - build 08/10/2026 22:30
+      Thư viện Sách HTML v4.0.0 - build 09/10/2026 09:30
     </div>
   </div>
 
@@ -2740,6 +2761,48 @@
 
       <!-- Body Content (Scrollable) -->
       <div class="p-4 sm:p-6 overflow-y-auto space-y-5">
+        <!-- // HANGMUC-2: Thẻ Thống kê Dung lượng & Giới hạn lưu trữ trình duyệt -->
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400"><use href="#icon-shield-check"></use></svg>
+              <h4 class="font-semibold text-xs text-[#1C1917] dark:text-[#EDECE8]">Bộ nhớ &amp; Dung lượng Thư viện</h4>
+            </div>
+            <span id="storageQuotaPercentBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">0%</span>
+          </div>
+
+          <!-- Chi tiết dung lượng -->
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-2.5 rounded-lg bg-white dark:bg-[#161A20] border border-slate-200/60 dark:border-slate-800/60">
+              <span class="text-[10px] text-gray-500 block mb-0.5">Dung lượng thư viện</span>
+              <span id="statLibrarySizeDisplay" class="font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">0 KB</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-white dark:bg-[#161A20] border border-slate-200/60 dark:border-slate-800/60">
+              <span class="text-[10px] text-gray-500 block mb-0.5">Bộ nhớ trình duyệt</span>
+              <span id="statBrowserStorageDisplay" class="font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Đang tính...</span>
+            </div>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+            <div id="storageProgressBar" class="h-full bg-indigo-600 transition-all duration-500" style="width: 0%;"></div>
+          </div>
+
+          <!-- Cảnh báo dung lượng đầy (>80%) -->
+          <div id="storageQuotaAlert" class="hidden p-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-[11px] flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-alert-triangle"></use></svg>
+            <span>Bộ nhớ trình duyệt sắp đầy (>80%)! Hãy dọn thùng rác hoặc tải bản sao lưu về máy.</span>
+          </div>
+
+          <!-- Quyền lưu trữ bền -->
+          <div class="flex items-center justify-between pt-1 text-[11px] text-gray-500">
+            <span id="persistentStorageStatus">Trạng thái lưu trữ: Tiêu chuẩn</span>
+            <button id="btnRequestPersistStorage" class="px-2 py-0.5 rounded border border-gray-300 dark:border-gray-700 hover:bg-black/5 text-[10px] font-medium transition">
+              Bật lưu trữ bền vững
+            </button>
+          </div>
+        </div>
+
         <!-- Hàng 1: Chuỗi ngày học liên tiếp & Mục tiêu hôm nay -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <!-- Streak Card -->
@@ -3592,6 +3655,59 @@
     </div>
   </div>
 
+    <!-- // HANGMUC-3: Modal Quản lý Sao lưu & Khôi phục (IndexedDB Snapshot) -->
+  <div id="backupRestoreModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-2xl rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[88vh] flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-0 overflow-hidden">
+      <!-- Handle mobile -->
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mt-2.5 mb-1"></div>
+      
+      <!-- Header modal -->
+      <div class="flex items-center justify-between p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-shield-check"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif text-base sm:text-lg font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Sao lưu &amp; Khôi phục</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Tự động bảo vệ dữ liệu với bản chụp an toàn (IndexedDB)</p>
+          </div>
+        </div>
+        <button id="btnCloseBackupRestoreModal" class="touch-target p-1 text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] dark:hover:text-[#E8E6E1] rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Toolbar hành động nhanh & Thống kê -->
+      <div class="p-3.5 sm:p-4 bg-[#FAF9F5] dark:bg-[#111317] border-b border-[#E7E5DF] dark:border-[#262C36] flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+        <div class="flex items-center gap-2 text-xs text-[#6E6B65] dark:text-[#979DA8]">
+          <span>Lưu tối đa 7 bản gần nhất</span>
+          <span>•</span>
+          <span id="backupStorageStatBadge" class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">Đang tính dung lượng...</span>
+        </div>
+        <button id="btnCreateManualSnapshot" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-xs transition active:scale-98">
+          <svg class="w-3.5 h-3.5"><use href="#icon-plus"></use></svg>
+          <span>Sao lưu ngay</span>
+        </button>
+      </div>
+
+      <!-- Danh sách các bản sao lưu -->
+      <div id="snapshotListContainer" class="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 min-h-[160px]">
+        <!-- Render động danh sách các bản snapshot -->
+      </div>
+
+      <!-- Footer modal -->
+      <div class="p-3 sm:p-3.5 bg-[#FAF9F5] dark:bg-[#111317] border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0"><use href="#icon-shield-check"></use></svg>
+          Khôi phục luôn tự động chụp lại trạng thái trước khi áp dụng
+        </span>
+        <button id="btnCloseBackupRestoreModalBottom" class="px-3 py-1 rounded-md border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1B18] dark:text-[#E8E6E1] font-medium transition">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
@@ -3888,6 +4004,1359 @@
     };
     window.state = state;
 
+    
+    
+    // =========================================================================
+    // // HANGMUC-1: CÁCH LY BÀI HỌC TRONG IFRAME SANDBOX & CẦU NỐI POSTMESSAGE 2 CHIỀU
+    // =========================================================================
+
+    // Bộ tạo mã Bridge Script tiêm vào trong Sandboxed Iframe
+    function buildSandboxBridgeCode() {
+      const openTag = '<' + 'script>';
+      const closeTag = '<' + '/script>';
+      const bridgeJs = `
+(function() {
+  const BRIDGE_VER = '1.0.0';
+  let currentScale = 1.0;
+  let searchMatches = [];
+  let currentMatchIdx = -1;
+
+  // 1. Thẻ Style nội bộ cho Sandbox
+  const bridgeStyle = document.createElement('style');
+  bridgeStyle.id = '__bridge_sandbox_styles';
+  bridgeStyle.textContent = \`
+    .custom-highlight { border-radius: 3px; padding: 1px 3px; cursor: pointer; transition: filter 0.15s ease; }
+    .custom-highlight:hover { filter: brightness(0.92); }
+    .custom-highlight-yellow { background-color: #FEF08A !important; color: #1C1917 !important; }
+    .custom-highlight-green { background-color: #BBF7D0 !important; color: #1C1917 !important; }
+    .custom-highlight-pink { background-color: #FBCFE8 !important; color: #1C1917 !important; }
+    .tts-active-highlight { outline: 2px solid #6366F1 !important; background-color: rgba(99, 102, 241, 0.18) !important; border-radius: 4px; transition: all 0.2s ease; }
+    .search-match-highlight { background-color: #FDE047 !important; color: #000 !important; border-radius: 2px; }
+    .search-match-active { background-color: #EA580C !important; color: #FFF !important; font-weight: bold; border-radius: 2px; }
+  \`;
+  (document.head || document.documentElement).appendChild(bridgeStyle);
+
+  function getNativeBg() {
+    try {
+      const bBg = window.getComputedStyle(document.body).backgroundColor;
+      const hBg = window.getComputedStyle(document.documentElement).backgroundColor;
+      const isTrans = v => !v || v === 'transparent' || v === 'rgba(0, 0, 0, 0)';
+      if (!isTrans(bBg)) return bBg;
+      if (!isTrans(hBg)) return hBg;
+    } catch (_) {}
+    return '#FFFFFF';
+  }
+
+  // 2. Tự co giãn chiều cao (Auto-height)
+  let resizeTimer = null;
+  function sendHeight() {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      try {
+        const body = document.body;
+        const html = document.documentElement;
+        if (!body || !html) return;
+        const naturalH = Math.max(body.scrollHeight, body.offsetHeight, html.scrollHeight, html.offsetHeight, 350);
+        const effectiveH = Math.ceil(naturalH * (currentScale > 1 ? currentScale : 1));
+        window.parent.postMessage({
+          type: 'BRIDGE_RESIZE',
+          height: effectiveH,
+          bg: getNativeBg()
+        }, '*');
+      } catch (_) {}
+    }, 40);
+  }
+
+  window.addEventListener('load', sendHeight);
+  if (typeof ResizeObserver !== 'undefined' && document.body) {
+    new ResizeObserver(sendHeight).observe(document.body);
+  }
+
+  // 3. Link handling an toàn
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const targetId = href.substring(1);
+      const targetEl = document.getElementById(targetId) || document.querySelector(\`[name="\${targetId}"]\`);
+      if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (href.startsWith('http://') || href.startsWith('https://')) {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
+    }
+  }, true);
+
+  // 4. Theo dõi bôi đen văn bản (Selection)
+  document.addEventListener('selectionchange', () => {
+    setTimeout(() => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+        window.parent.postMessage({ type: 'TEXT_DESELECTED' }, '*');
+        return;
+      }
+      const text = sel.toString().trim();
+      if (text.length < 2) return;
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      window.parent.postMessage({
+        type: 'TEXT_SELECTED',
+        text: text,
+        rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
+      }, '*');
+    }, 30);
+  });
+
+  document.addEventListener('click', (e) => {
+    const hl = e.target.closest('.custom-highlight');
+    if (hl) {
+      const hlId = hl.getAttribute('data-hl-id');
+      const rect = hl.getBoundingClientRect();
+      window.parent.postMessage({
+        type: 'HIGHLIGHT_CLICKED',
+        id: hlId,
+        rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right }
+      }, '*');
+    }
+  });
+
+  // 5. Chuyển tiếp phím tắt & cử chỉ vuốt
+  window.addEventListener('keydown', (e) => {
+    window.parent.postMessage({
+      type: 'FORWARD_KEY',
+      key: e.key,
+      code: e.code,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      shiftKey: e.shiftKey
+    }, '*');
+  });
+
+  let tStartX = 0, tStartY = 0;
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      tStartX = e.touches[0].clientX;
+      tStartY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', (e) => {
+    if (e.changedTouches.length === 1) {
+      const dx = e.changedTouches[0].clientX - tStartX;
+      const dy = e.changedTouches[0].clientY - tStartY;
+      if (Math.abs(dx) > 60 && Math.abs(dy) < 50) {
+        window.parent.postMessage({
+          type: 'FORWARD_SWIPE',
+          direction: dx < 0 ? 'next' : 'prev'
+        }, '*');
+      }
+    }
+  }, { passive: true });
+
+  // 6. Trích xuất Readable Chunks cho TTS
+  function extractTTSChunks() {
+    const chunks = [];
+    const blocks = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, blockquote, dt, dd');
+    blocks.forEach((el, bIdx) => {
+      if (el.closest('script, style, button, nav, .hidden')) return;
+      const raw = (el.innerText || '').trim();
+      if (!raw || raw.length < 2) return;
+      const chunkId = 'tts_' + bIdx;
+      el.setAttribute('data-tts-id', chunkId);
+      chunks.push({ id: chunkId, text: raw });
+    });
+    return chunks;
+  }
+
+  // 7. LẮNG NGHE LỆNH TỪ APP CHA
+  window.addEventListener('message', (e) => {
+    const msg = e.data;
+    if (!msg || typeof msg !== 'object') return;
+
+    switch (msg.type) {
+      case 'INIT_CONFIG': {
+        if (msg.fontSizeOffset !== undefined) {
+          applyScale(msg.fontSizeOffset);
+        }
+        if (msg.highlights && Array.isArray(msg.highlights)) {
+          applySavedHighlights(msg.highlights);
+        }
+        const chunks = extractTTSChunks();
+        window.parent.postMessage({
+          type: 'BRIDGE_READY',
+          height: Math.max(document.body ? document.body.scrollHeight : 350, 350),
+          bg: getNativeBg(),
+          ttsChunks: chunks
+        }, '*');
+        sendHeight();
+        break;
+      }
+
+      case 'APPLY_FONT_SIZE': {
+        applyScale(msg.fontSizeOffset);
+        sendHeight();
+        break;
+      }
+
+      case 'APPLY_THEME': {
+        if (!msg.preserveOriginalTheme) {
+          document.body.style.backgroundColor = msg.isDarkMode ? '#161A20' : '#FFFFFF';
+          document.body.style.color = msg.isDarkMode ? '#ECEEF2' : '#1A1A1A';
+        }
+        sendHeight();
+        break;
+      }
+
+      case 'APPLY_HIGHLIGHT': {
+        const { id, text, color } = msg.highlight;
+        const sel = window.getSelection();
+        if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
+          const range = sel.getRangeAt(0);
+          const mark = document.createElement('mark');
+          mark.className = \`custom-highlight custom-highlight-\${color || 'yellow'}\`;
+          mark.setAttribute('data-hl-id', id);
+          try {
+            range.surroundContents(mark);
+          } catch (_) {
+            mark.textContent = text;
+            range.deleteContents();
+            range.insertNode(mark);
+          }
+          sel.removeAllRanges();
+        }
+        break;
+      }
+
+      case 'REMOVE_HIGHLIGHT': {
+        const mark = document.querySelector(\`[data-hl-id="\${msg.id}"]\`);
+        if (mark) {
+          const parent = mark.parentNode;
+          while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+          parent.removeChild(mark);
+        }
+        break;
+      }
+
+      case 'SEARCH_IN_ARTICLE': {
+        handleSearchInArticle(msg.keyword);
+        break;
+      }
+
+      case 'NAVIGATE_SEARCH_MATCH': {
+        navigateSearchMatch(msg.direction);
+        break;
+      }
+
+      case 'TTS_HIGHLIGHT_NODE': {
+        document.querySelectorAll('.tts-active-highlight').forEach(el => el.classList.remove('tts-active-highlight'));
+        if (msg.chunkId) {
+          const target = document.querySelector(\`[data-tts-id="\${msg.chunkId}"]\`);
+          if (target) {
+            target.classList.add('tts-active-highlight');
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+        break;
+      }
+
+      case 'TTS_CLEAR_HIGHLIGHT': {
+        document.querySelectorAll('.tts-active-highlight').forEach(el => el.classList.remove('tts-active-highlight'));
+        break;
+      }
+    }
+  });
+
+  function applyScale(fontSizeOffset) {
+    const factor = 1 + ((fontSizeOffset || 0) * 0.1);
+    currentScale = factor;
+    document.body.style.zoom = factor;
+    document.body.style.webkitTextSizeAdjust = (factor * 100) + '%';
+  }
+
+  function applySavedHighlights(hlList) {
+    hlList.forEach(hl => {
+      if (!hl || !hl.text) return;
+      if (document.querySelector(\`[data-hl-id="\${hl.id}"]\`)) return;
+      findAndWrapText(hl.text, hl.id, hl.color || 'yellow');
+    });
+  }
+
+  function findAndWrapText(textToFind, hlId, color) {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement && (node.parentElement.closest('.custom-highlight') || node.parentElement.closest('script, style'))) continue;
+      const idx = node.nodeValue.indexOf(textToFind);
+      if (idx !== -1) {
+        const range = document.createRange();
+        range.setStart(node, idx);
+        range.setEnd(node, idx + textToFind.length);
+        const mark = document.createElement('mark');
+        mark.className = \`custom-highlight custom-highlight-\${color}\`;
+        mark.setAttribute('data-hl-id', hlId);
+        try {
+          range.surroundContents(mark);
+          break;
+        } catch (_) {}
+      }
+    }
+  }
+
+  function handleSearchInArticle(kw) {
+    document.querySelectorAll('.search-match-highlight').forEach(el => {
+      const p = el.parentNode;
+      while (el.firstChild) p.insertBefore(el.firstChild, el);
+      p.removeChild(el);
+    });
+    searchMatches = [];
+    currentMatchIdx = -1;
+
+    if (!kw || !kw.trim()) {
+      window.parent.postMessage({ type: 'SEARCH_RESULT', totalMatches: 0, currentIndex: 0, keyword: '' }, '*');
+      return;
+    }
+
+    const searchLower = kw.trim().toLowerCase();
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+    let n;
+    while ((n = walker.nextNode())) {
+      if (n.parentElement && !n.parentElement.closest('script, style')) {
+        textNodes.push(n);
+      }
+    }
+
+    for (const textNode of textNodes) {
+      let val = textNode.nodeValue;
+      let valLower = val.toLowerCase();
+      let matchIdx = valLower.indexOf(searchLower);
+      if (matchIdx !== -1) {
+        const range = document.createRange();
+        range.setStart(textNode, matchIdx);
+        range.setEnd(textNode, matchIdx + searchLower.length);
+        const span = document.createElement('span');
+        span.className = 'search-match-highlight';
+        try {
+          range.surroundContents(span);
+          searchMatches.push(span);
+        } catch (_) {}
+      }
+    }
+
+    if (searchMatches.length > 0) {
+      currentMatchIdx = 0;
+      searchMatches[0].classList.add('search-match-active');
+      searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    window.parent.postMessage({
+      type: 'SEARCH_RESULT',
+      totalMatches: searchMatches.length,
+      currentIndex: searchMatches.length > 0 ? 1 : 0,
+      keyword: kw
+    }, '*');
+  }
+
+  function navigateSearchMatch(dir) {
+    if (searchMatches.length === 0) return;
+    searchMatches[currentMatchIdx]?.classList.remove('search-match-active');
+    if (dir === 'next') {
+      currentMatchIdx = (currentMatchIdx + 1) % searchMatches.length;
+    } else {
+      currentMatchIdx = (currentMatchIdx - 1 + searchMatches.length) % searchMatches.length;
+    }
+    const activeEl = searchMatches[currentMatchIdx];
+    if (activeEl) {
+      activeEl.classList.add('search-match-active');
+      activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    window.parent.postMessage({
+      type: 'SEARCH_RESULT',
+      totalMatches: searchMatches.length,
+      currentIndex: currentMatchIdx + 1
+    }, '*');
+  }
+
+})();
+`;
+      return openTag + bridgeJs + closeTag;
+    }
+
+    function injectBridgeAndCspIntoHtml(rawHtml) {
+      const cspMeta = '<meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: https: \'unsafe-inline\' \'unsafe-eval\'; frame-src \'none\'; object-src \'none\';">';
+      const bridgeScript = buildSandboxBridgeCode();
+
+      let modified = rawHtml || '<p>Nội dung rỗng</p>';
+
+      // Chèn CSP vào head
+      if (modified.includes('<head>')) {
+        modified = modified.replace('<head>', '<head>\n  ' + cspMeta);
+      } else if (modified.includes('<head ')) {
+        modified = modified.replace(/<head[^>]*>/, '$&\n  ' + cspMeta);
+      } else {
+        modified = cspMeta + '\n' + modified;
+      }
+
+      // Chèn Bridge Script vào trước </body>
+      if (modified.includes('</body>')) {
+        modified = modified.replace('</body>', bridgeScript + '\n</body>');
+      } else {
+        modified = modified + '\n' + bridgeScript;
+      }
+
+      return modified;
+    }
+
+    function postMessageToLessonIframe(message) {
+      const iframe = document.getElementById('lessonIframe');
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage(message, '*');
+        } catch (_) {}
+      }
+    }
+
+    // Xử lý tin nhắn từ Iframe gửi ra App Cha
+    let bridgeReadableChunks = [];
+    let currentSelectionInfoBridge = null;
+
+    function handleBridgeMessageFromIframe(e) {
+      const iframe = document.getElementById('lessonIframe');
+      if (!iframe || e.source !== iframe.contentWindow) return; // Bảo mật: Chỉ nhận từ iframe bài học
+
+      const msg = e.data;
+      if (!msg || typeof msg !== 'object') return;
+
+      switch (msg.type) {
+        case 'BRIDGE_READY': {
+          const skeleton = document.getElementById('iframeLoadingSkeleton');
+          if (skeleton) {
+            skeleton.style.opacity = '0';
+            setTimeout(() => skeleton.classList.add('hidden'), 150);
+          }
+          if (iframe) {
+            iframe.style.opacity = '1';
+            iframe.style.height = `${(msg.height || 400) + 24}px`;
+          }
+          const container = document.getElementById('iframeOuterContainer');
+          if (container && msg.bg) {
+            container.style.backgroundColor = msg.bg;
+          }
+          if (msg.ttsChunks && Array.isArray(msg.ttsChunks)) {
+            bridgeReadableChunks = msg.ttsChunks;
+          }
+          break;
+        }
+
+        case 'BRIDGE_RESIZE': {
+          if (iframe && msg.height) {
+            const currentH = parseInt(iframe.style.height || '0', 10);
+            if (Math.abs(currentH - msg.height) > 6) {
+              iframe.style.height = `${msg.height + 24}px`;
+            }
+          }
+          const container = document.getElementById('iframeOuterContainer');
+          if (container && msg.bg) {
+            container.style.backgroundColor = msg.bg;
+          }
+          break;
+        }
+
+        case 'TEXT_SELECTED': {
+          currentSelectionInfoBridge = { text: msg.text, rect: msg.rect };
+          const hlToolbar = document.getElementById('highlightToolbar');
+          if (hlToolbar && msg.rect) {
+            const ifRect = iframe.getBoundingClientRect();
+            const topPos = Math.max(10, ifRect.top + msg.rect.top - 48);
+            const leftPos = Math.max(10, Math.min(window.innerWidth - 300, ifRect.left + msg.rect.left));
+            hlToolbar.style.top = `${topPos}px`;
+            hlToolbar.style.left = `${leftPos}px`;
+            hlToolbar.classList.remove('hidden');
+          }
+          break;
+        }
+
+        case 'TEXT_DESELECTED': {
+          currentSelectionInfoBridge = null;
+          const hlToolbar = document.getElementById('highlightToolbar');
+          if (hlToolbar && !hlToolbar.matches(':hover')) {
+            hlToolbar.classList.add('hidden');
+          }
+          break;
+        }
+
+        case 'HIGHLIGHT_CLICKED': {
+          if (typeof openHighlightNoteModal === 'function') {
+            openHighlightNoteModal(msg.id);
+          }
+          break;
+        }
+
+        case 'FORWARD_KEY': {
+          handleForwardedKey(msg);
+          break;
+        }
+
+        case 'FORWARD_SWIPE': {
+          if (state.swipeEnabled && typeof goToAdjacentLesson === 'function') {
+            goToAdjacentLesson(msg.direction === 'next' ? 1 : -1);
+          }
+          break;
+        }
+
+        case 'SEARCH_RESULT': {
+          const searchBar = document.getElementById('inArticleSearchBar');
+          const countEl = document.getElementById('inArticleCount');
+          const kwEl = document.getElementById('inArticleKeyword');
+          if (searchBar) {
+            if (msg.totalMatches > 0) {
+              searchBar.classList.remove('hidden');
+              if (countEl) countEl.innerText = `(${msg.currentIndex}/${msg.totalMatches})`;
+              if (kwEl) kwEl.innerText = msg.keyword || '';
+            } else {
+              if (countEl) countEl.innerText = '(0/0)';
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    // Xử lý phím tắt chuyển tiếp từ bên trong bài ra ngoài
+    function handleForwardedKey(keyEvt) {
+      const k = keyEvt.key;
+      if (k === 'ArrowLeft' || k === 'k' || k === 'K') {
+        if (typeof goToAdjacentLesson === 'function') goToAdjacentLesson(-1);
+      } else if (k === 'ArrowRight' || k === 'j' || k === 'J') {
+        if (typeof goToAdjacentLesson === 'function') goToAdjacentLesson(1);
+      } else if (k === 'f' && !keyEvt.ctrlKey && !keyEvt.metaKey) {
+        const btnFocus = document.getElementById('btnToggleFocusMode');
+        if (btnFocus) btnFocus.click();
+      }
+    }
+
+    window.addEventListener('message', handleBridgeMessageFromIframe);
+
+    // Tìm kiếm toàn văn (Full-Text Search) từ thư viện ngoài mà không cần chọc vào iframe
+    function getLessonPlainTextForSearch(lesson) {
+      if (!lesson) return '';
+      if (lesson._plainTextCache) return lesson._plainTextCache;
+      try {
+        const raw = lesson.htmlContent || '';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(raw, 'text/html');
+        lesson._plainTextCache = (doc.body ? doc.body.textContent : '') || '';
+        return lesson._plainTextCache;
+      } catch (_) {
+        return '';
+      }
+    }
+
+    window.postMessageToLessonIframe = postMessageToLessonIframe;
+    window.getLessonPlainTextForSearch = getLessonPlainTextForSearch;
+
+    window.saveLocalLessons = saveLocalLessons;
+    window.saveLocalCategories = saveLocalCategories;
+
+
+
+    // =========================================================================
+    // // HANGMUC-2: XỬ LÝ BÀI HTML LỚN & GIỚI HẠN LƯU TRỮ (INDEXEDDB, GZIP+BASE64, CHUNKING)
+    // =========================================================================
+    const MAX_FIRESTORE_DOC_BYTES = 900 * 1024; // 900 KB an toàn cho Firestore 1MB
+    const CHUNK_SIZE_BYTES = 450 * 1024; // 450 KB mỗi chunk
+    const LARGE_UPLOAD_FILE_THRESHOLD = 2 * 1024 * 1024; // 2 MB cảnh báo upload
+
+    // Lưu nội dung bài học vào store 'lesson_contents' của IndexedDB
+    async function putLessonContentToIDB(lessonId, htmlContent) {
+      if (!lessonId) return;
+      try {
+        const idb = await openAppDatabase();
+        await new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_LESSONS, 'readwrite');
+          tx.objectStore(IDB_STORE_LESSONS).put({
+            id: lessonId,
+            htmlContent: htmlContent || '',
+            updatedAt: Date.now()
+          });
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (e) {
+        console.warn("[HANGMUC-2] Lỗi putLessonContentToIDB:", e);
+      }
+    }
+
+    // Lấy nội dung bài học từ IndexedDB
+    async function getLessonContentFromIDB(lessonId) {
+      if (!lessonId) return '';
+      try {
+        const idb = await openAppDatabase();
+        return await new Promise((resolve) => {
+          const tx = idb.transaction(IDB_STORE_LESSONS, 'readonly');
+          const req = tx.objectStore(IDB_STORE_LESSONS).get(lessonId);
+          req.onsuccess = () => resolve(req.result ? (req.result.htmlContent || '') : '');
+          req.onerror = () => resolve('');
+        });
+      } catch (e) {
+        console.warn("[HANGMUC-2] Lỗi getLessonContentFromIDB:", e);
+        return '';
+      }
+    }
+
+    // Xóa nội dung bài học khỏi IndexedDB
+    async function deleteLessonContentFromIDB(lessonId) {
+      if (!lessonId) return;
+      try {
+        const idb = await openAppDatabase();
+        await new Promise((resolve) => {
+          const tx = idb.transaction(IDB_STORE_LESSONS, 'readwrite');
+          tx.objectStore(IDB_STORE_LESSONS).delete(lessonId);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => resolve();
+        });
+      } catch (_) {}
+    }
+
+    // Chuyển Uint8Array sang Base64 an toàn cho chuỗi nhị phân lớn
+    function uint8ArrayToBase64(u8) {
+      let binary = '';
+      const len = u8.byteLength;
+      const chunkSize = 8192;
+      for (let i = 0; i < len; i += chunkSize) {
+        const sub = u8.subarray(i, Math.min(i + chunkSize, len));
+        binary += String.fromCharCode.apply(null, sub);
+      }
+      return btoa(binary);
+    }
+
+    // Chuyển Base64 sang Uint8Array
+    function base64ToUint8Array(base64) {
+      const binary = atob(base64);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    // Nén nội dung HTML cho Firestore / Chia sẻ
+    async function compressContentForCloud(htmlStr) {
+      if (!htmlStr) return { isCompressed: false, compressionType: 'raw', contentPayload: '', byteSize: 0 };
+      const { compressed, data } = await compressStringToGzip(htmlStr);
+      if (compressed && data instanceof Uint8Array) {
+        const b64 = uint8ArrayToBase64(data);
+        return {
+          isCompressed: true,
+          compressionType: 'gzip_b64',
+          contentPayload: b64,
+          byteSize: data.byteLength
+        };
+      }
+      return {
+        isCompressed: false,
+        compressionType: 'raw',
+        contentPayload: htmlStr,
+        byteSize: new Blob([htmlStr]).size
+      };
+    }
+
+    // Giải nén nội dung đọc từ Cloud
+    async function decompressContentFromCloud(docData) {
+      if (!docData) return '';
+      if (docData.isCompressed && docData.compressionType === 'gzip_b64' && docData.contentPayload) {
+        const u8 = base64ToUint8Array(docData.contentPayload);
+        return await decompressGzipToString(true, u8);
+      }
+      // Tương thích ngược: nếu bản cũ chưa nén
+      return docData.htmlContent || docData.contentPayload || '';
+    }
+
+    // Chia nhỏ chuỗi thành các chunk
+    function splitStringIntoChunks(str, chunkSize = CHUNK_SIZE_BYTES) {
+      const chunks = [];
+      for (let i = 0; i < str.length; i += chunkSize) {
+        chunks.push(str.substring(i, i + chunkSize));
+      }
+      return chunks;
+    }
+
+    // Di chuyển dữ liệu cũ an toàn: localStorage -> IndexedDB
+    async function migrateLessonsToIndexedDB() {
+      try {
+        const raw = localStorage.getItem('local_lessons');
+        if (!raw) return;
+        let lessonsList = [];
+        try { lessonsList = JSON.parse(raw); } catch (_) { return; }
+        if (!Array.isArray(lessonsList) || lessonsList.length === 0) return;
+
+        // Tìm các bài còn chứa chuỗi htmlContent trong localStorage
+        const withHtml = lessonsList.filter(l => l.htmlContent && typeof l.htmlContent === 'string' && l.htmlContent.length > 0);
+        if (withHtml.length === 0) return;
+
+        console.log(`[HANGMUC-2] Phát hiện ${withHtml.length} bài có htmlContent trong localStorage. Tiến hành di chuyển an toàn...`);
+        
+        // BƯỚC 1: Tự động chụp Snapshot bảo vệ dữ liệu trước khi di chuyển
+        await captureSnapshot('Trước khi chuyển nội dung bài sang IndexedDB');
+
+        // BƯỚC 2: Ghi toàn bộ sang IndexedDB
+        for (const les of withHtml) {
+          await putLessonContentToIDB(les.id, les.htmlContent);
+        }
+
+        // BƯỚC 3: Xác minh (Verify) ghi thành công từng bài
+        let verifyAll = true;
+        for (const les of withHtml) {
+          const testContent = await getLessonContentFromIDB(les.id);
+          if (!testContent || testContent.length === 0) {
+            verifyAll = false;
+            console.error(`[HANGMUC-2] Xác minh thất bại cho bài ${les.id}`);
+            break;
+          }
+        }
+
+        if (!verifyAll) {
+          console.warn("[HANGMUC-2] Di chuyển chưa hoàn tất, giữ nguyên localStorage.");
+          showToast("Có lỗi khi chuyển nội dung bài sang IndexedDB, dữ liệu cũ vẫn được bảo lưu.", "warning");
+          return;
+        }
+
+        // BƯỚC 4: Sau khi xác minh thành công 100%, ghi lại localStorage chỉ giữ metadata nhẹ
+        saveLocalLessons();
+        localStorage.setItem('idb_lessons_migrated', 'true');
+        console.log("[HANGMUC-2] Đã di chuyển thành công toàn bộ nội dung sang IndexedDB!");
+      } catch (err) {
+        console.error("[HANGMUC-2] Lỗi migrateLessonsToIndexedDB:", err);
+      }
+    }
+
+    // Cập nhật thông tin dung lượng và Hạn mức lưu trữ trình duyệt (Storage Quota)
+    async function updateStorageStatsUI() {
+      try {
+        const statLibEl = document.getElementById('statLibrarySizeDisplay');
+        const statBrowserEl = document.getElementById('statBrowserStorageDisplay');
+        const badgeEl = document.getElementById('storageQuotaPercentBadge');
+        const barEl = document.getElementById('storageProgressBar');
+        const alertEl = document.getElementById('storageQuotaAlert');
+        const persistStatusEl = document.getElementById('persistentStorageStatus');
+
+        // 1. Tính tổng dung lượng thư viện
+        let totalLibBytes = 0;
+        (state.lessons || []).forEach(l => {
+          totalLibBytes += (l.fileSize || (l.htmlContent ? l.htmlContent.length : 0));
+        });
+        if (statLibEl) {
+          if (totalLibBytes < 1024 * 1024) {
+            statLibEl.innerText = `${(totalLibBytes / 1024).toFixed(1)} KB`;
+          } else {
+            statLibEl.innerText = `${(totalLibBytes / (1024 * 1024)).toFixed(2)} MB`;
+          }
+        }
+
+        // 2. navigator.storage.estimate()
+        if (navigator.storage && navigator.storage.estimate) {
+          const estimate = await navigator.storage.estimate();
+          const usageBytes = estimate.usage || 0;
+          const quotaBytes = estimate.quota || (1024 * 1024 * 1024);
+          const percent = Math.min(100, Math.round((usageBytes / quotaBytes) * 100));
+
+          const usageMB = (usageBytes / (1024 * 1024)).toFixed(1);
+          const quotaMB = (quotaBytes / (1024 * 1024)).toFixed(0);
+
+          if (statBrowserEl) {
+            statBrowserEl.innerText = `${usageMB} / ${quotaMB} MB`;
+          }
+          if (badgeEl) {
+            badgeEl.innerText = `${percent}%`;
+            badgeEl.className = percent > 80 
+              ? 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
+              : 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
+          }
+          if (barEl) {
+            barEl.style.width = `${percent}%`;
+            barEl.className = percent > 80 
+              ? 'h-full bg-rose-600 transition-all duration-500' 
+              : 'h-full bg-indigo-600 transition-all duration-500';
+          }
+          if (alertEl) {
+            if (percent > 80) alertEl.classList.remove('hidden');
+            else alertEl.classList.add('hidden');
+          }
+        }
+
+        // 3. Persistent storage
+        if (navigator.storage && navigator.storage.persisted && persistStatusEl) {
+          const isPersisted = await navigator.storage.persisted();
+          persistStatusEl.innerText = isPersisted ? 'Trạng thái: Lưu trữ bền vững (Đã bật)' : 'Trạng thái: Tiêu chuẩn (Có thể bị dọn dẹp)';
+          const btnPersist = document.getElementById('btnRequestPersistStorage');
+          if (btnPersist) {
+            btnPersist.style.display = isPersisted ? 'none' : 'inline-block';
+          }
+        }
+      } catch (e) {
+        console.warn("[HANGMUC-2] updateStorageStatsUI error:", e);
+      }
+    }
+
+    // Yêu cầu quyền lưu trữ bền
+    async function requestStoragePersist() {
+      if (navigator.storage && navigator.storage.persist) {
+        try {
+          const granted = await navigator.storage.persist();
+          if (granted) {
+            showToast("Đã kích hoạt chế độ lưu trữ bền vững!");
+          } else {
+            showToast("Trình duyệt từ chối cấp quyền lưu trữ bền vững.", "info");
+          }
+          await updateStorageStatsUI();
+        } catch (e) {
+          console.warn("Lỗi xin quyền persist:", e);
+        }
+      }
+    }
+
+    window.putLessonContentToIDB = putLessonContentToIDB;
+    window.getLessonContentFromIDB = getLessonContentFromIDB;
+    window.deleteLessonContentFromIDB = deleteLessonContentFromIDB;
+    window.compressContentForCloud = compressContentForCloud;
+    window.decompressContentFromCloud = decompressContentFromCloud;
+    window.migrateLessonsToIndexedDB = migrateLessonsToIndexedDB;
+    window.updateStorageStatsUI = updateStorageStatsUI;
+    window.requestStoragePersist = requestStoragePersist;
+
+
+    // =========================================================================
+    // // HANGMUC-3: HỆ THỐNG SAO LƯU TỰ ĐỘNG VÀ KHÔI PHỤC (INDEXEDDB SNAPSHOT)
+    // =========================================================================
+    const IDB_NAME = 'thuvienhtml_db';
+    const IDB_VERSION = 1;
+    const IDB_STORE_SNAPSHOTS = 'snapshots';
+    const IDB_STORE_LESSONS = 'lesson_contents';
+    const MAX_SNAPSHOTS = 7;
+    const JSON_REMINDER_DAYS = 7;
+
+    let dbPromise = null;
+    function openAppDatabase() {
+      if (!dbPromise) {
+        dbPromise = new Promise((resolve, reject) => {
+          if (!window.indexedDB) {
+            reject(new Error("IndexedDB không được hỗ trợ trên trình duyệt này"));
+            return;
+          }
+          const request = indexedDB.open(IDB_NAME, IDB_VERSION);
+          request.onupgradeneeded = (e) => {
+            const idb = e.target.result;
+            if (!idb.objectStoreNames.contains(IDB_STORE_SNAPSHOTS)) {
+              const snapStore = idb.createObjectStore(IDB_STORE_SNAPSHOTS, { keyPath: 'id' });
+              snapStore.createIndex('createdAt', 'createdAt', { unique: false });
+              snapStore.createIndex('reason', 'reason', { unique: false });
+            }
+            if (!idb.objectStoreNames.contains(IDB_STORE_LESSONS)) {
+              const lessonStore = idb.createObjectStore(IDB_STORE_LESSONS, { keyPath: 'id' });
+              lessonStore.createIndex('updatedAt', 'updatedAt', { unique: false });
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => {
+            dbPromise = null;
+            reject(request.error);
+          };
+        });
+      }
+      return dbPromise;
+    }
+
+    // Nén chuỗi sang gzip Uint8Array (CompressionStream)
+    async function compressStringToGzip(str) {
+      if (typeof CompressionStream !== 'undefined') {
+        try {
+          const stream = new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'));
+          const buffer = await new Response(stream).arrayBuffer();
+          return { compressed: true, data: new Uint8Array(buffer) };
+        } catch (e) {
+          console.warn("Gzip compression failed, fallback plain:", e);
+        }
+      }
+      return { compressed: false, data: str };
+    }
+
+    // Giải nén gzip Uint8Array hoặc đọc chuỗi (DecompressionStream)
+    async function decompressGzipToString(compressed, data) {
+      if (compressed && data) {
+        if (typeof DecompressionStream !== 'undefined') {
+          try {
+            const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('gzip'));
+            return await new Response(stream).text();
+          } catch (e) {
+            console.warn("Decompression failed:", e);
+          }
+        }
+      }
+      if (typeof data === 'string') return data;
+      if (data instanceof Uint8Array || data instanceof ArrayBuffer) {
+        return new TextDecoder().decode(data);
+      }
+      return JSON.stringify(data);
+    }
+
+    // Tự động chụp Snapshot toàn diện
+    async function captureSnapshot(reason = 'Tự động sao lưu') {
+      try {
+        const idb = await openAppDatabase();
+        const snapId = 'snap_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        
+        const snapshotPayload = {
+          version: '4.0.0',
+          createdAt: Date.now(),
+          reason: reason,
+          userId: state.userId || null,
+          categories: JSON.parse(JSON.stringify(state.categories || [])),
+          lessons: JSON.parse(JSON.stringify(state.lessons || [])),
+          tags: JSON.parse(JSON.stringify(state.tags || [])),
+          trash: JSON.parse(JSON.stringify(state.trash || [])),
+          learningData: JSON.parse(JSON.stringify(state.learningData || {})),
+          sharedLinks: JSON.parse(JSON.stringify(state.sharedLinks || [])),
+          recentLessons: JSON.parse(JSON.stringify(state.recentLessons || [])),
+          settings: {
+            fontSizeOffset: state.fontSizeOffset,
+            isDarkMode: state.isDarkMode,
+            preserveOriginalTheme: state.preserveOriginalTheme,
+            readingWidth: state.readingWidth,
+            sortOrder: state.sortOrder,
+            swipeEnabled: state.swipeEnabled,
+            focusMode: state.focusMode,
+            pomodoro: {
+              workMinutes: state.pomodoro?.workMinutes || 25,
+              shortBreakMinutes: state.pomodoro?.shortBreakMinutes || 5,
+              longBreakMinutes: state.pomodoro?.longBreakMinutes || 15,
+              autoSwitch: state.pomodoro?.autoSwitch !== false,
+              soundEnabled: state.pomodoro?.soundEnabled !== false
+            }
+          },
+          tombstones: typeof getTombstones === 'function' ? getTombstones() : []
+        };
+
+        const jsonStr = JSON.stringify(snapshotPayload);
+        const { compressed, data } = await compressStringToGzip(jsonStr);
+
+        const record = {
+          id: snapId,
+          createdAt: snapshotPayload.createdAt,
+          reason: reason,
+          categoryCount: snapshotPayload.categories.length,
+          lessonCount: snapshotPayload.lessons.length,
+          compressed: compressed,
+          sizeBytes: compressed ? data.byteLength : jsonStr.length,
+          data: data
+        };
+
+        await new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_SNAPSHOTS, 'readwrite');
+          tx.objectStore(IDB_STORE_SNAPSHOTS).put(record);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+
+        await pruneOldSnapshots(idb);
+        localStorage.setItem('last_auto_snapshot_time', Date.now().toString());
+        updateSnapshotCountBadge();
+        return record;
+      } catch (err) {
+        console.warn("Không thể chụp snapshot IndexedDB:", err);
+        return null;
+      }
+    }
+
+    // Giữ tối đa 7 bản gần nhất
+    async function pruneOldSnapshots(dbInstance) {
+      try {
+        const idb = dbInstance || await openAppDatabase();
+        const snapshots = await getAllSnapshots(idb);
+        if (snapshots.length > MAX_SNAPSHOTS) {
+          snapshots.sort((a, b) => b.createdAt - a.createdAt);
+          const toDelete = snapshots.slice(MAX_SNAPSHOTS);
+          const tx = idb.transaction(IDB_STORE_SNAPSHOTS, 'readwrite');
+          const store = tx.objectStore(IDB_STORE_SNAPSHOTS);
+          for (const item of toDelete) {
+            store.delete(item.id);
+          }
+          await new Promise(res => { tx.oncomplete = res; });
+        }
+      } catch (e) {
+        console.warn("Lỗi pruneOldSnapshots:", e);
+      }
+    }
+
+    // Lấy toàn bộ danh sách Snapshot
+    function getAllSnapshots(dbInstance) {
+      return new Promise(async (resolve) => {
+        try {
+          const idb = dbInstance || await openAppDatabase();
+          const tx = idb.transaction(IDB_STORE_SNAPSHOTS, 'readonly');
+          const request = tx.objectStore(IDB_STORE_SNAPSHOTS).getAll();
+          request.onsuccess = () => {
+            const list = request.result || [];
+            list.sort((a, b) => b.createdAt - a.createdAt);
+            resolve(list);
+          };
+          request.onerror = () => resolve([]);
+        } catch (_) {
+          resolve([]);
+        }
+      });
+    }
+
+    // Xóa 1 bản snapshot theo ID
+    async function deleteSnapshotById(id) {
+      try {
+        const idb = await openAppDatabase();
+        await new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_SNAPSHOTS, 'readwrite');
+          tx.objectStore(IDB_STORE_SNAPSHOTS).delete(id);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+        updateSnapshotCountBadge();
+        return true;
+      } catch (e) {
+        console.error("Lỗi xóa snapshot:", e);
+        return false;
+      }
+    }
+
+    // Khôi phục 1 bản snapshot an toàn
+    async function restoreSnapshotById(id) {
+      try {
+        const idb = await openAppDatabase();
+        const snap = await new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_SNAPSHOTS, 'readonly');
+          const req = tx.objectStore(IDB_STORE_SNAPSHOTS).get(id);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+
+        if (!snap) {
+          showToast("Không tìm thấy bản sao lưu", "error");
+          return false;
+        }
+
+        // Tự động chụp thêm 1 bản trước khi khôi phục để người dùng có thể hoàn tác
+        const dateStr = new Date(snap.createdAt).toLocaleString('vi-VN');
+        await captureSnapshot(`Trước khi khôi phục bản (${dateStr})`);
+
+        setSyncStatus(true, "Đang giải mã và khôi phục...");
+        const jsonStr = await decompressGzipToString(snap.compressed, snap.data);
+        const data = JSON.parse(jsonStr);
+
+        // Áp dụng chuẩn xác theo id
+        state.categories = Array.isArray(data.categories) ? data.categories : [];
+        state.lessons = Array.isArray(data.lessons) ? data.lessons : [];
+        if (data.tags) state.tags = data.tags;
+        if (data.trash) state.trash = data.trash;
+        if (data.learningData) state.learningData = data.learningData;
+        if (data.sharedLinks) state.sharedLinks = data.sharedLinks;
+        if (data.recentLessons) state.recentLessons = data.recentLessons;
+
+        if (data.settings) {
+          if (typeof data.settings.fontSizeOffset === 'number') state.fontSizeOffset = data.settings.fontSizeOffset;
+          if (typeof data.settings.isDarkMode === 'boolean') state.isDarkMode = data.settings.isDarkMode;
+          if (data.settings.sortOrder) state.sortOrder = data.settings.sortOrder;
+          if (typeof data.settings.swipeEnabled === 'boolean') state.swipeEnabled = data.settings.swipeEnabled;
+          if (data.settings.pomodoro) {
+            state.pomodoro.workMinutes = data.settings.pomodoro.workMinutes || 25;
+            state.pomodoro.shortBreakMinutes = data.settings.pomodoro.shortBreakMinutes || 5;
+            state.pomodoro.longBreakMinutes = data.settings.pomodoro.longBreakMinutes || 15;
+            state.pomodoro.autoSwitch = data.settings.pomodoro.autoSwitch !== false;
+            state.pomodoro.soundEnabled = data.settings.pomodoro.soundEnabled !== false;
+            savePomodoroSettings();
+          }
+        }
+
+        // Lưu local
+        saveLocalCategories();
+        saveLocalLessons();
+        saveLocalTags();
+        saveLocalTrash();
+        saveLearningData();
+        saveSharedLinks();
+        saveRecentLessons();
+
+        // Đồng bộ lên cloud nếu đã đăng nhập
+        if (!state.useLocalFallback && db && state.userId) {
+          for (const cat of state.categories) {
+            await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', cat.id), cat);
+          }
+          for (const lesson of state.lessons) {
+            await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), lesson);
+          }
+        }
+
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+        if (typeof updateTrashUIBadge === 'function') updateTrashUIBadge();
+        if (typeof renderRecentLessonsBar === 'function') renderRecentLessonsBar();
+
+        setSyncStatus(false);
+        showToast(`Đã khôi phục an toàn: ${state.lessons.length} bài học, ${state.categories.length} mục`);
+        renderBackupRestoreModal();
+        return true;
+      } catch (err) {
+        console.error("Lỗi khi khôi phục snapshot:", err);
+        setSyncStatus(false);
+        showToast("Lỗi khi khôi phục bản sao lưu", "error");
+        return false;
+      }
+    }
+
+    // Tải về bản snapshot dạng JSON
+    async function downloadSnapshotJson(id) {
+      try {
+        const idb = await openAppDatabase();
+        const snap = await new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_SNAPSHOTS, 'readonly');
+          const req = tx.objectStore(IDB_STORE_SNAPSHOTS).get(id);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+
+        if (!snap) {
+          showToast("Không tìm thấy bản sao", "error");
+          return;
+        }
+
+        const jsonStr = await decompressGzipToString(snap.compressed, snap.data);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const d = new Date(snap.createdAt);
+        const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+        a.href = url;
+        a.download = `sach_html_snapshot_${dateStr}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        // Cập nhật mốc tải sao lưu để ẩn nhắc nhở 7 ngày
+        localStorage.setItem('last_json_export_time', Date.now().toString());
+        hideJsonExportReminder();
+        showToast("Đã tải xuống file bản sao (.json)");
+      } catch (e) {
+        console.error("Lỗi tải snapshot JSON:", e);
+        showToast("Không thể xuất file JSON của bản sao", "error");
+      }
+    }
+
+    // Cập nhật số lượng bản sao trên badge menu
+    async function updateSnapshotCountBadge() {
+      const badge = document.getElementById('snapshotCountBadge');
+      if (!badge) return;
+      try {
+        const snapshots = await getAllSnapshots();
+        badge.textContent = `${snapshots.length}/7 bản`;
+      } catch (_) {}
+    }
+
+    // Render Modal Sao lưu & Khôi phục
+    async function renderBackupRestoreModal() {
+      const container = document.getElementById('snapshotListContainer');
+      const statBadge = document.getElementById('backupStorageStatBadge');
+      if (!container) return;
+
+      container.innerHTML = '<div class="py-8 text-center text-xs text-[#6E6B65] dark:text-[#979DA8]">Đang tải danh sách bản sao...</div>';
+
+      try {
+        const snapshots = await getAllSnapshots();
+        updateSnapshotCountBadge();
+
+        let totalBytes = 0;
+        snapshots.forEach(s => { totalBytes += (s.sizeBytes || 0); });
+        if (statBadge) {
+          const kb = (totalBytes / 1024).toFixed(1);
+          statBadge.textContent = `${snapshots.length}/7 bản • ~${kb} KB`;
+        }
+
+        if (snapshots.length === 0) {
+          container.innerHTML = `
+            <div class="py-12 text-center text-xs text-[#6E6B65] dark:text-[#979DA8] space-y-2">
+              <svg class="w-8 h-8 mx-auto text-gray-300 dark:text-gray-600"><use href="#icon-shield-check"></use></svg>
+              <p>Chưa có bản sao lưu tự động nào.</p>
+              <p class="text-[11px] text-gray-400">Hệ thống sẽ tự động chụp snapshot trước các thao tác lớn hoặc bạn có thể bấm "Sao lưu ngay".</p>
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        snapshots.forEach((snap, idx) => {
+          const date = new Date(snap.createdAt);
+          const timeStr = date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const dateStr = date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          const sizeKb = ((snap.sizeBytes || 0) / 1024).toFixed(1);
+          const isLatest = idx === 0;
+
+          html += `
+            <div class="p-3 sm:p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/70 dark:bg-[#111317]/70 hover:border-indigo-300 dark:hover:border-indigo-700/60 transition space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div class="space-y-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">${snap.reason || 'Bản sao lưu'}</span>
+                    ${isLatest ? '<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Mới nhất</span>' : ''}
+                    ${snap.compressed ? '<span class="text-[9px] px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">Gzip</span>' : ''}
+                  </div>
+                  <div class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-2 flex-wrap">
+                    <span>${timeStr} - ${dateStr}</span>
+                    <span>•</span>
+                    <span>${snap.categoryCount || 0} mục</span>
+                    <span>•</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">${snap.lessonCount || 0} bài học</span>
+                    <span>•</span>
+                    <span>~${sizeKb} KB</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nút thao tác -->
+              <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60 flex-wrap">
+                <button data-action="download" data-id="${snap.id}" class="px-2.5 py-1 rounded-md text-[11px] font-medium text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] dark:hover:text-[#E8E6E1] hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
+                  <span>Tải .json</span>
+                </button>
+                <button data-action="delete" data-id="${snap.id}" class="px-2 py-1 rounded-md text-[11px] font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+                  <span>Xóa</span>
+                </button>
+                <button data-action="restore" data-id="${snap.id}" class="px-3 py-1 rounded-md text-[11px] font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition flex items-center gap-1 active:scale-98">
+                  <svg class="w-3.5 h-3.5"><use href="#icon-rotate-ccw"></use></svg>
+                  <span>Khôi phục bản này</span>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+        refreshIcons(container);
+
+        // Gán sự kiện click cho các nút trong danh sách
+        container.querySelectorAll('button[data-action]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const action = btn.getAttribute('data-action');
+            const snapId = btn.getAttribute('data-id');
+            if (action === 'download') {
+              await downloadSnapshotJson(snapId);
+            } else if (action === 'delete') {
+              askConfirmDelete('Bạn có chắc muốn xóa bản sao lưu này khỏi IndexedDB?', async () => {
+                await deleteSnapshotById(snapId);
+                showToast("Đã xóa bản sao lưu");
+                renderBackupRestoreModal();
+              });
+            } else if (action === 'restore') {
+              askConfirmDelete('Khôi phục bản sao này? Hệ thống sẽ tự động chụp lại trạng thái hiện tại trước khi khôi phục để bạn có thể hoàn tác.', async () => {
+                const ok = await restoreSnapshotById(snapId);
+                if (ok) {
+                  closeBackupRestoreModal();
+                }
+              });
+            }
+          });
+        });
+      } catch (e) {
+        console.error("Lỗi render danh sách snapshot:", e);
+        container.innerHTML = '<div class="py-6 text-center text-xs text-rose-500">Lỗi nạp danh sách bản sao lưu.</div>';
+      }
+    }
+
+    function openBackupRestoreModal() {
+      closeUserMenu();
+      const modal = document.getElementById('backupRestoreModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderBackupRestoreModal();
+      }
+    }
+
+    function closeBackupRestoreModal() {
+      const modal = document.getElementById('backupRestoreModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // Nhắc nhở 7 ngày chưa tải file JSON
+    function checkJsonExportReminder() {
+      try {
+        const banner = document.getElementById('jsonExportReminderBanner');
+        if (!banner) return;
+        
+        // Nếu không có bài nào thì không cần nhắc
+        if (!state.lessons || state.lessons.length === 0) {
+          banner.classList.add('hidden');
+          return;
+        }
+
+        // Kiểm tra xem có đang trong thời gian tạm hoãn 24h sau khi đóng không
+        const dismissedUntil = parseInt(localStorage.getItem('json_reminder_dismissed_until') || '0', 10);
+        if (Date.now() < dismissedUntil) {
+          banner.classList.add('hidden');
+          return;
+        }
+
+        const lastExport = parseInt(localStorage.getItem('last_json_export_time') || '0', 10);
+        const sevenDaysMs = JSON_REMINDER_DAYS * 24 * 60 * 60 * 1000;
+
+        if (!lastExport) {
+          // Chưa từng xuất bao giờ, đặt mốc bắt đầu tính từ bây giờ để không phiền ngay lập tức
+          localStorage.setItem('last_json_export_time', Date.now().toString());
+          banner.classList.add('hidden');
+          return;
+        }
+
+        if (Date.now() - lastExport > sevenDaysMs) {
+          banner.classList.remove('hidden');
+          refreshIcons(banner);
+        } else {
+          banner.classList.add('hidden');
+        }
+      } catch (_) {}
+    }
+
+    function hideJsonExportReminder(dismissForHours = 24) {
+      const banner = document.getElementById('jsonExportReminderBanner');
+      if (banner) banner.classList.add('hidden');
+      localStorage.setItem('json_reminder_dismissed_until', (Date.now() + dismissForHours * 60 * 60 * 1000).toString());
+    }
+
+    // Kiểm tra định kỳ 24h tự động chụp snapshot
+    
+    // Gán các hàm Hạng mục 3 lên window để tiện kiểm tra và truy cập
+    window.captureSnapshot = captureSnapshot;
+    window.getAllSnapshots = getAllSnapshots;
+    window.restoreSnapshotById = restoreSnapshotById;
+    window.deleteSnapshotById = deleteSnapshotById;
+    window.downloadSnapshotJson = downloadSnapshotJson;
+    window.openBackupRestoreModal = openBackupRestoreModal;
+    window.closeBackupRestoreModal = closeBackupRestoreModal;
+    window.checkJsonExportReminder = checkJsonExportReminder;
+    window.hideJsonExportReminder = hideJsonExportReminder;
+    window.updateSnapshotCountBadge = updateSnapshotCountBadge;
+
+    async function checkAutoDailySnapshot() {
+      try {
+        const lastAuto = parseInt(localStorage.getItem('last_auto_snapshot_time') || '0', 10);
+        const oneDayMs = 24 * 60 * 60 * 1000;
+        if (Date.now() - lastAuto > oneDayMs && (state.lessons.length > 0 || state.categories.length > 0)) {
+          console.log("[HANGMUC-3] Tự động chụp snapshot định kỳ 24h...");
+          await captureSnapshot('Tự động định kỳ (24h)');
+        }
+      } catch (e) {
+        console.warn("Lỗi checkAutoDailySnapshot:", e);
+      }
+    }
+
+
     // // REDESIGN: Bộ render icon SVG độc bản nội bộ (Thay thế hoàn toàn Lucide / Icon bên ngoài)
     function refreshIcons(container = document) {
       const root = container || document;
@@ -4116,6 +5585,10 @@
     // // DỌN DẸP DỮ LIỆU CŨ BỊ LỖI & SAO LƯU TRƯỚC KHI DỌN (TỰ ĐỘNG CHẠY KHI KHỞI ĐỘNG)
     function autoCleanupDuplicateData(silent = false) {
       try {
+        // // HANGMUC-3: Chụp bản sao trước khi dọn dữ liệu trùng
+        if (state.lessons && state.lessons.length > 0) {
+          captureSnapshot('Trước khi dọn trùng lặp');
+        }
         let dirty = false;
         let cleanedCount = 0;
 
@@ -4349,8 +5822,20 @@
 
     function saveLocalLessons() {
       try {
-        localStorage.setItem('local_lessons', JSON.stringify(state.lessons));
-      } catch (_) {}
+        // // HANGMUC-2: Chỉ lưu metadata nhẹ vào localStorage để tránh tràn quota 5MB
+        const metaOnly = (state.lessons || []).map(l => {
+          const { htmlContent, ...meta } = l;
+          const byteLen = (typeof htmlContent === 'string' && htmlContent.length) ? htmlContent.length : (l.fileSize || 0);
+          return {
+            ...meta,
+            fileSize: byteLen,
+            hasContentInDb: true
+          };
+        });
+        localStorage.setItem('local_lessons', JSON.stringify(metaOnly));
+      } catch (e) {
+        console.warn("[HANGMUC-2] Lỗi saveLocalLessons:", e);
+      }
     }
 
     async function ensureUserAuth() {
@@ -6194,7 +7679,9 @@
       btnBatchDeleteLesson.addEventListener('click', () => {
         if (!state.selectedLessonIds || state.selectedLessonIds.size === 0) return;
         const count = state.selectedLessonIds.size;
-        askConfirmDelete(`Chuyển ${count} bài học đã chọn vào Thùng rác? (Có thể khôi phục trong 7 ngày)`, () => {
+        askConfirmDelete(`Chuyển ${count} bài học đã chọn vào Thùng rác? (Có thể khôi phục trong 7 ngày)`, async () => {
+          // // HANGMUC-3: Chụp bản sao trước khi xóa nhiều bài
+          await captureSnapshot(`Trước khi xóa ${count} bài`);
           const idsToDelete = Array.from(state.selectedLessonIds);
           for (const lId of idsToDelete) {
             moveLessonToTrash(lId, true); // true = skip individual toast
@@ -6548,6 +8035,8 @@
     function emptyTrashAll() {
       if (!state.trash || state.trash.length === 0) return;
       askConfirmDelete('Bạn có chắc muốn dọn sạch toàn bộ Thùng rác? Hành động này sẽ xóa vĩnh viễn và không thể hoàn tác.', async () => {
+        // // HANGMUC-3: Chụp bản sao an toàn trước khi dọn sạch thùng rác
+        await captureSnapshot('Trước khi dọn sạch thùng rác');
         const toDelete = [...state.trash];
         state.trash = [];
         saveLocalTrash();
@@ -7452,7 +8941,7 @@
     }
     window.renderCategoriesAndLessons = renderCategoriesAndLessons;
 
-    function renderActiveLesson() {
+    async function renderActiveLesson() {
       const emptyState = document.getElementById('emptyLessonState');
       const activeContentBox = document.getElementById('activeLessonContentBox');
       const titleEl = document.getElementById('displayLessonTitle');
@@ -7686,6 +9175,11 @@
         if (btnToggleFav) btnToggleFav.classList.remove('hidden');
       }
 
+      // // HANGMUC-2: Nạp từ IndexedDB nếu nội dung chưa có trong bộ nhớ
+      if (!currentLesson.htmlContent && currentLesson.id) {
+        const idbHtml = await getLessonContentFromIDB(currentLesson.id);
+        if (idbHtml) currentLesson.htmlContent = idbHtml;
+      }
       loadHtmlIntoIframe(currentLesson.htmlContent || '<p>Nội dung rỗng.</p>');
       refreshIcons();
     }
@@ -7722,43 +9216,11 @@
     }
 
     function applyFontSizeToIframe() {
-      const iframe = document.getElementById('lessonIframe');
-      if (!iframe) return;
-      try {
-        const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
-        if (!doc || !doc.body) return;
-
-        const { scaleValue } = getScaleFactor(state.fontSizeOffset);
-
-        let scalerStyle = doc.getElementById('__editorial_scaler_style');
-        if (!scalerStyle) {
-          scalerStyle = doc.createElement('style');
-          scalerStyle.id = '__editorial_scaler_style';
-          (doc.head || doc.body).appendChild(scalerStyle);
-        }
-
-        scalerStyle.textContent = `
-          body {
-            zoom: ${scaleValue} !important;
-            -webkit-text-size-adjust: ${scaleValue * 100}% !important;
-            transform-origin: top center;
-            max-width: 100vw !important;
-            overflow-x: hidden !important;
-          }
-          img, svg, canvas, table {
-            max-width: 100% !important;
-            height: auto !important;
-          }
-        `;
-
-        doc.body.style.zoom = scaleValue;
-
-        setTimeout(() => {
-          inspectIframeNativeBackgroundAndResize();
-        }, 60);
-      } catch (err) {
-        console.warn("Lỗi scale iframe:", err);
-      }
+      // // HANGMUC-1: Gửi lệnh thay đổi cỡ chữ qua bridge postMessage
+      postMessageToLessonIframe({
+        type: 'APPLY_FONT_SIZE',
+        fontSizeOffset: state.fontSizeOffset
+      });
     }
 
     function loadHtmlIntoIframe(rawHtml) {
@@ -7766,7 +9228,6 @@
       const skeleton = document.getElementById('iframeLoadingSkeleton');
       const container = document.getElementById('iframeOuterContainer');
 
-      // // ANIM: Giữ nền khung cùng màu theme để không bị chớp trắng ở dark mode
       if (container) {
         container.style.backgroundColor = state.isDarkMode ? '#161A20' : '#FFFFFF';
       }
@@ -7780,87 +9241,36 @@
         iframe.style.transition = 'opacity 250ms var(--ease-out)';
       }
 
-      if (state.preserveOriginalTheme) {
-        iframe.srcdoc = rawHtml;
-      } else {
+      let contentToInject = rawHtml || '<p>Nội dung rỗng.</p>';
+      if (!state.preserveOriginalTheme) {
         const baseFontSize = 16 + (state.fontSizeOffset * 2);
-        let injectedThemeCss = '';
-        if (state.isDarkMode) {
-          injectedThemeCss = `
-            body { background-color: #161A20 !important; color: #ECEEF2 !important; }
-            a { color: #818CF8 !important; }
-            table, th, td { border-color: #262C36 !important; }
-            pre, code { background: #0F1115 !important; color: #E0E7FF !important; }
-          `;
-        } else {
-          injectedThemeCss = `body { background-color: #FFFFFF !important; color: #1A1A1A !important; }`;
-        }
-
-        const themedDoc = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-              html, body {
-                margin: 0;
-                padding: 12px;
-                box-sizing: border-box;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                font-size: ${baseFontSize}px;
-                line-height: 1.7;
-                overflow-x: hidden;
-              }
-              img { max-width: 100%; height: auto; }
-              ${injectedThemeCss}
-            
-    /* // FEATURE: CSS cho 3D Flashcards & Highlights */
-    .perspective-1000 { perspective: 1000px; }
-    .transform-style-preserve-3d { transform-style: preserve-3d; }
-    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-    .rotate-y-180 { transform: rotateY(180deg); }
-    .card-flipped { transform: rotateY(180deg); }
-    
-    .custom-highlight {
-      border-radius: 3px;
-      padding: 1px 3px;
-      cursor: pointer;
-      transition: filter 0.15s ease;
-    }
-    .custom-highlight:hover {
-      filter: brightness(0.92);
-    }
-    .custom-highlight-flash {
-      animation: highlightFlash 1.5s ease-in-out;
-    }
-    @keyframes highlightFlash {
-      0%, 100% { outline: 0; }
-      50% { outline: 3px solid #6366F1; box-shadow: 0 0 12px rgba(99, 102, 241, 0.6); }
-    }
-
-  </style>
-          </head>
-          <body>
-            ${rawHtml}
-          </body>
-          </html>
+        let injectedThemeCss = state.isDarkMode 
+          ? `body { background-color: #161A20 !important; color: #ECEEF2 !important; } a { color: #818CF8 !important; }`
+          : `body { background-color: #FFFFFF !important; color: #1A1A1A !important; }`;
+        contentToInject = `
+          <!DOCTYPE html><html><head><meta charset="utf-8"><style>
+            html, body { margin:0; padding:12px; font-size:${baseFontSize}px; line-height:1.7; overflow-x:hidden; }
+            img { max-width:100%; height:auto; }
+            ${injectedThemeCss}
+          </style></head><body>${contentToInject}</body></html>
         `;
-        iframe.srcdoc = themedDoc;
       }
 
+      // // HANGMUC-1: Tiêm CSP Meta và Cầu nối Bridge Script vào nội dung
+      const sandboxedHtml = injectBridgeAndCspIntoHtml(contentToInject);
+      iframe.srcdoc = sandboxedHtml;
+
       iframe.onload = () => {
-        if (skeleton) {
-          skeleton.style.opacity = '0';
-          setTimeout(() => {
-            skeleton.classList.add('hidden');
-          }, 150);
-        }
-        if (iframe) {
-          iframe.style.opacity = '1';
-        }
-        applyFontSizeToIframe();
-        inspectIframeNativeBackgroundAndResize();
+        // Gửi cấu hình ban đầu vào trong iframe qua postMessage
+        const curLesson = state.lessons.find(l => l.id === state.activeLessonId);
+        const highlights = curLesson?.highlights || [];
+        postMessageToLessonIframe({
+          type: 'INIT_CONFIG',
+          fontSizeOffset: state.fontSizeOffset,
+          preserveOriginalTheme: state.preserveOriginalTheme,
+          isDarkMode: state.isDarkMode,
+          highlights: highlights
+        });
       };
     }
 
@@ -8412,6 +9822,23 @@
             const snap = await getDoc(shareRef);
             if (snap.exists()) {
               lessonData = snap.data();
+              
+              // // HANGMUC-2: Xử lý Chunking & Giải nén Gzip Base64
+              if (lessonData.isChunked) {
+                // Đọc các chunks từ subcollection
+                const chunksCol = collection(db, 'artifacts', appId, 'public_shares', sid, 'chunks');
+                const chunkSnaps = await getDocs(chunksCol);
+                const chunkList = [];
+                chunkSnaps.forEach(cDoc => chunkList.push(cDoc.data()));
+                chunkList.sort((a, b) => (a.index || 0) - (b.index || 0));
+                const fullPayload = chunkList.map(c => c.chunk).join('');
+                lessonData.contentPayload = fullPayload;
+              }
+
+              // Giải nén nội dung bài học
+              if (lessonData.isCompressed) {
+                lessonData.htmlContent = await decompressContentFromCloud(lessonData);
+              }
             }
           } catch (fsErr) {
             console.warn("Firestore read share error:", fsErr);
@@ -9048,6 +10475,10 @@
             order: item.order || (state.lessons.length + 1),
             updatedAt: new Date().toISOString()
           };
+
+          // // HANGMUC-2: Lưu nội dung bài vào IndexedDB song song
+          await putLessonContentToIDB(docId, lessonData.htmlContent);
+          lessonData.fileSize = (lessonData.htmlContent || '').length;
 
           // FIX-3: Sử dụng Upsert by ID thay vì push mù quáng
           upsertLesson(lessonData);
@@ -9898,6 +11329,46 @@
       });
     }
 
+    
+    // // HANGMUC-3: Gán sự kiện mở modal và banner nhắc nhở
+    const btnOpenBackupRestoreModal = document.getElementById('btnOpenBackupRestoreModal');
+    if (btnOpenBackupRestoreModal) {
+      btnOpenBackupRestoreModal.addEventListener('click', openBackupRestoreModal);
+    }
+    const btnCloseBackupRestoreModal = document.getElementById('btnCloseBackupRestoreModal');
+    if (btnCloseBackupRestoreModal) {
+      btnCloseBackupRestoreModal.addEventListener('click', closeBackupRestoreModal);
+    }
+    const btnCloseBackupRestoreModalBottom = document.getElementById('btnCloseBackupRestoreModalBottom');
+    if (btnCloseBackupRestoreModalBottom) {
+      btnCloseBackupRestoreModalBottom.addEventListener('click', closeBackupRestoreModal);
+    }
+    const btnCreateManualSnapshot = document.getElementById('btnCreateManualSnapshot');
+    if (btnCreateManualSnapshot) {
+      btnCreateManualSnapshot.addEventListener('click', async () => {
+        btnCreateManualSnapshot.disabled = true;
+        btnCreateManualSnapshot.innerHTML = 'Đang lưu...';
+        await captureSnapshot('Sao lưu thủ công');
+        showToast("Đã tạo bản sao lưu thành công");
+        await renderBackupRestoreModal();
+        btnCreateManualSnapshot.disabled = false;
+        btnCreateManualSnapshot.innerHTML = '<svg class="w-3.5 h-3.5"><use href="#icon-plus"></use></svg><span>Sao lưu ngay</span>';
+        refreshIcons(btnCreateManualSnapshot);
+      });
+    }
+    const btnCloseReminderBanner = document.getElementById('btnCloseReminderBanner');
+    if (btnCloseReminderBanner) {
+      btnCloseReminderBanner.addEventListener('click', () => hideJsonExportReminder(24));
+    }
+    const btnQuickExportFromReminder = document.getElementById('btnQuickExportFromReminder');
+    if (btnQuickExportFromReminder) {
+      btnQuickExportFromReminder.addEventListener('click', () => {
+        const btnExport = document.getElementById('btnExportData');
+        if (btnExport) btnExport.click();
+        hideJsonExportReminder(7 * 24);
+      });
+    }
+
     document.getElementById('btnExportData').addEventListener('click', () => {
       const exportObject = {
         exportedAt: new Date().toISOString(),
@@ -9929,6 +11400,9 @@
       const file = e.target.files[0];
       if (!file) return;
       closeUserMenu();
+
+      // // HANGMUC-3: Chụp bản sao lưu an toàn trước khi nạp JSON
+      await captureSnapshot('Trước khi nạp sao lưu JSON');
 
       try {
         const text = await file.text();
@@ -10100,7 +11574,7 @@
     }
 
     // // FIX: Khởi động app an toàn, hỗ trợ cả trường hợp DOM đã tải xong trước khi module thực thi
-    function bootApp() {
+    async function bootApp() {
       try {
         initAuthAndData();
       } catch (err) {
@@ -12012,6 +13486,30 @@
       });
     }
 
+    
+    // // HANGMUC-1: Sự kiện thanh tìm kiếm trong bài
+    const inArticleSearchBar = document.getElementById('inArticleSearchBar');
+    const btnCloseInArticleSearch = document.getElementById('btnCloseInArticleSearch');
+    const btnNextMatch = document.getElementById('btnNextMatch');
+    const btnPrevMatch = document.getElementById('btnPrevMatch');
+
+    if (btnCloseInArticleSearch) {
+      btnCloseInArticleSearch.addEventListener('click', () => {
+        if (inArticleSearchBar) inArticleSearchBar.classList.add('hidden');
+        postMessageToLessonIframe({ type: 'SEARCH_IN_ARTICLE', keyword: '' });
+      });
+    }
+    if (btnNextMatch) {
+      btnNextMatch.addEventListener('click', () => {
+        postMessageToLessonIframe({ type: 'NAVIGATE_SEARCH_MATCH', direction: 'next' });
+      });
+    }
+    if (btnPrevMatch) {
+      btnPrevMatch.addEventListener('click', () => {
+        postMessageToLessonIframe({ type: 'NAVIGATE_SEARCH_MATCH', direction: 'prev' });
+      });
+    }
+
     const btnCloseAnalytics = document.getElementById('btnCloseAnalyticsModal');
     if (btnCloseAnalytics) {
       btnCloseAnalytics.addEventListener('click', () => hideModalAnimated(analyticsModal));
@@ -12774,9 +14272,9 @@
 
     function highlightCurrentChunk(chunk) {
       clearTTSHighlights();
-      if (chunk && chunk.element) {
-        chunk.element.classList.add('tts-active-highlight');
-        chunk.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // // HANGMUC-1: Gửi lệnh highlight qua bridge
+      if (chunk && chunk.chunkId) {
+        postMessageToLessonIframe({ type: 'TTS_HIGHLIGHT_NODE', chunkId: chunk.chunkId });
       }
     }
 
@@ -13348,19 +14846,47 @@
         let cloudErrorDetail = '';
 
         if (db) {
-          if (approxSize > 950000) {
-            throw new Error("Dung lượng bài học vượt quá giới hạn (~1MB). Vui lòng rút gọn file trước khi chia sẻ.");
-          }
           try {
+            // // HANGMUC-2: Nén nội dung bằng Gzip + Base64
+            const { isCompressed, compressionType, contentPayload, byteSize } = await compressContentForCloud(lesson.htmlContent || '');
+            
             const shareRef = doc(db, 'artifacts', appId, 'public_shares', shareId);
-            await setDoc(shareRef, shareDocData);
+            const isOversized = contentPayload.length > MAX_FIRESTORE_DOC_BYTES;
 
-            // FIX-1 (Req 4): TỰ KIỂM TRA NGAY - Đọc lại bản ghi vừa ghi từ đám mây
+            if (!isOversized) {
+              // Lưu 1 document duy nhất
+              shareDocData.isCompressed = isCompressed;
+              shareDocData.compressionType = compressionType;
+              shareDocData.contentPayload = contentPayload;
+              shareDocData.htmlContent = ''; // Tránh trùng lặp dung lượng
+              shareDocData.isChunked = false;
+              shareDocData.chunkCount = 1;
+              await setDoc(shareRef, shareDocData);
+            } else {
+              // // HANGMUC-2: Chia chunk cho tài liệu lớn > 900KB
+              const chunks = splitStringIntoChunks(contentPayload, CHUNK_SIZE_BYTES);
+              shareDocData.isCompressed = isCompressed;
+              shareDocData.compressionType = compressionType;
+              shareDocData.contentPayload = ''; // Để rỗng ở doc chính
+              shareDocData.htmlContent = '';
+              shareDocData.isChunked = true;
+              shareDocData.chunkCount = chunks.length;
+              shareDocData.totalLength = contentPayload.length;
+              await setDoc(shareRef, shareDocData);
+
+              // Ghi từng chunk vào subcollection chunks
+              for (let i = 0; i < chunks.length; i++) {
+                const chunkRef = doc(db, 'artifacts', appId, 'public_shares', shareId, 'chunks', String(i));
+                await setDoc(chunkRef, { index: i, chunk: chunks[i] });
+              }
+            }
+
+            // Tự kiểm tra lại
             const verifySnap = await getDoc(shareRef);
-            if (verifySnap.exists() && verifySnap.data().htmlContent) {
+            if (verifySnap.exists()) {
               saveCloudSuccess = true;
             } else {
-              cloudErrorDetail = "Đã gửi lên Firestore nhưng không thể đọc lại bản ghi vừa ghi.";
+              cloudErrorDetail = "Đã gửi lên Firestore nhưng không thể xác nhận bản ghi vừa ghi.";
             }
           } catch (err) {
             console.error("Firestore share error:", err);
@@ -14002,7 +15528,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v3.9.5 - build 08/10/2026 22:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.0.0 - build 09/10/2026 09:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
