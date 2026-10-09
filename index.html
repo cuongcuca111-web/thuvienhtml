@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.8.0';
+    const CURRENT_APP_VERSION = 'v4.9.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1666,6 +1666,11 @@
     <symbol id="folder-plus-glyph" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7a2 2 0 0 1 2-2h3.4l2 2.2h7.6a2 2 0 0 1 2 2V17.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V7z"/><path d="M12 10.8v5M9.5 13.3h5"/></g></symbol>
     <symbol id="frame-glyph" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 3v4M3 9h4M15 3v4M21 9h-4M9 21v-4M3 15h4M15 21v-4M21 15h-4"/></g></symbol>
 
+        <!-- ICON CỠ CHỮ & FONT (Aa) CHO BẢNG GHI CHÚ -->
+    <symbol id="textsize-glyph" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 19l5-13 5 13M5.3 14.5h6.4"/><path d="M15.5 19l3-7.5 3 7.5M16.6 16.6h3.8"/></g></symbol>
+    <symbol id="icon-minus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M6.5 12h11"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 6.5v11M6.5 12h11"/></symbol>
+    <symbol id="icon-more-horizontal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/></g></symbol>
     <symbol id="icon-logo" viewBox="0 0 24 24">
       <path d="M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M12 6.5V18.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
@@ -2334,24 +2339,8 @@
                   </label>
                 </div>
 
-                <!-- Hàng 6: Hiện nhãn khung (VIỆC 4) -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
-                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                      <svg class="w-4 h-4"><use href="#icon-tag"></use></svg>
-                    </div>
-                    <div class="min-w-0">
-                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Hiện nhãn khung</div>
-                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Hiển thị huy hiệu góc nhỏ của khung</div>
-                    </div>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                    <input id="toggleShowFrameBadges" type="checkbox" class="sr-only peer" checked>
-                    <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-amber-600"></div>
-                  </label>
-                </div>
-
-              </div>
+                <!-- Đã bỏ nhãn góc khung theo VIỆC 1 -->
+                <input id="toggleShowFrameBadges" type="checkbox" class="hidden sr-only" style="display:none;" checked>
             </div>
 
             <!-- NHÓM 3: THAO TÁC -->
@@ -2696,7 +2685,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.7.3 - build 09/10/2026
+        Thư viện Sách HTML v4.9.0 - build 09/10/2026
       </div>
     </aside>
 
@@ -3252,7 +3241,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.7.3 - build 09/10/2026
+      Thư viện Sách HTML v4.9.0 - build 09/10/2026
     </div>
   </div>
 
@@ -3427,111 +3416,215 @@
   </div>
 
   <!-- // FEATURE-2: Modal Chi tiết & Sửa Ghi Chú Khung -->
-  <div id="highlightDetailModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-md p-4 sm:p-5 shadow-2xl flex flex-col space-y-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
-      <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
-        <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400"><use href="#frame-glyph"></use></svg>
-          <h3 class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Chi tiết Khung &amp; Ghi chú</h3>
+  <div id="highlightDetailModal" class="modal-animated fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs">
+    <div id="highlightDetailModalCard" class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-sm sm:w-[320px] p-4 shadow-2xl flex flex-col space-y-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
+      <!-- Dòng 1: Chấm màu + Trích đoạn 1 dòng cắt ellipsis + Nút đóng -->
+      <div class="flex items-center justify-between gap-2 pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span id="hlModalColorDot" class="w-3 h-3 rounded-full shrink-0 bg-amber-500 ring-2 ring-white dark:ring-[#161A20]"></span>
+          <p id="hlSelectedTextPreview" class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate flex-1 min-w-0" title="Trích đoạn">Trích đoạn...</p>
         </div>
-        <button id="btnCloseHlDetail" class="p-1 rounded-md text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+        <button id="btnCloseHlDetail" class="touch-target w-8 h-8 rounded-lg text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center cursor-pointer shrink-0" aria-label="Đóng">
           <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
-      <blockquote id="hlSelectedTextPreview" class="text-xs italic p-2.5 rounded-lg bg-[#F7F7F5] dark:bg-[#0F1115] border-l-2 border-indigo-500 text-[#6E6B65] dark:text-[#979DA8] line-clamp-3"></blockquote>
-      
+
+      <!-- Dòng 2: Ô ghi chú (textarea 3 dòng, font >= 16px, auto focus) -->
       <div>
-        <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Nhãn góc (tối đa 12 ký tự):</label>
-        <input id="hlLabelInput" type="text" maxlength="12" class="w-full text-xs p-2 rounded-lg bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-indigo-600 focus:outline-none" placeholder="Ví dụ: Lưu ý, Quan trọng, Định nghĩa..." />
+        <textarea id="hlNoteInput" rows="3" class="w-full text-[16px] sm:text-sm p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none resize-none leading-relaxed" placeholder="Viết ghi chú cho đoạn này..."></textarea>
       </div>
 
+      <!-- Dòng 3: Hàng 4 chấm chọn màu khung (Vàng/Xanh/Hồng/Tím, vùng chạm >= 44px) -->
       <div>
-        <label class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">Nội dung ghi chú:</label>
-        <textarea id="hlNoteInput" rows="3" class="w-full text-xs p-2.5 rounded-lg bg-[#F7F7F5] dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1A1A1A] dark:text-[#ECEEF2] focus:border-indigo-600 focus:outline-none" placeholder="Nhập ghi chú hoặc suy ngẫm của bạn..."></textarea>
+        <div class="text-[11px] font-medium text-[#4B5563] dark:text-[#B6BDCA] mb-1">Màu khung</div>
+        <div class="flex items-center justify-between px-1">
+          <button type="button" class="hl-color-btn touch-target w-11 h-11 flex items-center justify-center cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-color="yellow" title="Vàng" aria-label="Màu vàng">
+            <span class="w-6 h-6 rounded-full bg-[#d97706] ring-2 ring-offset-2 ring-transparent transition hover:scale-110"></span>
+          </button>
+          <button type="button" class="hl-color-btn touch-target w-11 h-11 flex items-center justify-center cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-color="green" title="Xanh" aria-label="Màu xanh">
+            <span class="w-6 h-6 rounded-full bg-[#059669] ring-2 ring-offset-2 ring-transparent transition hover:scale-110"></span>
+          </button>
+          <button type="button" class="hl-color-btn touch-target w-11 h-11 flex items-center justify-center cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-color="pink" title="Hồng" aria-label="Màu hồng">
+            <span class="w-6 h-6 rounded-full bg-[#db2777] ring-2 ring-offset-2 ring-transparent transition hover:scale-110"></span>
+          </button>
+          <button type="button" class="hl-color-btn touch-target w-11 h-11 flex items-center justify-center cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-color="purple" title="Tím" aria-label="Màu tím">
+            <span class="w-6 h-6 rounded-full bg-[#7c3aed] ring-2 ring-offset-2 ring-transparent transition hover:scale-110"></span>
+          </button>
+        </div>
       </div>
 
-      <div class="flex items-center justify-between pt-2">
-        <button id="btnDeleteCurrentHighlight" class="text-xs text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 cursor-pointer">
-          <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+      <!-- Dòng 4: Hàng chọn / sửa thẻ phân loại (chip "Khó", "Quan trọng",...) -->
+      <div>
+        <div class="flex items-center justify-between text-[11px] font-medium text-[#4B5563] dark:text-[#B6BDCA] mb-1.5">
+          <span>Thẻ phân loại</span>
+          <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">(tùy chọn)</span>
+        </div>
+        <div class="flex items-center gap-1.5 flex-wrap mb-1.5">
+          <button type="button" class="hl-preset-tag px-2.5 py-1 rounded-md text-[11px] font-medium border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-[#1C1917] dark:text-[#EDECE8] transition" data-tag="Khó">Khó</button>
+          <button type="button" class="hl-preset-tag px-2.5 py-1 rounded-md text-[11px] font-medium border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-[#1C1917] dark:text-[#EDECE8] transition" data-tag="Quan trọng">Quan trọng</button>
+          <button type="button" class="hl-preset-tag px-2.5 py-1 rounded-md text-[11px] font-medium border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-[#1C1917] dark:text-[#EDECE8] transition" data-tag="Ôn thi">Ôn thi</button>
+          <button type="button" class="hl-preset-tag px-2.5 py-1 rounded-md text-[11px] font-medium border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-[#1C1917] dark:text-[#EDECE8] transition" data-tag="Lưu ý">Lưu ý</button>
+        </div>
+        <input id="hlLabelInput" type="text" maxlength="12" class="w-full text-xs p-2 rounded-lg bg-[#FAF9F5] dark:bg-[#0F1115] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" placeholder="Tự nhập thẻ (tối đa 12 ký tự)..." />
+      </div>
+
+      <!-- Dòng 5: Hàng nút: Xóa khung (icon thùng rác) & Nút Xong -->
+      <div class="flex items-center justify-between pt-1 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+        <button id="btnDeleteCurrentHighlight" class="touch-target min-h-[44px] px-2.5 py-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 font-medium text-xs flex items-center gap-1.5 cursor-pointer transition" aria-label="Xóa khung này">
+          <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
           <span>Xóa khung</span>
         </button>
-        <button id="btnSaveCurrentHighlightNote" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs cursor-pointer">
-          Lưu ghi chú
+        <button id="btnSaveCurrentHighlightNote" class="touch-target min-h-[44px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs cursor-pointer transition">
+          Xong
         </button>
       </div>
     </div>
   </div>
 
   <!-- // FEATURE-2: Modal Tất Cả Ghi Chú & Khung Toàn Thư Viện (VIỆC 4) -->
-  <div id="allNotesModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl overflow-hidden">
+  <div id="allNotesModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4" style="--frames-fs: 16px;">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl overflow-hidden relative">
       <!-- Header modal -->
-      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+      <div class="p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <svg class="w-4 h-4"><use href="#frame-glyph"></use></svg>
           </div>
-          <div>
-            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tất cả Ghi chú &amp; Khung</h3>
-            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]" id="allNotesCountLabel">0 khung &amp; ghi chú trong thư viện</p>
+          <div class="min-w-0">
+            <h3 class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] truncate">Tất cả Ghi chú &amp; Khung</h3>
+            <p class="text-[11px] text-[#4B5563] dark:text-[#B6BDCA] truncate" id="allNotesCountLabel">0 khung &amp; ghi chú trong thư viện</p>
           </div>
         </div>
-        <div class="flex items-center gap-1.5">
-          <button id="btnToggleBatchNotes" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 transition cursor-pointer" title="Chọn nhiều để xóa hàng loạt">
+        
+        <!-- Hàng nút thao tác header -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <!-- Nút Aa (Tăng/giảm cỡ chữ & font) -->
+          <button id="btnNotesFontSize" class="touch-target w-10 h-10 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-center transition cursor-pointer" title="Cỡ chữ và font" aria-label="Cỡ chữ và font">
+            <svg class="w-5 h-5"><use href="#textsize-glyph"></use></svg>
+          </button>
+          
+          <!-- Các nút thao tác desktop -->
+          <button id="btnToggleBatchNotes" class="hidden sm:flex touch-target px-2.5 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] items-center gap-1 transition cursor-pointer" title="Chọn nhiều để xóa hàng loạt">
             <svg class="w-3.5 h-3.5"><use href="#icon-check-square"></use></svg>
-            <span class="hidden sm:inline">Chọn nhiều</span>
+            <span>Chọn nhiều</span>
           </button>
-          <button id="btnClearAllLibraryNotes" class="touch-target px-2.5 py-1.5 rounded-lg border border-red-200 dark:border-red-900/60 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-medium text-red-600 dark:text-red-400 flex items-center gap-1 transition cursor-pointer" title="Xóa tất cả khung toàn thư viện">
+          <button id="btnClearAllLibraryNotes" class="hidden sm:flex touch-target px-2.5 py-2 rounded-lg border border-red-200 dark:border-red-900/60 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-medium text-red-600 dark:text-red-400 items-center gap-1 transition cursor-pointer" title="Xóa tất cả khung toàn thư viện">
             <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
-            <span class="hidden sm:inline">Xóa toàn bộ</span>
+            <span>Xóa toàn bộ</span>
           </button>
-          <button id="btnExportNotesMarkdown" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 cursor-pointer" title="Xuất toàn bộ ghi chú ra file Markdown (.md)">
+          <button id="btnExportNotesMarkdown" class="hidden sm:flex touch-target px-2.5 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] items-center gap-1 cursor-pointer" title="Xuất toàn bộ ghi chú ra file Markdown (.md)">
             <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
-            <span class="hidden sm:inline">Xuất .md</span>
+            <span>Xuất .md</span>
           </button>
-          <button id="btnCloseAllNotesModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+
+          <!-- Nút '⋯' gom menu trên mobile (<640px) -->
+          <div class="relative sm:hidden">
+            <button id="btnNotesMobileMore" class="touch-target w-10 h-10 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-center transition cursor-pointer" title="Thao tác khác" aria-label="Thao tác khác">
+              <svg class="w-5 h-5"><use href="#icon-more-horizontal"></use></svg>
+            </button>
+            <div id="notesMobileMoreMenu" class="hidden absolute right-0 top-full mt-1.5 z-50 w-44 rounded-xl bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl py-1 text-xs">
+              <button id="btnMobileBatchNotes" class="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8]">
+                <svg class="w-3.5 h-3.5"><use href="#icon-check-square"></use></svg>
+                <span>Chọn nhiều</span>
+              </button>
+              <button id="btnMobileClearAll" class="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400">
+                <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+                <span>Xóa toàn bộ</span>
+              </button>
+              <button id="btnMobileExportMd" class="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8]">
+                <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
+                <span>Xuất .md</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Nút đóng ✕ -->
+          <button id="btnCloseAllNotesModal" class="touch-target w-10 h-10 rounded-lg text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center cursor-pointer" aria-label="Đóng bảng">
             <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
           </button>
         </div>
       </div>
 
-      <!-- Search, Lesson Filter & Color Filter Chips with count badges -->
-      <div class="p-3 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] flex flex-col sm:flex-row gap-2 shrink-0">
-        <div class="flex items-center gap-2 flex-1">
-          <div class="relative flex-1">
-            <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#6E6B65]"><use href="#icon-search"></use></svg>
-            <input id="searchNotesInput" type="text" placeholder="Tìm kiếm ghi chú, trích dẫn..." class="w-full text-xs pl-8 pr-3 py-2 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none" />
+      <!-- Popover điều khiển cỡ chữ & font (Aa) -->
+      <div id="notesFontSizePopover" class="hidden absolute top-16 right-4 sm:right-16 z-50 w-72 p-3.5 rounded-2xl bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl space-y-3.5 text-xs text-[#1C1917] dark:text-[#EDECE8]">
+        <div class="flex items-center justify-between font-semibold pb-1.5 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+          <span>Cỡ chữ &amp; Kiểu chữ</span>
+          <button id="btnResetNotesFont" class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Đặt lại</button>
+        </div>
+        
+        <!-- Hàng chỉnh cỡ chữ: A- | Slider / chỉ báo 8 mức | A+ -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5 text-[11px] text-[#4B5563] dark:text-[#B6BDCA]">
+            <span>Cỡ chữ đoạn trích</span>
+            <span id="notesFontSizeDisplay" class="font-bold text-indigo-600 dark:text-indigo-400 font-mono">16px</span>
           </div>
-          <!-- Lọc theo bài học -->
-          <select id="notesLessonFilterSelect" class="text-xs px-2.5 py-2 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0" title="Phạm vi hiển thị">
+          <div class="flex items-center gap-2">
+            <button id="btnNotesFontSmaller" class="touch-target w-11 h-11 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-30 disabled:pointer-events-none" title="Giảm cỡ chữ" aria-label="Giảm cỡ chữ">
+              <svg class="w-4 h-4"><use href="#icon-minus"></use></svg>
+            </button>
+            <input id="notesFontSizeRange" type="range" min="0" max="7" step="1" value="3" class="w-full accent-indigo-600 cursor-pointer" aria-label="Thanh trượt 8 mức cỡ chữ" />
+            <button id="btnNotesFontBigger" class="touch-target w-11 h-11 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-30 disabled:pointer-events-none" title="Tăng cỡ chữ" aria-label="Tăng cỡ chữ">
+              <svg class="w-4 h-4"><use href="#icon-plus"></use></svg>
+            </button>
+          </div>
+          <div class="flex justify-between px-1 text-[9px] text-[#6E6B65] dark:text-[#979DA8] font-mono mt-1">
+            <span>13px</span>
+            <span>16px</span>
+            <span>24px</span>
+          </div>
+        </div>
+
+        <!-- Nhóm lựa chọn Font: Mặc định | Theo bài -->
+        <div>
+          <div class="text-[11px] text-[#4B5563] dark:text-[#B6BDCA] mb-1.5">Kiểu font</div>
+          <div class="grid grid-cols-2 p-0.5 rounded-lg bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36]">
+            <button id="btnFontDefault" class="py-1.5 text-xs rounded-md font-medium transition cursor-pointer text-center bg-white dark:bg-[#20252D] text-indigo-600 dark:text-indigo-400 shadow-2xs">
+              Mặc định
+            </button>
+            <button id="btnFontArticle" class="py-1.5 text-xs rounded-md font-medium transition cursor-pointer text-center text-[#4B5563] dark:text-[#B6BDCA] hover:text-[#1C1917] dark:hover:text-[#EDECE8]">
+              Theo bài
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hàng 1: Ô tìm kiếm full width (không bao giờ bị cắt chữ) | Hàng 2: Phạm vi + Nhóm chip màu -->
+      <div class="p-3 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] flex flex-col gap-2 shrink-0">
+        <!-- Hàng 1: Ô tìm kiếm full width -->
+        <div class="relative w-full">
+          <svg class="w-4 h-4 absolute left-3 top-2.5 text-[#6E6B65] pointer-events-none"><use href="#icon-search"></use></svg>
+          <input id="searchNotesInput" type="text" placeholder="Tìm kiếm ghi chú, trích dẫn..." class="w-full text-xs sm:text-sm pl-9 pr-3 py-2 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none placeholder:text-[#6E6B65] dark:placeholder:text-[#979DA8]" />
+        </div>
+        <!-- Hàng 2: Phạm vi hiển thị + Color chips cuộn ngang -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+          <select id="notesLessonFilterSelect" class="text-xs px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0" title="Phạm vi hiển thị">
             <option value="all">Toàn thư viện</option>
             <option value="category">Mục hiện tại</option>
             <option value="current">Bài đang đọc</option>
           </select>
-        </div>
-
-        <!-- Color chips kèm số lượng -->
-        <div class="flex items-center gap-1 shrink-0 overflow-x-auto no-scrollbar">
-          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-indigo-600 text-white cursor-pointer" data-color="all">
-            <span>Tất cả</span>
-            <span id="chipCountAll" class="opacity-80 text-[10px] ml-0.5 font-mono">(0)</span>
-          </button>
-          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 cursor-pointer" data-color="yellow">
-            <span>Vàng</span>
-            <span id="chipCountYellow" class="opacity-80 text-[10px] ml-0.5 font-mono">(0)</span>
-          </button>
-          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 cursor-pointer" data-color="green">
-            <span>Xanh</span>
-            <span id="chipCountGreen" class="opacity-80 text-[10px] ml-0.5 font-mono">(0)</span>
-          </button>
-          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200 cursor-pointer" data-color="pink">
-            <span>Hồng</span>
-            <span id="chipCountPink" class="opacity-80 text-[10px] ml-0.5 font-mono">(0)</span>
-          </button>
-          <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200 cursor-pointer" data-color="purple">
-            <span>Tím</span>
-            <span id="chipCountPurple" class="opacity-80 text-[10px] ml-0.5 font-mono">(0)</span>
-          </button>
+          <div class="h-4 w-px bg-[#E7E5DF] dark:bg-[#262C36] shrink-0"></div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-indigo-600 text-white cursor-pointer shrink-0" data-color="all">
+              <span>Tất cả</span>
+              <span id="chipCountAll" class="opacity-90 text-[11px] ml-0.5 font-mono">(0)</span>
+            </button>
+            <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 cursor-pointer shrink-0" data-color="yellow">
+              <span>Vàng</span>
+              <span id="chipCountYellow" class="opacity-90 text-[11px] ml-0.5 font-mono">(0)</span>
+            </button>
+            <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 cursor-pointer shrink-0" data-color="green">
+              <span>Xanh</span>
+              <span id="chipCountGreen" class="opacity-90 text-[11px] ml-0.5 font-mono">(0)</span>
+            </button>
+            <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-pink-100 text-pink-900 dark:bg-pink-950 dark:text-pink-200 cursor-pointer shrink-0" data-color="pink">
+              <span>Hồng</span>
+              <span id="chipCountPink" class="opacity-90 text-[11px] ml-0.5 font-mono">(0)</span>
+            </button>
+            <button class="notes-color-filter px-2 py-1 text-xs rounded-md font-medium bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-200 cursor-pointer shrink-0" data-color="purple">
+              <span>Tím</span>
+              <span id="chipCountPurple" class="opacity-90 text-[11px] ml-0.5 font-mono">(0)</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -7401,44 +7494,28 @@
       transition: top 0.15s ease-out, left 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out, opacity 0.3s ease;
     }
 
-    /* Đóng khung văn bản chịu lỗi cao (Text Framing) */
+    body {
+      touch-action: manipulation;
+    }
+    /* Đóng khung văn bản: viền sắc nét, bo góc mềm, không chèn badge góc, chữ nguyên vẹn */
     .text-frame {
       box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22));
-      border-radius: 6px;
+      border-radius: 4px;
       background-color: var(--frame-bg, rgba(217, 119, 6, 0.08));
       box-decoration-break: clone;
       -webkit-box-decoration-break: clone;
-      padding: 1px 2px;
+      padding: 0;
       margin: 0;
       line-height: inherit !important;
       display: inline;
       position: relative;
-      cursor: pointer;
+      cursor: text;
+      outline: none;
       transition: box-shadow 0.15s ease, background-color 0.15s ease;
     }
-    .text-frame:hover {
-      filter: brightness(0.96);
-    }
-    .frame-corner-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      line-height: 1;
-      padding: 1px 4px;
-      margin-right: 4px;
-      border-radius: 4px;
-      vertical-align: baseline;
-      user-select: none;
-      cursor: pointer;
-      opacity: 0.9;
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .frame-corner-badge:hover {
-      opacity: 1;
-      transform: scale(1.05);
+    .text-frame:focus-visible {
+      outline: 2px solid #6366f1;
+      outline-offset: 2px;
     }
     @keyframes frameFlashPulse {
       0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
@@ -7451,9 +7528,6 @@
     html.hide-text-frames .text-frame, body.hide-text-frames .text-frame {
       box-shadow: none !important;
       background-color: transparent !important;
-    }
-    html.hide-frame-badges .frame-corner-badge, body.hide-frame-badges .frame-corner-badge {
-      display: none !important;
     }
   \`;
   (document.head || document.documentElement).appendChild(bridgeStyle);
@@ -7484,17 +7558,10 @@
     span.style.setProperty('--frame-color', col.border);
     span.style.setProperty('--frame-glow', col.glow);
     span.style.setProperty('--frame-bg', col.bg);
-    if (noteText) {
-      span.title = '[Ghi chú] ' + (noteText || '');
-    } else if (labelText) {
-      span.title = labelText;
-    }
-    if (badge) {
-      badge.style.backgroundColor = col.badgeBg;
-      badge.style.color = col.badgeText;
-      badge.style.border = '1px solid ' + col.badgeBorder;
-      badge.innerText = (labelText && labelText.trim()) ? labelText.trim().substring(0, 12) : '•';
-      badge.title = labelText || (noteText ? ('Ghi chú: ' + noteText) : 'Khung đánh dấu');
+    if (noteText && noteText.trim()) {
+      span.title = noteText.trim().substring(0, 120);
+    } else {
+      span.title = 'Nhấp đúp để ghi chú';
     }
   }
 
@@ -7512,14 +7579,10 @@
       span.setAttribute('data-frame-id', frameId);
       span.setAttribute('data-color', colorName);
       if (customHex) span.setAttribute('data-custom-color', customHex);
+      span.setAttribute('tabindex', '0');
+      span.setAttribute('role', 'group');
+      span.setAttribute('aria-label', 'Đoạn đã đóng khung. Nhấn Enter để mở ghi chú');
       return span;
-    };
-
-    const createBadge = () => {
-      const badge = document.createElement('span');
-      badge.className = 'frame-corner-badge';
-      badge.setAttribute('data-frame-id', frameId);
-      return badge;
     };
 
     const startContainer = range.startContainer;
@@ -7537,10 +7600,8 @@
         targetNode = targetNode.splitText(startOffset);
       }
       const span = createFrameSpan();
-      const badge = createBadge();
-      styleFrameElement(span, badge, colorName, customHex, labelText, noteText);
+      styleFrameElement(span, null, colorName, customHex, labelText, noteText);
       targetNode.parentNode.insertBefore(span, targetNode);
-      span.appendChild(badge);
       span.appendChild(targetNode);
       return [span];
     }
@@ -7572,13 +7633,8 @@
       if (start > 0) tNode = tNode.splitText(start);
 
       const span = createFrameSpan();
-      let badge = null;
-      if (i === 0) {
-        badge = createBadge();
-      }
-      styleFrameElement(span, badge, colorName, customHex, labelText, noteText);
+      styleFrameElement(span, null, colorName, customHex, labelText, noteText);
       tNode.parentNode.insertBefore(span, tNode);
-      if (badge) span.appendChild(badge);
       span.appendChild(tNode);
       created.push(span);
     }
@@ -7588,13 +7644,8 @@
   function removeFrameInternal(frameId) {
     const elements = document.querySelectorAll('[data-frame-id="' + frameId + '"]');
     elements.forEach(el => {
-      if (el.classList.contains('frame-corner-badge')) {
-        el.remove();
-        return;
-      }
       const parent = el.parentNode;
       if (parent) {
-        el.querySelectorAll('.frame-corner-badge').forEach(b => b.remove());
         while (el.firstChild) parent.insertBefore(el.firstChild, el);
         parent.removeChild(el);
         parent.normalize();
@@ -7699,6 +7750,23 @@
       const text = sel.toString().trim();
       if (text.length < 2) return;
       const range = sel.getRangeAt(0);
+
+      // KIỂM TRA: nếu vùng chọn nằm trọn bên trong khung có sẵn
+      const ancestor = range.commonAncestorContainer;
+      const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
+      const existingFrame = parentEl ? parentEl.closest('.text-frame') : null;
+      if (existingFrame) {
+        window.parent.postMessage({ type: 'TEXT_ALREADY_FRAMED' }, '*');
+        return;
+      }
+
+      let quoteFont = '';
+      if (parentEl) {
+        try {
+          quoteFont = (window.getComputedStyle(parentEl).fontFamily || '').substring(0, 200);
+        } catch (_) {}
+      }
+
       const rect = range.getBoundingClientRect();
       let prefix = '', suffix = '';
       try {
@@ -7712,21 +7780,92 @@
         text: text,
         prefix: prefix,
         suffix: suffix,
+        quoteFont: quoteFont,
         rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
     }, 30);
   });
 
-  document.addEventListener('click', (e) => {
-    const frameOrHl = e.target.closest('.text-frame, .frame-corner-badge, .custom-highlight');
-    if (frameOrHl) {
-      const fId = frameOrHl.getAttribute('data-frame-id') || frameOrHl.getAttribute('data-hl-id');
-      const rect = frameOrHl.getBoundingClientRect();
+  // VIỆC 1: Click 1 lần KHÔNG làm gì cả
+  // Mousedown e.detail >= 2: preventDefault() để chặn trình duyệt tự bôi đen từ khi nhấp đúp
+  document.addEventListener('mousedown', (e) => {
+    if (e.detail >= 2 && e.target.closest('.text-frame, .custom-highlight')) {
+      e.preventDefault();
+    }
+  });
+
+  // Double click trên chuột: mở cửa sổ ghi chú, xóa selection, không hiện toolbar
+  document.addEventListener('dblclick', (e) => {
+    const frameEl = e.target.closest('.text-frame, .custom-highlight');
+    if (frameEl) {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        const sel = window.getSelection();
+        if (sel) sel.removeAllRanges();
+      } catch (_) {}
+      const fId = frameEl.getAttribute('data-frame-id') || frameEl.getAttribute('data-hl-id');
+      const rect = frameEl.getBoundingClientRect();
       window.parent.postMessage({
-        type: 'FRAME_CLICKED',
+        type: 'FRAME_DBLCLICKED',
         id: fId,
-        rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right }
+        rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
+    }
+  });
+
+  // Double-tap trên Touch (iOS Safari / mobile)
+  let lastTapTime = 0, lastTapX = 0, lastTapY = 0, lastTapFrameId = null;
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      const frameEl = e.target.closest('.text-frame, .custom-highlight');
+      if (frameEl) {
+        const now = Date.now();
+        const touch = e.touches[0];
+        const fId = frameEl.getAttribute('data-frame-id') || frameEl.getAttribute('data-hl-id');
+        const timeDiff = now - lastTapTime;
+        const dist = Math.hypot(touch.clientX - lastTapX, touch.clientY - lastTapY);
+        if (timeDiff <= 300 && dist <= 10 && lastTapFrameId === fId) {
+          e.preventDefault();
+          try {
+            const sel = window.getSelection();
+            if (sel) sel.removeAllRanges();
+          } catch (_) {}
+          const rect = frameEl.getBoundingClientRect();
+          window.parent.postMessage({
+            type: 'FRAME_DBLCLICKED',
+            id: fId,
+            rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
+          }, '*');
+          lastTapTime = 0;
+          lastTapFrameId = null;
+          return;
+        }
+        lastTapTime = now;
+        lastTapX = touch.clientX;
+        lastTapY = touch.clientY;
+        lastTapFrameId = fId;
+      } else {
+        lastTapTime = 0;
+        lastTapFrameId = null;
+      }
+    }
+  }, { passive: false });
+
+  // Trợ năng phím Enter trên khung
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const activeEl = document.activeElement;
+      if (activeEl && activeEl.classList.contains('text-frame')) {
+        e.preventDefault();
+        const fId = activeEl.getAttribute('data-frame-id') || activeEl.getAttribute('data-hl-id');
+        const rect = activeEl.getBoundingClientRect();
+        window.parent.postMessage({
+          type: 'FRAME_DBLCLICKED',
+          id: fId,
+          rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
+        }, '*');
+      }
     }
   });
 
@@ -7880,29 +8019,24 @@
         break;
       }
 
-      case 'APPLY_COLOR': {
-        const elements = document.querySelectorAll(\`[data-frame-id="\${msg.id}"]\`);
+      case 'APPLY_COLOR':
+      case 'UPDATE_FRAME_COLOR': {
+        const elements = document.querySelectorAll('[data-frame-id="' + msg.id + '"]');
         elements.forEach(el => {
-          if (!el.classList.contains('frame-corner-badge')) {
-            el.setAttribute('data-color', msg.color);
-            if (msg.customColor) el.setAttribute('data-custom-color', msg.customColor);
-            const badge = el.querySelector('.frame-corner-badge');
-            styleFrameElement(el, badge, msg.color, msg.customColor, msg.label, msg.note);
-          }
+          el.setAttribute('data-color', msg.color);
+          if (msg.customColor) el.setAttribute('data-custom-color', msg.customColor);
+          styleFrameElement(el, null, msg.color, msg.customColor, msg.label, msg.note);
         });
         break;
       }
 
+      case 'UPDATE_FRAME_NOTE':
       case 'UPDATE_FRAME_LABEL': {
-        const badge = document.querySelector(\`.frame-corner-badge[data-frame-id="\${msg.id}"]\`);
-        if (badge) {
-          badge.innerText = (msg.label && msg.label.trim()) ? msg.label.trim().substring(0, 12) : '•';
-          badge.title = msg.label || (msg.note ? \`Ghi chú: \${msg.note}\` : 'Khung đánh dấu');
-        }
-        const span = document.querySelector(\`.text-frame[data-frame-id="\${msg.id}"]\`);
-        if (span && msg.note) {
-          span.title = \`[Ghi chú] \${msg.note}\`;
-        }
+        const spans = document.querySelectorAll('[data-frame-id="' + msg.id + '"]');
+        spans.forEach(span => {
+          if (msg.color) span.setAttribute('data-color', msg.color);
+          styleFrameElement(span, null, msg.color || span.getAttribute('data-color'), span.getAttribute('data-custom-color'), msg.label, msg.note);
+        });
         break;
       }
 
@@ -8373,6 +8507,7 @@
 `;
       return openTag + bridgeJs + closeTag;
     }
+    window.buildSandboxBridgeCode = buildSandboxBridgeCode;
 
     function injectBridgeAndCspIntoHtml(rawHtml) {
       const cspMeta = '<meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: https: \'unsafe-inline\' \'unsafe-eval\'; frame-src \'none\'; object-src \'none\';">';
@@ -8494,13 +8629,25 @@
           break;
         }
 
+        case 'TEXT_ALREADY_FRAMED': {
+          const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+          if (hlToolbar) hlToolbar.classList.add('hidden');
+          showToast("Đoạn này đã có khung • Nhấp đúp để ghi chú", "info");
+          break;
+        }
+
+        case 'FRAME_DBLCLICKED': {
+          const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+          if (hlToolbar) hlToolbar.classList.add('hidden');
+          if (typeof openFrameDetailModal === 'function') {
+            openFrameDetailModal(msg.id, msg.rect);
+          }
+          break;
+        }
+
         case 'FRAME_CLICKED':
         case 'HIGHLIGHT_CLICKED': {
-          if (typeof openFrameDetailModal === 'function') {
-            openFrameDetailModal(msg.id);
-          } else if (typeof openHighlightNoteModal === 'function') {
-            openHighlightNoteModal(msg.id);
-          }
+          // Bỏ hành vi mở modal khi click 1 lần theo VIỆC 1
           break;
         }
 
@@ -21050,46 +21197,24 @@
     }
 
     function injectHighlightStyles(doc) {
-      if (!doc) return;
-      applyFrameSettingsToDoc(doc);
-      if (doc.getElementById('custom-highlight-styles')) return;
-
+      if (!doc || doc.getElementById('__parent_frame_styles')) return;
       const style = doc.createElement('style');
-      style.id = 'custom-highlight-styles';
+      style.id = '__parent_frame_styles';
       style.textContent = `
+        body { touch-action: manipulation; }
         .text-frame {
           box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22));
-          border-radius: 6px;
+          border-radius: 4px;
           background-color: var(--frame-bg, rgba(217, 119, 6, 0.08));
           box-decoration-break: clone;
           -webkit-box-decoration-break: clone;
-          padding: 1px 2px;
+          padding: 0;
           margin: 0;
-          line-height: inherit !important;
-          display: inline;
-          position: relative;
-          cursor: pointer;
+          cursor: text;
+          outline: none;
           transition: box-shadow 0.15s ease, background-color 0.15s ease;
         }
-        .text-frame:hover { filter: brightness(0.96); }
-        .frame-corner-badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-          font-size: 10px;
-          font-weight: 600;
-          line-height: 1;
-          padding: 1px 4px;
-          margin-right: 4px;
-          border-radius: 4px;
-          vertical-align: baseline;
-          user-select: none;
-          cursor: pointer;
-          opacity: 0.9;
-          transition: transform 0.15s, opacity 0.15s;
-        }
-        .frame-corner-badge:hover { opacity: 1; transform: scale(1.05); }
+        .text-frame:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
         @keyframes frameFlashPulse {
           0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
           50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
@@ -21097,7 +21222,6 @@
         }
         .frame-flash-highlight { animation: frameFlashPulse 1.8s ease-out 1 !important; }
         html.hide-text-frames .text-frame, body.hide-text-frames .text-frame { box-shadow: none !important; background-color: transparent !important; }
-        html.hide-frame-badges .frame-corner-badge, body.hide-frame-badges .frame-corner-badge { display: none !important; }
       `;
       (doc.head || doc.body).appendChild(style);
     }
@@ -21174,13 +21298,33 @@
             if (text.length < 2) return;
 
             const range = sel.getRangeAt(0);
+
+            // KIỂM TRA: Vùng chọn nằm trọn bên trong khung có sẵn -> Hiện toast 3s, không hiện toolbar
+            const ancestor = range.commonAncestorContainer;
+            const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
+            const existingFrame = parentEl ? parentEl.closest('.text-frame') : null;
+            if (existingFrame) {
+              if (hlToolbar) hlToolbar.classList.add('hidden');
+              currentSelectionInfo = null;
+              showToast("Đoạn này đã có khung • Nhấp đúp để ghi chú", "info");
+              return;
+            }
+
+            let quoteFont = '';
+            if (parentEl) {
+              try {
+                quoteFont = (window.getComputedStyle(parentEl).fontFamily || '').substring(0, 200);
+              } catch (_) {}
+            }
+
             const rect = range.getBoundingClientRect();
             const ifRect = iframe.getBoundingClientRect();
 
             currentSelectionInfo = {
               text: text,
               range: range.cloneRange(),
-              rect: rect
+              rect: rect,
+              quoteFont: quoteFont
             };
 
             if (hlToolbar) {
@@ -21204,14 +21348,82 @@
           selectionDebounceTimer = setTimeout(handleSelection, 80);
         });
 
-        doc.addEventListener('click', (e) => {
-          const target = e.target.closest('.text-frame, .frame-corner-badge, .custom-highlight');
-          if (target) {
-            e.stopPropagation();
-            const fId = target.getAttribute('data-frame-id') || target.getAttribute('data-hl-id');
-            if (fId) openFrameDetailModal(fId);
+        // VIỆC 1:
+        // Click 1 lần: KHÔNG làm gì cả
+        // Mousedown detail >= 2: preventDefault() để không bôi đen từ
+        doc.addEventListener('mousedown', (e) => {
+          if (e.detail >= 2 && e.target.closest('.text-frame, .custom-highlight')) {
+            e.preventDefault();
           }
         });
+
+        // Double-click mở cửa sổ ghi chú
+        doc.addEventListener('dblclick', (e) => {
+          const target = e.target.closest('.text-frame, .custom-highlight');
+          if (target) {
+            e.preventDefault();
+            e.stopPropagation();
+            try {
+              const sel = doc.getSelection();
+              if (sel) sel.removeAllRanges();
+            } catch (_) {}
+            const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+            if (hlToolbar) hlToolbar.classList.add('hidden');
+            const fId = target.getAttribute('data-frame-id') || target.getAttribute('data-hl-id');
+            const rect = target.getBoundingClientRect();
+            if (fId) openFrameDetailModal(fId, rect);
+          }
+        });
+
+        // Double-tap trên Touch (iOS Safari)
+        let lastTapTime = 0, lastTapX = 0, lastTapY = 0, lastTapFId = null;
+        doc.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            const frameEl = e.target.closest('.text-frame, .custom-highlight');
+            if (frameEl) {
+              const now = Date.now();
+              const touch = e.touches[0];
+              const fId = frameEl.getAttribute('data-frame-id') || frameEl.getAttribute('data-hl-id');
+              const timeDiff = now - lastTapTime;
+              const dist = Math.hypot(touch.clientX - lastTapX, touch.clientY - lastTapY);
+              if (timeDiff <= 300 && dist <= 10 && lastTapFId === fId) {
+                e.preventDefault();
+                try {
+                  const sel = doc.getSelection();
+                  if (sel) sel.removeAllRanges();
+                } catch (_) {}
+                const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+                if (hlToolbar) hlToolbar.classList.add('hidden');
+                const rect = frameEl.getBoundingClientRect();
+                if (fId) openFrameDetailModal(fId, rect);
+                lastTapTime = 0;
+                lastTapFId = null;
+                return;
+              }
+              lastTapTime = now;
+              lastTapX = touch.clientX;
+              lastTapY = touch.clientY;
+              lastTapFId = fId;
+            } else {
+              lastTapTime = 0;
+              lastTapFId = null;
+            }
+          }
+        }, { passive: false });
+
+        // Enter key mở ghi chú khi đang focus khung
+        doc.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const activeEl = doc.activeElement;
+            if (activeEl && activeEl.classList.contains('text-frame')) {
+              e.preventDefault();
+              const fId = activeEl.getAttribute('data-frame-id') || activeEl.getAttribute('data-hl-id');
+              const rect = activeEl.getBoundingClientRect();
+              if (fId) openFrameDetailModal(fId, rect);
+            }
+          }
+        });
+
       } catch (err) {
         console.warn("Lỗi gắn sự kiện selection iframe:", err);
       }
@@ -21307,9 +21519,36 @@
 
       state.learningData.frames[state.activeLessonId].push(newFrame);
       state.learningData.highlights[state.activeLessonId].push(newFrame);
+      if (currentSelectionInfo && currentSelectionInfo.quoteFont) {
+        newFrame.quoteFont = currentSelectionInfo.quoteFont;
+      } else if (bridgeInfo && bridgeInfo.quoteFont) {
+        newFrame.quoteFont = bridgeInfo.quoteFont;
+      }
       saveLearningData();
 
-      showToast("Đã đóng khung văn bản thành công!");
+      // Gợi ý cách dùng theo VIỆC 1F (3 lần đầu hướng dẫn nhấp đúp)
+      let hintCount = parseInt(localStorage.getItem('frameHintCount') || '0', 10);
+      hintCount++;
+      localStorage.setItem('frameHintCount', hintCount.toString());
+      const toastMsg = hintCount <= 3
+        ? "Đã đóng khung • Nhấp đúp vào khung để ghi chú"
+        : "Đã đóng khung";
+
+      showActionToast(toastMsg, "Hoàn tác", () => {
+        if (state.learningData.frames && state.learningData.frames[state.activeLessonId]) {
+          state.learningData.frames[state.activeLessonId] = state.learningData.frames[state.activeLessonId].filter(h => h.id !== newFrame.id);
+        }
+        if (state.learningData.highlights && state.learningData.highlights[state.activeLessonId]) {
+          state.learningData.highlights[state.activeLessonId] = state.learningData.highlights[state.activeLessonId].filter(h => h.id !== newFrame.id);
+        }
+        saveLearningData();
+        postMessageToLessonIframe({ type: 'REMOVE_FRAME', id: newFrame.id });
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        if (doc) removeFrameFromDoc(doc, newFrame.id);
+        if (typeof renderAllNotesView === 'function') renderAllNotesView();
+        showToast("Đã hoàn tác đóng khung");
+      });
 
       if (hlToolbar) hlToolbar.classList.add('hidden');
       currentSelectionInfo = null;
@@ -21540,8 +21779,14 @@
       restoreFramesForLesson(lessonId);
     }
 
-    // Mở Modal Chi tiết & Sửa Ghi Chú Khung
-    function openFrameDetailModal(frameId) {
+    // =========================================================================
+    // VIỆC 1E: CỬA SỔ GHI CHÚ (DESKTOP POPOVER 300PX NEO KHUNG, MOBILE BOTTOM SHEET)
+    // Tự động lưu 400ms debounce, chọn màu trực tiếp, chọn thẻ phân loại, xóa kèm hoàn tác 5s
+    // =========================================================================
+    let frameAutoSaveTimer = null;
+    let lastFrameTriggerRect = null;
+
+    function openFrameDetailModal(frameId, triggerRect) {
       if (!state.activeLessonId) return;
       const list = (state.learningData.frames && state.learningData.frames[state.activeLessonId]) ||
                    (state.learningData.highlights && state.learningData.highlights[state.activeLessonId]) || [];
@@ -21549,17 +21794,134 @@
       if (!item) return;
 
       activeHighlightItem = item;
+      lastFrameTriggerRect = triggerRect || null;
+
       const previewEl = document.getElementById('hlSelectedTextPreview');
       const labelInput = document.getElementById('hlLabelInput');
       const noteInput = document.getElementById('hlNoteInput');
-      if (previewEl) previewEl.innerText = `"${item.anchor?.exact || item.text || ''}"`;
+      const colorDot = document.getElementById('hlModalColorDot');
+      const card = document.getElementById('highlightDetailModalCard');
+
+      const quoteText = item.anchor?.exact || item.text || '';
+      if (previewEl) {
+        previewEl.innerText = quoteText;
+        previewEl.title = quoteText;
+      }
       if (labelInput) labelInput.value = item.label || '';
       if (noteInput) {
         noteInput.value = item.note || '';
-        setTimeout(() => noteInput.focus(), 150);
+        setTimeout(() => {
+          noteInput.focus();
+          try {
+            noteInput.setSelectionRange(noteInput.value.length, noteInput.value.length);
+          } catch (_) {}
+        }, 120);
+      }
+
+      updateNoteModalColorUI(item.color || 'yellow');
+
+      // Định vị Popover trên Desktop (>= 640px)
+      if (card) {
+        if (window.innerWidth > 640 && triggerRect) {
+          const iframe = document.getElementById('lessonIframe');
+          const ifRect = iframe ? iframe.getBoundingClientRect() : { top: 0, left: 0 };
+          const popoverW = 320;
+          const popoverH = 360;
+
+          let left = ifRect.left + triggerRect.left;
+          left = Math.max(8, Math.min(window.innerWidth - popoverW - 8, left));
+
+          let top = ifRect.top + triggerRect.bottom + 8;
+          if (top + popoverH > window.innerHeight - 8) {
+            top = Math.max(8, ifRect.top + triggerRect.top - popoverH - 8);
+          }
+
+          card.style.position = 'absolute';
+          card.style.left = `${left}px`;
+          card.style.top = `${top}px`;
+          card.style.margin = '0';
+        } else {
+          card.style.position = '';
+          card.style.left = '';
+          card.style.top = '';
+          card.style.margin = '';
+        }
       }
 
       showModalAnimated(hlDetailModal);
+    }
+
+    function updateNoteModalColorUI(colorName) {
+      const colMap = {
+        yellow: '#d97706',
+        green: '#059669',
+        pink: '#db2777',
+        purple: '#7c3aed'
+      };
+      const colorDot = document.getElementById('hlModalColorDot');
+      if (colorDot) {
+        colorDot.style.backgroundColor = colMap[colorName] || '#d97706';
+      }
+      document.querySelectorAll('.hl-color-btn').forEach(btn => {
+        const dot = btn.querySelector('span');
+        const c = btn.getAttribute('data-color');
+        if (dot) {
+          if (c === colorName) {
+            dot.classList.add('ring-indigo-600', 'dark:ring-indigo-400', 'scale-110');
+            dot.classList.remove('ring-transparent');
+          } else {
+            dot.classList.remove('ring-indigo-600', 'dark:ring-indigo-400', 'scale-110');
+            dot.classList.add('ring-transparent');
+          }
+        }
+      });
+    }
+
+    // Tự động lưu sau 400ms debounce
+    function triggerFrameAutoSave() {
+      clearTimeout(frameAutoSaveTimer);
+      frameAutoSaveTimer = setTimeout(() => {
+        persistCurrentFrameData();
+      }, 400);
+    }
+
+    function persistCurrentFrameData() {
+      if (!activeHighlightItem) return;
+      const labelInput = document.getElementById('hlLabelInput');
+      const noteInput = document.getElementById('hlNoteInput');
+      const newLabel = (labelInput ? labelInput.value : '').trim().substring(0, 12);
+      const newNote = (noteInput ? noteInput.value : '').trim();
+
+      activeHighlightItem.label = newLabel;
+      activeHighlightItem.note = newNote;
+      activeHighlightItem.updatedAt = Date.now();
+      saveLearningData();
+
+      // Đồng bộ tới Iframe
+      postMessageToLessonIframe({
+        type: 'UPDATE_FRAME_NOTE',
+        id: activeHighlightItem.id,
+        label: newLabel,
+        note: newNote,
+        color: activeHighlightItem.color
+      });
+
+      // Cập nhật DOM trực tiếp nếu iframe cùng origin
+      const iframe = document.getElementById('lessonIframe');
+      const doc = getSafeIframeDocument(iframe);
+      if (doc) {
+        const spans = doc.querySelectorAll(`[data-frame-id="${activeHighlightItem.id}"]`);
+        spans.forEach(span => {
+          if (newNote) span.title = newNote.substring(0, 120);
+          else span.title = 'Nhấp đúp để ghi chú';
+        });
+      }
+
+      // Cập nhật bảng "Tất cả Ghi chú & Khung" nếu đang mở
+      const allNotesModal = document.getElementById('allNotesModal');
+      if (allNotesModal && !allNotesModal.classList.contains('hidden')) {
+        renderAllNotesView();
+      }
     }
 
     function openHighlightDetail(hlId) {
@@ -21568,72 +21930,109 @@
     window.openFrameDetailModal = openFrameDetailModal;
     window.openHighlightDetail = openHighlightDetail;
 
+    // Gắn sự kiện ô nhập ghi chú & nhãn (Auto-save)
+    const hlNoteInputEl = document.getElementById('hlNoteInput');
+    if (hlNoteInputEl) {
+      hlNoteInputEl.addEventListener('input', triggerFrameAutoSave);
+    }
+    const hlLabelInputEl = document.getElementById('hlLabelInput');
+    if (hlLabelInputEl) {
+      hlLabelInputEl.addEventListener('input', triggerFrameAutoSave);
+    }
+
+    // Sự kiện chọn màu trực tiếp (Yellow, Green, Pink, Purple)
+    document.querySelectorAll('.hl-color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!activeHighlightItem) return;
+        const color = btn.getAttribute('data-color') || 'yellow';
+        activeHighlightItem.color = color;
+        updateNoteModalColorUI(color);
+        persistCurrentFrameData();
+        postMessageToLessonIframe({
+          type: 'UPDATE_FRAME_COLOR',
+          id: activeHighlightItem.id,
+          color: color
+        });
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        if (doc) {
+          const spans = doc.querySelectorAll(`[data-frame-id="${activeHighlightItem.id}"]`);
+          spans.forEach(span => {
+            span.setAttribute('data-color', color);
+            const col = (color === 'green') ? { border: '#059669', glow: 'rgba(5, 150, 105, 0.25)', bg: 'rgba(5, 150, 105, 0.08)' }
+                      : (color === 'pink') ? { border: '#db2777', glow: 'rgba(219, 39, 119, 0.25)', bg: 'rgba(219, 39, 119, 0.08)' }
+                      : (color === 'purple') ? { border: '#7c3aed', glow: 'rgba(124, 58, 237, 0.25)', bg: 'rgba(124, 58, 237, 0.08)' }
+                      : { border: '#d97706', glow: 'rgba(217, 119, 6, 0.25)', bg: 'rgba(217, 119, 6, 0.08)' };
+            span.style.setProperty('--frame-color', col.border);
+            span.style.setProperty('--frame-glow', col.glow);
+            span.style.setProperty('--frame-bg', col.bg);
+          });
+        }
+      });
+    });
+
+    // Preset tags (Khó, Quan trọng, Ôn thi, Lưu ý)
+    document.querySelectorAll('.hl-preset-tag').forEach(tagBtn => {
+      tagBtn.addEventListener('click', () => {
+        const tagText = tagBtn.getAttribute('data-tag') || '';
+        const input = document.getElementById('hlLabelInput');
+        if (input) {
+          if (input.value === tagText) {
+            input.value = '';
+          } else {
+            input.value = tagText;
+          }
+          persistCurrentFrameData();
+        }
+      });
+    });
+
+    // Đóng và lưu khi bấm nút Xong hoặc nút X
+    function closeAndSaveFrameModal() {
+      persistCurrentFrameData();
+      hideModalAnimated(hlDetailModal);
+      const iframe = document.getElementById('lessonIframe');
+      if (iframe && iframe.contentWindow) {
+        try { iframe.contentWindow.focus(); } catch (_) {}
+      }
+    }
+
     const btnCloseHlDetail = document.getElementById('btnCloseHlDetail');
     if (btnCloseHlDetail) {
-      btnCloseHlDetail.addEventListener('click', () => hideModalAnimated(hlDetailModal));
+      btnCloseHlDetail.addEventListener('click', closeAndSaveFrameModal);
     }
-
-    // Phím tắt Ctrl+Enter để Lưu, Esc để Hủy trong Modal Ghi chú
-    if (hlDetailModal) {
-      hlDetailModal.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          const saveBtn = document.getElementById('btnSaveCurrentHighlightNote');
-          if (saveBtn) saveBtn.click();
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          hideModalAnimated(hlDetailModal);
-        }
-      });
-    }
-
-    // Lưu Nhãn Góc & Ghi Chú cho khung
     const btnSaveHlNote = document.getElementById('btnSaveCurrentHighlightNote');
     if (btnSaveHlNote) {
-      btnSaveHlNote.addEventListener('click', () => {
-        if (activeHighlightItem) {
-          const labelInput = document.getElementById('hlLabelInput');
-          const noteInput = document.getElementById('hlNoteInput');
-          const newLabel = (labelInput ? labelInput.value : '').trim().substring(0, 12);
-          const newNote = (noteInput ? noteInput.value : '').trim();
+      btnSaveHlNote.addEventListener('click', closeAndSaveFrameModal);
+    }
 
-          activeHighlightItem.label = newLabel;
-          activeHighlightItem.note = newNote;
-          activeHighlightItem.updatedAt = Date.now();
-          saveLearningData();
-
-          // Cập nhật nhãn trong Iframe qua postMessage
-          postMessageToLessonIframe({
-            type: 'UPDATE_FRAME_LABEL',
-            id: activeHighlightItem.id,
-            label: newLabel,
-            note: newNote
-          });
-
-          // Nếu cùng origin, cập nhật DOM trực tiếp
-          const iframe = document.getElementById('lessonIframe');
-          const doc = getSafeIframeDocument(iframe);
-          if (doc) {
-            const badge = doc.querySelector(`.frame-corner-badge[data-frame-id="${activeHighlightItem.id}"]`);
-            if (badge) {
-              badge.innerText = newLabel || '•';
-              badge.title = newLabel || (newNote ? `Ghi chú: ${newNote}` : 'Khung đánh dấu');
-            }
-          }
-
-          showToast("Đã lưu nhãn và ghi chú thành công!");
-          hideModalAnimated(hlDetailModal);
+    // Bấm ra ngoài backdrop để đóng
+    if (hlDetailModal) {
+      hlDetailModal.addEventListener('click', (e) => {
+        if (e.target === hlDetailModal) {
+          closeAndSaveFrameModal();
+        }
+      });
+      hlDetailModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeAndSaveFrameModal();
+        } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          closeAndSaveFrameModal();
         }
       });
     }
 
-    // Xóa khung từ trong Modal Chi tiết
+    // Xóa khung từ trong Modal: Hoàn tác 5 giây
     const btnDeleteHl = document.getElementById('btnDeleteCurrentHighlight');
     if (btnDeleteHl) {
       btnDeleteHl.addEventListener('click', () => {
         if (activeHighlightItem && state.activeLessonId) {
-          const targetItem = activeHighlightItem;
+          const targetItem = { ...activeHighlightItem };
           const targetLessonId = state.activeLessonId;
+
+          clearTimeout(frameAutoSaveTimer);
 
           if (state.learningData.frames && state.learningData.frames[targetLessonId]) {
             state.learningData.frames[targetLessonId] = state.learningData.frames[targetLessonId].filter(h => h.id !== targetItem.id);
@@ -21641,6 +22040,7 @@
           if (state.learningData.highlights && state.learningData.highlights[targetLessonId]) {
             state.learningData.highlights[targetLessonId] = state.learningData.highlights[targetLessonId].filter(h => h.id !== targetItem.id);
           }
+          saveLearningData();
 
           postMessageToLessonIframe({
             type: 'REMOVE_FRAME',
@@ -21653,10 +22053,34 @@
             removeFrameFromDoc(doc, targetItem.id);
           }
 
-          saveLearningData();
-          showToast("Đã xóa khung đánh dấu!");
+          if (typeof renderAllNotesView === 'function') {
+            renderAllNotesView();
+          }
+
           hideModalAnimated(hlDetailModal);
-          activeHighlightItem = null;
+
+          // Thông báo Hoàn tác 5 giây
+          showActionToast("Đã xóa khung", "Hoàn tác", () => {
+            if (!state.learningData.frames) state.learningData.frames = {};
+            if (!state.learningData.frames[targetLessonId]) state.learningData.frames[targetLessonId] = [];
+            state.learningData.frames[targetLessonId].push(targetItem);
+
+            if (!state.learningData.highlights) state.learningData.highlights = {};
+            if (!state.learningData.highlights[targetLessonId]) state.learningData.highlights[targetLessonId] = [];
+            state.learningData.highlights[targetLessonId].push(targetItem);
+
+            saveLearningData();
+
+            postMessageToLessonIframe({
+              type: 'APPLY_FRAME',
+              frame: targetItem
+            });
+
+            if (typeof renderAllNotesView === 'function') {
+              renderAllNotesView();
+            }
+            showToast("Đã hoàn tác xóa khung");
+          });
         }
       });
     }
@@ -21678,6 +22102,7 @@
     }
 
     let notesActiveColorFilter = 'all';
+    let notesActiveLessonFilter = 'all';
     let notesSearchKeyword = '';
     let isNotesBatchModeActive = false;
     let selectedNoteKeys = new Set();
@@ -21768,25 +22193,85 @@
       }
     }
 
+    // =========================================================================
+    // VIỆC 2: BẢNG "TẤT CẢ GHI CHÚ & KHUNG" VỚI NÚT "Aa" VÀ ĐỌC CHỮ DỄ NHÌN
+    // =========================================================================
+    const FONT_SIZE_LEVELS = [13, 14, 15, 16, 18, 20, 22, 24];
+
+    function getSavedFramesFontSize() {
+      const saved = parseInt(localStorage.getItem('framesFontSize') || '16', 10);
+      return FONT_SIZE_LEVELS.includes(saved) ? saved : 16;
+    }
+
+    function getSavedFramesFontMode() {
+      const saved = localStorage.getItem('framesFont');
+      return (saved === 'article') ? 'article' : 'default';
+    }
+
+    function applyFramesTypographySettings() {
+      const modal = document.getElementById('allNotesModal');
+      const curSize = getSavedFramesFontSize();
+      const curMode = getSavedFramesFontMode();
+
+      if (modal) {
+        modal.style.setProperty('--frames-fs', `${curSize}px`);
+      }
+
+      const displayEl = document.getElementById('notesFontSizeDisplay');
+      if (displayEl) displayEl.innerText = `${curSize}px`;
+
+      const rangeEl = document.getElementById('notesFontSizeRange');
+      const idx = FONT_SIZE_LEVELS.indexOf(curSize);
+      if (rangeEl && idx !== -1) {
+        rangeEl.value = idx;
+      }
+
+      const btnSmaller = document.getElementById('btnNotesFontSmaller');
+      const btnBigger = document.getElementById('btnNotesFontBigger');
+      if (btnSmaller) btnSmaller.disabled = (idx <= 0);
+      if (btnBigger) btnBigger.disabled = (idx >= FONT_SIZE_LEVELS.length - 1);
+
+      const btnDef = document.getElementById('btnFontDefault');
+      const btnArt = document.getElementById('btnFontArticle');
+      if (btnDef && btnArt) {
+        if (curMode === 'article') {
+          btnDef.className = "py-1.5 text-xs rounded-md font-medium transition cursor-pointer text-center text-[#4B5563] dark:text-[#B6BDCA] hover:text-[#1C1917] dark:hover:text-[#EDECE8]";
+          btnArt.className = "py-1.5 text-xs rounded-md font-medium transition cursor-pointer text-center bg-white dark:bg-[#20252D] text-indigo-600 dark:text-indigo-400 shadow-2xs font-semibold";
+        } else {
+          btnDef.className = "py-1.5 text-xs rounded-md font-medium transition cursor-pointer text-center bg-white dark:bg-[#20252D] text-indigo-600 dark:text-indigo-400 shadow-2xs font-semibold";
+          btnArt.className = "py-1.5 text-xs rounded-md font-medium transition cursor-pointer text-center text-[#4B5563] dark:text-[#B6BDCA] hover:text-[#1C1917] dark:hover:text-[#EDECE8]";
+        }
+      }
+    }
+
     function renderAllNotesView() {
-      const container = document.getElementById('allNotesListContainer');
+      const container = document.getElementById('allNotesListContainer') || document.getElementById('allNotesContainer');
       const countLabel = document.getElementById('allNotesCountLabel');
-      const lessonFilterSelect = document.getElementById('notesLessonFilterSelect');
-      const selectedScope = lessonFilterSelect ? lessonFilterSelect.value : 'all';
-
       if (!container) return;
-      container.innerHTML = '';
 
-      let totalNotes = 0;
-      let countYellow = 0, countGreen = 0, countPink = 0, countPurple = 0, countOther = 0;
+      applyFramesTypographySettings();
+
+      const curFontMode = getSavedFramesFontMode();
+
+      container.innerHTML = '';
       const allEntries = [];
 
-      let targetLessons = state.lessons || [];
-      if (selectedScope === 'current' && state.activeLessonId) {
-        targetLessons = targetLessons.filter(l => l.id === state.activeLessonId);
-      } else if (selectedScope === 'category' && state.activeCategoryId) {
-        targetLessons = targetLessons.filter(l => l.categoryId === state.activeCategoryId);
+      let targetLessons = [];
+      if (notesActiveLessonFilter === 'current' && state.activeLessonId) {
+        targetLessons = (state.lessons || []).filter(l => l.id === state.activeLessonId);
+      } else if (notesActiveLessonFilter === 'category' && state.activeLessonId) {
+        const curLes = (state.lessons || []).find(l => l.id === state.activeLessonId);
+        if (curLes) {
+          targetLessons = (state.lessons || []).filter(l => l.categoryId === curLes.categoryId);
+        } else {
+          targetLessons = state.lessons || [];
+        }
+      } else {
+        targetLessons = state.lessons || [];
       }
+
+      let countYellow = 0, countGreen = 0, countPink = 0, countPurple = 0, countOther = 0;
+      let totalNotes = 0;
 
       for (const les of targetLessons) {
         const list = (state.learningData.frames && state.learningData.frames[les.id]) ||
@@ -21833,9 +22318,9 @@
 
       if (allEntries.length === 0) {
         container.innerHTML = `
-          <div class="text-center py-12 text-[#6E6B65] dark:text-[#979DA8] text-xs">
-            <svg class="w-8 h-8 mx-auto mb-2 opacity-40"><use href="#frame-glyph"></use></svg>
-            <p>Chưa có khung hay ghi chú nào phù hợp.</p>
+          <div class="text-center py-12 text-[#4B5563] dark:text-[#B6BDCA] text-xs">
+            <svg class="w-8 h-8 mx-auto mb-2 opacity-50"><use href="#frame-glyph"></use></svg>
+            <p class="font-medium">Chưa có khung hay ghi chú nào phù hợp.</p>
           </div>
         `;
         updateBatchActionBarUI();
@@ -21866,28 +22351,51 @@
           const labelVal = (h.label || '').trim();
           const dateStr = h.createdAt ? new Date(h.createdAt).toLocaleDateString('vi-VN') : '';
 
+          const fontStyle = (curFontMode === 'article' && h.quoteFont) 
+            ? `font-family: ${escapeHtml(h.quoteFont)}, var(--font-ui, sans-serif);` 
+            : 'font-family: inherit;';
+
+          const isLongQuote = textVal.length > 220;
+
           itemsHtml += `
-            <div class="group relative p-2.5 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF]/70 dark:border-[#262C36]/70 hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer transition note-item-card flex items-start gap-2.5" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}" data-item-key="${itemKey}">
+            <div class="group relative p-3 rounded-xl bg-white dark:bg-[#181B20] border border-[#E7E5DF]/80 dark:border-[#262C36]/80 hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer transition note-item-card flex items-start gap-3 shadow-2xs" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}" data-item-key="${itemKey}">
               ${isNotesBatchModeActive ? `
                 <input type="checkbox" class="note-batch-checkbox mt-1 rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer shrink-0" data-item-key="${itemKey}" ${isChecked ? 'checked' : ''} />
               ` : ''}
               
               <div class="flex-1 min-w-0">
-                <div class="flex items-start gap-2 mb-1 flex-wrap">
-                  <span class="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style="background-color: ${colDetails.border}"></span>
+                <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${colDetails.border}" title="Màu khung"></span>
                   ${labelVal ? `
-                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0" style="background-color: ${colDetails.badgeBg}; color: ${colDetails.badgeText}; border: 1px solid ${colDetails.badgeBorder}">
-                      ${labelVal}
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold shrink-0" style="background-color: ${colDetails.badgeBg}; color: ${colDetails.badgeText}; border: 1px solid ${colDetails.badgeBorder}">
+                      ${escapeHtml(labelVal)}
                     </span>
                   ` : ''}
-                  <p class="font-serif text-xs text-[#1C1917] dark:text-[#EDECE8] italic line-clamp-2 leading-relaxed flex-1 min-w-[120px]">"${textVal}"</p>
+                  <div class="text-[#4B5563] dark:text-[#B6BDCA] font-mono shrink-0 ml-auto" style="font-size: max(12px, calc(var(--frames-fs, 16px) * 0.78));">${dateStr}</div>
                 </div>
-                ${h.note ? `<div class="pl-4 text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-sans border-l-2 border-indigo-400 dark:border-indigo-600 ml-1.5 mt-1 leading-snug">${h.note}</div>` : ''}
-                ${dateStr ? `<div class="text-[10px] text-[#979DA8] font-mono mt-1 pl-1">${dateStr}</div>` : ''}
+
+                <!-- Đoạn trích: font gốc, màu đậm, thanh dọc 3px màu khung bên trái, tối đa 6 dòng -->
+                <div class="relative pl-3 border-l-[3px] my-1" style="border-color: ${colDetails.border};">
+                  <p class="note-quote-paragraph text-[#1C1917] dark:text-[#EDECE8] font-normal leading-[1.65] line-clamp-6 transition-all" style="font-size: var(--frames-fs, 16px); ${fontStyle} text-wrap: pretty; overflow-wrap: anywhere; word-break: break-word;">${escapeHtml(textVal)}</p>
+                  ${isLongQuote ? `
+                    <button class="btn-toggle-clamp text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer min-h-[44px] flex items-center transition" title="Xem thêm hoặc thu gọn">
+                      <span>Xem thêm</span>
+                    </button>
+                  ` : ''}
+                </div>
+
+                <!-- Khối ghi chú: font 0.9x, nền kem nhạt, nhãn 'Ghi chú' -->
+                ${h.note ? `
+                  <div class="mt-2.5 p-2.5 rounded-lg border border-[#E7E5DF]/70 dark:border-[#262C36]/70 bg-[#FAF7F0] dark:bg-white/[0.04]">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-0.5">Ghi chú</div>
+                    <div class="text-[#1C1917] dark:text-[#EDECE8] font-sans leading-relaxed" style="font-size: calc(var(--frames-fs, 16px) * 0.9); overflow-wrap: anywhere;">${escapeHtml(h.note)}</div>
+                  </div>
+                ` : ''}
               </div>
 
-              <button class="btn-delete-single-note touch-target p-1.5 rounded-md text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/40 opacity-80 sm:opacity-40 sm:group-hover:opacity-100 transition shrink-0 self-center" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}" title="Xóa khung này">
-                <svg class="w-3.5 h-3.5 pointer-events-none"><use href="#icon-trash-2"></use></svg>
+              <!-- Nút xóa thùng rác: vùng chạm 40x40px, tương phản >= 3:1 -->
+              <button class="btn-delete-single-note touch-target w-10 h-10 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center justify-center transition shrink-0 self-start cursor-pointer mt-0.5" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}" title="Xóa khung này" aria-label="Xóa khung này">
+                <svg class="w-4 h-4 pointer-events-none"><use href="#icon-trash-2"></use></svg>
               </button>
             </div>
           `;
@@ -21896,24 +22404,39 @@
         groupEl.innerHTML = `
           <div class="flex items-center justify-between pb-1.5 border-b border-[#E7E5DF] dark:border-[#262C36]">
             <div class="flex items-center gap-2 min-w-0">
-              <span class="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-1.5 py-0.5 rounded">${catTitle}</span>
-              <h4 class="font-serif font-bold text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">${group.lesson.title}</h4>
-              <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono shrink-0">(${group.items.length})</span>
+              <span class="text-[11px] uppercase font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md shrink-0">${escapeHtml(catTitle)}</span>
+              <h4 class="font-serif font-bold text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] truncate" style="font-size: max(13px, calc(var(--frames-fs, 16px) * 0.9));">${escapeHtml(group.lesson.title)}</h4>
+              <span class="text-xs text-[#4B5563] dark:text-[#B6BDCA] font-mono shrink-0">(${group.items.length})</span>
             </div>
-            <button class="btn-delete-lesson-notes text-[11px] text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 font-medium transition" data-lesson-id="${group.lesson.id}" data-lesson-title="${group.lesson.title}" title="Xóa tất cả khung của bài này">
-              <svg class="w-3 h-3"><use href="#icon-trash-2"></use></svg>
+            <button class="btn-delete-lesson-notes touch-target min-h-[44px] px-2 text-xs text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 font-medium transition cursor-pointer" data-lesson-id="${group.lesson.id}" data-lesson-title="${escapeHtml(group.lesson.title)}" title="Xóa tất cả khung của bài này">
+              <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
               <span>Xóa bài này</span>
             </button>
           </div>
-          <div class="space-y-2">${itemsHtml}</div>
+          <div class="space-y-2.5">${itemsHtml}</div>
         `;
         container.appendChild(groupEl);
       }
 
+      // Toggle Xem thêm / Thu gọn cho các đoạn trích dài
+      container.querySelectorAll('.btn-toggle-clamp').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const p = btn.previousElementSibling;
+          if (p && p.classList.contains('line-clamp-6')) {
+            p.classList.remove('line-clamp-6');
+            btn.querySelector('span').innerText = 'Thu gọn';
+          } else if (p) {
+            p.classList.add('line-clamp-6');
+            btn.querySelector('span').innerText = 'Xem thêm';
+          }
+        });
+      });
+
       // Sự kiện click chọn thẻ hoặc chuyển tới bài
       container.querySelectorAll('.note-item-card').forEach(card => {
         card.addEventListener('click', (e) => {
-          if (e.target.closest('.btn-delete-single-note')) return;
+          if (e.target.closest('.btn-delete-single-note') || e.target.closest('.btn-toggle-clamp')) return;
 
           const itemKey = card.getAttribute('data-item-key');
           if (isNotesBatchModeActive) {
@@ -21967,6 +22490,135 @@
     }
     window.renderAllNotesView = renderAllNotesView;
 
+    // Gắn sự kiện cho Popover "Aa"
+    function initNotesTypographyEvents() {
+      const btnToggle = document.getElementById('btnNotesFontSize');
+      const popover = document.getElementById('notesFontSizePopover');
+      const range = document.getElementById('notesFontSizeRange');
+      const btnSmaller = document.getElementById('btnNotesFontSmaller');
+      const btnBigger = document.getElementById('btnNotesFontBigger');
+      const btnReset = document.getElementById('btnResetNotesFont');
+      const btnDef = document.getElementById('btnFontDefault');
+      const btnArt = document.getElementById('btnFontArticle');
+
+      if (btnToggle && popover) {
+        btnToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          popover.classList.toggle('hidden');
+          if (!popover.classList.contains('hidden')) {
+            applyFramesTypographySettings();
+          }
+        });
+        document.addEventListener('click', (e) => {
+          if (!popover.classList.contains('hidden') && !popover.contains(e.target) && e.target !== btnToggle && !btnToggle.contains(e.target)) {
+            popover.classList.add('hidden');
+          }
+        });
+      }
+
+      if (range) {
+        range.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.value, 10);
+          if (idx >= 0 && idx < FONT_SIZE_LEVELS.length) {
+            const size = FONT_SIZE_LEVELS[idx];
+            localStorage.setItem('framesFontSize', size.toString());
+            applyFramesTypographySettings();
+          }
+        });
+      }
+
+      if (btnSmaller) {
+        btnSmaller.addEventListener('click', () => {
+          const cur = getSavedFramesFontSize();
+          let idx = FONT_SIZE_LEVELS.indexOf(cur);
+          if (idx > 0) {
+            idx--;
+            localStorage.setItem('framesFontSize', FONT_SIZE_LEVELS[idx].toString());
+            applyFramesTypographySettings();
+          }
+        });
+      }
+
+      if (btnBigger) {
+        btnBigger.addEventListener('click', () => {
+          const cur = getSavedFramesFontSize();
+          let idx = FONT_SIZE_LEVELS.indexOf(cur);
+          if (idx !== -1 && idx < FONT_SIZE_LEVELS.length - 1) {
+            idx++;
+            localStorage.setItem('framesFontSize', FONT_SIZE_LEVELS[idx].toString());
+            applyFramesTypographySettings();
+          }
+        });
+      }
+
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          localStorage.setItem('framesFontSize', '16');
+          localStorage.setItem('framesFont', 'default');
+          applyFramesTypographySettings();
+          renderAllNotesView();
+        });
+      }
+
+      if (btnDef) {
+        btnDef.addEventListener('click', () => {
+          localStorage.setItem('framesFont', 'default');
+          applyFramesTypographySettings();
+          renderAllNotesView();
+        });
+      }
+
+      if (btnArt) {
+        btnArt.addEventListener('click', () => {
+          localStorage.setItem('framesFont', 'article');
+          applyFramesTypographySettings();
+          renderAllNotesView();
+        });
+      }
+
+      // Mobile menu '⋯'
+      const btnMore = document.getElementById('btnNotesMobileMore');
+      const menuMore = document.getElementById('notesMobileMoreMenu');
+      if (btnMore && menuMore) {
+        btnMore.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuMore.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!menuMore.classList.contains('hidden') && !menuMore.contains(e.target) && e.target !== btnMore && !btnMore.contains(e.target)) {
+            menuMore.classList.add('hidden');
+          }
+        });
+
+        const btnMobBatch = document.getElementById('btnMobileBatchNotes');
+        if (btnMobBatch) {
+          btnMobBatch.addEventListener('click', () => {
+            menuMore.classList.add('hidden');
+            const batchBtn = document.getElementById('btnToggleBatchNotes');
+            if (batchBtn) batchBtn.click();
+          });
+        }
+        const btnMobClear = document.getElementById('btnMobileClearAll');
+        if (btnMobClear) {
+          btnMobClear.addEventListener('click', () => {
+            menuMore.classList.add('hidden');
+            const clearBtn = document.getElementById('btnClearAllLibraryNotes');
+            if (clearBtn) clearBtn.click();
+          });
+        }
+        const btnMobExp = document.getElementById('btnMobileExportMd');
+        if (btnMobExp) {
+          btnMobExp.addEventListener('click', () => {
+            menuMore.classList.add('hidden');
+            const expBtn = document.getElementById('btnExportNotesMarkdown');
+            if (expBtn) expBtn.click();
+          });
+        }
+      }
+    }
+
+    setTimeout(initNotesTypographyEvents, 100);
+
     // Gắn sự kiện tìm kiếm và bộ lọc bài học
     const searchNotesInput = document.getElementById('searchNotesInput');
     if (searchNotesInput) {
@@ -21978,7 +22630,10 @@
 
     const notesLessonFilterSelect = document.getElementById('notesLessonFilterSelect');
     if (notesLessonFilterSelect) {
-      notesLessonFilterSelect.addEventListener('change', renderAllNotesView);
+      notesLessonFilterSelect.addEventListener('change', (e) => {
+        notesActiveLessonFilter = e.target.value || 'all';
+        renderAllNotesView();
+      });
     }
 
     // Bộ lọc màu
@@ -24884,7 +25539,7 @@
       if (new URLSearchParams(window.location.search).get('debug') === '1') {
         setTimeout(selfTest, 500);
       }
-    console.log("%c Thư viện Sách HTML v4.7.3 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.9.0 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
