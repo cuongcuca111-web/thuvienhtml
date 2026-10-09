@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.2.0';
+    const CURRENT_APP_VERSION = 'v4.3.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1798,18 +1798,7 @@
               </div>
             </div>
 
-            <!-- CUỐI BẢNG: Nút Tùy chỉnh khung đọc tách riêng full-width -->
-            <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36] mt-3">
-              <button id="btnHeaderOpenReadingSettings" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-semibold transition active:scale-98 shadow-2xs border border-indigo-100 dark:border-indigo-900/40">
-                <span class="flex items-center gap-2.5">
-                  <div class="w-6 h-6 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
-                    <svg class="w-3.5 h-3.5"><use href="#icon-ds-settings-advanced"></use></svg>
-                  </div>
-                  <span class="text-xs">Tùy chỉnh khung đọc nâng cao...</span>
-                </span>
-                <svg class="w-3.5 h-3.5 opacity-70"><use href="#icon-chevron-right"></use></svg>
-              </button>
-            </div>
+
 
           </div>
         </div>
@@ -2035,7 +2024,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.2.0 - build 09/10/2026 10:30
+        Thư viện Sách HTML v4.3.0 - build 09/10/2026 10:30
       </div>
     </aside>
 
@@ -2433,6 +2422,29 @@
 
         </div>
       </div>
+    
+    <!-- // FEATURE: THANH ĐIỀU HƯỚNG TÌM KIẾM NỔI DẠNG VIÊN THUỐC (FLOATING SEARCH NAV PILL) -->
+    <aside id="searchInArticleFloatingNav" class="hidden fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181B20]/95 dark:bg-[#181B20]/95 backdrop-blur-md text-white shadow-2xl border border-white/15 select-none transition-all duration-200" aria-label="Điều hướng kết quả tìm kiếm trong bài">
+      <div class="flex items-center gap-1.5 pl-1 pr-2">
+        <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" aria-hidden="true"><use href="#icon-search"></use></svg>
+        <span id="searchFloatingPillKeyword" class="text-xs font-medium text-white/90 max-w-[120px] sm:max-w-[180px] truncate"></span>
+        <span id="searchFloatingPillCounter" class="text-xs font-mono font-bold text-amber-300 shrink-0">1/1</span>
+      </div>
+      <div class="h-4 w-px bg-white/20 shrink-0"></div>
+      <div class="flex items-center gap-0.5">
+        <button id="btnSearchFloatingPrev" type="button" aria-label="Kết quả trước (Shift+Enter, ↑)" title="Kết quả trước (Shift+Enter, ↑)" class="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition text-white/90 hover:text-white">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-up"></use></svg>
+        </button>
+        <button id="btnSearchFloatingNext" type="button" aria-label="Kết quả tiếp theo (Enter, F3, ↓)" title="Kết quả tiếp theo (Enter, F3, ↓)" class="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition text-white/90 hover:text-white">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
+        </button>
+      </div>
+      <div class="h-4 w-px bg-white/20 shrink-0"></div>
+      <button id="btnSearchFloatingClose" type="button" aria-label="Tắt khung nổi bật (Esc)" title="Tắt khung nổi bật (Esc)" class="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-red-500/30 active:scale-95 transition text-white/80 hover:text-white">
+        <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-x"></use></svg>
+      </button>
+    </aside>
+
     </main>
 
   </div>
@@ -2589,7 +2601,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.2.0 - build 09/10/2026 10:30
+      Thư viện Sách HTML v4.3.0 - build 09/10/2026 10:30
     </div>
   </div>
 
@@ -4235,8 +4247,8 @@
               <div class="text-[10px] text-gray-500">~1100px</div>
             </button>
             <button type="button" data-col-width="full" class="col-width-btn py-2 px-2.5 rounded-xl border-2 border-[#E7E5DF] dark:border-[#262C36] hover:border-gray-400 bg-white dark:bg-[#181B20] text-center transition">
-              <div class="font-semibold text-xs">Tự do</div>
-              <div class="text-[10px] text-gray-500">Toàn màn</div>
+              <div class="font-semibold text-xs">Toàn màn</div>
+              <div class="text-[10px] text-gray-500">100%</div>
             </button>
           </div>
         </div>
@@ -5343,7 +5355,7 @@
       fontScale: 100, // 80 -> 150 (%)
       lineHeight: 'normal', // 'compact' (1.4) | 'normal' (1.7) | 'relaxed' (2.0)
       paragraphSpacing: 'normal', // 'normal' | 'relaxed'
-      columnWidth: 'normal', // 'narrow' (680px) | 'normal' (860px) | 'wide' (1100px) | 'full'
+      columnWidth: 'full', // 'narrow' (680px) | 'normal' (860px) | 'wide' (1100px) | 'full' (Toàn màn mặc định)
       preserveOriginal: false,
       scope: 'all' // 'all' | 'current'
     };
@@ -5626,10 +5638,11 @@
 
     // Đặt lại mặc định
     function resetReadingSettingsToDefault() {
-      applyReadingSettings({ ...DEFAULT_READING_SETTINGS, scope: 'all' }, null, true);
+      applyReadingSettings({ ...DEFAULT_READING_SETTINGS, columnWidth: 'full', scope: 'all' }, null, true);
+      applyReadingWidth('full');
       const settings = getEffectiveReadingSettings();
       syncReadingSettingsModalUI(settings);
-      showToast('Đã đặt lại tùy chỉnh đọc về mặc định.');
+      showToast('Đã đặt lại tùy chỉnh đọc về mặc định (Toàn màn).');
     }
 
     // Khởi tạo toàn bộ sự kiện cho Bảng Tùy Chỉnh Đọc
@@ -5807,6 +5820,25 @@
     .tts-active-highlight { outline: 2px solid #6366F1 !important; background-color: rgba(99, 102, 241, 0.18) !important; border-radius: 4px; transition: all 0.2s ease; }
     .search-match-highlight { background-color: #FDE047 !important; color: #000 !important; border-radius: 2px; }
     .search-match-active { background-color: #EA580C !important; color: #FFF !important; font-weight: bold; border-radius: 2px; }
+    @keyframes searchBoxPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.65), 0 4px 12px rgba(0,0,0,0.18); }
+      50% { transform: scale(1.02); box-shadow: 0 0 0 7px rgba(99, 102, 241, 0.32), 0 6px 18px rgba(0,0,0,0.24); }
+      100% { transform: scale(1); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22), 0 4px 12px rgba(0,0,0,0.18); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .search-highlight-overlay-box { animation: none !important; }
+    }
+    .search-highlight-overlay-box {
+      position: absolute;
+      border: 2px solid #6366F1 !important;
+      border-radius: 6px !important;
+      background-color: rgba(99, 102, 241, 0.16) !important;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22), 0 4px 14px rgba(0, 0, 0, 0.18) !important;
+      pointer-events: none !important;
+      z-index: 999999 !important;
+      box-sizing: border-box !important;
+      transition: top 0.15s ease-out, left 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out, opacity 0.3s ease;
+    }
   \`;
   (document.head || document.documentElement).appendChild(bridgeStyle);
 
@@ -6055,6 +6087,16 @@
         break;
       }
 
+      case 'HIGHLIGHT_BOX_TARGET': {
+        handleHighlightBoxTarget(msg);
+        break;
+      }
+
+      case 'CLEAR_BOX_OVERLAY': {
+        clearSearchBoxOverlay();
+        break;
+      }
+
       case 'SEARCH_IN_ARTICLE': {
         handleSearchInArticle(msg.keyword);
         break;
@@ -6175,7 +6217,261 @@
     }, '*');
   }
 
+  // =========================================================================
+  // // FEATURE-BOX-OVERLAY: TỰ NHẢY ĐẾN ĐOẠN KHỚP VÀ VẼ KHUNG NỔI BẬT KHÔNG ĐỤNG DOM
+  // =========================================================================
+  let currentOccurrences = [];
+  let currentOccIndex = -1;
+  let searchBoxOverlayEl = null;
+  let overlayTimer = null;
+  let overlayObserver = null;
+  let activeKeyword = '';
+  let lastScrollY = window.scrollY || 0;
+
+  function normalizeVietnamese1to1(text) {
+    if (!text) return '';
+    const nfc = text.normalize('NFC');
+    const res = [];
+    for (let i = 0; i < nfc.length; i++) {
+      const ch = nfc[i];
+      if (ch === 'đ') res.push('d');
+      else if (ch === 'Đ') res.push('D');
+      else {
+        const nfd = ch.normalize('NFD');
+        let stripped = '';
+        for (let j = 0; j < nfd.length; j++) {
+          const code = nfd.charCodeAt(j);
+          if (code < 0x0300 || code > 0x036F) stripped += nfd[j];
+        }
+        res.push(stripped || ch);
+      }
+    }
+    return res.join('');
+  }
+
+  function clearSearchBoxOverlay() {
+    if (overlayTimer) {
+      clearTimeout(overlayTimer);
+      overlayTimer = null;
+    }
+    if (overlayObserver) {
+      overlayObserver.disconnect();
+      overlayObserver = null;
+    }
+    if (searchBoxOverlayEl && searchBoxOverlayEl.parentNode) {
+      searchBoxOverlayEl.parentNode.removeChild(searchBoxOverlayEl);
+    }
+    searchBoxOverlayEl = null;
+    currentOccurrences = [];
+    currentOccIndex = -1;
+    activeKeyword = '';
+    window.removeEventListener('resize', updateOverlayPosition);
+    window.removeEventListener('scroll', handleOverlayScroll);
+  }
+
+  function updateOverlayPosition() {
+    if (!searchBoxOverlayEl || currentOccIndex < 0 || !currentOccurrences[currentOccIndex]) return;
+    try {
+      const occ = currentOccurrences[currentOccIndex];
+      const rect = occ.range.getBoundingClientRect();
+      const scrollX = window.scrollX || window.pageXOffset || 0;
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const pad = 3;
+      searchBoxOverlayEl.style.top = (rect.top + scrollY - pad) + 'px';
+      searchBoxOverlayEl.style.left = (rect.left + scrollX - pad) + 'px';
+      searchBoxOverlayEl.style.width = Math.max(20, rect.width + pad * 2) + 'px';
+      searchBoxOverlayEl.style.height = Math.max(18, rect.height + pad * 2) + 'px';
+    } catch (_) {}
+  }
+
+  function handleOverlayScroll() {
+    const curY = window.scrollY || 0;
+    if (Math.abs(curY - lastScrollY) > 500) {
+      if (searchBoxOverlayEl) searchBoxOverlayEl.style.opacity = '0';
+    } else {
+      updateOverlayPosition();
+    }
+  }
+
+  function renderOverlayAtIndex(idx, shouldPulse = true) {
+    if (idx < 0 || idx >= currentOccurrences.length) return;
+    currentOccIndex = idx;
+    const occ = currentOccurrences[idx];
+    
+    // Cuộn mượt để đoạn khớp nằm ở trung tâm màn hình
+    try {
+      const scrollTarget = occ.range.commonAncestorContainer.nodeType === 1 
+        ? occ.range.commonAncestorContainer 
+        : occ.range.commonAncestorContainer.parentElement;
+      if (scrollTarget) {
+        scrollTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    } catch (_) {}
+
+    // Tạo hoặc tái sử dụng phần tử overlay
+    if (!searchBoxOverlayEl) {
+      searchBoxOverlayEl = document.createElement('div');
+      searchBoxOverlayEl.id = 'searchHighlightBoxOverlay';
+      searchBoxOverlayEl.className = 'search-highlight-overlay-box';
+      (document.body || document.documentElement).appendChild(searchBoxOverlayEl);
+      
+      window.addEventListener('resize', updateOverlayPosition, { passive: true });
+      window.addEventListener('scroll', handleOverlayScroll, { passive: true });
+      if (typeof ResizeObserver !== 'undefined' && document.body) {
+        overlayObserver = new ResizeObserver(updateOverlayPosition);
+        overlayObserver.observe(document.body);
+      }
+    }
+
+    lastScrollY = window.scrollY || 0;
+    updateOverlayPosition();
+    searchBoxOverlayEl.style.display = 'block';
+    searchBoxOverlayEl.style.opacity = '1';
+
+    // Hiệu ứng nhịp (pulse) 1.2s nhẹ nhàng tôn trọng prefers-reduced-motion
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (shouldPulse && !prefersReduced) {
+      searchBoxOverlayEl.style.animation = 'searchBoxPulse 0.4s ease-in-out 3';
+      setTimeout(() => {
+        if (searchBoxOverlayEl) searchBoxOverlayEl.style.animation = 'none';
+      }, 1250);
+    } else {
+      searchBoxOverlayEl.style.animation = 'none';
+    }
+
+    // Tự động dịu xuống và mờ sau ~8 giây không tương tác
+    if (overlayTimer) clearTimeout(overlayTimer);
+    overlayTimer = setTimeout(() => {
+      if (searchBoxOverlayEl) searchBoxOverlayEl.style.opacity = '0';
+    }, 8000);
+
+    // Báo cáo số thứ tự kết quả về app cha để hiển thị trên viên thuốc nổi
+    window.parent.postMessage({
+      type: 'SEARCH_OVERLAY_STATUS',
+      currentIndex: idx + 1,
+      totalMatches: currentOccurrences.length,
+      keyword: activeKeyword
+    }, '*');
+  }
+
+  function handleHighlightBoxTarget(msg) {
+    clearSearchBoxOverlay();
+    if (!msg || !msg.keyword || !msg.keyword.trim()) return;
+
+    activeKeyword = msg.keyword.trim();
+    const rawKw = activeKeyword;
+    const normKw = normalizeVietnamese1to1(rawKw).toLowerCase();
+
+    // Thu thập tất cả các text node hiển thị
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+    let n;
+    while ((n = walker.nextNode())) {
+      const p = n.parentElement;
+      if (!p || p.closest('script, style, noscript, template')) continue;
+      textNodes.push(n);
+    }
+
+    let fullText = '';
+    const nodeOffsets = [];
+    for (const tn of textNodes) {
+      const val = tn.nodeValue || '';
+      const start = fullText.length;
+      fullText += val;
+      nodeOffsets.push({ node: tn, start, end: fullText.length, text: val });
+    }
+
+    const normFull = normalizeVietnamese1to1(fullText).toLowerCase();
+    const occurrences = [];
+    let searchPos = 0;
+    while (true) {
+      const matchIdx = normFull.indexOf(normKw, searchPos);
+      if (matchIdx === -1) break;
+      const matchEnd = matchIdx + normKw.length;
+
+      // Tìm node bắt đầu
+      let startNodeInfo = null, startOffset = 0;
+      for (const no of nodeOffsets) {
+        if (matchIdx >= no.start && matchIdx < no.end) {
+          startNodeInfo = no;
+          startOffset = matchIdx - no.start;
+          break;
+        }
+      }
+
+      // Tìm node kết thúc
+      let endNodeInfo = null, endOffset = 0;
+      for (const no of nodeOffsets) {
+        if (matchEnd > no.start && matchEnd <= no.end) {
+          endNodeInfo = no;
+          endOffset = matchEnd - no.start;
+          break;
+        }
+      }
+
+      if (startNodeInfo && endNodeInfo) {
+        try {
+          const range = document.createRange();
+          range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
+          range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
+          
+          const prefix = fullText.substring(Math.max(0, matchIdx - 40), matchIdx);
+          const suffix = fullText.substring(matchEnd, Math.min(fullText.length, matchEnd + 40));
+          occurrences.push({ range, matchIdx, matchEnd, prefix, suffix, index: occurrences.length });
+        } catch (_) {}
+      }
+
+      searchPos = matchIdx + Math.max(1, normKw.length);
+    }
+
+    currentOccurrences = occurrences;
+    if (occurrences.length === 0) {
+      window.parent.postMessage({
+        type: 'SEARCH_OVERLAY_STATUS',
+        currentIndex: 0,
+        totalMatches: 0,
+        keyword: activeKeyword
+      }, '*');
+      return;
+    }
+
+    // Chọn lần xuất hiện thích hợp nhất (ưu tiên ngữ cảnh prefix/suffix, dự phòng index)
+    let targetIdx = 0;
+    if (msg.prefix || msg.suffix) {
+      let bestScore = -1;
+      const targetNormPrefix = normalizeVietnamese1to1(msg.prefix || '').toLowerCase();
+      const targetNormSuffix = normalizeVietnamese1to1(msg.suffix || '').toLowerCase();
+      occurrences.forEach((occ, i) => {
+        let score = 0;
+        const occPrefix = normalizeVietnamese1to1(occ.prefix).toLowerCase();
+        const occSuffix = normalizeVietnamese1to1(occ.suffix).toLowerCase();
+        if (targetNormPrefix && occPrefix.endsWith(targetNormPrefix.slice(-15))) score += 2;
+        if (targetNormSuffix && occSuffix.startsWith(targetNormSuffix.slice(0, 15))) score += 2;
+        if (score > bestScore) {
+          bestScore = score;
+          targetIdx = i;
+        }
+      });
+      if (bestScore === 0 && typeof msg.occurrenceIndex === 'number') {
+        targetIdx = Math.min(Math.max(0, msg.occurrenceIndex), occurrences.length - 1);
+      }
+    } else if (typeof msg.occurrenceIndex === 'number') {
+      targetIdx = Math.min(Math.max(0, msg.occurrenceIndex), occurrences.length - 1);
+    }
+
+    renderOverlayAtIndex(targetIdx, true);
+  }
+
   function navigateSearchMatch(dir) {
+    if (currentOccurrences.length > 0) {
+      if (dir === 'next') {
+        currentOccIndex = (currentOccIndex + 1) % currentOccurrences.length;
+      } else {
+        currentOccIndex = (currentOccIndex - 1 + currentOccurrences.length) % currentOccurrences.length;
+      }
+      renderOverlayAtIndex(currentOccIndex, false);
+      return;
+    }
     if (searchMatches.length === 0) return;
     searchMatches[currentMatchIdx]?.classList.remove('search-match-active');
     if (dir === 'next') {
@@ -6263,6 +6559,14 @@
           if (msg.ttsChunks && Array.isArray(msg.ttsChunks)) {
             bridgeReadableChunks = msg.ttsChunks;
           }
+          if (typeof pendingSearchJump !== 'undefined' && pendingSearchJump && pendingSearchJump.lessonId === state.activeLessonId) {
+            setTimeout(() => {
+              if (pendingSearchJump) {
+                postMessageToLessonIframe(pendingSearchJump);
+                pendingSearchJump = null;
+              }
+            }, 120);
+          }
           break;
         }
 
@@ -6344,6 +6648,22 @@
           }
           break;
         }
+
+        case 'SEARCH_OVERLAY_STATUS': {
+          const pill = document.getElementById('searchInArticleFloatingNav');
+          const pillCount = document.getElementById('searchFloatingPillCounter');
+          const pillKw = document.getElementById('searchFloatingPillKeyword');
+          if (pill) {
+            if (msg.totalMatches > 0) {
+              pill.classList.remove('hidden');
+              if (pillCount) pillCount.innerText = `${msg.currentIndex}/${msg.totalMatches}`;
+              if (pillKw) pillKw.innerText = msg.keyword || '';
+            } else {
+              pill.classList.add('hidden');
+            }
+          }
+          break;
+        }
       }
     }
 
@@ -6378,6 +6698,9 @@
     }
 
     window.postMessageToLessonIframe = postMessageToLessonIframe;
+    window.performSearch = performSearch;
+    window.jumpToSearchMatch = jumpToSearchMatch;
+    window.normalizeVietnamese1to1 = normalizeVietnamese1to1;
     window.getLessonPlainTextForSearch = getLessonPlainTextForSearch;
 
     window.saveLocalLessons = saveLocalLessons;
@@ -11177,6 +11500,11 @@
       }
 
       const updateView = () => {
+        // Dọn sạch khung nổi bật tìm kiếm khi chuyển bài
+        const floatingNav = document.getElementById('searchInArticleFloatingNav');
+        if (floatingNav) floatingNav.classList.add('hidden');
+        postMessageToLessonIframe({ type: 'CLEAR_BOX_OVERLAY' });
+
         renderCategoriesAndLessons();
         renderActiveLesson();
         saveUserSettings();
@@ -11884,36 +12212,154 @@
     });
 
     // =========================================================================
-    // // FEATURE-10: TÌM KIẾM TOÀN THƯ VIỆN CÓ TRÍCH ĐOẠN & KHÔNG DẤU TIẾNG VIỆT
+    // // FEATURE-10: TÌM KIẾM TOÀN THƯ VIỆN / TRONG BÀI CÓ TRÍCH ĐOẠN, TỰ NHẢY & KHUNG NỔI BẬT
     // =========================================================================
     let searchActiveIndex = -1;
+    let searchScope = 'library'; // 'library' | 'current'
+    let searchIndexCache = new Map();
+    let isIndexingActive = false;
+    let pendingSearchJump = null;
+    let lastSearchQuery = '';
 
-    function buildPlainTextFromHtml(html) {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Chuẩn hóa tiếng Việt 1-1 ký tự (đảm bảo index của chuỗi không đổi)
+    function normalizeVietnamese1to1(text) {
+      if (!text) return '';
+      const nfc = text.normalize('NFC');
+      const res = [];
+      for (let i = 0; i < nfc.length; i++) {
+        const ch = nfc[i];
+        if (ch === 'đ') res.push('d');
+        else if (ch === 'Đ') res.push('D');
+        else {
+          const nfd = ch.normalize('NFD');
+          let stripped = '';
+          for (let j = 0; j < nfd.length; j++) {
+            const code = nfd.charCodeAt(j);
+            if (code < 0x0300 || code > 0x036F) stripped += nfd[j];
+          }
+          res.push(stripped || ch);
+        }
+      }
+      return res.join('');
+    }
+
+    // Trích xuất văn bản thuần sạch loại bỏ script, style, noscript, thẻ ẩn
+    function extractCleanTextFromHtml(html) {
       if (!html) return '';
-      const div = document.createElement('div');
-      div.innerHTML = html;
-      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        doc.querySelectorAll('script, style, noscript, template, svg, [hidden]').forEach(el => el.remove());
+        return (doc.body ? doc.body.textContent : '').replace(/\s+/g, ' ').trim();
+      } catch (_) {
+        return (html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      }
     }
 
-    function extractSearchSnippet(fullText, normQuery) {
-      if (!fullText) return '';
-      const normFull = removeVietnameseTones(fullText);
-      const idx = normFull.indexOf(normQuery);
-      if (idx === -1) return fullText.substring(0, 90) + '...';
+    // Lập chỉ mục cho 1 bài học (có cache theo id + updatedAt)
+    function indexLesson(lesson) {
+      if (!lesson || !lesson.id) return null;
+      const cacheKey = `${lesson.id}_${lesson.updatedAt || lesson.createdAt || 0}`;
+      if (searchIndexCache.has(lesson.id)) {
+        const cached = searchIndexCache.get(lesson.id);
+        if (cached.key === cacheKey) return cached;
+      }
 
-      const start = Math.max(0, idx - 30);
-      const end = Math.min(fullText.length, idx + normQuery.length + 50);
-      return (start > 0 ? '...' : '') + fullText.substring(start, end) + (end < fullText.length ? '...' : '');
+      const plain = extractCleanTextFromHtml(lesson.htmlContent || '');
+      const normText = normalizeVietnamese1to1(plain).toLowerCase();
+      const normTitle = normalizeVietnamese1to1(lesson.title || '').toLowerCase();
+      const normDesc = normalizeVietnamese1to1(lesson.description || '').toLowerCase();
+
+      const entry = {
+        id: lesson.id,
+        key: cacheKey,
+        title: lesson.title || 'Bài chưa đặt tên',
+        normTitle,
+        description: lesson.description || '',
+        normDesc,
+        plainText: plain,
+        normText,
+        categoryId: lesson.categoryId,
+        updatedAt: lesson.updatedAt || 0,
+        lesson
+      };
+      searchIndexCache.set(lesson.id, entry);
+      return entry;
     }
 
-    function highlightMatch(text, query) {
-      if (!query) return text;
-      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${escaped})`, 'gi');
-      return text.replace(regex, '<mark class="bg-[#FEF3C7] dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-0.5 rounded">$1</mark>');
+    // Lập chỉ mục lười chạy nền (Background Idle Indexing)
+    function scheduleBackgroundIndexing() {
+      if (isIndexingActive || !state.lessons || state.lessons.length === 0) return;
+      isIndexingActive = true;
+      let idx = 0;
+      const nonTrashed = state.lessons.filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
+
+      function runBatch() {
+        const start = Date.now();
+        while (idx < nonTrashed.length && (Date.now() - start < 12)) {
+          indexLesson(nonTrashed[idx]);
+          idx++;
+        }
+        if (idx < nonTrashed.length) {
+          if (typeof requestIdleCallback !== 'undefined') {
+            requestIdleCallback(runBatch);
+          } else {
+            setTimeout(runBatch, 25);
+          }
+        } else {
+          isIndexingActive = false;
+        }
+      }
+
+      if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(runBatch);
+      } else {
+        setTimeout(runBatch, 50);
+      }
     }
 
+    // Gọi lập chỉ mục nền khi app rảnh rỗi
+    setTimeout(scheduleBackgroundIndexing, 1500);
+
+    // Nhảy tới đúng vị trí kết quả và gửi thông điệp vẽ khung nổi bật
+    function jumpToSearchMatch(lessonId, occurrenceIndex, prefix, suffix, keyword) {
+      if (!lessonId) return;
+
+      const payload = {
+        type: 'HIGHLIGHT_BOX_TARGET',
+        lessonId,
+        occurrenceIndex: occurrenceIndex || 0,
+        prefix: prefix || '',
+        suffix: suffix || '',
+        keyword: keyword || ''
+      };
+
+      if (state.activeLessonId === lessonId) {
+        postMessageToLessonIframe(payload);
+        return;
+      }
+
+      // Đang ở bài khác -> Chuyển bài và lưu lại lệnh jump
+      pendingSearchJump = payload;
+      selectLesson(lessonId);
+
+      // Dự phòng nếu iframe không gửi BRIDGE_READY
+      setTimeout(() => {
+        if (pendingSearchJump) {
+          postMessageToLessonIframe(pendingSearchJump);
+          pendingSearchJump = null;
+        }
+      }, 500);
+    }
+
+    // Thực hiện tìm kiếm theo phạm vi Thư viện hoặc Bài này
     function performSearch(query, dropdownEl) {
+      lastSearchQuery = query || '';
       if (!query || query.trim().length === 0) {
         dropdownEl.classList.add('hidden');
         dropdownEl.innerHTML = '';
@@ -11922,127 +12368,291 @@
       }
 
       const rawQ = query.trim();
-      const normQ = removeVietnameseTones(rawQ);
-      const matches = [];
+      const scopeHeader = `
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E7E5DF] dark:border-[#262C36] px-1">
+          <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
+            <button type="button" class="search-scope-tab px-2.5 py-1 rounded-md transition ${searchScope === 'library' ? 'bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-[#6E6B65] dark:text-[#979DA8]'}" data-scope="library">
+              Thư viện
+            </button>
+            <button type="button" class="search-scope-tab px-2.5 py-1 rounded-md transition ${searchScope === 'current' ? 'bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-[#6E6B65] dark:text-[#979DA8]'}" data-scope="current" ${!state.activeLessonId ? 'disabled opacity-50 title="Chưa mở bài học nào"' : ''}>
+              Bài này
+            </button>
+          </div>
+          <div class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]" id="searchScopeInfo"></div>
+        </div>
+      `;
 
-      state.lessons.forEach(lesson => {
-        const cat = state.categories.find(c => c.id === lesson.categoryId);
-        const catTitle = cat ? cat.title : 'Chưa phân loại';
-
-        const normTitle = removeVietnameseTones(lesson.title || '');
-        const normDesc = removeVietnameseTones(lesson.description || '');
-
-        // 1. Kiểm tra Tiêu đề
-        if (normTitle.includes(normQ)) {
-          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Tiêu đề', snippet: lesson.title, query: rawQ });
-        }
-
-        // 2. Kiểm tra Mô tả
-        if (normDesc.includes(normQ)) {
-          matches.push({ lesson, categoryTitle: catTitle, matchType: 'Mô tả', snippet: extractSearchSnippet(lesson.description, normQ), query: rawQ });
-        }
-
-        // 3. Kiểm tra Nội dung HTML bài học
-        if (lesson.htmlContent) {
-          if (!lesson._plainText) {
-            lesson._plainText = buildPlainTextFromHtml(lesson.htmlContent);
-          }
-          const normContent = removeVietnameseTones(lesson._plainText);
-          if (normContent.includes(normQ)) {
-            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Nội dung', snippet: extractSearchSnippet(lesson._plainText, normQ), query: rawQ });
-          }
-        }
-
-        // 4. Kiểm tra Highlight & Ghi chú của bài
-        const lessonHls = (state.learningData && state.learningData.highlights && state.learningData.highlights[lesson.id]) || [];
-        for (const h of lessonHls) {
-          const normHlText = removeVietnameseTones(h.text || '');
-          const normHlNote = removeVietnameseTones(h.note || '');
-          if (normHlText.includes(normQ)) {
-            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Highlight', snippet: `"${h.text}"`, query: rawQ, hlId: h.id });
-            break;
-          } else if (normHlNote.includes(normQ)) {
-            matches.push({ lesson, categoryTitle: catTitle, matchType: 'Ghi chú', snippet: h.note, query: rawQ, hlId: h.id });
-            break;
-          }
-        }
-      });
-
-      renderSearchResults(matches, rawQ, dropdownEl);
-    }
-
-    function renderSearchResults(matches, query, dropdownEl) {
-      dropdownEl.innerHTML = '';
-      searchActiveIndex = -1;
-
-      if (matches.length === 0) {
-        dropdownEl.innerHTML = `
+      if (rawQ.length < 2) {
+        dropdownEl.innerHTML = scopeHeader + `
           <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
-            Không tìm thấy bài học hay ghi chú nào cho "${query}".
+            Nhập từ 2 ký tự trở lên để tìm kiếm trong ${searchScope === 'current' ? 'bài này' : 'toàn thư viện'}...
           </div>
         `;
+        bindScopeButtons(dropdownEl);
         dropdownEl.classList.remove('hidden');
         return;
       }
 
-      // Giới hạn hiển thị 15 kết quả tối đa
-      const limitedMatches = matches.slice(0, 15);
+      const normQ = normalizeVietnamese1to1(rawQ).toLowerCase();
+      const words = normQ.split(/\s+/).filter(Boolean);
 
-      const grouped = {};
-      limitedMatches.forEach(m => {
-        if (!grouped[m.categoryTitle]) grouped[m.categoryTitle] = [];
-        grouped[m.categoryTitle].push(m);
+      // Xác định tập bài học cần tìm
+      let targetLessons = [];
+      if (searchScope === 'current') {
+        if (state.activeLessonId) {
+          const cur = state.lessons.find(l => l.id === state.activeLessonId);
+          if (cur && !cur.trashed && !cur.isDeleted && !cur.deletedAt) targetLessons = [cur];
+        }
+      } else {
+        targetLessons = state.lessons.filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
+      }
+
+      if (targetLessons.length === 0) {
+        dropdownEl.innerHTML = scopeHeader + `
+          <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
+            ${searchScope === 'current' ? 'Chưa mở bài học nào để tìm kiếm.' : 'Thư viện chưa có bài học nào.'}
+          </div>
+        `;
+        bindScopeButtons(dropdownEl);
+        dropdownEl.classList.remove('hidden');
+        return;
+      }
+
+      const lessonMatches = [];
+      let totalMatchCount = 0;
+
+      for (const lesson of targetLessons) {
+        const indexed = indexLesson(lesson);
+        if (!indexed) continue;
+
+        const cat = state.categories.find(c => c.id === lesson.categoryId);
+        const catTitle = cat ? cat.title : 'Chưa phân loại';
+
+        const normTitle = indexed.normTitle;
+        const normText = indexed.normText;
+        const plainText = indexed.plainText;
+        const titleHasKw = normTitle.includes(normQ);
+
+        // 1. Tìm tất cả các lần xuất hiện của cụm từ chuẩn xác trong bài
+        const occurrences = [];
+        let searchPos = 0;
+        while (true) {
+          const idx = normText.indexOf(normQ, searchPos);
+          if (idx === -1) break;
+
+          const start = Math.max(0, idx - 40);
+          const end = Math.min(plainText.length, idx + normQ.length + 40);
+          const prefix = plainText.substring(start, idx);
+          const matchedText = plainText.substring(idx, idx + normQ.length);
+          const suffix = plainText.substring(idx + normQ.length, end);
+
+          occurrences.push({
+            occurrenceIndex: occurrences.length,
+            prefix,
+            matchedText,
+            suffix,
+            snippet: (start > 0 ? '…' : '') + prefix + `<mark class="bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-1 py-0.5 rounded">${matchedText}</mark>` + suffix + (end < plainText.length ? '…' : '')
+          });
+
+          searchPos = idx + Math.max(1, normQ.length);
+          if (occurrences.length >= 30) break; // Giới hạn tối đa 30 kết quả mỗi bài
+        }
+
+        // 2. Nếu nhiều từ và không khớp cụm nguyên vẹn: tìm các đoạn chứa tất cả các từ
+        if (occurrences.length === 0 && words.length > 1) {
+          const allWordsMatch = words.every(w => normText.includes(w) || normTitle.includes(w));
+          if (allWordsMatch) {
+            // Lấy vị trí từ đầu tiên xuất hiện
+            const firstWordIdx = normText.indexOf(words[0]);
+            if (firstWordIdx !== -1) {
+              const start = Math.max(0, firstWordIdx - 30);
+              const end = Math.min(plainText.length, firstWordIdx + 90);
+              const snippetRaw = plainText.substring(start, end);
+              occurrences.push({
+                occurrenceIndex: 0,
+                prefix: plainText.substring(start, firstWordIdx),
+                matchedText: plainText.substring(firstWordIdx, firstWordIdx + words[0].length),
+                suffix: plainText.substring(firstWordIdx + words[0].length, end),
+                snippet: (start > 0 ? '…' : '') + snippetRaw + (end < plainText.length ? '…' : '')
+              });
+            }
+          }
+        }
+
+        if (titleHasKw || occurrences.length > 0) {
+          totalMatchCount += occurrences.length;
+          lessonMatches.push({
+            lesson,
+            categoryTitle: catTitle,
+            titleHasKw,
+            occurrences,
+            matchCount: occurrences.length,
+            query: rawQ
+          });
+        }
+      }
+
+      // Sắp xếp bài: có từ khóa trong tiêu đề lên trước, sau đó xếp theo số kết quả giảm dần
+      lessonMatches.sort((a, b) => {
+        if (a.titleHasKw && !b.titleHasKw) return -1;
+        if (!a.titleHasKw && b.titleHasKw) return 1;
+        return b.matchCount - a.matchCount;
       });
 
-      let html = '';
-      for (const [catName, list] of Object.entries(grouped)) {
-        html += `
-          <div class="mb-2">
-            <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 px-2 py-0.5 block">
-              Mục: ${catName}
-            </span>
-            <div class="space-y-1">
-              ${list.map(item => `
-                <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800" data-lesson-id="${item.lesson.id}" data-hl-id="${item.hlId || ''}" data-query="${item.query}">
-                  <div class="flex items-center justify-between text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2]">
-                    <span class="truncate mr-2">${item.lesson.title}</span>
-                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
-                      ${item.matchType}
-                    </span>
-                  </div>
-                  <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-1 line-clamp-2 leading-relaxed">
-                    ${highlightMatch(item.snippet, query)}
-                  </p>
-                </div>
-              `).join('')}
-            </div>
+      renderSearchResults(lessonMatches, rawQ, totalMatchCount, dropdownEl);
+    }
+
+    // Hiển thị danh sách kết quả tìm kiếm với phân nhóm & trích đoạn
+    function renderSearchResults(lessonMatches, query, totalMatchCount, dropdownEl) {
+      dropdownEl.innerHTML = '';
+      searchActiveIndex = -1;
+
+      // Header chuyển đổi phạm vi Thư viện | Bài này
+      const scopeHeader = `
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E7E5DF] dark:border-[#262C36] px-1">
+          <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
+            <button type="button" class="search-scope-tab px-2.5 py-1 rounded-md transition ${searchScope === 'library' ? 'bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-[#6E6B65] dark:text-[#979DA8]'}" data-scope="library">
+              Thư viện
+            </button>
+            <button type="button" class="search-scope-tab px-2.5 py-1 rounded-md transition ${searchScope === 'current' ? 'bg-white dark:bg-[#252932] shadow-xs text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-[#6E6B65] dark:text-[#979DA8]'}" data-scope="current" ${!state.activeLessonId ? 'disabled opacity-50 title="Chưa mở bài học nào"' : ''}>
+              Bài này
+            </button>
+          </div>
+          <div class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
+            ${totalMatchCount > 0 ? `<span class="font-semibold text-indigo-600 dark:text-indigo-400">${totalMatchCount}</span> kết quả` : ''}
+          </div>
+        </div>
+      `;
+
+      if (lessonMatches.length === 0) {
+        dropdownEl.innerHTML = scopeHeader + `
+          <div class="p-4 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
+            Không thấy "${escapeHtml(query)}" trong ${searchScope === 'current' ? 'bài hiện tại' : 'thư viện'}.
+          </div>
+        `;
+        bindScopeButtons(dropdownEl);
+        dropdownEl.classList.remove('hidden');
+        return;
+      }
+
+      let countLimitNotice = '';
+      if (totalMatchCount > 100) {
+        countLimitNotice = `
+          <div class="mb-2 p-1.5 text-center text-[11px] bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 rounded-lg border border-amber-200 dark:border-amber-900/50">
+            Hiển thị 100 kết quả đầu, hãy gõ cụ thể hơn.
           </div>
         `;
       }
 
-      dropdownEl.innerHTML = html;
+      let groupsHtml = '';
+      lessonMatches.forEach(lm => {
+        const topSnippets = lm.occurrences.slice(0, 3);
+        const remainingCount = lm.occurrences.length - 3;
+
+        groupsHtml += `
+          <div class="mb-3 bg-black/[0.02] dark:bg-white/[0.02] p-2 rounded-xl border border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5 px-1">
+              <span class="truncate max-w-[240px] sm:max-w-[280px]" title="${escapeHtml(lm.lesson.title)}">
+                ${escapeHtml(lm.lesson.title)}
+              </span>
+              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
+                ${lm.matchCount} kết quả
+              </span>
+            </div>
+
+            <div class="space-y-1">
+              ${topSnippets.map((occ, oIdx) => `
+                <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
+                     data-lesson-id="${lm.lesson.id}" 
+                     data-occ-idx="${occ.occurrenceIndex}" 
+                     data-prefix="${escapeHtml(occ.prefix)}" 
+                     data-suffix="${escapeHtml(occ.suffix)}" 
+                     data-kw="${escapeHtml(query)}">
+                  <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed">
+                    ${occ.snippet}
+                  </p>
+                </div>
+              `).join('')}
+
+              ${remainingCount > 0 ? `
+                <div class="hidden remaining-snippets-box space-y-1" id="remainingSnippets_${lm.lesson.id}">
+                  ${lm.occurrences.slice(3).map((occ, oIdx) => `
+                    <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
+                         data-lesson-id="${lm.lesson.id}" 
+                         data-occ-idx="${occ.occurrenceIndex}" 
+                         data-prefix="${escapeHtml(occ.prefix)}" 
+                         data-suffix="${escapeHtml(occ.suffix)}" 
+                         data-kw="${escapeHtml(query)}">
+                      <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed">
+                        ${occ.snippet}
+                      </p>
+                    </div>
+                  `).join('')}
+                </div>
+                <button type="button" class="btn-expand-snippets text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline px-1 py-1 block w-full text-left" data-target="remainingSnippets_${lm.lesson.id}">
+                  Xem thêm ${remainingCount} kết quả...
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      dropdownEl.innerHTML = scopeHeader + countLimitNotice + groupsHtml;
+      bindScopeButtons(dropdownEl);
       dropdownEl.classList.remove('hidden');
 
+      // Nút xem thêm kết quả
+      dropdownEl.querySelectorAll('.btn-expand-snippets').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetId = btn.getAttribute('data-target');
+          const targetBox = document.getElementById(targetId);
+          if (targetBox) {
+            targetBox.classList.remove('hidden');
+            btn.classList.add('hidden');
+          }
+        });
+      });
+
+      // Bấm vào kết quả -> Nhảy tới vị trí và vẽ khung
       dropdownEl.querySelectorAll('.search-result-item').forEach(el => {
         el.addEventListener('click', () => {
           const lId = el.getAttribute('data-lesson-id');
-          const hId = el.getAttribute('data-hl-id');
-          dropdownEl.classList.add('hidden');
-          mobileSearchExpandable.classList.add('hidden');
-          selectLesson(lId);
+          const oIdx = parseInt(el.getAttribute('data-occ-idx') || '0', 10);
+          const prefix = el.getAttribute('data-prefix') || '';
+          const suffix = el.getAttribute('data-suffix') || '';
+          const kw = el.getAttribute('data-kw') || query;
 
-          if (hId && typeof jumpToHighlight === 'function') {
-            setTimeout(() => jumpToHighlight(lId, hId), 400);
+          dropdownEl.classList.add('hidden');
+          const mobileExpandable = document.getElementById('mobileSearchExpandable');
+          if (mobileExpandable) mobileExpandable.classList.add('hidden');
+
+          jumpToSearchMatch(lId, oIdx, prefix, suffix, kw);
+        });
+      });
+    }
+
+    // Gắn sự kiện cho nút chuyển phạm vi Thư viện | Bài này
+    function bindScopeButtons(dropdownEl) {
+      dropdownEl.querySelectorAll('.search-scope-tab').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const scope = btn.getAttribute('data-scope');
+          if (scope && scope !== searchScope) {
+            searchScope = scope;
+            const inputVal = (dropdownEl === searchDropdown) ? searchInput.value : mobileSearchInput.value;
+            performSearch(inputVal, dropdownEl);
           }
         });
       });
     }
 
-    // Điều hướng phím mũi tên trong ô tìm kiếm
+    // Điều hướng phím mũi tên & Enter / Esc trong ô tìm kiếm
     [searchInput, mobileSearchInput].forEach(inp => {
       if (!inp) return;
       inp.addEventListener('keydown', (e) => {
-        const dd = inp === searchInput ? searchDropdown : mobileSearchDropdown;
+        const dd = (inp === searchInput) ? searchDropdown : mobileSearchDropdown;
         if (!dd || dd.classList.contains('hidden')) return;
 
         const items = dd.querySelectorAll('.search-result-item');
@@ -12067,6 +12677,45 @@
           dd.classList.add('hidden');
         }
       });
+    });
+
+    // Sự kiện thanh điều hướng tìm kiếm nổi trong bài (Floating Pill Nav)
+    const btnSearchFloatingPrev = document.getElementById('btnSearchFloatingPrev');
+    const btnSearchFloatingNext = document.getElementById('btnSearchFloatingNext');
+    const btnSearchFloatingClose = document.getElementById('btnSearchFloatingClose');
+    const searchInArticleFloatingNav = document.getElementById('searchInArticleFloatingNav');
+
+    if (btnSearchFloatingPrev) {
+      btnSearchFloatingPrev.addEventListener('click', () => {
+        postMessageToLessonIframe({ type: 'NAVIGATE_SEARCH_MATCH', direction: 'prev' });
+      });
+    }
+    if (btnSearchFloatingNext) {
+      btnSearchFloatingNext.addEventListener('click', () => {
+        postMessageToLessonIframe({ type: 'NAVIGATE_SEARCH_MATCH', direction: 'next' });
+      });
+    }
+    if (btnSearchFloatingClose) {
+      btnSearchFloatingClose.addEventListener('click', () => {
+        if (searchInArticleFloatingNav) searchInArticleFloatingNav.classList.add('hidden');
+        postMessageToLessonIframe({ type: 'CLEAR_BOX_OVERLAY' });
+      });
+    }
+
+    // Phím tắt bàn phím chuyển kết quả khi thanh nổi đang mở (F3, Enter / Shift+Enter, Esc)
+    window.addEventListener('keydown', (e) => {
+      const nav = document.getElementById('searchInArticleFloatingNav');
+      const isNavVisible = nav && !nav.classList.contains('hidden');
+      if (!isNavVisible) return;
+
+      if (e.key === 'F3' || (e.key === 'Enter' && !e.target.matches('input, textarea, [contenteditable]'))) {
+        e.preventDefault();
+        const dir = e.shiftKey ? 'prev' : 'next';
+        postMessageToLessonIframe({ type: 'NAVIGATE_SEARCH_MATCH', direction: dir });
+      } else if (e.key === 'Escape') {
+        nav.classList.add('hidden');
+        postMessageToLessonIframe({ type: 'CLEAR_BOX_OVERLAY' });
+      }
     });
 
     const uploadModal = document.getElementById('uploadModal');
@@ -12819,7 +13468,7 @@
         container.style.paddingRight = '4px';
       }
 
-      // Cập nhật trạng thái active cho nút chuyển Vừa / Rộng / Toàn màn
+      // Cập nhật trạng thái active cho nút chuyển Vừa / Rộng / Toàn màn trên thanh công cụ
       document.querySelectorAll('.width-tab').forEach(tab => {
         const val = tab.getAttribute('data-width-opt');
         if (val === mode) {
@@ -12828,6 +13477,31 @@
           tab.className = "width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium";
         }
       });
+
+      // Đồng bộ vào cấu hình đọc nâng cao (globalReadingSettings & modal UI)
+      const mappedColWidth = (mode === 'compact') ? 'normal' : (mode === 'wide' ? 'wide' : 'full');
+      if (globalReadingSettings && globalReadingSettings.columnWidth !== mappedColWidth) {
+        globalReadingSettings.columnWidth = mappedColWidth;
+        try {
+          localStorage.setItem('thuvienhtml_reading_settings', JSON.stringify(globalReadingSettings));
+        } catch (_) {}
+      }
+      const modal = document.getElementById('readingSettingsModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        document.querySelectorAll('.col-width-btn').forEach(btn => {
+          const val = btn.getAttribute('data-col-width');
+          const isMatch = (mappedColWidth === 'full' && val === 'full') ||
+                          (mappedColWidth === 'wide' && val === 'wide') ||
+                          ((mappedColWidth === 'normal' || mappedColWidth === 'narrow') && (val === 'normal' || val === 'narrow'));
+          if (val === mappedColWidth) {
+            btn.classList.add('border-indigo-600', 'bg-indigo-50/50', 'dark:bg-indigo-950/30', 'text-indigo-700', 'dark:text-indigo-300');
+            btn.classList.remove('border-[#E7E5DF]', 'dark:border-[#262C36]');
+          } else {
+            btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'dark:bg-indigo-950/30', 'text-indigo-700', 'dark:text-indigo-300');
+            btn.classList.add('border-[#E7E5DF]', 'dark:border-[#262C36]');
+          }
+        });
+      }
 
       // Nếu đang bật chế độ Phóng vừa chiều ngang (Fit to width), tự động đo và scale lại
       if (state.fitWidthActive) {
@@ -17480,7 +18154,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v4.2.0 - build 09/10/2026 10:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.3.0 - build 09/10/2026 10:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
