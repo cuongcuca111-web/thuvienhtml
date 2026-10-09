@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.4.0';
+    const CURRENT_APP_VERSION = 'v4.4.2';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1093,6 +1093,144 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
+
+    /* ===== THEME STYLES CHO THẺ KẾ HOẠCH HỌC TẬP THEO MỨC KHẨN CẤP ===== */
+    [data-urgency="safe"] {
+      --plan-bg: #ecfdf3;
+      --plan-border: #86efac;
+      --plan-fg: #166534;
+      --plan-badge-bg: #15803d;
+      --plan-badge-fg: #ffffff;
+      --plan-bar: #16a34a;
+      --plan-track: #bbf7d0;
+    }
+    [data-urgency="done"] {
+      --plan-bg: #ecfdf3;
+      --plan-border: #86efac;
+      --plan-fg: #166534;
+      --plan-badge-bg: #15803d;
+      --plan-badge-fg: #ffffff;
+      --plan-bar: #16a34a;
+      --plan-track: #bbf7d0;
+    }
+    [data-urgency="soon"] {
+      --plan-bg: #fffbeb;
+      --plan-border: #fcd34d;
+      --plan-fg: #92400e;
+      --plan-badge-bg: #fbbf24;
+      --plan-badge-fg: #451a03;
+      --plan-bar: #f59e0b;
+      --plan-track: #fde68a;
+    }
+    [data-urgency="urgent"] {
+      --plan-bg: #fff1f2;
+      --plan-border: #fda4af;
+      --plan-fg: #9f1239;
+      --plan-badge-bg: #e11d48;
+      --plan-badge-fg: #ffffff;
+      --plan-bar: #e11d48;
+      --plan-track: #fecdd3;
+    }
+    [data-urgency="passed"] {
+      --plan-bg: #f3f4f6;
+      --plan-border: #d1d5db;
+      --plan-fg: #4b5563;
+      --plan-badge-bg: #6b7280;
+      --plan-badge-fg: #ffffff;
+      --plan-bar: #9ca3af;
+      --plan-track: #e5e7eb;
+    }
+
+    .dark [data-urgency="safe"], .dark [data-urgency="done"] {
+      --plan-bg: rgba(34, 197, 94, 0.12);
+      --plan-border: rgba(74, 222, 128, 0.35);
+      --plan-fg: #86efac;
+      --plan-badge-bg: #22c55e;
+      --plan-badge-fg: #052e16;
+      --plan-bar: #22c55e;
+      --plan-track: rgba(34, 197, 94, 0.2);
+    }
+    .dark [data-urgency="soon"] {
+      --plan-bg: rgba(245, 158, 11, 0.12);
+      --plan-border: rgba(251, 191, 36, 0.35);
+      --plan-fg: #fcd34d;
+      --plan-badge-bg: #fbbf24;
+      --plan-badge-fg: #451a03;
+      --plan-bar: #fbbf24;
+      --plan-track: rgba(251, 191, 36, 0.2);
+    }
+    .dark [data-urgency="urgent"] {
+      --plan-bg: rgba(244, 63, 94, 0.12);
+      --plan-border: rgba(251, 113, 133, 0.4);
+      --plan-fg: #fda4af;
+      --plan-badge-bg: #fb7185;
+      --plan-badge-fg: #4c0519;
+      --plan-bar: #fb7185;
+      --plan-track: rgba(251, 113, 133, 0.2);
+    }
+    .dark [data-urgency="passed"] {
+      --plan-bg: rgba(148, 163, 184, 0.1);
+      --plan-border: rgba(148, 163, 184, 0.3);
+      --plan-fg: #cbd5e1;
+      --plan-badge-bg: #64748b;
+      --plan-badge-fg: #ffffff;
+      --plan-bar: #94a3b8;
+      --plan-track: rgba(148, 163, 184, 0.2);
+    }
+
+    /* Style áp dụng lên thẻ Sidebar Widget */
+    #sidebarStudyPlanWidget {
+      background-color: var(--plan-bg, rgba(79, 70, 229, 0.08));
+      border-color: var(--plan-border, rgba(79, 70, 229, 0.2));
+      color: var(--plan-fg, inherit);
+      transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+    }
+    #sidebarStudyPlanWidget #sidebarPlanName {
+      color: var(--plan-fg, inherit);
+    }
+    #sidebarStudyPlanWidget #sidebarPlanCountdownBadge {
+      background-color: var(--plan-badge-bg, #4F46E5);
+      color: var(--plan-badge-fg, #ffffff);
+      transition: background-color 250ms ease, color 250ms ease;
+    }
+    #sidebarStudyPlanWidget #sidebarPlanProgressBarTrack {
+      background-color: var(--plan-track, rgba(79, 70, 229, 0.15));
+    }
+    #sidebarStudyPlanWidget #sidebarPlanProgressBar {
+      background-color: var(--plan-bar, #4F46E5);
+      transition: width 500ms ease-out, background-color 250ms ease;
+    }
+
+    /* Viền xanh hoàn thành bao quanh popup modal */
+    .study-plan-modal-completed-border {
+      border: 2px solid #16a34a !important;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18), 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+      transition: border-color 300ms ease, box-shadow 300ms ease;
+    }
+    .dark .study-plan-modal-completed-border {
+      border: 2px solid #4ade80 !important;
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.22), 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Hiệu ứng nảy nhẹ của dấu tích khi hoàn thành */
+    @keyframes checkmarkPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      70% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .anim-check-pop {
+      animation: checkmarkPop 250ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #sidebarStudyPlanWidget, #sidebarStudyPlanWidget #sidebarPlanProgressBar, .study-plan-modal-completed-border {
+        transition: none !important;
+      }
+      .anim-check-pop {
+        animation: none !important;
+      }
+    }
+
   </style>
   <!-- // FEATURE-11: Đăng ký Service Worker và PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -2009,22 +2147,28 @@
         </div>
       </div>
 
-      <!-- // WIDGET LỊCH THI & KẾ HOẠCH Ở SIDEBAR -->
-      <div id="sidebarStudyPlanWidget" class="hidden mx-3 mt-2 p-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 shadow-2xs cursor-pointer hover:bg-indigo-100/70 transition shrink-0">
+      <!-- // WIDGET LỊCH THI & KẾ HOẠCH Ở SIDEBAR (v4.4.1 CẬP NHẬT MÀU SẮC THEO MỨC KHẨN CẤP & TIẾN ĐỘ) -->
+      <div id="sidebarStudyPlanWidget" class="hidden mx-3 mt-2 p-2.5 rounded-xl border shadow-2xs cursor-pointer hover:opacity-95 transition shrink-0 select-none" data-urgency="safe" role="region" aria-label="Kế hoạch học tập sắp tới">
         <div class="flex items-center justify-between mb-1.5">
-          <div class="flex items-center gap-1.5 text-xs font-semibold text-indigo-900 dark:text-indigo-200">
-            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-calendar"></use></svg>
-            <span id="sidebarPlanName" class="truncate max-w-[130px]">Kế hoạch thi</span>
+          <div class="flex items-center gap-1.5 text-xs font-semibold truncate">
+            <svg class="w-[18px] h-[18px] shrink-0" style="color: var(--plan-fg); fill: none;"><use href="#plan-glyph"></use></svg>
+            <span id="sidebarPlanName" class="truncate max-w-[125px]">Kế hoạch thi</span>
           </div>
-          <span id="sidebarPlanCountdownBadge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white font-mono">còn 0 ngày</span>
+          <span id="sidebarPlanCountdownBadge" class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono shrink-0 flex items-center justify-center">
+            còn 0 ngày
+          </span>
         </div>
-        <div class="flex items-center justify-between text-[11px] text-[#6E6B65] dark:text-[#979DA8] mb-1.5">
+        <div class="flex items-center justify-between text-[11px] opacity-90 mb-1.5">
           <span id="sidebarPlanTodayText">Hôm nay: 0 bài</span>
-          <span id="sidebarPlanProgressText" class="font-mono">0/0</span>
+          <span id="sidebarPlanProgressText" class="font-mono font-medium">0/0</span>
         </div>
-        <div class="w-full h-1.5 rounded-full bg-indigo-200/70 dark:bg-indigo-900/60 overflow-hidden">
-          <div id="sidebarPlanProgressBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <!-- Thanh tiến độ 6px với vạch chia nhỏ khi ≤ 10 bài -->
+        <div id="sidebarPlanProgressBarTrack" class="w-full h-1.5 rounded-full overflow-hidden relative" style="background-color: var(--plan-track);">
+          <div id="sidebarPlanProgressBar" class="h-full rounded-full transition-all duration-500" style="width: 0%; background-color: var(--plan-bar);" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Tiến độ kế hoạch"></div>
+          <div id="sidebarPlanProgressDividers" class="absolute inset-0 flex pointer-events-none"></div>
         </div>
+        <!-- Dòng phụ khi có thêm các kế hoạch khác -->
+        <div id="sidebarPlanOtherCountNotice" class="hidden text-[10px] opacity-75 pt-1.5 text-right font-medium hover:underline"></div>
       </div>
 
       <!-- // FEATURE-3: Thẻ Cần ôn hôm nay ở Sidebar -->
@@ -3424,8 +3568,9 @@
 
   <!-- MODAL: LỊCH THI & KẾ HOẠCH HỌC TẬP (STUDY PLAN DASHBOARD) -->
     <!-- MODAL: LỊCH THI & KẾ HOẠCH HỌC TẬP (REDESIGNED EDITORIAL / MINIMALIST) -->
+  <div id="planCompletionLiveAnnouncer" class="sr-only" aria-live="polite"></div>
   <div id="studyPlanModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white dark:bg-[#16181E] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-[640px] max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] transition-all">
+    <div id="studyPlanModalDialog" class="bg-white dark:bg-[#16181E] border-t sm:border border-[#E7E5DF] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-[640px] max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] transition-all">
       
       <!-- 1. HEADER (Cố định, nền kem #faf7f0 ở light, #16181E ở dark, đường kẻ dưới mảnh) -->
       <div class="p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF7F0] dark:bg-[#16181E]">
@@ -3489,12 +3634,18 @@
             
             <!-- Progress Bar mỏng 6px & tỉ lệ bài học -->
             <div class="space-y-1 pt-1">
-              <div class="w-full h-1.5 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
-                <div id="planDetailProgressBar" class="h-full bg-[#4F46E5] dark:bg-indigo-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div id="planDetailProgressBarTrack" class="w-full h-1.5 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden relative">
+                <div id="planDetailProgressBar" class="h-full bg-[#4F46E5] dark:bg-indigo-400 rounded-full transition-all duration-500" style="width: 0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                <div id="planDetailProgressDividers" class="absolute inset-0 flex pointer-events-none"></div>
               </div>
               <div class="flex items-center justify-between text-[11px] text-[#6E6B65] dark:text-[#979DA8]">
                 <span id="planProgressRatio">0/0 bài đã học</span>
                 <span id="planDailyCapNotice" class="text-[10px]"></span>
+              </div>
+              <!-- Dòng chúc mừng hoàn thành 100% trong hero card -->
+              <div id="planDetailCompletedRow" class="hidden items-center gap-1.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 pt-0.5">
+                <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                <span>Bạn đã hoàn thành kế hoạch này</span>
               </div>
             </div>
           </div>
@@ -8494,6 +8645,64 @@
       }
     }
 
+    const UI_CATEGORY_EXPANDED_KEY = 'ui_category_expanded';
+
+    function loadCategoryExpandedState() {
+      try {
+        const raw = localStorage.getItem(UI_CATEGORY_EXPANDED_KEY);
+        if (!raw) {
+          state.categoryExpanded = {};
+          return;
+        }
+        const data = JSON.parse(raw);
+        if (data && typeof data === 'object') {
+          const exp = data.expanded || data;
+          state.categoryExpanded = (typeof exp === 'object' && exp !== null) ? { ...exp } : {};
+        }
+      } catch (e) {
+        console.warn("Lỗi đọc ui_category_expanded:", e);
+        state.categoryExpanded = {};
+      }
+    }
+
+    function saveCategoryExpandedState() {
+      try {
+        const validCatIds = new Set((state.categories || []).map(c => c.id));
+        validCatIds.add('__uncategorized__');
+
+        const cleanedExpanded = {};
+        for (const [cid, val] of Object.entries(state.categoryExpanded || {})) {
+          if (validCatIds.has(cid)) {
+            cleanedExpanded[cid] = Boolean(val);
+          }
+        }
+        state.categoryExpanded = cleanedExpanded;
+
+        const payload = {
+          schemaVersion: 1,
+          expanded: cleanedExpanded,
+          updatedAt: Date.now()
+        };
+        localStorage.setItem(UI_CATEGORY_EXPANDED_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn("Lỗi lưu ui_category_expanded:", e);
+      }
+    }
+
+    function pruneCategoryExpandedState() {
+      if (!state.categoryExpanded) return;
+      const validCatIds = new Set((state.categories || []).map(c => c.id));
+      validCatIds.add('__uncategorized__');
+      let changed = false;
+      for (const cid of Object.keys(state.categoryExpanded)) {
+        if (!validCatIds.has(cid)) {
+          delete state.categoryExpanded[cid];
+          changed = true;
+        }
+      }
+      if (changed) saveCategoryExpandedState();
+    }
+
     function loadLocalState() {
       state.useLocalFallback = true;
       try {
@@ -8519,6 +8728,10 @@
 
         // Tự động dọn dẹp dữ liệu rác/trùng lặp
         autoCleanupDuplicateData();
+
+        // Tải trạng thái đóng/mở từng mục đồng bộ trước khi render
+        loadCategoryExpandedState();
+        pruneCategoryExpandedState();
 
         try {
           loadLocalStudyPlans();
@@ -11468,6 +11681,7 @@
           const currentlyExpanded = gridEl ? gridEl.classList.contains('is-expanded') : (state.categoryExpanded[catId] !== false);
           const nextExpanded = !currentlyExpanded;
           state.categoryExpanded[catId] = nextExpanded;
+          saveCategoryExpandedState();
 
           if (gridEl) {
             if (nextExpanded) {
@@ -12151,6 +12365,45 @@
       renderActiveLesson();
       saveLocalLessons();
 
+      // Đồng bộ trạng thái đã học với các Kế hoạch học tập tức thời (Live Sync)
+      if (updateFields.isCompleted !== undefined && state.studyPlans && state.studyPlans.length > 0) {
+        let plansChanged = false;
+        state.studyPlans.forEach(p => {
+          if (p.lessonIds && p.lessonIds.includes(lessonId)) {
+            if (!p.completedLessonIds) p.completedLessonIds = [];
+            const has = p.completedLessonIds.includes(lessonId);
+            if (updateFields.isCompleted && !has) {
+              p.completedLessonIds.push(lessonId);
+              p.updatedAt = new Date().toISOString();
+              plansChanged = true;
+              if (p.completedLessonIds.length === p.lessonIds.length && p.lessonIds.length > 0) {
+                if (typeof plansCompletedInSession !== 'undefined') {
+                  plansCompletedInSession.add(p.id);
+                }
+              }
+            } else if (!updateFields.isCompleted && has) {
+              p.completedLessonIds = p.completedLessonIds.filter(id => id !== lessonId);
+              p.updatedAt = new Date().toISOString();
+              plansChanged = true;
+              if (typeof plansCompletedInSession !== 'undefined') {
+                plansCompletedInSession.delete(p.id);
+              }
+            }
+          }
+        });
+        if (plansChanged) {
+          saveLocalStudyPlans();
+          try {
+            renderStudyPlanWidget();
+          } catch (_) {}
+          try {
+            if (selectedActivePlanId && document.getElementById('studyPlanModal') && !document.getElementById('studyPlanModal').classList.contains('hidden')) {
+              renderStudyPlanDetail(selectedActivePlanId);
+            }
+          } catch (_) {}
+        }
+      }
+
       if (state.useLocalFallback || !db || !state.userId) {
         return;
       }
@@ -12224,6 +12477,7 @@
 
       state.categories = state.categories.filter(c => c.id !== categoryId);
       state.lessons = state.lessons.filter(l => l.categoryId !== categoryId);
+      pruneCategoryExpandedState();
 
       if (state.activeCategoryId === categoryId) {
         state.activeCategoryId = state.categories[0] ? state.categories[0].id : null;
@@ -13147,6 +13401,18 @@
       pendingSearchJump = payload;
       selectLesson(lessonId);
 
+      // Bung tạm thời trên DOM nếu mục đang thu gọn để người dùng thấy vị trí (không lưu vào localStorage)
+      const targetLesson = state.lessons.find(l => l.id === lessonId);
+      if (targetLesson) {
+        const catId = targetLesson.categoryId || '__uncategorized__';
+        if (state.categoryExpanded[catId] === false) {
+          const gridEl = document.querySelector(`[data-cat-grid="${catId}"]`);
+          const headerEl = document.querySelector(`[data-toggle-cat="${catId}"]`);
+          if (gridEl) gridEl.classList.add('is-expanded');
+          if (headerEl) headerEl.classList.add('is-expanded');
+        }
+      }
+
       // Dự phòng nếu iframe không gửi BRIDGE_READY
       setTimeout(() => {
         if (pendingSearchJump) {
@@ -14067,6 +14333,39 @@
     // SECTION: LỊCH THI & KẾ HOẠCH HỌC TẬP (STUDY PLANS ENGINE & TESTING)
     // =========================================================================
 
+    const PLAN_URGENCY = { soonDays: 14, urgentDays: 7 };
+    const plansCompletedInSession = new Set();
+
+    function getPlanUrgencyLevel(plan, sched) {
+      if (sched.totalLessons > 0 && sched.completedCount === sched.totalLessons) {
+        return 'done';
+      }
+      if (sched.isPast) {
+        return 'passed';
+      }
+      if (sched.isTodayExam || sched.daysLeft <= PLAN_URGENCY.urgentDays) {
+        return 'urgent';
+      }
+      if (sched.daysLeft <= PLAN_URGENCY.soonDays) {
+        return 'soon';
+      }
+      return 'safe';
+    }
+
+    function updateProgressDividers(containerEl, totalCount) {
+      if (!containerEl) return;
+      if (!totalCount || totalCount <= 1 || totalCount > 10) {
+        containerEl.innerHTML = '';
+        return;
+      }
+      let html = '';
+      for (let i = 1; i < totalCount; i++) {
+        const leftPct = (i / totalCount) * 100;
+        html += `<span class="absolute top-0 bottom-0 w-[1px] bg-white/70 dark:bg-black/50 pointer-events-none" style="left: ${leftPct}%;"></span>`;
+      }
+      containerEl.innerHTML = html;
+    }
+
     function calculateStudyPlanSchedule(plan, todayStr, completedLessonIds) {
       const today = parseDateOnly(todayStr);
       const examDate = parseDateOnly(plan.examDate || todayStr);
@@ -14658,6 +14957,7 @@
           state.activeCategoryId = newCatId;
           // // FIX-1: Mục mới luôn ở trạng thái mở sẵn
           state.categoryExpanded[newCatId] = true;
+          saveCategoryExpandedState();
           renderCategoriesAndLessons();
           saveLocalCategories();
 
@@ -14945,27 +15245,6 @@
           state.learningData.analytics.dailyActivity[today].lessonsCompleted = 
             (state.learningData.analytics.dailyActivity[today].lessonsCompleted || 0) + 1;
           saveLearningData();
-
-          // Đồng bộ trạng thái đã học với các Kế hoạch học tập
-          if (state.studyPlans && state.studyPlans.length > 0) {
-            let planChanged = false;
-            state.studyPlans.forEach(p => {
-              if (p.lessonIds && p.lessonIds.includes(cur.id)) {
-                if (!p.completedLessonIds) p.completedLessonIds = [];
-                if (targetState && !p.completedLessonIds.includes(cur.id)) {
-                  p.completedLessonIds.push(cur.id);
-                  planChanged = true;
-                } else if (!targetState && p.completedLessonIds.includes(cur.id)) {
-                  p.completedLessonIds = p.completedLessonIds.filter(id => id !== cur.id);
-                  planChanged = true;
-                }
-              }
-            });
-            if (planChanged) {
-              saveLocalStudyPlans();
-              renderStudyPlanWidget();
-            }
-          }
         } catch (_) {}
       }
     });
@@ -16086,54 +16365,100 @@
     }
 
     function renderStudyPlanWidget() {
-      const activePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
+      const allActivePlans = (state.studyPlans || []).filter(p => !p.deleted && !p.archived);
       const todayStr = getTodayDateStr();
 
       // Check badge on toolbar button
       if (headerBadge) {
-        const hasUrgent = activePlans.some(p => {
+        const hasUrgent = allActivePlans.some(p => {
           const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
-          return (sc.daysLeft <= 3 && !sc.isPast) || sc.todayRequiredCount > 0;
+          return (sc.daysLeft <= PLAN_URGENCY.urgentDays && !sc.isPast) || sc.todayRequiredCount > 0;
         });
         if (hasUrgent) headerBadge.classList.remove('hidden');
         else headerBadge.classList.add('hidden');
       }
 
-      if (activePlans.length === 0) {
+      if (allActivePlans.length === 0) {
         if (sidebarWidget) sidebarWidget.classList.add('hidden');
         if (emptyWidget) emptyWidget.classList.add('hidden');
         return;
       }
 
-      // Lấy kế hoạch gần nhất
+      // Sắp xếp: Kế hoạch chưa kết thúc có ngày thi gần nhất lên trước
+      const activePlans = [...allActivePlans].sort((a, b) => {
+        const schedA = calculateStudyPlanSchedule(a, todayStr, a.completedLessonIds || []);
+        const schedB = calculateStudyPlanSchedule(b, todayStr, b.completedLessonIds || []);
+        if (schedA.isPast && !schedB.isPast) return 1;
+        if (!schedA.isPast && schedB.isPast) return -1;
+        return schedA.daysLeft - schedB.daysLeft;
+      });
+
       const plan = activePlans[0];
       const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+      const urgency = getPlanUrgencyLevel(plan, sched);
 
       // Sidebar widget
       if (sidebarWidget) {
         sidebarWidget.classList.remove('hidden');
+        sidebarWidget.setAttribute('data-urgency', urgency);
+
         const nameEl = document.getElementById('sidebarPlanName');
         const badgeEl = document.getElementById('sidebarPlanCountdownBadge');
         const todayEl = document.getElementById('sidebarPlanTodayText');
         const progTextEl = document.getElementById('sidebarPlanProgressText');
         const barEl = document.getElementById('sidebarPlanProgressBar');
+        const dividersEl = document.getElementById('sidebarPlanProgressDividers');
+        const otherNoticeEl = document.getElementById('sidebarPlanOtherCountNotice');
 
-        if (nameEl) nameEl.innerText = plan.name;
+        if (nameEl) {
+          nameEl.innerText = plan.name;
+          nameEl.setAttribute('title', plan.name);
+        }
+
         if (badgeEl) {
-          if (sched.isTodayExam) {
-            badgeEl.innerText = "Hôm nay thi!";
-            badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-600 text-white font-mono";
+          const isPop = plansCompletedInSession.has(plan.id);
+          if (urgency === 'done') {
+            badgeEl.innerHTML = `<svg class="w-3 h-3 inline-block mr-0.5 ${isPop ? 'anim-check-pop' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hoàn thành`;
+          } else if (sched.isTodayExam) {
+            badgeEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Hôm nay thi`;
+          } else if (sched.daysLeft === 1) {
+            badgeEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Ngày mai thi`;
           } else if (sched.isPast) {
             badgeEl.innerText = "Đã kết thúc";
-            badgeEl.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-500 text-white font-mono";
           } else {
-            badgeEl.innerText = `còn ${sched.daysLeft} ngày`;
-            badgeEl.className = `px-1.5 py-0.5 rounded text-[10px] font-bold ${sched.daysLeft <= 3 ? 'bg-rose-600' : sched.daysLeft <= 7 ? 'bg-amber-600' : 'bg-indigo-600'} text-white font-mono`;
+            const warningDot = (urgency === 'urgent') ? `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>` : '';
+            badgeEl.innerHTML = `${warningDot}còn ${sched.daysLeft} ngày`;
           }
         }
-        if (todayEl) todayEl.innerText = `Hôm nay: ${sched.todayRequiredCount} bài`;
+
+        if (todayEl) {
+          if (urgency === 'done') {
+            todayEl.innerText = "Đã xong toàn bộ";
+          } else {
+            todayEl.innerText = `Hôm nay: ${sched.todayRequiredCount} bài`;
+          }
+        }
         if (progTextEl) progTextEl.innerText = `${sched.completedCount}/${sched.totalLessons}`;
-        if (barEl) barEl.style.width = `${sched.percentCompleted}%`;
+        if (barEl) {
+          barEl.style.width = `${sched.percentCompleted}%`;
+          barEl.setAttribute('aria-valuenow', sched.percentCompleted);
+        }
+        if (dividersEl) {
+          updateProgressDividers(dividersEl, sched.totalLessons);
+        }
+
+        if (otherNoticeEl) {
+          if (activePlans.length > 1) {
+            otherNoticeEl.classList.remove('hidden');
+            otherNoticeEl.innerText = `+${activePlans.length - 1} kế hoạch khác`;
+            otherNoticeEl.onclick = (e) => {
+              e.stopPropagation();
+              openStudyPlanModal();
+            };
+          } else {
+            otherNoticeEl.classList.add('hidden');
+          }
+        }
 
         sidebarWidget.onclick = () => openStudyPlanModal(plan.id);
       }
@@ -16150,10 +16475,15 @@
 
         if (eTitle) eTitle.innerText = plan.name;
         if (eDays) eDays.innerText = sched.daysLeft >= 0 ? sched.daysLeft : 0;
-        if (eToday) eToday.innerText = `Hôm nay cần học: ${sched.todayRequiredCount} bài`;
+        if (eToday) eToday.innerText = (urgency === 'done') ? "Đã xong toàn bộ" : `Hôm nay cần học: ${sched.todayRequiredCount} bài`;
         if (ePace) {
-          ePace.innerText = sched.paceText;
-          ePace.className = `text-[10px] px-1.5 py-0.5 rounded font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'}`;
+          if (urgency === 'done') {
+            ePace.innerText = "Hoàn thành";
+            ePace.className = "text-[10px] px-1.5 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300";
+          } else {
+            ePace.innerText = sched.paceText;
+            ePace.className = `text-[10px] px-1.5 py-0.5 rounded font-semibold ${sched.paceStatus === 'ahead' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : sched.paceStatus === 'behind' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300' : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'}`;
+          }
         }
         if (eBar) eBar.style.width = `${sched.percentCompleted}%`;
         if (eBtn) eBtn.onclick = () => openStudyPlanModal(plan.id);
@@ -16199,6 +16529,7 @@
       selectedActivePlanId = plan.id;
       const todayStr = getTodayDateStr();
       const sched = calculateStudyPlanSchedule(plan, todayStr, plan.completedLessonIds || []);
+      const urgency = getPlanUrgencyLevel(plan, sched);
 
       // 1. HERO COUNTDOWN CARD
       const heroCard = document.getElementById('planHeroCard');
@@ -16210,32 +16541,77 @@
       const paceBadge = document.getElementById('planPaceStatusBadge');
       const progressBar = document.getElementById('planDetailProgressBar');
       const progressRatio = document.getElementById('planProgressRatio');
+      const heroDividersEl = document.getElementById('planDetailProgressDividers');
+      const completedRow = document.getElementById('planDetailCompletedRow');
+      const modalDialog = document.getElementById('studyPlanModalDialog');
 
       if (planNameEl) planNameEl.innerText = plan.name;
       if (planMetaEl) planMetaEl.innerText = `Thi ${formatVietnameseDateOnly(plan.examDate)}`;
-      if (progressBar) progressBar.style.width = `${sched.percentCompleted}%`;
+      if (progressBar) {
+        progressBar.style.width = `${sched.percentCompleted}%`;
+        progressBar.setAttribute('aria-valuenow', sched.percentCompleted);
+      }
       if (progressRatio) progressRatio.innerText = `${sched.completedCount}/${sched.totalLessons} bài đã học`;
 
-      // Hero styling & badge based on status
+      if (heroDividersEl) {
+        updateProgressDividers(heroDividersEl, sched.totalLessons);
+      }
+
+      // Gắn data-urgency lên heroCard
       if (heroCard) {
-        heroCard.className = "relative rounded-[14px] bg-[#F5F6FF] dark:bg-[#1A1D28] border border-[#DFE2FF] dark:border-[#2A3045] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-all duration-200";
-        if (sched.isTodayExam) {
-          heroCard.classList.add('bg-amber-50/80', 'dark:bg-amber-950/30', '!border-amber-300', 'dark:!border-amber-900/60');
-        } else if (sched.daysLeft <= 3 && !sched.isPast) {
-          heroCard.classList.add('!border-rose-300', 'dark:!border-rose-900/60');
+        heroCard.setAttribute('data-urgency', urgency);
+      }
+
+      // Viền xanh hoàn thành bao quanh khung popup modal
+      if (modalDialog) {
+        if (urgency === 'done') {
+          modalDialog.classList.add('study-plan-modal-completed-border');
+        } else {
+          modalDialog.classList.remove('study-plan-modal-completed-border');
         }
       }
 
+      // Dòng chúc mừng hoàn thành trong hero
+      if (completedRow) {
+        if (urgency === 'done') {
+          completedRow.classList.remove('hidden');
+          completedRow.classList.add('flex');
+          const announcer = document.getElementById('planCompletionLiveAnnouncer');
+          if (announcer) {
+            announcer.innerText = `Chúc mừng! Bạn đã hoàn thành toàn bộ bài học trong kế hoạch ${plan.name}.`;
+          }
+        } else {
+          completedRow.classList.add('hidden');
+          completedRow.classList.remove('flex');
+        }
+      }
+
+      // Màu viền vòng đếm ngược theo urgency
+      const isDark = document.documentElement.classList.contains('dark');
+      let ringStrokeColor = '#16a34a';
+      if (urgency === 'soon') {
+        ringStrokeColor = isDark ? '#fbbf24' : '#f59e0b';
+      } else if (urgency === 'urgent') {
+        ringStrokeColor = isDark ? '#f43f5e' : '#e11d48';
+      } else if (urgency === 'passed') {
+        ringStrokeColor = isDark ? '#94a3b8' : '#9ca3af';
+      } else {
+        ringStrokeColor = isDark ? '#22c55e' : '#16a34a';
+      }
+
       if (paceBadge) {
-        if (sched.isTodayExam) {
+        if (urgency === 'done') {
+          paceBadge.innerHTML = `<svg class="w-3 h-3 inline-block mr-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hoàn thành`;
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/60 dark:text-emerald-300";
+        } else if (sched.isTodayExam) {
           paceBadge.innerText = "Hôm nay thi!";
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300";
+          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#9F1239] dark:bg-rose-950/60 dark:text-rose-300";
         } else if (sched.isPast) {
           paceBadge.innerText = "Đã kết thúc";
           paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
         } else if (sched.todayRequiredCount > 0) {
           paceBadge.innerText = `Hôm nay ${sched.todayRequiredCount} bài`;
-          paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950/50 dark:text-amber-300";
+          paceBadge.className = `self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${urgency === 'urgent' ? 'bg-[#FFE4E6] text-[#9F1239] dark:bg-rose-950/50 dark:text-rose-300' : 'bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950/50 dark:text-amber-300'}`;
         } else if (sched.paceStatus === 'ahead') {
           paceBadge.innerText = sched.paceText;
           paceBadge.className = "self-center sm:self-auto px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E0F2FE] text-[#0369A1] dark:bg-sky-950/50 dark:text-sky-300";
@@ -16256,15 +16632,20 @@
       const totalPlanDays = Math.max(1, Math.round((examDateObj.getTime() - createdDate.getTime()) / 86400000));
       const elapsedDays = Math.max(0, Math.round((todayObj.getTime() - createdDate.getTime()) / 86400000));
       const progressFraction = Math.min(1, Math.max(0, elapsedDays / totalPlanDays));
-      const targetOffset = C * (1 - progressFraction);
+      const targetOffset = (urgency === 'done') ? 0 : C * (1 - progressFraction);
 
       if (ringDaysNumber && ringDaysLabel) {
-        if (sched.isTodayExam) {
+        if (urgency === 'done') {
+          const isPop = plansCompletedInSession.has(plan.id);
+          ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-7 h-7 text-emerald-600 dark:text-emerald-400 mx-auto ${isPop ? 'anim-check-pop' : ''}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
+          ringDaysLabel.innerText = "HOÀN THÀNH";
+          ringDaysLabel.className = "text-[10px] font-bold text-emerald-700 dark:text-emerald-400 leading-none mt-1";
+        } else if (sched.isTodayExam) {
           ringDaysNumber.innerText = "Hôm nay";
-          ringDaysNumber.className = "text-[14px] font-bold text-amber-600 dark:text-amber-400 leading-none";
+          ringDaysNumber.className = "text-[14px] font-bold text-rose-600 dark:text-rose-400 leading-none";
           ringDaysLabel.innerText = "THI";
         } else if (sched.isPast) {
-          ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-6 h-6 text-emerald-600 dark:text-emerald-400 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
+          ringDaysNumber.innerHTML = `<svg viewBox="0 0 24 24" class="w-6 h-6 text-gray-500 dark:text-gray-400 mx-auto" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`;
           ringDaysLabel.innerText = "Đã qua";
         } else {
           ringDaysNumber.innerText = sched.daysLeft;
@@ -16274,6 +16655,7 @@
       }
 
       if (ringCircle) {
+        ringCircle.style.stroke = ringStrokeColor;
         ringCircle.style.strokeDasharray = `${C}`;
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (isInitialOpen && !prefersReduced) {
@@ -16731,6 +17113,17 @@
         counterEl.innerText = `${completedInDay}/${scheduledLessonIds.length}`;
       }
 
+      if (sched.totalLessons > 0 && sched.completedCount === sched.totalLessons) {
+        listEl.innerHTML = `
+          <div class="py-6 px-4 text-center text-[#6E6B65] dark:text-[#979DA8] space-y-1.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
+            <svg viewBox="0 0 24 24" class="w-8 h-8 mx-auto text-emerald-500" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            <p class="font-bold text-xs text-emerald-700 dark:text-emerald-400">Không còn bài nào cần học</p>
+            <p class="text-[11px]">Bạn đã hoàn thành 100% mục tiêu của kế hoạch này!</p>
+          </div>
+        `;
+        return;
+      }
+
       if (scheduledLessonIds.length === 0) {
         listEl.innerHTML = `
           <div class="py-6 px-4 text-center text-[#6E6B65] dark:text-[#979DA8] space-y-1.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
@@ -16802,49 +17195,65 @@
 
       allList.innerHTML = activePlans.map(p => {
         const sc = calculateStudyPlanSchedule(p, todayStr, p.completedLessonIds || []);
+        const pUrgency = getPlanUrgencyLevel(p, sc);
         const isSelected = (p.id === currentPlan.id);
 
         let badgeHtml = '';
-        if (sc.isTodayExam) {
-          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">Hôm nay thi</span>`;
+        if (pUrgency === 'done') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300">Hoàn thành</span>`;
+        } else if (sc.isTodayExam) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300">Hôm nay thi</span>`;
         } else if (sc.isPast) {
           badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">Đã kết thúc</span>`;
-        } else if (sc.daysLeft <= 3) {
+        } else if (pUrgency === 'urgent') {
           badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFE4E6] text-[#BE123C] dark:bg-rose-950/50 dark:text-rose-300">còn ${sc.daysLeft} ngày</span>`;
+        } else if (pUrgency === 'soon') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950/50 dark:text-amber-300">còn ${sc.daysLeft} ngày</span>`;
         } else {
-          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] bg-black/5 dark:bg-white/5">còn ${sc.daysLeft} ngày</span>`;
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DCFCE7] text-[#15803D] dark:bg-emerald-950/50 dark:text-emerald-300">còn ${sc.daysLeft} ngày</span>`;
         }
 
+        let barColor = '#16a34a';
+        if (pUrgency === 'soon') barColor = '#f59e0b';
+        else if (pUrgency === 'urgent') barColor = '#e11d48';
+        else if (pUrgency === 'passed') barColor = '#9ca3af';
+
         return `
-          <div class="py-2.5 px-2 flex items-center justify-between gap-2.5 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition rounded-xl cursor-pointer ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-950/20' : ''}" data-select-plan="${p.id}">
-            <div class="flex items-center gap-2.5 min-w-0 flex-1">
-              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${p.color || '#4F46E5'}"></span>
-              <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate">${escapeHtml(p.name)}</span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-              ${badgeHtml}
-              <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${sc.completedCount}/${sc.totalLessons} bài</span>
-              
-              <!-- Nút 3 chấm mở action menu nhỏ -->
-              <div class="relative plan-action-menu-anchor">
-                <button type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] transition plan-action-trigger" data-plan-id="${p.id}" aria-label="Thao tác kế hoạch">
-                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/></svg>
-                </button>
-                <div class="plan-action-dropdown hidden absolute right-0 top-full mt-1 z-30 w-36 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-lg py-1 text-xs select-none">
-                  <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-edit" data-plan-id="${p.id}">
-                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                    <span>Sửa kế hoạch</span>
+          <div class="py-2.5 px-2 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition rounded-xl cursor-pointer ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-950/20' : ''}" data-select-plan="${p.id}">
+            <div class="flex items-center justify-between gap-2.5">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${p.color || '#4F46E5'}"></span>
+                <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate">${escapeHtml(p.name)}</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                ${badgeHtml}
+                <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${sc.completedCount}/${sc.totalLessons} bài</span>
+                
+                <!-- Nút 3 chấm mở action menu nhỏ -->
+                <div class="relative plan-action-menu-anchor">
+                  <button type="button" class="touch-target w-8 h-8 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] transition plan-action-trigger" data-plan-id="${p.id}" aria-label="Thao tác kế hoạch">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/></svg>
                   </button>
-                  <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-archive" data-plan-id="${p.id}">
-                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
-                    <span>Lưu trữ</span>
-                  </button>
-                  <button type="button" class="w-full px-3 py-1.5 text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 plan-opt-delete" data-plan-id="${p.id}">
-                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                    <span>Xóa</span>
-                  </button>
+                  <div class="plan-action-dropdown hidden absolute right-0 top-full mt-1 z-30 w-36 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-lg py-1 text-xs select-none">
+                    <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-edit" data-plan-id="${p.id}">
+                      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                      <span>Sửa kế hoạch</span>
+                    </button>
+                    <button type="button" class="w-full px-3 py-1.5 text-left text-[#1C1917] dark:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 plan-opt-archive" data-plan-id="${p.id}">
+                      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+                      <span>Lưu trữ</span>
+                    </button>
+                    <button type="button" class="w-full px-3 py-1.5 text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 plan-opt-delete" data-plan-id="${p.id}">
+                      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                      <span>Xóa</span>
+                    </button>
+                  </div>
                 </div>
               </div>
+            </div>
+            <!-- Mini progress bar 3px -->
+            <div class="w-full h-[3px] rounded-full bg-black/5 dark:bg-white/10 overflow-hidden mt-1.5 relative">
+              <div class="h-full rounded-full transition-all duration-300" style="width: ${sc.percentCompleted}%; background-color: ${barColor};"></div>
             </div>
           </div>
         `;
@@ -17095,13 +17504,9 @@
       if (!plan.completedLessonIds) plan.completedLessonIds = [];
 
       const isDone = plan.completedLessonIds.includes(lessonId);
-      if (isDone) {
-        plan.completedLessonIds = plan.completedLessonIds.filter(id => id !== lessonId);
-        await updateLessonField(lessonId, { isCompleted: false });
-      } else {
-        plan.completedLessonIds.push(lessonId);
-        await updateLessonField(lessonId, { isCompleted: true });
+      const targetState = !isDone;
 
+      if (targetState) {
         // Tăng dailyActivity một lần duy nhất
         const today = getTodayDateStr();
         if (!state.learningData.analytics.dailyActivity[today]) {
@@ -17113,8 +17518,7 @@
         shootMicroConfetti(document.getElementById('studyPlanModal') || document.body);
       }
 
-      plan.updatedAt = new Date().toISOString();
-      saveLocalStudyPlans();
+      await updateLessonField(lessonId, { isCompleted: targetState });
       renderStudyPlanDetail(plan.id);
       renderStudyPlanWidget();
       renderCategoriesAndLessons();
@@ -17497,17 +17901,36 @@
       bootApp();
     }
 
-    // Đảm bảo dữ liệu kế hoạch được ghi lại ngay khi ẩn tab hoặc đóng trang
+    // Đảm bảo dữ liệu kế hoạch và UI state được ghi lại ngay khi ẩn tab hoặc đóng trang
     window.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
+        try { saveCategoryExpandedState(); } catch (_) {}
         try { saveLocalStudyPlans(); } catch (_) {}
         try { saveLearningData(); } catch (_) {}
+      } else if (document.visibilityState === 'visible') {
+        try { checkStudyPlanDateChange(); } catch (_) {}
       }
     });
     window.addEventListener('pagehide', () => {
+      try { saveCategoryExpandedState(); } catch (_) {}
       try { saveLocalStudyPlans(); } catch (_) {}
       try { saveLearningData(); } catch (_) {}
     });
+
+    let lastStudyPlanCheckDate = getTodayDateStr();
+    function checkStudyPlanDateChange() {
+      const today = getTodayDateStr();
+      if (today !== lastStudyPlanCheckDate) {
+        lastStudyPlanCheckDate = today;
+        try { renderStudyPlanWidget(); } catch (_) {}
+        try {
+          if (selectedActivePlanId && document.getElementById('studyPlanModal') && !document.getElementById('studyPlanModal').classList.contains('hidden')) {
+            renderStudyPlanDetail(selectedActivePlanId);
+          }
+        } catch (_) {}
+      }
+    }
+    setInterval(checkStudyPlanDateChange, 60000);
   
     // // FIX-1: Tương tác đóng/mở & tự động căn chỉnh vị trí popover "Hiển thị" chống tràn mép
     const btnDisplaySettingsToggle = document.getElementById('btnDisplaySettingsToggle');
@@ -21516,8 +21939,16 @@
     window.closeSearchCommandPalette = closeSearchCommandPalette;
     window.setStudyPlanCalendarView = setStudyPlanCalendarView;
     window.renderMonthView = renderMonthView;
+    window.loadCategoryExpandedState = loadCategoryExpandedState;
+    window.saveCategoryExpandedState = saveCategoryExpandedState;
+    window.pruneCategoryExpandedState = pruneCategoryExpandedState;
+    window.getPlanUrgencyLevel = getPlanUrgencyLevel;
+    window.renderCategoriesAndLessons = renderCategoriesAndLessons;
+    window.updateLessonField = updateLessonField;
+    window.PLAN_URGENCY = PLAN_URGENCY;
+    window.plansCompletedInSession = plansCompletedInSession;
 
-    console.log("%c Thư viện Sách HTML v4.4.0 - build 09/10/2026 10:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.4.2 - build 09/10/2026 15:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
