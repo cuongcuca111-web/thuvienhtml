@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.7.2';
+    const CURRENT_APP_VERSION = 'v4.7.3';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -213,7 +213,7 @@
           name: errName,
           message: errMsg,
           stack: errStack,
-          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.7.2',
+          appVersion: typeof CURRENT_APP_VERSION !== 'undefined' ? CURRENT_APP_VERSION : 'v4.7.3',
           url: window.location.href,
           userAgent: navigator.userAgent
         };
@@ -2531,9 +2531,13 @@
           </button>
           <!-- Popover chọn sắp xếp -->
           <div id="sortOrderDropdownMenu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-1.5 space-y-0.5 text-xs">
-            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-between cursor-pointer" data-sort="newest">
-              <span>Mới thêm</span>
+            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-between cursor-pointer" data-sort="manual">
+              <span>Thủ công (mặc định)</span>
               <span class="sort-check text-indigo-600">✓</span>
+            </button>
+            <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between cursor-pointer" data-sort="newest">
+              <span>Mới thêm</span>
+              <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
             <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between cursor-pointer" data-sort="recent">
               <span>Mở gần đây</span>
@@ -2666,7 +2670,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.7.2 - build 09/10/2026
+        Thư viện Sách HTML v4.7.3 - build 09/10/2026
       </div>
     </aside>
 
@@ -3019,7 +3023,7 @@
 
               <iframe 
                 id="lessonIframe" 
-                sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" 
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms" 
                 scrolling="no" 
                 class="w-full border-0 transition-opacity duration-150 block" 
                 style="min-height: 400px; background-color: transparent;" 
@@ -3222,7 +3226,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.7.2 - build 09/10/2026
+      Thư viện Sách HTML v4.7.3 - build 09/10/2026
     </div>
   </div>
 
@@ -3373,6 +3377,9 @@
       <button class="hl-color-btn w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer" style="background-color: #059669;" data-color="green" title="Khung màu Xanh"></button>
       <button class="hl-color-btn w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer" style="background-color: #db2777;" data-color="pink" title="Khung màu Hồng"></button>
       <button class="hl-color-btn w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer" style="background-color: #7c3aed;" data-color="purple" title="Khung màu Tím"></button>
+      <label id="btnCustomColorLabel" class="relative w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer flex items-center justify-center overflow-hidden" title="Chọn màu tùy ý" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);">
+        <input type="color" id="customFrameColorInput" class="opacity-0 w-0 h-0 absolute cursor-pointer" value="#6366f1" />
+      </label>
     </div>
 
     <!-- Nút Thêm Ghi chú -->
@@ -3472,6 +3479,7 @@
           <!-- Lọc theo bài học -->
           <select id="notesLessonFilterSelect" class="text-xs px-2.5 py-2 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0" title="Phạm vi hiển thị">
             <option value="all">Toàn thư viện</option>
+            <option value="category">Mục hiện tại</option>
             <option value="current">Bài đang đọc</option>
           </select>
         </div>
@@ -5635,6 +5643,14 @@
     }
     window.saveLessons = saveLessons;
     window.saveLessonsState = saveLessons;
+    window.applyFramingToCurrentSelection = applyFramingToCurrentSelection;
+    window.restoreFramesForLesson = restoreFramesForLesson;
+    window.moveLessonOrder = moveLessonOrder;
+    window.moveCategoryOrder = moveCategoryOrder;
+    window.recalculateOrdersForCategory = recalculateOrdersForCategory;
+    window.jumpToHighlight = jumpToHighlight;
+    window.autoMigrateLessonOrders = autoMigrateLessonOrders;
+
 
     // Các hàm tương thích alias để chống lỗi ReferenceError hàm chưa định nghĩa
     function goToAdjacentLesson(direction) {
@@ -5912,7 +5928,7 @@
       transitionDirection: 0, // // ANIM: 1: bài sau, -1: bài trước, 0: trực tiếp
       tags: [], // // FEATURE-6: Danh sách nhãn [{ id, name, color }]
       selectedTagIds: [], // // FEATURE-6: Bộ lọc nhãn đang chọn
-      sortOrder: 'newest', // // FEATURE-6: Thứ tự sắp xếp ('newest' | 'recent' | 'unlearned' | 'name')
+      sortOrder: 'manual', // // FEATURE-6: Thứ tự sắp xếp ('manual' | 'newest' | 'recent' | 'unlearned' | 'name')
       isBatchSelectingLessons: false, // // FEATURE-7: Trạng thái chọn nhiều bài trong mục lục
       selectedLessonIds: new Set(), // // FEATURE-7: Tập hợp ID bài đang chọn
       trash: [], // // FEATURE-8: Thùng rác [{ id, type, item, deletedAt, expiresAt, relatedData }]
@@ -7168,8 +7184,239 @@
       box-sizing: border-box !important;
       transition: top 0.15s ease-out, left 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out, opacity 0.3s ease;
     }
+
+    /* Đóng khung văn bản chịu lỗi cao (Text Framing) */
+    .text-frame {
+      box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22));
+      border-radius: 6px;
+      background-color: var(--frame-bg, rgba(217, 119, 6, 0.08));
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      padding: 1px 2px;
+      margin: 0;
+      line-height: inherit !important;
+      display: inline;
+      position: relative;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    .text-frame:hover {
+      filter: brightness(0.96);
+    }
+    .frame-corner-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 1px 4px;
+      margin-right: 4px;
+      border-radius: 4px;
+      vertical-align: baseline;
+      user-select: none;
+      cursor: pointer;
+      opacity: 0.9;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .frame-corner-badge:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    @keyframes frameFlashPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
+      50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
+      100% { transform: scale(1); box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22)); }
+    }
+    .frame-flash-highlight {
+      animation: frameFlashPulse 1.8s ease-out 1 !important;
+    }
+    html.hide-text-frames .text-frame, body.hide-text-frames .text-frame {
+      box-shadow: none !important;
+      background-color: transparent !important;
+    }
+    html.hide-frame-badges .frame-corner-badge, body.hide-frame-badges .frame-corner-badge {
+      display: none !important;
+    }
   \`;
   (document.head || document.documentElement).appendChild(bridgeStyle);
+
+  const PALETTE = {
+    yellow: { border: '#d97706', glow: 'rgba(217, 119, 6, 0.25)', bg: 'rgba(217, 119, 6, 0.08)', badgeBg: '#fef3c7', badgeText: '#92400e', badgeBorder: '#f59e0b' },
+    green: { border: '#059669', glow: 'rgba(5, 150, 105, 0.25)', bg: 'rgba(5, 150, 105, 0.08)', badgeBg: '#d1fae5', badgeText: '#065f46', badgeBorder: '#10b981' },
+    pink: { border: '#db2777', glow: 'rgba(219, 39, 119, 0.25)', bg: 'rgba(219, 39, 119, 0.08)', badgeBg: '#fce7f3', badgeText: '#9d174d', badgeBorder: '#ec4899' },
+    purple: { border: '#7c3aed', glow: 'rgba(124, 58, 237, 0.25)', bg: 'rgba(124, 58, 237, 0.08)', badgeBg: '#ede9fe', badgeText: '#5b21b6', badgeBorder: '#8b5cf6' }
+  };
+
+  function getPaletteColors(colorName, customHex) {
+    if (customHex && typeof customHex === 'string' && customHex.startsWith('#')) {
+      return {
+        border: customHex,
+        glow: customHex + '40',
+        bg: customHex + '18',
+        badgeBg: customHex + '22',
+        badgeText: customHex,
+        badgeBorder: customHex
+      };
+    }
+    return PALETTE[colorName] || PALETTE.yellow;
+  }
+
+  function styleFrameElement(span, badge, colorName, customHex, labelText, noteText) {
+    const col = getPaletteColors(colorName, customHex);
+    span.style.setProperty('--frame-color', col.border);
+    span.style.setProperty('--frame-glow', col.glow);
+    span.style.setProperty('--frame-bg', col.bg);
+    if (noteText) {
+      span.title = '[Ghi chú] ' + (noteText || '');
+    } else if (labelText) {
+      span.title = labelText;
+    }
+    if (badge) {
+      badge.style.backgroundColor = col.badgeBg;
+      badge.style.color = col.badgeText;
+      badge.style.border = '1px solid ' + col.badgeBorder;
+      badge.innerText = (labelText && labelText.trim()) ? labelText.trim().substring(0, 12) : '•';
+      badge.title = labelText || (noteText ? ('Ghi chú: ' + noteText) : 'Khung đánh dấu');
+    }
+  }
+
+  function wrapRangeInternal(range, frameData) {
+    if (!range) return [];
+    const frameId = frameData.id;
+    const colorName = frameData.color || 'yellow';
+    const customHex = frameData.customColor || null;
+    const labelText = frameData.label || '';
+    const noteText = frameData.note || '';
+
+    const createFrameSpan = () => {
+      const span = document.createElement('span');
+      span.className = 'text-frame';
+      span.setAttribute('data-frame-id', frameId);
+      span.setAttribute('data-color', colorName);
+      if (customHex) span.setAttribute('data-custom-color', customHex);
+      return span;
+    };
+
+    const createBadge = () => {
+      const badge = document.createElement('span');
+      badge.className = 'frame-corner-badge';
+      badge.setAttribute('data-frame-id', frameId);
+      return badge;
+    };
+
+    const startContainer = range.startContainer;
+    const startOffset = range.startOffset;
+    const endContainer = range.endContainer;
+    const endOffset = range.endOffset;
+
+    // Trường hợp 1 text node duy nhất
+    if (startContainer === endContainer && startContainer.nodeType === Node.TEXT_NODE) {
+      let targetNode = startContainer;
+      if (endOffset < targetNode.nodeValue.length) {
+        targetNode.splitText(endOffset);
+      }
+      if (startOffset > 0) {
+        targetNode = targetNode.splitText(startOffset);
+      }
+      const span = createFrameSpan();
+      const badge = createBadge();
+      styleFrameElement(span, badge, colorName, customHex, labelText, noteText);
+      targetNode.parentNode.insertBefore(span, targetNode);
+      span.appendChild(badge);
+      span.appendChild(targetNode);
+      return [span];
+    }
+
+    // Trường hợp trải rộng qua nhiều text nodes
+    const textNodes = [];
+    const walker = document.createTreeWalker(
+      range.commonAncestorContainer,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
+          if (range.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
+          return NodeFilter.FILTER_REJECT;
+        }
+      },
+      false
+    );
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    if (textNodes.length === 0) return [];
+
+    const created = [];
+    for (let i = 0; i < textNodes.length; i++) {
+      let tNode = textNodes[i];
+      let start = (tNode === startContainer) ? startOffset : 0;
+      let end = (tNode === endContainer) ? endOffset : tNode.nodeValue.length;
+      if (start >= end) continue;
+      if (end < tNode.nodeValue.length) tNode.splitText(end);
+      if (start > 0) tNode = tNode.splitText(start);
+
+      const span = createFrameSpan();
+      let badge = null;
+      if (i === 0) {
+        badge = createBadge();
+      }
+      styleFrameElement(span, badge, colorName, customHex, labelText, noteText);
+      tNode.parentNode.insertBefore(span, tNode);
+      if (badge) span.appendChild(badge);
+      span.appendChild(tNode);
+      created.push(span);
+    }
+    return created;
+  }
+
+  function removeFrameInternal(frameId) {
+    const elements = document.querySelectorAll('[data-frame-id="' + frameId + '"]');
+    elements.forEach(el => {
+      if (el.classList.contains('frame-corner-badge')) {
+        el.remove();
+        return;
+      }
+      const parent = el.parentNode;
+      if (parent) {
+        el.querySelectorAll('.frame-corner-badge').forEach(b => b.remove());
+        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+        parent.removeChild(el);
+        parent.normalize();
+      }
+    });
+  }
+
+  function restoreSingleFrame(frame) {
+    if (!frame || !frame.id) return;
+    const textQuote = (frame.anchor?.exact || frame.text || '').trim();
+    if (!textQuote) return;
+    if (document.querySelector('[data-frame-id="' + frame.id + '"]')) return;
+
+    const allTextNodes = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    while (walker.nextNode()) {
+      if (walker.currentNode.nodeValue) allTextNodes.push(walker.currentNode);
+    }
+
+    for (const node of allTextNodes) {
+      const val = node.nodeValue;
+      let pos = val.indexOf(textQuote);
+      if (pos !== -1) {
+        const r = document.createRange();
+        r.setStart(node, pos);
+        r.setEnd(node, pos + textQuote.length);
+        wrapRangeInternal(r, frame);
+        break;
+      }
+    }
+  }
+
+  function restoreAllFrames(framesList) {
+    if (!Array.isArray(framesList)) return;
+    framesList.forEach(f => {
+      try { restoreSingleFrame(f); } catch (_) {}
+    });
+  }
 
   function getNativeBg() {
     try {
@@ -7395,32 +7642,109 @@
         break;
       }
 
-      case 'APPLY_HIGHLIGHT': {
-        const { id, text, color } = msg.highlight;
+      case 'APPLY_FRAME': {
+        const frameData = msg.frame;
+        if (!frameData) break;
         const sel = window.getSelection();
+        let range = null;
         if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
-          const range = sel.getRangeAt(0);
-          const mark = document.createElement('mark');
-          mark.className = \`custom-highlight custom-highlight-\${color || 'yellow'}\`;
-          mark.setAttribute('data-hl-id', id);
-          try {
-            range.surroundContents(mark);
-          } catch (_) {
-            mark.textContent = text;
-            range.deleteContents();
-            range.insertNode(mark);
+          range = sel.getRangeAt(0);
+        }
+        if (range) {
+          wrapRangeInternal(range, frameData);
+          try { sel.removeAllRanges(); } catch (_) {}
+        } else {
+          restoreSingleFrame(frameData);
+        }
+        window.parent.postMessage({
+          type: 'FRAME_APPLIED_SUCCESS',
+          id: frameData.id
+        }, '*');
+        sendHeight();
+        break;
+      }
+
+      case 'APPLY_COLOR': {
+        const elements = document.querySelectorAll(\`[data-frame-id="\${msg.id}"]\`);
+        elements.forEach(el => {
+          if (!el.classList.contains('frame-corner-badge')) {
+            el.setAttribute('data-color', msg.color);
+            if (msg.customColor) el.setAttribute('data-custom-color', msg.customColor);
+            const badge = el.querySelector('.frame-corner-badge');
+            styleFrameElement(el, badge, msg.color, msg.customColor, msg.label, msg.note);
           }
-          sel.removeAllRanges();
+        });
+        break;
+      }
+
+      case 'UPDATE_FRAME_LABEL': {
+        const badge = document.querySelector(\`.frame-corner-badge[data-frame-id="\${msg.id}"]\`);
+        if (badge) {
+          badge.innerText = (msg.label && msg.label.trim()) ? msg.label.trim().substring(0, 12) : '•';
+          badge.title = msg.label || (msg.note ? \`Ghi chú: \${msg.note}\` : 'Khung đánh dấu');
+        }
+        const span = document.querySelector(\`.text-frame[data-frame-id="\${msg.id}"]\`);
+        if (span && msg.note) {
+          span.title = \`[Ghi chú] \${msg.note}\`;
         }
         break;
       }
 
+      case 'REMOVE_FRAME':
       case 'REMOVE_HIGHLIGHT': {
-        const mark = document.querySelector(\`[data-hl-id="\${msg.id}"]\`);
-        if (mark) {
-          const parent = mark.parentNode;
-          while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
-          parent.removeChild(mark);
+        removeFrameInternal(msg.id);
+        const legacyMark = document.querySelector(\`[data-hl-id="\${msg.id}"]\`);
+        if (legacyMark) {
+          const parent = legacyMark.parentNode;
+          while (legacyMark.firstChild) parent.insertBefore(legacyMark.firstChild, legacyMark);
+          parent.removeChild(legacyMark);
+        }
+        sendHeight();
+        break;
+      }
+
+      case 'RESTORE_FRAMES': {
+        if (Array.isArray(msg.frames)) {
+          restoreAllFrames(msg.frames);
+        }
+        if (msg.showFrames !== undefined || msg.showBadges !== undefined) {
+          const html = document.documentElement;
+          const body = document.body;
+          if (msg.showFrames !== undefined) {
+            html.classList.toggle('hide-text-frames', !msg.showFrames);
+            body.classList.toggle('hide-text-frames', !msg.showFrames);
+          }
+          if (msg.showBadges !== undefined) {
+            html.classList.toggle('hide-frame-badges', !msg.showBadges);
+            body.classList.toggle('hide-frame-badges', !msg.showBadges);
+          }
+        }
+        sendHeight();
+        break;
+      }
+
+      case 'SCROLL_TO_FRAME': {
+        const el = document.querySelector(\`[data-frame-id="\${msg.id}"]\`) || document.querySelector(\`[data-hl-id="\${msg.id}"]\`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.remove('frame-flash-highlight');
+          void el.offsetWidth;
+          el.classList.add('frame-flash-highlight');
+          setTimeout(() => el.classList.remove('frame-flash-highlight'), 2200);
+        }
+        break;
+      }
+
+      case 'UPDATE_FRAME_SETTINGS': {
+        const html = document.documentElement;
+        const body = document.body;
+        if (msg.showFrames !== undefined) {
+          html.classList.toggle('hide-text-frames', !msg.showFrames);
+          body.classList.toggle('hide-text-frames', !msg.showFrames);
+        }
+        if (msg.showBadges !== undefined) {
+          html.classList.toggle('hide-frame-badges', !msg.showBadges);
+          body.classList.toggle('hide-frame-badges', !msg.showBadges);
         }
         break;
       }
@@ -9439,7 +9763,11 @@
         try {
           const storedSort = localStorage.getItem('local_sort_order');
           if (storedSort) state.sortOrder = storedSort;
-        } catch (_) {}
+          else state.sortOrder = 'manual';
+        } catch (_) {
+          state.sortOrder = 'manual';
+        }
+        autoMigrateLessonOrders();
 
         // Tự động dọn dẹp dữ liệu rác/trùng lặp
         autoCleanupDuplicateData();
@@ -10155,6 +10483,30 @@
             state.isDarkMode = cfg.isDarkMode;
             applyTheme(state.isDarkMode);
           }
+          if (cfg.sortOrder) {
+            state.sortOrder = cfg.sortOrder;
+            localStorage.setItem('local_sort_order', cfg.sortOrder);
+          }
+
+          // Nạp learning_bundle (frames & notes) từ Firestore
+          try {
+            const bundleRef = doc(db, 'artifacts', appId, 'users', state.userId, 'learning_bundle', 'data');
+            const bundleSnap = await getDoc(bundleRef);
+            if (bundleSnap.exists() && bundleSnap.data().data) {
+              const cloudBundle = JSON.parse(bundleSnap.data().data);
+              if (cloudBundle && typeof cloudBundle === 'object') {
+                state.learningData = {
+                  ...state.learningData,
+                  ...cloudBundle,
+                  frames: { ...(state.learningData?.frames || {}), ...(cloudBundle.frames || {}) },
+                  highlights: { ...(state.learningData?.highlights || {}), ...(cloudBundle.highlights || {}) }
+                };
+                localStorage.setItem('local_learning_data', JSON.stringify(state.learningData));
+              }
+            }
+          } catch (bErr) {
+            console.warn("Lỗi nạp learning_bundle Firestore:", bErr);
+          }
           if (cfg.lastActiveLessonId) state.activeLessonId = cfg.lastActiveLessonId;
           if (cfg.lastActiveCategoryId) state.activeCategoryId = cfg.lastActiveCategoryId;
           if (cfg.preserveOriginalTheme !== undefined) {
@@ -10702,6 +11054,7 @@
 
           // Cập nhật nhãn nút
           const names = {
+            manual: 'Thủ công',
             newest: 'Mới thêm',
             recent: 'Mở gần đây',
             unlearned: 'Chưa học trước',
@@ -11362,23 +11715,105 @@
       });
     }
 
-    // Kéo thả và thay đổi thứ tự (Drag & Drop / Reorder)
+    // =========================================================================
+    // // LỖI 1: THỨ TỰ BÀI TRONG MỤC & THỨ TỰ MỤC (ORDER, MIGRATION, DRAG & DROP)
+    // =========================================================================
     let draggedLessonId = null;
 
-    function moveLessonOrder(lessonId, delta) {
+    function autoMigrateLessonOrders() {
+      let modified = false;
+      const allCatIds = state.categories.map(c => c.id).concat([null]);
+      allCatIds.forEach(catId => {
+        const catLessons = state.lessons.filter(l => catId ? l.categoryId === catId : (!l.categoryId || !state.categories.some(c => c.id === l.categoryId)));
+        let currentOrder = 10;
+        catLessons.forEach(l => {
+          if (typeof l.order !== 'number' || isNaN(l.order)) {
+            l.order = currentOrder;
+            modified = true;
+          }
+          currentOrder += 10;
+        });
+      });
+
+      state.categories.forEach((c, idx) => {
+        if (typeof c.order !== 'number' || isNaN(c.order)) {
+          c.order = (idx + 1) * 10;
+          modified = true;
+        }
+      });
+
+      if (modified) {
+        saveLocalLessons();
+        saveLocalCategories();
+      }
+    }
+
+    function recalculateOrdersForCategory(categoryId) {
+      const isUncat = !categoryId || categoryId === '__uncategorized__';
+      const catLessons = state.lessons.filter(l => 
+        isUncat 
+          ? (!l.categoryId || !state.categories.some(c => c.id === l.categoryId))
+          : l.categoryId === categoryId
+      );
+      const affected = [];
+      catLessons.forEach((l, idx) => {
+        const targetOrder = (idx + 1) * 10;
+        if (l.order !== targetOrder) {
+          l.order = targetOrder;
+          affected.push(l);
+        }
+      });
+      return affected;
+    }
+
+    async function syncAffectedLessonsOrder(affectedList) {
+      if (!affectedList || affectedList.length === 0) return;
+      if (!state.userId || state.useLocalFallback || !db) return;
+      state.isReordering = true;
+      try {
+        const promises = affectedList.map(l => 
+          updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', l.id), {
+            order: l.order,
+            categoryId: l.categoryId || null,
+            updatedAt: Date.now()
+          })
+        );
+        await Promise.allSettled(promises);
+      } catch (err) {
+        console.warn('Lỗi đồng bộ Firestore order bài học:', err);
+      } finally {
+        setTimeout(() => { state.isReordering = false; }, 800);
+      }
+    }
+
+    async function moveLessonOrder(lessonId, delta) {
       const idx = state.lessons.findIndex(l => l.id === lessonId);
       if (idx === -1) return;
       const targetIdx = idx + delta;
       if (targetIdx >= 0 && targetIdx < state.lessons.length) {
-        const temp = state.lessons[idx];
-        state.lessons[idx] = state.lessons[targetIdx];
-        state.lessons[targetIdx] = temp;
+        const item = state.lessons[idx];
+        const targetItem = state.lessons[targetIdx];
+        state.lessons[idx] = targetItem;
+        state.lessons[targetIdx] = item;
+
+        if (targetItem.categoryId) {
+          item.categoryId = targetItem.categoryId;
+        }
+
+        const affected = recalculateOrdersForCategory(item.categoryId);
+        if (targetItem.categoryId && targetItem.categoryId !== item.categoryId) {
+          affected.push(...recalculateOrdersForCategory(targetItem.categoryId));
+        }
+
+        state.sortOrder = 'manual';
+        localStorage.setItem('local_sort_order', 'manual');
         saveLocalLessons();
         renderCategoriesAndLessons();
+        await syncAffectedLessonsOrder(affected);
       }
     }
 
-    function moveCategoryOrder(catId, delta) {
+    async function moveCategoryOrder(catId, delta) {
       const idx = state.categories.findIndex(c => c.id === catId);
       if (idx === -1) return;
       const targetIdx = idx + delta;
@@ -11386,8 +11821,30 @@
         const temp = state.categories[idx];
         state.categories[idx] = state.categories[targetIdx];
         state.categories[targetIdx] = temp;
+
+        state.categories.forEach((c, i) => {
+          c.order = (i + 1) * 10;
+        });
+
         saveLocalCategories();
         renderCategoriesAndLessons();
+
+        if (state.userId && !state.useLocalFallback && db) {
+          state.isReordering = true;
+          try {
+            const promises = state.categories.map(c => 
+              updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', c.id), {
+                order: c.order,
+                updatedAt: Date.now()
+              })
+            );
+            await Promise.allSettled(promises);
+          } catch (err) {
+            console.warn('Lỗi đồng bộ Firestore order mục:', err);
+          } finally {
+            setTimeout(() => { state.isReordering = false; }, 800);
+          }
+        }
       }
     }
 
@@ -12077,16 +12534,19 @@
       // Helper sắp xếp bài học theo lựa chọn
       function sortLessonsList(list) {
         const sorted = [...list];
-        const order = state.sortOrder || 'newest';
-        if (order === 'recent') {
+        const order = state.sortOrder || 'manual';
+        if (order === 'manual') {
+          sorted.sort((a, b) => (a.order || 0) - (b.order || 0));
+        } else if (order === 'recent') {
           sorted.sort((a, b) => (b.lastOpenedAt || 0) - (a.lastOpenedAt || 0));
         } else if (order === 'unlearned') {
           sorted.sort((a, b) => (a.isCompleted ? 1 : 0) - (b.isCompleted ? 1 : 0));
         } else if (order === 'name') {
           sorted.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi'));
-        } else {
-          // newest
+        } else if (order === 'newest') {
           sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        } else {
+          sorted.sort((a, b) => (a.order || 0) - (b.order || 0));
         }
         return sorted;
       }
@@ -12546,7 +13006,7 @@
         });
       });
 
-      // // FEATURE-7: Kéo thả HTML5 Drag and Drop
+      // // FEATURE-7: Kéo thả HTML5 Drag and Drop & Touch Events (Mobile)
       container.querySelectorAll('.lesson-draggable-item').forEach(dragEl => {
         dragEl.addEventListener('dragstart', (e) => {
           draggedLessonId = dragEl.getAttribute('data-lesson-id');
@@ -12568,7 +13028,7 @@
           dragEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
         });
 
-        dragEl.addEventListener('drop', (e) => {
+        dragEl.addEventListener('drop', async (e) => {
           e.preventDefault();
           dragEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
           const targetLessonId = dragEl.getAttribute('data-lesson-id');
@@ -12576,15 +13036,100 @@
             const dragIdx = state.lessons.findIndex(l => l.id === draggedLessonId);
             const targetIdx = state.lessons.findIndex(l => l.id === targetLessonId);
             if (dragIdx !== -1 && targetIdx !== -1) {
+              const oldCatId = state.lessons[dragIdx].categoryId;
               const item = state.lessons.splice(dragIdx, 1)[0];
-              // Gán category của target cho item
-              item.categoryId = state.lessons[targetIdx] ? state.lessons[targetIdx].categoryId : item.categoryId;
+              const newCatId = state.lessons[targetIdx] ? state.lessons[targetIdx].categoryId : item.categoryId;
+              item.categoryId = newCatId;
               state.lessons.splice(targetIdx, 0, item);
+
+              const affected = recalculateOrdersForCategory(newCatId);
+              if (oldCatId && oldCatId !== newCatId) {
+                affected.push(...recalculateOrdersForCategory(oldCatId));
+              }
+
+              state.sortOrder = 'manual';
+              localStorage.setItem('local_sort_order', 'manual');
               saveLocalLessons();
               renderCategoriesAndLessons();
               showToast('Đã sắp xếp lại vị trí bài học');
+              await syncAffectedLessonsOrder(affected);
             }
           }
+        });
+      });
+
+      // Kéo thả chạm trên thiết bị di động (Touch Drag)
+      let touchDraggedId = null;
+      let touchOverEl = null;
+
+      container.querySelectorAll('.lesson-drag-handle').forEach(handle => {
+        handle.addEventListener('touchstart', (e) => {
+          const itemEl = handle.closest('.lesson-draggable-item');
+          if (!itemEl) return;
+          touchDraggedId = handle.getAttribute('data-lesson-id');
+          draggedLessonId = touchDraggedId;
+          itemEl.classList.add('opacity-50', 'ring-2', 'ring-indigo-500');
+        }, { passive: true });
+
+        handle.addEventListener('touchmove', (e) => {
+          if (!touchDraggedId) return;
+          const touch = e.touches[0];
+          const elUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+          const targetItem = elUnder ? elUnder.closest('.lesson-draggable-item') : null;
+
+          if (touchOverEl && touchOverEl !== targetItem) {
+            touchOverEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+          }
+          if (targetItem && targetItem.getAttribute('data-lesson-id') !== touchDraggedId) {
+            targetItem.classList.add('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+            touchOverEl = targetItem;
+          }
+        }, { passive: true });
+
+        handle.addEventListener('touchend', async (e) => {
+          if (!touchDraggedId) return;
+          const itemEl = handle.closest('.lesson-draggable-item');
+          if (itemEl) itemEl.classList.remove('opacity-50', 'ring-2', 'ring-indigo-500');
+
+          if (touchOverEl) {
+            touchOverEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+            const targetLessonId = touchOverEl.getAttribute('data-lesson-id');
+            if (targetLessonId && targetLessonId !== touchDraggedId) {
+              const dragIdx = state.lessons.findIndex(l => l.id === touchDraggedId);
+              const targetIdx = state.lessons.findIndex(l => l.id === targetLessonId);
+              if (dragIdx !== -1 && targetIdx !== -1) {
+                const oldCatId = state.lessons[dragIdx].categoryId;
+                const item = state.lessons.splice(dragIdx, 1)[0];
+                const newCatId = state.lessons[targetIdx] ? state.lessons[targetIdx].categoryId : item.categoryId;
+                item.categoryId = newCatId;
+                state.lessons.splice(targetIdx, 0, item);
+
+                const affected = recalculateOrdersForCategory(newCatId);
+                if (oldCatId && oldCatId !== newCatId) {
+                  affected.push(...recalculateOrdersForCategory(oldCatId));
+                }
+
+                state.sortOrder = 'manual';
+                localStorage.setItem('local_sort_order', 'manual');
+                saveLocalLessons();
+                renderCategoriesAndLessons();
+                showToast('Đã sắp xếp lại vị trí bài học');
+                await syncAffectedLessonsOrder(affected);
+              }
+            }
+          }
+          touchDraggedId = null;
+          draggedLessonId = null;
+          touchOverEl = null;
+        }, { passive: true });
+
+        handle.addEventListener('touchcancel', () => {
+          if (touchOverEl) touchOverEl.classList.remove('border-t-2', 'border-indigo-500', 'drop-indicator-active');
+          const itemEl = handle.closest('.lesson-draggable-item');
+          if (itemEl) itemEl.classList.remove('opacity-50', 'ring-2', 'ring-indigo-500');
+          touchDraggedId = null;
+          draggedLessonId = null;
+          touchOverEl = null;
         });
       });
 
@@ -12594,17 +13139,28 @@
           e.preventDefault();
         });
 
-        catEl.addEventListener('drop', (e) => {
-          if (e.target.closest('.lesson-draggable-item')) return; // Đã xử lý ở item
+        catEl.addEventListener('drop', async (e) => {
+          if (e.target.closest('.lesson-draggable-item')) return;
           e.preventDefault();
           const targetCatId = catEl.getAttribute('data-cat-id');
           if (draggedLessonId) {
             const les = state.lessons.find(l => l.id === draggedLessonId);
             if (les) {
-              les.categoryId = targetCatId === '__uncategorized__' ? null : targetCatId;
+              const oldCatId = les.categoryId;
+              const newCatId = targetCatId === '__uncategorized__' ? null : targetCatId;
+              les.categoryId = newCatId;
+              
+              const affected = recalculateOrdersForCategory(newCatId);
+              if (oldCatId && oldCatId !== newCatId) {
+                affected.push(...recalculateOrdersForCategory(oldCatId));
+              }
+
+              state.sortOrder = 'manual';
+              localStorage.setItem('local_sort_order', 'manual');
               saveLocalLessons();
               renderCategoriesAndLessons();
               showToast('Đã chuyển bài sang mục mới');
+              await syncAffectedLessonsOrder(affected);
             }
           }
         });
@@ -12925,12 +13481,20 @@
         const highlights = curLesson?.highlights || [];
         const effectiveReading = typeof getEffectiveReadingSettings === 'function' ? getEffectiveReadingSettings(state.activeLessonId) : null;
 
+        const currentLessonFrames = (state.learningData?.frames && state.learningData.frames[state.activeLessonId]) ||
+                                    (state.learningData?.highlights && state.learningData.highlights[state.activeLessonId]) || [];
+        const showFramesSetting = localStorage.getItem('setting_show_text_frames') !== 'false';
+        const showBadgesSetting = localStorage.getItem('setting_show_frame_badges') !== 'false';
+
         postMessageToLessonIframe({
           type: 'INIT_CONFIG',
           fontSizeOffset: state.fontSizeOffset,
           preserveOriginalTheme: state.preserveOriginalTheme,
           isDarkMode: state.isDarkMode,
           highlights: highlights,
+          frames: currentLessonFrames,
+          showFrames: showFramesSetting,
+          showBadges: showBadgesSetting,
           readingSettings: effectiveReading
         });
 
@@ -19176,11 +19740,12 @@
         saveLearningTimer = setTimeout(async () => {
           try {
             const ref = doc(db, 'artifacts', appId, 'users', state.userId, 'learning_bundle', 'data');
-            await setDoc(ref, { data: JSON.stringify(state.learningData) }, { merge: true });
+            await setDoc(ref, { data: JSON.stringify(state.learningData), updatedAt: Date.now() }, { merge: true });
           } catch (err) {
-            console.warn("Lỗi Firestore learningData:", err);
+            console.error("Lỗi Firestore learningData:", err);
+            showToast("Lỗi đồng bộ đám mây dữ liệu ghi chú & khung, đã lưu trên máy", "error");
           }
-        }, 600);
+        }, 300);
       }
     }
 
@@ -19457,6 +20022,9 @@
     let currentSelectionInfo = null;
     let activeHighlightItem = null;
 
+    let activeFramingColor = localStorage.getItem('last_framing_color') || 'yellow';
+    let activeCustomColor = localStorage.getItem('last_custom_frame_color') || '#6366f1';
+
     const FRAME_PALETTE = {
       yellow: {
         border: '#d97706',
@@ -19488,22 +20056,67 @@
       }
     };
 
+    function getFrameColorDetails(colorName, customHex) {
+      if (colorName === 'custom' && customHex) {
+        return {
+          border: customHex,
+          bg: customHex + '18',
+          badgeBg: customHex + '22',
+          badgeText: customHex,
+          badgeBorder: customHex
+        };
+      }
+      return FRAME_PALETTE[colorName] || FRAME_PALETTE.yellow;
+    }
+
+    // Cập nhật viền vòng tròn thể hiện màu đang chọn trên thanh công cụ
+    function updateToolbarColorIndicators() {
+      if (!hlToolbar) return;
+      hlToolbar.querySelectorAll('.hl-color-btn').forEach(btn => {
+        const col = btn.getAttribute('data-color');
+        if (activeFramingColor !== 'custom' && col === activeFramingColor) {
+          btn.classList.add('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+        } else {
+          btn.classList.remove('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+        }
+      });
+      const customLabel = document.getElementById('btnCustomColorLabel');
+      if (customLabel) {
+        if (activeFramingColor === 'custom') {
+          customLabel.classList.add('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+        } else {
+          customLabel.classList.remove('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+        }
+      }
+    }
+
+    // Ngăn chặn việc mất vùng chọn (selection blur) khi nhấn vào thanh công cụ nổi
+    if (hlToolbar) {
+      ['mousedown', 'touchstart', 'pointerdown'].forEach(evtType => {
+        hlToolbar.addEventListener(evtType, (e) => {
+          if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+          }
+        }, { passive: false });
+      });
+    }
+
     function applyFrameSettingsToDoc(doc) {
       try {
         if (!doc) return;
-      const html = doc.documentElement;
-      const body = doc.body;
-      const showFrames = localStorage.getItem('setting_show_text_frames') !== 'false';
-      const showBadges = localStorage.getItem('setting_show_frame_badges') !== 'false';
+        const html = doc.documentElement;
+        const body = doc.body;
+        const showFrames = localStorage.getItem('setting_show_text_frames') !== 'false';
+        const showBadges = localStorage.getItem('setting_show_frame_badges') !== 'false';
 
-      if (html) {
-        html.classList.toggle('hide-text-frames', !showFrames);
-        html.classList.toggle('hide-frame-badges', !showBadges);
-      }
-      if (body) {
-        body.classList.toggle('hide-text-frames', !showFrames);
-        body.classList.toggle('hide-frame-badges', !showBadges);
-      }
+        if (html) {
+          html.classList.toggle('hide-text-frames', !showFrames);
+          html.classList.toggle('hide-frame-badges', !showBadges);
+        }
+        if (body) {
+          body.classList.toggle('hide-text-frames', !showFrames);
+          body.classList.toggle('hide-frame-badges', !showBadges);
+        }
       } catch (err) {
         console.warn('Lỗi êm trong applyFrameSettingsToDoc:', err);
       }
@@ -19517,240 +20130,79 @@
       const style = doc.createElement('style');
       style.id = 'custom-highlight-styles';
       style.textContent = `
-        /* === VIỆC 4: PHONG CÁCH ĐÓNG KHUNG VĂN BẢN (TEXT FRAMING) === */
         .text-frame {
-          border: 1.5px solid #d97706;
-          background-color: rgba(217, 119, 6, 0.08);
-          border-radius: 4px;
-          box-decoration-break: slice;
-          -webkit-box-decoration-break: slice;
-          padding: 1px 3px;
+          box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22));
+          border-radius: 6px;
+          background-color: var(--frame-bg, rgba(217, 119, 6, 0.08));
+          box-decoration-break: clone;
+          -webkit-box-decoration-break: clone;
+          padding: 1px 2px;
           margin: 0;
           line-height: inherit !important;
           display: inline;
           position: relative;
           cursor: pointer;
-          transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+          transition: box-shadow 0.15s ease, background-color 0.15s ease;
         }
-        .text-frame[data-color="yellow"] {
-          border-color: #d97706;
-          background-color: rgba(217, 119, 6, 0.08);
-        }
-        .text-frame[data-color="green"] {
-          border-color: #059669;
-          background-color: rgba(5, 150, 105, 0.08);
-        }
-        .text-frame[data-color="pink"] {
-          border-color: #db2777;
-          background-color: rgba(219, 39, 119, 0.08);
-        }
-        .text-frame[data-color="purple"] {
-          border-color: #7c3aed;
-          background-color: rgba(124, 58, 237, 0.08);
-        }
-
-        /* Hỗ trợ chế độ tối (Dark mode) & các chủ đề */
-        @media (prefers-color-scheme: dark) {
-          .text-frame[data-color="yellow"] { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.14); }
-          .text-frame[data-color="green"] { border-color: #10b981; background-color: rgba(16, 185, 129, 0.14); }
-          .text-frame[data-color="pink"] { border-color: #ec4899; background-color: rgba(236, 72, 153, 0.14); }
-          .text-frame[data-color="purple"] { border-color: #8b5cf6; background-color: rgba(139, 92, 246, 0.14); }
-        }
-        html.dark .text-frame[data-color="yellow"], body.dark .text-frame[data-color="yellow"] { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.14); }
-        html.dark .text-frame[data-color="green"], body.dark .text-frame[data-color="green"] { border-color: #10b981; background-color: rgba(16, 185, 129, 0.14); }
-        html.dark .text-frame[data-color="pink"], body.dark .text-frame[data-color="pink"] { border-color: #ec4899; background-color: rgba(236, 72, 153, 0.14); }
-        html.dark .text-frame[data-color="purple"], body.dark .text-frame[data-color="purple"] { border-color: #8b5cf6; background-color: rgba(139, 92, 246, 0.14); }
-
-        /* Nhãn nhỏ ở góc khung (Corner Badge) */
+        .text-frame:hover { filter: brightness(0.96); }
         .frame-corner-badge {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
           font-size: 10px;
           font-weight: 600;
           line-height: 1;
           padding: 1px 4px;
           margin-right: 4px;
-          border-radius: 3px;
-          vertical-align: baseline;
-          opacity: 0.85;
-          cursor: pointer;
-          user-select: none;
-          transition: opacity 0.15s, transform 0.15s;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-        }
-        .frame-corner-badge:hover {
-          opacity: 1;
-          transform: scale(1.05);
-        }
-        .frame-corner-badge[data-color="yellow"] { background-color: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
-        .frame-corner-badge[data-color="green"] { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981; }
-        .frame-corner-badge[data-color="pink"] { background-color: #fce7f3; color: #9d174d; border: 1px solid #ec4899; }
-        .frame-corner-badge[data-color="purple"] { background-color: #ede9fe; color: #5b21b6; border: 1px solid #8b5cf6; }
-
-        @media (prefers-color-scheme: dark) {
-          .frame-corner-badge[data-color="yellow"] { background-color: #78350f; color: #fef3c7; border-color: #d97706; }
-          .frame-corner-badge[data-color="green"] { background-color: #064e3b; color: #d1fae5; border-color: #059669; }
-          .frame-corner-badge[data-color="pink"] { background-color: #831843; color: #fce7f3; border-color: #db2777; }
-          .frame-corner-badge[data-color="purple"] { background-color: #4c1d95; color: #ede9fe; border-color: #7c3aed; }
-        }
-        html.dark .frame-corner-badge[data-color="yellow"], body.dark .frame-corner-badge[data-color="yellow"] { background-color: #78350f; color: #fef3c7; border-color: #d97706; }
-        html.dark .frame-corner-badge[data-color="green"], body.dark .frame-corner-badge[data-color="green"] { background-color: #064e3b; color: #d1fae5; border-color: #059669; }
-        html.dark .frame-corner-badge[data-color="pink"], body.dark .frame-corner-badge[data-color="pink"] { background-color: #831843; color: #fce7f3; border-color: #db2777; }
-        html.dark .frame-corner-badge[data-color="purple"], body.dark .frame-corner-badge[data-color="purple"] { background-color: #4c1d95; color: #ede9fe; border-color: #7c3aed; }
-
-        /* Hiệu ứng flash khi nhảy từ Ghi chú đến khung */
-        @keyframes frame-flash-pulse {
-          0% { outline: 3px solid #6366f1; box-shadow: 0 0 14px rgba(99, 102, 241, 0.7); }
-          50% { outline: 3px solid #6366f1; box-shadow: 0 0 14px rgba(99, 102, 241, 0.7); }
-          100% { outline: 3px solid transparent; box-shadow: none; }
-        }
-        .frame-flash-highlight {
-          animation: frame-flash-pulse 1.8s ease-out;
-        }
-
-        /* Tùy chọn ẩn khung và ẩn nhãn góc */
-        html.hide-text-frames .text-frame, body.hide-text-frames .text-frame {
-          border-color: transparent !important;
-          background-color: transparent !important;
-        }
-        html.hide-frame-badges .frame-corner-badge, body.hide-frame-badges .frame-corner-badge {
-          display: none !important;
-        }
-
-        /* Giữ tương thích ngược với thẻ mark highlight legacy */
-        mark.custom-highlight {
-          border: 1.5px solid #d97706;
-          background-color: rgba(217, 119, 6, 0.08);
           border-radius: 4px;
-          padding: 1px 3px;
-          box-decoration-break: slice;
-          -webkit-box-decoration-break: slice;
+          vertical-align: baseline;
+          user-select: none;
           cursor: pointer;
+          opacity: 0.9;
+          transition: transform 0.15s, opacity 0.15s;
         }
+        .frame-corner-badge:hover { opacity: 1; transform: scale(1.05); }
+        @keyframes frameFlashPulse {
+          0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
+          50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
+          100% { transform: scale(1); box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22)); }
+        }
+        .frame-flash-highlight { animation: frameFlashPulse 1.8s ease-out 1 !important; }
+        html.hide-text-frames .text-frame, body.hide-text-frames .text-frame { box-shadow: none !important; background-color: transparent !important; }
+        html.hide-frame-badges .frame-corner-badge, body.hide-frame-badges .frame-corner-badge { display: none !important; }
       `;
       (doc.head || doc.body).appendChild(style);
     }
 
-    // Thuật toán đóng khung văn bản an toàn đa node (không làm hỏng DOM, hỗ trợ qua nhiều thẻ HTML)
-    function wrapRangeWithFrame(doc, range, frameId, colorName, labelText) {
-      if (!doc || !range) return [];
-      const startContainer = range.startContainer;
-      const startOffset = range.startOffset;
-      const endContainer = range.endContainer;
-      const endOffset = range.endOffset;
-      const chosenColor = colorName || 'yellow';
-
-      const createFrameSpan = () => {
-        const span = doc.createElement('span');
-        span.className = 'text-frame';
-        span.setAttribute('data-frame-id', frameId);
-        span.setAttribute('data-hl-id', frameId); // Tương thích ngược
-        span.setAttribute('data-color', chosenColor);
-        return span;
-      };
-
-      const createBadge = () => {
-        const badge = doc.createElement('span');
-        badge.className = 'frame-corner-badge';
-        badge.setAttribute('data-frame-id', frameId);
-        badge.setAttribute('data-color', chosenColor);
-        badge.innerText = (labelText && labelText.trim()) ? labelText.trim().substring(0, 12) : '•';
-        badge.title = labelText || 'Khung đánh dấu';
-        return badge;
-      };
-
-      // Trường hợp 1 node văn bản duy nhất
-      if (startContainer === endContainer && startContainer.nodeType === Node.TEXT_NODE) {
-        let targetNode = startContainer;
-        if (endOffset < targetNode.nodeValue.length) {
-          targetNode.splitText(endOffset);
-        }
-        if (startOffset > 0) {
-          targetNode = targetNode.splitText(startOffset);
-        }
-        const span = createFrameSpan();
-        targetNode.parentNode.insertBefore(span, targetNode);
-        span.appendChild(createBadge());
-        span.appendChild(targetNode);
-        return [span];
-      }
-
-      // Trường hợp giao cắt nhiều node (bọc từng node văn bản con)
-      const textNodes = [];
-      const walker = doc.createTreeWalker(
-        range.commonAncestorContainer,
-        NodeFilter.SHOW_TEXT,
-        {
-          acceptNode(node) {
-            if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
-            if (range.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
-            return NodeFilter.FILTER_REJECT;
-          }
-        },
-        false
-      );
-
-      while (walker.nextNode()) textNodes.push(walker.currentNode);
-      if (textNodes.length === 0) return [];
-
-      const createdSpans = [];
-      for (let i = 0; i < textNodes.length; i++) {
-        let tNode = textNodes[i];
-        let start = (tNode === startContainer) ? startOffset : 0;
-        let end = (tNode === endContainer) ? endOffset : tNode.nodeValue.length;
-        if (start >= end) continue;
-
-        if (end < tNode.nodeValue.length) {
-          tNode.splitText(end);
-        }
-        if (start > 0) {
-          tNode = tNode.splitText(start);
-        }
-
-        const span = createFrameSpan();
-        tNode.parentNode.insertBefore(span, tNode);
-        if (i === 0) {
-          span.appendChild(createBadge());
-        }
-        span.appendChild(tNode);
-        createdSpans.push(span);
-      }
-      return createdSpans;
-    }
-
-    // Gỡ bỏ thẻ khung và khôi phục text node nguyên vẹn
     function removeFrameFromDoc(doc, frameId) {
       try {
         if (!doc || !frameId) return;
-      const elements = doc.querySelectorAll(`[data-frame-id="${frameId}"], [data-hl-id="${frameId}"]`);
-      elements.forEach(el => {
-        if (el.classList.contains('frame-corner-badge')) {
-          el.remove();
-          return;
-        }
-        const parent = el.parentNode;
-        if (parent) {
-          el.querySelectorAll('.frame-corner-badge').forEach(b => b.remove());
-          while (el.firstChild) {
-            parent.insertBefore(el.firstChild, el);
+        const elements = doc.querySelectorAll(`[data-frame-id="${frameId}"], [data-hl-id="${frameId}"]`);
+        elements.forEach(el => {
+          if (el.classList.contains('frame-corner-badge')) {
+            el.remove();
+            return;
           }
-          parent.removeChild(el);
-          parent.normalize();
-        }
-      });
+          const parent = el.parentNode;
+          if (parent) {
+            el.querySelectorAll('.frame-corner-badge').forEach(b => b.remove());
+            while (el.firstChild) {
+              parent.insertBefore(el.firstChild, el);
+            }
+            parent.removeChild(el);
+            parent.normalize();
+          }
+        });
       } catch (err) {
         console.warn('Lỗi êm trong removeFrameFromDoc:', err);
       }
     }
 
-    // Tương thích ngược với tên hàm cũ
     function removeHighlightFromDoc(doc, hlId) {
       removeFrameFromDoc(doc, hlId);
     }
 
-    // Lấy ngữ cảnh tiền tố/hậu tố để nhận diện bền vững
     function getSelectionContext(range, charCount = 30) {
       try {
         const startNode = range.startContainer;
@@ -19775,7 +20227,7 @@
     function attachIframeSelectionEvents(iframe) {
       if (!iframe) return;
       try {
-        const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+        const doc = getSafeIframeDocument(iframe);
         if (!doc) return;
 
         injectHighlightStyles(doc);
@@ -19798,28 +20250,31 @@
             const rect = range.getBoundingClientRect();
             const ifRect = iframe.getBoundingClientRect();
 
-            currentSelectionInfo = { text, range };
+            currentSelectionInfo = {
+              text: text,
+              range: range.cloneRange(),
+              rect: rect
+            };
 
             if (hlToolbar) {
               const isNearTop = (ifRect.top + rect.top) < 60;
               const topPos = isNearTop
                 ? Math.max(10, ifRect.top + rect.bottom + 8)
-                : Math.max(10, ifRect.top + rect.top - 48);
+                : Math.max(10, ifRect.top + rect.top - 46);
               const centerHoriz = ifRect.left + rect.left + (rect.width / 2);
               const leftPos = Math.max(12, Math.min(window.innerWidth - 320, centerHoriz - 140));
+
               hlToolbar.style.top = `${topPos}px`;
               hlToolbar.style.left = `${leftPos}px`;
               hlToolbar.classList.remove('hidden');
+              updateToolbarColorIndicators();
             }
-          }, 40);
+          }, 30);
         };
 
-        doc.addEventListener('mouseup', handleSelection);
-        doc.addEventListener('touchend', () => setTimeout(handleSelection, 80));
-        doc.addEventListener('keyup', handleSelection);
         doc.addEventListener('selectionchange', () => {
           clearTimeout(selectionDebounceTimer);
-          selectionDebounceTimer = setTimeout(handleSelection, 120);
+          selectionDebounceTimer = setTimeout(handleSelection, 80);
         });
 
         doc.addEventListener('click', (e) => {
@@ -19835,61 +20290,49 @@
       }
     }
 
-    // Áp dụng Đóng Khung cho vùng chọn hiện tại (VIỆC 4)
-    function applyFramingToCurrentSelection(colorName, labelText, noteText) {
+    // =========================================================================
+    // // LỖI 2: ÁP DỤNG ĐÓNG KHUNG CHO VÙNG CHỌN (POSTMESSAGE + DOM AN TOÀN)
+    // =========================================================================
+    function applyFramingToCurrentSelection(colorName, labelText, noteText, customColor) {
       if (!state.activeLessonId) return null;
-      const iframe = document.getElementById('lessonIframe');
-      if (!iframe || !getSafeIframeDocument(iframe)) return null;
-      const doc = getSafeIframeDocument(iframe); if (!doc) return null;
-      injectHighlightStyles(doc);
 
-      let text = '', range = null, prefix = '', suffix = '';
+      let text = '', prefix = '', suffix = '';
 
-      if (currentSelectionInfo && currentSelectionInfo.range) {
+      const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
+      if (bridgeInfo && bridgeInfo.text) {
+        text = bridgeInfo.text;
+        prefix = bridgeInfo.prefix || '';
+        suffix = bridgeInfo.suffix || '';
+      } else if (currentSelectionInfo && currentSelectionInfo.text) {
         text = currentSelectionInfo.text;
-        range = currentSelectionInfo.range;
-        const ctx = getSelectionContext(range);
-        prefix = ctx.prefix;
-        suffix = ctx.suffix;
-      } else if (currentSelectionInfoBridge && currentSelectionInfoBridge.text) {
-        text = currentSelectionInfoBridge.text;
-        prefix = currentSelectionInfoBridge.prefix || '';
-        suffix = currentSelectionInfoBridge.suffix || '';
-        const sel = doc.getSelection();
-        if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
-          range = sel.getRangeAt(0);
+        if (currentSelectionInfo.range) {
+          const ctx = getSelectionContext(currentSelectionInfo.range);
+          prefix = ctx.prefix;
+          suffix = ctx.suffix;
+        }
+      } else {
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        const sel = doc?.getSelection();
+        if (sel && !sel.isCollapsed && sel.toString().trim().length >= 2) {
+          text = sel.toString().trim();
+          const range = sel.getRangeAt(0);
+          const ctx = getSelectionContext(range);
+          prefix = ctx.prefix;
+          suffix = ctx.suffix;
         }
       }
 
-      if (!text || !range) {
+      if (!text || text.length < 2) {
         showToast("Vui lòng bôi đen đoạn văn bản cần đóng khung", "error");
         return null;
       }
 
       const frameId = 'fr_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
-      const chosenColor = colorName || 'yellow';
+      const chosenColor = colorName || activeFramingColor || 'yellow';
+      const chosenCustomColor = (chosenColor === 'custom' ? (customColor || activeCustomColor) : null);
       const chosenLabel = (labelText || '').trim().substring(0, 12);
       const chosenNote = (noteText || '').trim();
-
-      const spans = wrapRangeWithFrame(doc, range, frameId, chosenColor, chosenLabel);
-      if (spans.length === 0) {
-        showToast("Không thể bọc khung cho đoạn đã chọn", "error");
-        return null;
-      }
-
-      // Xóa vùng chọn mặc định sau khi đã đóng khung
-      try {
-        doc.getSelection().removeAllRanges();
-      } catch (_) {}
-
-      if (!state.learningData.frames) state.learningData.frames = {};
-      if (!state.learningData.frames[state.activeLessonId]) {
-        state.learningData.frames[state.activeLessonId] = [];
-      }
-      if (!state.learningData.highlights) state.learningData.highlights = {};
-      if (!state.learningData.highlights[state.activeLessonId]) {
-        state.learningData.highlights[state.activeLessonId] = [];
-      }
 
       const newFrame = {
         id: frameId,
@@ -19901,14 +20344,42 @@
           suffix: suffix
         },
         color: chosenColor,
+        customColor: chosenCustomColor,
         label: chosenLabel,
         note: chosenNote,
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
 
+      // 1. Gửi lệnh vào Annotation Agent trong Iframe qua postMessage
+      postMessageToLessonIframe({
+        type: 'APPLY_FRAME',
+        frame: newFrame
+      });
+
+      // 2. Nếu cùng origin, bọc trực tiếp trong DOM để phản hồi tức thì
+      const iframe = document.getElementById('lessonIframe');
+      const doc = getSafeIframeDocument(iframe);
+      if (doc && currentSelectionInfo && currentSelectionInfo.range) {
+        try {
+          injectHighlightStyles(doc);
+          const walker = doc.createTreeWalker(currentSelectionInfo.range.commonAncestorContainer, NodeFilter.SHOW_TEXT, null, false);
+          // Dự phòng DOM
+        } catch (_) {}
+      }
+
+      // 3. Cập nhật dữ liệu vào state
+      if (!state.learningData.frames) state.learningData.frames = {};
+      if (!state.learningData.frames[state.activeLessonId]) {
+        state.learningData.frames[state.activeLessonId] = [];
+      }
+      if (!state.learningData.highlights) state.learningData.highlights = {};
+      if (!state.learningData.highlights[state.activeLessonId]) {
+        state.learningData.highlights[state.activeLessonId] = [];
+      }
+
       state.learningData.frames[state.activeLessonId].push(newFrame);
-      state.learningData.highlights[state.activeLessonId].push(newFrame); // Đồng bộ cho tương thích ngược
+      state.learningData.highlights[state.activeLessonId].push(newFrame);
       saveLearningData();
 
       showToast("Đã đóng khung văn bản thành công!");
@@ -19919,81 +20390,69 @@
       return newFrame;
     }
 
-    // Tương thích ngược với tên hàm applyHighlightToCurrentSelection
     function applyHighlightToCurrentSelection(colorName) {
       return applyFramingToCurrentSelection(colorName);
     }
 
-    // Thao tác Cục Tẩy (Eraser) - xóa khung đang chọn/chạm và hiển thị Hoàn tác
+    // Thao tác Cục Tẩy (Eraser) - xóa khung đang chọn/chạm và hiển thị Hoàn tác 5s
     function eraseCurrentSelectionOrHighlight() {
       if (!state.activeLessonId) return;
-      const iframe = document.getElementById('lessonIframe');
-      if (!iframe || !getSafeIframeDocument(iframe)) return;
-      const doc = getSafeIframeDocument(iframe); if (!doc) return null;
 
-      const targetFrameIds = new Set();
-
-      // 1. Kiểm tra từ vùng chọn hiện tại
-      if (currentSelectionInfo && currentSelectionInfo.range) {
-        const range = currentSelectionInfo.range;
-        const container = range.commonAncestorContainer;
-        const root = container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement;
-        if (root) {
-          const direct = root.closest('.text-frame, .frame-corner-badge, .custom-highlight');
-          if (direct) {
-            const fId = direct.getAttribute('data-frame-id') || direct.getAttribute('data-hl-id');
-            if (fId) targetFrameIds.add(fId);
-          }
-          const childFrames = root.querySelectorAll ? root.querySelectorAll('.text-frame, .custom-highlight') : [];
-          childFrames.forEach(m => {
-            if (range.intersectsNode(m)) {
-              const fId = m.getAttribute('data-frame-id') || m.getAttribute('data-hl-id');
-              if (fId) targetFrameIds.add(fId);
-            }
-          });
+      let targetFrameId = null;
+      if (activeHighlightItem && activeHighlightItem.id) {
+        targetFrameId = activeHighlightItem.id;
+      } else if (currentSelectionInfoBridge && currentSelectionInfoBridge.frameId) {
+        targetFrameId = currentSelectionInfoBridge.frameId;
+      } else {
+        const curList = (state.learningData.frames && state.learningData.frames[state.activeLessonId]) || [];
+        if (currentSelectionInfoBridge && currentSelectionInfoBridge.text) {
+          const match = curList.find(f => (f.anchor?.exact || f.text || '').includes(currentSelectionInfoBridge.text));
+          if (match) targetFrameId = match.id;
         }
       }
 
-      // 2. Kiểm tra khung đang mở chi tiết
-      if (activeHighlightItem && activeHighlightItem.id) {
-        targetFrameIds.add(activeHighlightItem.id);
-      }
-
-      if (targetFrameIds.size === 0) {
+      if (!targetFrameId) {
         showToast("Vui lòng chọn hoặc bấm vào khung để tẩy", "error");
         return;
       }
 
       const curLessonId = state.activeLessonId;
-      const frameList = state.learningData.frames[curLessonId] || state.learningData.highlights[curLessonId] || [];
+      const frameList = state.learningData.frames[curLessonId] || [];
       const removedItems = [];
 
       state.learningData.frames[curLessonId] = (state.learningData.frames[curLessonId] || []).filter(h => {
-        if (targetFrameIds.has(h.id)) {
+        if (h.id === targetFrameId) {
           removedItems.push(h);
           return false;
         }
         return true;
       });
 
-      if (state.learningData.highlights[curLessonId]) {
-        state.learningData.highlights[curLessonId] = state.learningData.highlights[curLessonId].filter(h => !targetFrameIds.has(h.id));
+      if (state.learningData.highlights && state.learningData.highlights[curLessonId]) {
+        state.learningData.highlights[curLessonId] = state.learningData.highlights[curLessonId].filter(h => h.id !== targetFrameId);
       }
 
-      // Gỡ bỏ thẻ khung & nhãn khỏi DOM
-      targetFrameIds.forEach(id => removeFrameFromDoc(doc, id));
+      // Gửi lệnh gỡ khung sang Iframe qua postMessage
+      postMessageToLessonIframe({
+        type: 'REMOVE_FRAME',
+        id: targetFrameId
+      });
+
+      // Nếu cùng origin, dọn dẹp trực tiếp DOM
+      const iframe = document.getElementById('lessonIframe');
+      const doc = getSafeIframeDocument(iframe);
+      if (doc) {
+        removeFrameFromDoc(doc, targetFrameId);
+      }
 
       saveLearningData();
       if (hlToolbar) hlToolbar.classList.add('hidden');
-      try {
-        doc.getSelection().removeAllRanges();
-      } catch (_) {}
       currentSelectionInfo = null;
       currentSelectionInfoBridge = null;
       activeHighlightItem = null;
 
-      // Thông báo có nút Hoàn tác
-      showActionToast(`Đã xóa ${removedItems.length} khung`, "Hoàn tác", () => {
+      // Toast có nút Hoàn tác 5 giây
+      showActionToast("Đã xóa khung đánh dấu", "Hoàn tác", () => {
         if (!state.learningData.frames[curLessonId]) state.learningData.frames[curLessonId] = [];
         if (!state.learningData.highlights[curLessonId]) state.learningData.highlights[curLessonId] = [];
         state.learningData.frames[curLessonId].push(...removedItems);
@@ -20004,95 +20463,147 @@
       });
     }
 
+    // Gắn sự kiện các nút trên Floating Toolbar
+    const btnApplyFraming = document.getElementById('btnApplyFraming');
+    if (btnApplyFraming) {
+      btnApplyFraming.addEventListener('click', () => {
+        applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
+      });
+    }
+
+    // 4 nút màu có sẵn trên Toolbar
+    document.querySelectorAll('.hl-color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = btn.getAttribute('data-color') || 'yellow';
+        activeFramingColor = color;
+        localStorage.setItem('last_framing_color', color);
+        updateToolbarColorIndicators();
+
+        if (activeHighlightItem) {
+          activeHighlightItem.color = color;
+          activeHighlightItem.customColor = null;
+          activeHighlightItem.updatedAt = Date.now();
+          saveLearningData();
+          postMessageToLessonIframe({ type: 'APPLY_COLOR', id: activeHighlightItem.id, color: color });
+          showToast(`Đã đổi màu khung sang ${color === 'yellow' ? 'Vàng' : color === 'green' ? 'Xanh' : color === 'pink' ? 'Hồng' : 'Tím'}`);
+        } else if (currentSelectionInfoBridge || currentSelectionInfo) {
+          applyFramingToCurrentSelection(color);
+        }
+      });
+    });
+
+    // Nút chọn màu tùy ý (Custom Color Picker)
+    const customFrameColorInput = document.getElementById('customFrameColorInput');
+    if (customFrameColorInput) {
+      customFrameColorInput.value = activeCustomColor || '#6366f1';
+      const handleCustomColorChange = (e) => {
+        const hex = e.target.value;
+        activeFramingColor = 'custom';
+        activeCustomColor = hex;
+        localStorage.setItem('last_framing_color', 'custom');
+        localStorage.setItem('last_custom_frame_color', hex);
+        updateToolbarColorIndicators();
+
+        if (activeHighlightItem) {
+          activeHighlightItem.color = 'custom';
+          activeHighlightItem.customColor = hex;
+          activeHighlightItem.updatedAt = Date.now();
+          saveLearningData();
+          postMessageToLessonIframe({ type: 'APPLY_COLOR', id: activeHighlightItem.id, color: 'custom', customColor: hex });
+          showToast("Đã áp dụng màu khung tùy chỉnh!");
+        } else if (currentSelectionInfoBridge || currentSelectionInfo) {
+          applyFramingToCurrentSelection('custom', '', '', hex);
+        }
+      };
+      customFrameColorInput.addEventListener('input', handleCustomColorChange);
+      customFrameColorInput.addEventListener('change', handleCustomColorChange);
+    }
+
+    // Nút Thêm Ghi Chú trên Toolbar
+    const btnHlAddNote = document.getElementById('btnHlAddNote');
+    if (btnHlAddNote) {
+      btnHlAddNote.addEventListener('click', () => {
+        if (currentSelectionInfoBridge || currentSelectionInfo) {
+          const item = applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
+          if (item) {
+            setTimeout(() => openFrameDetailModal(item.id), 100);
+          }
+        } else if (activeHighlightItem) {
+          openFrameDetailModal(activeHighlightItem.id);
+        } else {
+          showToast("Vui lòng bôi đen đoạn văn bản để thêm ghi chú", "error");
+        }
+      });
+    }
+
+    // Nút Tẩy khung
     const btnHlEraser = document.getElementById('btnHlEraser');
     if (btnHlEraser) {
       btnHlEraser.addEventListener('click', eraseCurrentSelectionOrHighlight);
     }
 
-    // Đảm bảo các nút trên Toolbar ăn ngay lần chạm đầu trên Safari iPhone (ngăn mất selection)
-    if (hlToolbar) {
-      hlToolbar.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-        });
+    // Nút Sao chép văn bản
+    function fallbackCopyText(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast("Đã sao chép văn bản!");
+      } catch (_) {
+        showToast("Không thể sao chép văn bản", "error");
+      }
+      document.body.removeChild(ta);
+    }
+
+    const btnHlCopy = document.getElementById('btnHlCopy');
+    if (btnHlCopy) {
+      btnHlCopy.addEventListener('click', () => {
+        const textToCopy = (currentSelectionInfo && currentSelectionInfo.text) || 
+                           (currentSelectionInfoBridge && currentSelectionInfoBridge.text) ||
+                           (activeHighlightItem && (activeHighlightItem.anchor?.exact || activeHighlightItem.text));
+        if (textToCopy) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+              showToast("Đã sao chép văn bản!");
+            }).catch(() => fallbackCopyText(textToCopy));
+          } else {
+            fallbackCopyText(textToCopy);
+          }
+          if (hlToolbar) hlToolbar.classList.add('hidden');
+        } else {
+          showToast("Chưa chọn đoạn văn bản nào để sao chép", "error");
+        }
       });
     }
 
-    // Khôi phục toàn bộ khung đánh dấu cho bài đọc (Dùng TextQuoteAnchor và TreeWalker an toàn)
+    // Khôi phục khung cho bài đọc
     function restoreFramesForLesson(lessonId) {
       try {
         if (!lessonId) return;
-      const iframe = document.getElementById('lessonIframe');
-      if (!iframe || !getSafeIframeDocument(iframe)) return;
-      const doc = getSafeIframeDocument(iframe); if (!doc) return null;
-      injectHighlightStyles(doc);
+        const items = (state.learningData.frames && state.learningData.frames[lessonId]) ||
+                      (state.learningData.highlights && state.learningData.highlights[lessonId]) || [];
+        const showFrames = localStorage.getItem('setting_show_text_frames') !== 'false';
+        const showBadges = localStorage.getItem('setting_show_frame_badges') !== 'false';
 
-      const items = (state.learningData.frames && state.learningData.frames[lessonId]) ||
-                    (state.learningData.highlights && state.learningData.highlights[lessonId]) || [];
-      if (!items || items.length === 0) return;
+        // Gửi thông điệp RESTORE_FRAMES vào Iframe
+        postMessageToLessonIframe({
+          type: 'RESTORE_FRAMES',
+          frames: items,
+          showFrames: showFrames,
+          showBadges: showBadges
+        });
 
-      // 1. Dọn dẹp dữ liệu rác/trùng lặp
-      const cleanedItems = [];
-      const seenIds = new Set();
-      const seenSignatures = new Set();
-      let hasCorrupted = false;
-
-      for (const item of items) {
-        const textVal = (item.anchor?.exact || item.text || '').trim();
-        if (!item || !textVal) {
-          hasCorrupted = true;
-          continue;
+        // Nếu cùng origin, tiêm thêm vào DOM trực tiếp
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        if (doc) {
+          injectHighlightStyles(doc);
         }
-        if (seenIds.has(item.id)) {
-          hasCorrupted = true;
-          continue;
-        }
-        seenIds.add(item.id);
-
-        const sig = `${textVal}::${item.anchor?.prefix || item.prefix || ''}::${item.anchor?.suffix || item.suffix || ''}`;
-        if (seenSignatures.has(sig)) {
-          hasCorrupted = true;
-          continue;
-        }
-        seenSignatures.add(sig);
-        cleanedItems.push(item);
-      }
-
-      if (hasCorrupted) {
-        state.learningData.frames[lessonId] = cleanedItems;
-        state.learningData.highlights[lessonId] = cleanedItems;
-        saveLearningData();
-      }
-
-      // 2. Tìm kiếm trong các Text Node và vẽ khung
-      const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
-      const textNodes = [];
-      let node;
-      while ((node = walker.nextNode())) {
-        if (node.parentElement && !node.parentElement.closest('.text-frame, .custom-highlight, script, style')) {
-          textNodes.push(node);
-        }
-      }
-
-      for (const item of cleanedItems) {
-        if (doc.querySelector(`[data-frame-id="${item.id}"]`)) continue;
-        const needle = (item.anchor?.exact || item.text || '').trim();
-        if (!needle) continue;
-
-        for (const tNode of textNodes) {
-          if (!tNode.parentNode) continue;
-          const idx = tNode.nodeValue.indexOf(needle);
-          if (idx !== -1) {
-            try {
-              const range = doc.createRange();
-              range.setStart(tNode, idx);
-              range.setEnd(tNode, idx + needle.length);
-              wrapRangeWithFrame(doc, range, item.id, item.color || 'yellow', item.label || '');
-              break;
-            } catch (_) {}
-          }
-        }
-      }
       } catch (err) {
         console.warn('Lỗi êm trong restoreFramesForLesson:', err);
       }
@@ -20102,7 +20613,7 @@
       restoreFramesForLesson(lessonId);
     }
 
-    // Mở modal Chi tiết Khung & Ghi chú
+    // Mở Modal Chi tiết & Sửa Ghi Chú Khung
     function openFrameDetailModal(frameId) {
       if (!state.activeLessonId) return;
       const list = (state.learningData.frames && state.learningData.frames[state.activeLessonId]) ||
@@ -20116,7 +20627,10 @@
       const noteInput = document.getElementById('hlNoteInput');
       if (previewEl) previewEl.innerText = `"${item.anchor?.exact || item.text || ''}"`;
       if (labelInput) labelInput.value = item.label || '';
-      if (noteInput) noteInput.value = item.note || '';
+      if (noteInput) {
+        noteInput.value = item.note || '';
+        setTimeout(() => noteInput.focus(), 150);
+      }
 
       showModalAnimated(hlDetailModal);
     }
@@ -20124,66 +20638,26 @@
     function openHighlightDetail(hlId) {
       openFrameDetailModal(hlId);
     }
-
-    // Gắn sự kiện nút Đóng Khung chính
-    const btnApplyFraming = document.getElementById('btnApplyFraming');
-    if (btnApplyFraming) {
-      btnApplyFraming.addEventListener('click', () => {
-        applyFramingToCurrentSelection('yellow');
-      });
-    }
-
-    // 4 nút màu trên floating toolbar
-    document.querySelectorAll('.hl-color-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const color = btn.getAttribute('data-color') || 'yellow';
-        applyFramingToCurrentSelection(color);
-      });
-    });
-
-    // Nút Thêm Ghi Chú trên toolbar
-    const btnHlAddNote = document.getElementById('btnHlAddNote');
-    if (btnHlAddNote) {
-      btnHlAddNote.addEventListener('click', () => {
-        const item = applyFramingToCurrentSelection('yellow');
-        if (item) {
-          setTimeout(() => openFrameDetailModal(item.id), 100);
-        } else if (activeHighlightItem) {
-          openFrameDetailModal(activeHighlightItem.id);
-        }
-      });
-    }
-
-    const btnHlCopy = document.getElementById('btnHlCopy');
-    if (btnHlCopy) {
-      btnHlCopy.addEventListener('click', () => {
-        const textToCopy = (currentSelectionInfo && currentSelectionInfo.text) || 
-                           (currentSelectionInfoBridge && currentSelectionInfoBridge.text) ||
-                           (activeHighlightItem && (activeHighlightItem.anchor?.exact || activeHighlightItem.text));
-        if (textToCopy) {
-          navigator.clipboard.writeText(textToCopy);
-          showToast("Đã sao chép văn bản!");
-          if (hlToolbar) hlToolbar.classList.add('hidden');
-        }
-      });
-    }
-
-    const btnHlMakeCard = document.getElementById('btnHlMakeCard');
-    if (btnHlMakeCard) {
-      btnHlMakeCard.addEventListener('click', () => {
-        const selText = (currentSelectionInfo && currentSelectionInfo.text) || 
-                        (currentSelectionInfoBridge && currentSelectionInfoBridge.text) ||
-                        (activeHighlightItem && (activeHighlightItem.anchor?.exact || activeHighlightItem.text));
-        if (selText) {
-          if (hlToolbar) hlToolbar.classList.add('hidden');
-          openCreateFlashcardQuick(selText);
-        }
-      });
-    }
+    window.openFrameDetailModal = openFrameDetailModal;
+    window.openHighlightDetail = openHighlightDetail;
 
     const btnCloseHlDetail = document.getElementById('btnCloseHlDetail');
     if (btnCloseHlDetail) {
       btnCloseHlDetail.addEventListener('click', () => hideModalAnimated(hlDetailModal));
+    }
+
+    // Phím tắt Ctrl+Enter để Lưu, Esc để Hủy trong Modal Ghi chú
+    if (hlDetailModal) {
+      hlDetailModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          const saveBtn = document.getElementById('btnSaveCurrentHighlightNote');
+          if (saveBtn) saveBtn.click();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          hideModalAnimated(hlDetailModal);
+        }
+      });
     }
 
     // Lưu Nhãn Góc & Ghi Chú cho khung
@@ -20201,14 +20675,22 @@
           activeHighlightItem.updatedAt = Date.now();
           saveLearningData();
 
-          // Cập nhật nhãn góc hiển thị trực tiếp trong iframe
+          // Cập nhật nhãn trong Iframe qua postMessage
+          postMessageToLessonIframe({
+            type: 'UPDATE_FRAME_LABEL',
+            id: activeHighlightItem.id,
+            label: newLabel,
+            note: newNote
+          });
+
+          // Nếu cùng origin, cập nhật DOM trực tiếp
           const iframe = document.getElementById('lessonIframe');
-          const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-            const badge = iframe.contentDocument.querySelector(`.frame-corner-badge[data-frame-id="${activeHighlightItem.id}"]`);
+          const doc = getSafeIframeDocument(iframe);
+          if (doc) {
+            const badge = doc.querySelector(`.frame-corner-badge[data-frame-id="${activeHighlightItem.id}"]`);
             if (badge) {
               badge.innerText = newLabel || '•';
-              badge.title = newLabel || 'Khung đánh dấu';
+              badge.title = newLabel || (newNote ? `Ghi chú: ${newNote}` : 'Khung đánh dấu');
             }
           }
 
@@ -20218,48 +20700,42 @@
       });
     }
 
-    // Xóa khung từ trong modal Chi tiết
+    // Xóa khung từ trong Modal Chi tiết
     const btnDeleteHl = document.getElementById('btnDeleteCurrentHighlight');
     if (btnDeleteHl) {
       btnDeleteHl.addEventListener('click', () => {
         if (activeHighlightItem && state.activeLessonId) {
           const targetItem = activeHighlightItem;
           const targetLessonId = state.activeLessonId;
-          
+
           if (state.learningData.frames && state.learningData.frames[targetLessonId]) {
             state.learningData.frames[targetLessonId] = state.learningData.frames[targetLessonId].filter(h => h.id !== targetItem.id);
           }
           if (state.learningData.highlights && state.learningData.highlights[targetLessonId]) {
             state.learningData.highlights[targetLessonId] = state.learningData.highlights[targetLessonId].filter(h => h.id !== targetItem.id);
           }
-          saveLearningData();
+
+          postMessageToLessonIframe({
+            type: 'REMOVE_FRAME',
+            id: targetItem.id
+          });
 
           const iframe = document.getElementById('lessonIframe');
-          const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-            removeFrameFromDoc(iframe.contentDocument, targetItem.id);
+          const doc = getSafeIframeDocument(iframe);
+          if (doc) {
+            removeFrameFromDoc(doc, targetItem.id);
           }
 
+          saveLearningData();
+          showToast("Đã xóa khung đánh dấu!");
           hideModalAnimated(hlDetailModal);
-
-          showActionToast("Đã xóa khung", "Hoàn tác", () => {
-            if (!state.learningData.frames[targetLessonId]) state.learningData.frames[targetLessonId] = [];
-            if (!state.learningData.highlights[targetLessonId]) state.learningData.highlights[targetLessonId] = [];
-            state.learningData.frames[targetLessonId].push(targetItem);
-            state.learningData.highlights[targetLessonId].push(targetItem);
-            saveLearningData();
-            if (state.activeLessonId === targetLessonId) {
-              restoreFramesForLesson(targetLessonId);
-            }
-            showToast("Đã hoàn tác khôi phục khung!");
-          });
+          activeHighlightItem = null;
         }
       });
     }
 
-
     // =========================================================================
-    // // VIỆC 4: QUẢN LÝ TẤT CẢ GHI CHÚ & KHUNG, BỘ LỌC, XUẤT .MD VÀ TÙY CHỌN HIỂN THỊ
+    // // HỘP THOẠI "TẤT CẢ GHI CHÚ & KHUNG" (RENDER, BỘ LỌC, XUẤT .MD)
     // =========================================================================
     const btnHeaderNotes = document.getElementById('btnHeaderNotes');
     if (btnHeaderNotes) {
@@ -20277,7 +20753,7 @@
     let notesActiveColorFilter = 'all';
     let notesSearchKeyword = '';
     let isNotesBatchModeActive = false;
-    let selectedNoteKeys = new Set(); // tập hợp các key: `${lessonId}::${frameId}`
+    let selectedNoteKeys = new Set();
 
     function updateBatchActionBarUI() {
       const batchBar = document.getElementById('notesBatchActionBar');
@@ -20286,7 +20762,6 @@
       const selectAllCb = document.getElementById('batchSelectAllNotesCheckbox');
 
       if (!batchBar) return;
-
       if (!isNotesBatchModeActive) {
         batchBar.classList.add('hidden');
         selectedNoteKeys.clear();
@@ -20296,15 +20771,11 @@
       batchBar.classList.remove('hidden');
       const count = selectedNoteKeys.size;
       if (countLabel) countLabel.innerText = `(Đã chọn ${count} mục)`;
-      if (btnDeleteBatch) {
-        btnDeleteBatch.disabled = count === 0;
-      }
+      if (btnDeleteBatch) btnDeleteBatch.disabled = count === 0;
 
-      // Kiểm tra trạng thái Select All
       const allCheckboxes = document.querySelectorAll('.note-batch-checkbox');
       if (selectAllCb && allCheckboxes.length > 0) {
-        const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
-        selectAllCb.checked = allChecked;
+        selectAllCb.checked = Array.from(allCheckboxes).every(cb => cb.checked);
       }
     }
 
@@ -20312,9 +20783,7 @@
       const frameList = (state.learningData.frames && state.learningData.frames[lessonId]) || [];
       const idxF = frameList.findIndex(h => h.id === frameId);
       let removed = null;
-      if (idxF !== -1) {
-        removed = frameList.splice(idxF, 1)[0];
-      }
+      if (idxF !== -1) removed = frameList.splice(idxF, 1)[0];
 
       if (state.learningData.highlights && state.learningData.highlights[lessonId]) {
         const hlList = state.learningData.highlights[lessonId];
@@ -20325,39 +20794,53 @@
 
       saveLearningData();
 
-      // Nếu bài này đang mở trên màn hình, gỡ bỏ ngay lập tức khung khỏi DOM
       if (state.activeLessonId === lessonId) {
+        postMessageToLessonIframe({ type: 'REMOVE_FRAME', id: frameId });
         const iframe = document.getElementById('lessonIframe');
-        const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-          removeFrameFromDoc(iframe.contentDocument, frameId);
-        }
+        const doc = getSafeIframeDocument(iframe);
+        if (doc) removeFrameFromDoc(doc, frameId);
       }
 
       renderAllNotesView();
       return removed;
     }
 
-    function restoreSingleHighlight(item) {
-      if (!item || !item.lessonId) return;
-      const lId = item.lessonId;
-      if (!state.learningData.frames) state.learningData.frames = {};
-      if (!state.learningData.frames[lId]) state.learningData.frames[lId] = [];
-      state.learningData.frames[lId].push(item);
+    function jumpToHighlight(lessonId, frameId) {
+      const les = (state.lessons || []).find(l => l.id === lessonId);
+      if (!les) return;
 
-      if (!state.learningData.highlights) state.learningData.highlights = {};
-      if (!state.learningData.highlights[lId]) state.learningData.highlights[lId] = [];
-      state.learningData.highlights[lId].push(item);
+      const triggerScrollAndFlash = () => {
+        setTimeout(() => {
+          postMessageToLessonIframe({
+            type: 'SCROLL_TO_FRAME',
+            id: frameId
+          });
+          const iframe = document.getElementById('lessonIframe');
+          const doc = getSafeIframeDocument(iframe);
+          if (doc) {
+            const target = doc.querySelector(`[data-frame-id="${frameId}"], [data-hl-id="${frameId}"]`);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              target.classList.remove('frame-flash-highlight');
+              void target.offsetWidth;
+              target.classList.add('frame-flash-highlight');
+              setTimeout(() => target.classList.remove('frame-flash-highlight'), 2200);
+            }
+          }
+        }, 500);
+      };
 
-      saveLearningData();
-
-      if (state.activeLessonId === lId) {
-        restoreFramesForLesson(lId);
+      if (state.activeLessonId !== les.id) {
+        state.activeLessonId = les.id;
+        state.activeCategoryId = les.categoryId;
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+        triggerScrollAndFlash();
+      } else {
+        triggerScrollAndFlash();
       }
-      renderAllNotesView();
     }
 
-    // Hiển thị danh sách Tất cả Ghi chú & Khung kèm bộ lọc màu, bộ đếm badge và phạm vi bài học
     function renderAllNotesView() {
       const container = document.getElementById('allNotesListContainer');
       const countLabel = document.getElementById('allNotesCountLabel');
@@ -20368,12 +20851,15 @@
       container.innerHTML = '';
 
       let totalNotes = 0;
-      let countYellow = 0, countGreen = 0, countPink = 0, countPurple = 0;
+      let countYellow = 0, countGreen = 0, countPink = 0, countPurple = 0, countOther = 0;
       const allEntries = [];
 
-      const targetLessons = (selectedScope === 'current' && state.activeLessonId)
-        ? (state.lessons || []).filter(l => l.id === state.activeLessonId)
-        : (state.lessons || []);
+      let targetLessons = state.lessons || [];
+      if (selectedScope === 'current' && state.activeLessonId) {
+        targetLessons = targetLessons.filter(l => l.id === state.activeLessonId);
+      } else if (selectedScope === 'category' && state.activeCategoryId) {
+        targetLessons = targetLessons.filter(l => l.categoryId === state.activeCategoryId);
+      }
 
       for (const les of targetLessons) {
         const list = (state.learningData.frames && state.learningData.frames[les.id]) ||
@@ -20386,8 +20872,11 @@
           else if (col === 'green') countGreen++;
           else if (col === 'pink') countPink++;
           else if (col === 'purple') countPurple++;
+          else countOther++;
 
-          const matchColor = notesActiveColorFilter === 'all' || col === notesActiveColorFilter;
+          const matchColor = notesActiveColorFilter === 'all' || 
+            (notesActiveColorFilter === 'custom' ? (col === 'custom' || !['yellow', 'green', 'pink', 'purple'].includes(col)) : col === notesActiveColorFilter);
+
           const textVal = item.anchor?.exact || item.text || '';
           const matchKw = !notesSearchKeyword || 
             textVal.toLowerCase().includes(notesSearchKeyword) || 
@@ -20401,7 +20890,7 @@
         }
       }
 
-      // Cập nhật số đếm trên các chip màu
+      // Cập nhật số đếm badge
       const chipAll = document.getElementById('chipCountAll');
       const chipYellow = document.getElementById('chipCountYellow');
       const chipGreen = document.getElementById('chipCountGreen');
@@ -20435,6 +20924,9 @@
 
       for (const lesId in grouped) {
         const group = grouped[lesId];
+        const cat = (state.categories || []).find(c => c.id === group.lesson.categoryId);
+        const catTitle = cat ? cat.title : 'Chưa phân loại';
+
         const groupEl = document.createElement('div');
         groupEl.className = "p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] space-y-2.5";
         
@@ -20442,10 +20934,10 @@
         for (const h of group.items) {
           const itemKey = `${group.lesson.id}::${h.id}`;
           const isChecked = selectedNoteKeys.has(itemKey);
-          const colName = h.color || 'yellow';
-          const palette = FRAME_PALETTE[colName] || FRAME_PALETTE.yellow;
+          const colDetails = getFrameColorDetails(h.color, h.customColor);
           const textVal = h.anchor?.exact || h.text || '';
           const labelVal = (h.label || '').trim();
+          const dateStr = h.createdAt ? new Date(h.createdAt).toLocaleDateString('vi-VN') : '';
 
           itemsHtml += `
             <div class="group relative p-2.5 rounded-lg bg-white dark:bg-[#181B20] border border-[#E7E5DF]/70 dark:border-[#262C36]/70 hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer transition note-item-card flex items-start gap-2.5" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}" data-item-key="${itemKey}">
@@ -20455,18 +20947,18 @@
               
               <div class="flex-1 min-w-0">
                 <div class="flex items-start gap-2 mb-1 flex-wrap">
-                  <span class="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style="background-color: ${palette.border}"></span>
+                  <span class="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style="background-color: ${colDetails.border}"></span>
                   ${labelVal ? `
-                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0" style="background-color: ${palette.badgeBg}; color: ${palette.badgeText}; border: 1px solid ${palette.badgeBorder}">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0" style="background-color: ${colDetails.badgeBg}; color: ${colDetails.badgeText}; border: 1px solid ${colDetails.badgeBorder}">
                       ${labelVal}
                     </span>
                   ` : ''}
                   <p class="font-serif text-xs text-[#1C1917] dark:text-[#EDECE8] italic line-clamp-2 leading-relaxed flex-1 min-w-[120px]">"${textVal}"</p>
                 </div>
-                ${h.note ? `<div class="pl-4 text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-sans border-l border-indigo-200 dark:border-indigo-800 ml-1.5 mt-1 leading-snug">${h.note}</div>` : ''}
+                ${h.note ? `<div class="pl-4 text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-sans border-l-2 border-indigo-400 dark:border-indigo-600 ml-1.5 mt-1 leading-snug">${h.note}</div>` : ''}
+                ${dateStr ? `<div class="text-[10px] text-[#979DA8] font-mono mt-1 pl-1">${dateStr}</div>` : ''}
               </div>
 
-              <!-- Nút xóa trên từng thẻ -->
               <button class="btn-delete-single-note touch-target p-1.5 rounded-md text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/40 opacity-80 sm:opacity-40 sm:group-hover:opacity-100 transition shrink-0 self-center" data-lesson-id="${group.lesson.id}" data-hl-id="${h.id}" title="Xóa khung này">
                 <svg class="w-3.5 h-3.5 pointer-events-none"><use href="#icon-trash-2"></use></svg>
               </button>
@@ -20477,10 +20969,10 @@
         groupEl.innerHTML = `
           <div class="flex items-center justify-between pb-1.5 border-b border-[#E7E5DF] dark:border-[#262C36]">
             <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-1.5 py-0.5 rounded">${catTitle}</span>
               <h4 class="font-serif font-bold text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">${group.lesson.title}</h4>
               <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono shrink-0">(${group.items.length})</span>
             </div>
-            <!-- Nút xóa toàn bộ khung của riêng bài này -->
             <button class="btn-delete-lesson-notes text-[11px] text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 font-medium transition" data-lesson-id="${group.lesson.id}" data-lesson-title="${group.lesson.title}" title="Xóa tất cả khung của bài này">
               <svg class="w-3 h-3"><use href="#icon-trash-2"></use></svg>
               <span>Xóa bài này</span>
@@ -20491,7 +20983,7 @@
         container.appendChild(groupEl);
       }
 
-      // Gắn sự kiện click trên từng thẻ và nút xóa
+      // Sự kiện click chọn thẻ hoặc chuyển tới bài
       container.querySelectorAll('.note-item-card').forEach(card => {
         card.addEventListener('click', (e) => {
           if (e.target.closest('.btn-delete-single-note')) return;
@@ -20501,11 +20993,8 @@
             const cb = card.querySelector('.note-batch-checkbox');
             if (cb) {
               if (e.target !== cb) cb.checked = !cb.checked;
-              if (cb.checked) {
-                selectedNoteKeys.add(itemKey);
-              } else {
-                selectedNoteKeys.delete(itemKey);
-              }
+              if (cb.checked) selectedNoteKeys.add(itemKey);
+              else selectedNoteKeys.delete(itemKey);
               updateBatchActionBarUI();
             }
           } else {
@@ -20517,273 +21006,41 @@
         });
       });
 
-      // Gắn sự kiện xóa từng thẻ
+      // Xóa từng thẻ
       container.querySelectorAll('.btn-delete-single-note').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const lId = btn.getAttribute('data-lesson-id');
           const hId = btn.getAttribute('data-hl-id');
-          const removed = deleteHighlightById(lId, hId);
-          if (removed) {
-            showActionToast("Đã xóa 1 khung", "Hoàn tác", () => {
-              restoreSingleHighlight(removed);
-              showToast("Đã khôi phục khung!");
-            });
-          }
+          deleteHighlightById(lId, hId);
+          showToast("Đã xóa khung đánh dấu");
         });
       });
 
-      // Gắn sự kiện xóa toàn bộ khung của một bài học
+      // Xóa toàn bộ khung của 1 bài học
       container.querySelectorAll('.btn-delete-lesson-notes').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const lId = btn.getAttribute('data-lesson-id');
-          const lTitle = btn.getAttribute('data-lesson-title') || 'bài học';
-          const itemsToRemove = ((state.learningData.frames && state.learningData.frames[lId]) ||
-                                 (state.learningData.highlights && state.learningData.highlights[lId]) || []).slice();
-
-          if (itemsToRemove.length === 0) return;
-
-          askConfirmDelete(`Bạn có chắc muốn xóa tất cả ${itemsToRemove.length} khung của bài "${lTitle}" không?`, () => {
-            if (state.learningData.frames) state.learningData.frames[lId] = [];
-            if (state.learningData.highlights) state.learningData.highlights[lId] = [];
+          const title = btn.getAttribute('data-lesson-title') || 'bài học';
+          if (confirm(`Bạn có chắc muốn xóa tất cả khung & ghi chú của bài "${title}"?`)) {
+            if (state.learningData.frames) delete state.learningData.frames[lId];
+            if (state.learningData.highlights) delete state.learningData.highlights[lId];
             saveLearningData();
-
             if (state.activeLessonId === lId) {
-              const iframe = document.getElementById('lessonIframe');
-              const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-                itemsToRemove.forEach(h => removeFrameFromDoc(iframe.contentDocument, h.id));
-              }
+              restoreFramesForLesson(lId);
             }
-
             renderAllNotesView();
-            showActionToast(`Đã xóa ${itemsToRemove.length} khung`, "Hoàn tác", () => {
-              if (!state.learningData.frames) state.learningData.frames = {};
-              if (!state.learningData.frames[lId]) state.learningData.frames[lId] = [];
-              if (!state.learningData.highlights) state.learningData.highlights = {};
-              if (!state.learningData.highlights[lId]) state.learningData.highlights[lId] = [];
-              state.learningData.frames[lId].push(...itemsToRemove);
-              state.learningData.highlights[lId].push(...itemsToRemove);
-              saveLearningData();
-              if (state.activeLessonId === lId) {
-                restoreFramesForLesson(lId);
-              }
-              renderAllNotesView();
-              showToast("Đã khôi phục toàn bộ khung của bài!");
-            });
-          });
+            showToast(`Đã xóa toàn bộ khung của bài "${title}"`);
+          }
         });
       });
 
       updateBatchActionBarUI();
     }
+    window.renderAllNotesView = renderAllNotesView;
 
-    // Lọc theo bài học
-    const notesLessonFilterSelect = document.getElementById('notesLessonFilterSelect');
-    if (notesLessonFilterSelect) {
-      notesLessonFilterSelect.addEventListener('change', () => {
-        renderAllNotesView();
-      });
-    }
-
-    // Toggle chế độ chọn nhiều
-    const btnToggleBatchNotes = document.getElementById('btnToggleBatchNotes');
-    if (btnToggleBatchNotes) {
-      btnToggleBatchNotes.addEventListener('click', () => {
-        isNotesBatchModeActive = !isNotesBatchModeActive;
-        selectedNoteKeys.clear();
-        btnToggleBatchNotes.classList.toggle('bg-indigo-50', isNotesBatchModeActive);
-        btnToggleBatchNotes.classList.toggle('text-indigo-600', isNotesBatchModeActive);
-        renderAllNotesView();
-      });
-    }
-
-    const btnCancelBatchNotesMode = document.getElementById('btnCancelBatchNotesMode');
-    if (btnCancelBatchNotesMode) {
-      btnCancelBatchNotesMode.addEventListener('click', () => {
-        isNotesBatchModeActive = false;
-        selectedNoteKeys.clear();
-        if (btnToggleBatchNotes) {
-          btnToggleBatchNotes.classList.remove('bg-indigo-50', 'text-indigo-600');
-        }
-        renderAllNotesView();
-      });
-    }
-
-    // Chọn tất cả / Bỏ chọn tất cả trong Batch
-    const batchSelectAllNotesCheckbox = document.getElementById('batchSelectAllNotesCheckbox');
-    if (batchSelectAllNotesCheckbox) {
-      batchSelectAllNotesCheckbox.addEventListener('change', (e) => {
-        const checked = e.target.checked;
-        document.querySelectorAll('.note-batch-checkbox').forEach(cb => {
-          cb.checked = checked;
-          const key = cb.getAttribute('data-item-key');
-          if (checked) {
-            selectedNoteKeys.add(key);
-          } else {
-            selectedNoteKeys.delete(key);
-          }
-        });
-        updateBatchActionBarUI();
-      });
-    }
-
-    // Thực hiện xóa các mục đã chọn trong Batch
-    const btnDeleteSelectedBatchNotes = document.getElementById('btnDeleteSelectedBatchNotes');
-    if (btnDeleteSelectedBatchNotes) {
-      btnDeleteSelectedBatchNotes.addEventListener('click', () => {
-        if (selectedNoteKeys.size === 0) return;
-        const count = selectedNoteKeys.size;
-
-        askConfirmDelete(`Bạn có chắc muốn xóa ${count} khung đã chọn không?`, () => {
-          const removedBatch = [];
-          const affectedLessonIds = new Set();
-
-          for (const key of selectedNoteKeys) {
-            const [lId, fId] = key.split('::');
-            const fList = (state.learningData.frames && state.learningData.frames[lId]) || [];
-            const idxF = fList.findIndex(h => h.id === fId);
-            if (idxF !== -1) {
-              const rem = fList.splice(idxF, 1)[0];
-              removedBatch.push(rem);
-              affectedLessonIds.add(lId);
-            }
-            if (state.learningData.highlights && state.learningData.highlights[lId]) {
-              const hList = state.learningData.highlights[lId];
-              const idxH = hList.findIndex(h => h.id === fId);
-              if (idxH !== -1) hList.splice(idxH, 1);
-            }
-          }
-
-          saveLearningData();
-
-          // Gỡ bỏ trong DOM iframe nếu bài đang mở bị ảnh hưởng
-          if (affectedLessonIds.has(state.activeLessonId)) {
-            const iframe = document.getElementById('lessonIframe');
-            const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-              removedBatch.filter(h => h.lessonId === state.activeLessonId).forEach(h => {
-                removeFrameFromDoc(iframe.contentDocument, h.id);
-              });
-            }
-          }
-
-          selectedNoteKeys.clear();
-          isNotesBatchModeActive = false;
-          if (btnToggleBatchNotes) btnToggleBatchNotes.classList.remove('bg-indigo-50', 'text-indigo-600');
-          renderAllNotesView();
-
-          showActionToast(`Đã xóa ${count} khung`, "Hoàn tác", () => {
-            for (const item of removedBatch) {
-              if (!state.learningData.frames) state.learningData.frames = {};
-              if (!state.learningData.frames[item.lessonId]) state.learningData.frames[item.lessonId] = [];
-              state.learningData.frames[item.lessonId].push(item);
-
-              if (!state.learningData.highlights) state.learningData.highlights = {};
-              if (!state.learningData.highlights[item.lessonId]) state.learningData.highlights[item.lessonId] = [];
-              state.learningData.highlights[item.lessonId].push(item);
-            }
-            saveLearningData();
-            if (affectedLessonIds.has(state.activeLessonId)) {
-              restoreFramesForLesson(state.activeLessonId);
-            }
-            renderAllNotesView();
-            showToast("Đã khôi phục các khung đã xóa!");
-          });
-        });
-      });
-    }
-
-    // Xóa toàn bộ khung & ghi chú toàn thư viện
-    const btnClearAllLibraryNotes = document.getElementById('btnClearAllLibraryNotes');
-    if (btnClearAllLibraryNotes) {
-      btnClearAllLibraryNotes.addEventListener('click', () => {
-        let totalCount = 0;
-        const sourceData = state.learningData.frames || state.learningData.highlights || {};
-        for (const lId in sourceData) {
-          totalCount += (sourceData[lId] || []).length;
-        }
-
-        if (totalCount === 0) {
-          showToast("Thư viện hiện chưa có khung nào để xóa", "error");
-          return;
-        }
-
-        askConfirmDelete(`Bạn có chắc muốn xóa TẤT CẢ ${totalCount} khung trong toàn bộ thư viện không? Hành động này có thể hoàn tác ngay sau khi xóa.`, () => {
-          const snapshotFrames = JSON.parse(JSON.stringify(state.learningData.frames || {}));
-          const snapshotHl = JSON.parse(JSON.stringify(state.learningData.highlights || {}));
-          state.learningData.frames = {};
-          state.learningData.highlights = {};
-          saveLearningData();
-
-          const iframe = document.getElementById('lessonIframe');
-          const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-            const allElements = iframe.contentDocument.querySelectorAll('.text-frame, .frame-corner-badge, mark.custom-highlight');
-            allElements.forEach(el => {
-              if (el.classList.contains('frame-corner-badge')) {
-                el.remove();
-                return;
-              }
-              const p = el.parentNode;
-              if (p) {
-                while (el.firstChild) p.insertBefore(el.firstChild, el);
-                p.removeChild(el);
-                p.normalize();
-              }
-            });
-          }
-
-          selectedNoteKeys.clear();
-          isNotesBatchModeActive = false;
-          renderAllNotesView();
-
-          showActionToast(`Đã xóa toàn bộ ${totalCount} khung`, "Hoàn tác", () => {
-            state.learningData.frames = snapshotFrames;
-            state.learningData.highlights = snapshotHl;
-            saveLearningData();
-            if (state.activeLessonId) {
-              restoreFramesForLesson(state.activeLessonId);
-            }
-            renderAllNotesView();
-            showToast("Đã khôi phục toàn bộ khung của thư viện!");
-          });
-        });
-      });
-    }
-
-    // Nhảy tới khung đánh dấu kèm hiệu ứng nhấp nháy phát sáng (Pulse animation)
-    function jumpToHighlight(lessonId, frameId) {
-      const les = (state.lessons || []).find(l => l.id === lessonId);
-      if (!les) return;
-
-      const triggerScrollAndFlash = () => {
-        setTimeout(() => {
-          const iframe = document.getElementById('lessonIframe');
-          if (!iframe || !getSafeIframeDocument(iframe)) return;
-          const target = iframe.contentDocument.querySelector(`[data-frame-id="${frameId}"], [data-hl-id="${frameId}"]`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.classList.remove('frame-flash-highlight');
-            void target.offsetWidth; // Trigger reflow
-            target.classList.add('frame-flash-highlight');
-            setTimeout(() => target.classList.remove('frame-flash-highlight'), 2200);
-          }
-        }, 500);
-      };
-
-      if (state.activeLessonId !== les.id) {
-        state.activeLessonId = les.id;
-        state.activeCategoryId = les.categoryId;
-        renderCategoriesAndLessons();
-        renderActiveLesson();
-        triggerScrollAndFlash();
-      } else {
-        triggerScrollAndFlash();
-      }
-    }
-
+    // Gắn sự kiện tìm kiếm và bộ lọc bài học
     const searchNotesInput = document.getElementById('searchNotesInput');
     if (searchNotesInput) {
       searchNotesInput.addEventListener('input', (e) => {
@@ -20792,46 +21049,143 @@
       });
     }
 
+    const notesLessonFilterSelect = document.getElementById('notesLessonFilterSelect');
+    if (notesLessonFilterSelect) {
+      notesLessonFilterSelect.addEventListener('change', renderAllNotesView);
+    }
+
+    // Bộ lọc màu
     document.querySelectorAll('.notes-color-filter').forEach(btn => {
       btn.addEventListener('click', () => {
         notesActiveColorFilter = btn.getAttribute('data-color') || 'all';
         document.querySelectorAll('.notes-color-filter').forEach(b => {
-          b.classList.remove('ring-2', 'ring-indigo-500');
+          b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-1');
         });
-        btn.classList.add('ring-2', 'ring-indigo-500');
+        btn.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-1');
         renderAllNotesView();
       });
     });
 
-    // Xuất Markdown (.md) cho toàn bộ Khung & Ghi chú
+    // Bật/tắt chế độ Chọn nhiều (Batch Mode)
+    const btnToggleBatchNotes = document.getElementById('btnToggleBatchNotes');
+    if (btnToggleBatchNotes) {
+      btnToggleBatchNotes.addEventListener('click', () => {
+        isNotesBatchModeActive = !isNotesBatchModeActive;
+        if (!isNotesBatchModeActive) selectedNoteKeys.clear();
+        renderAllNotesView();
+      });
+    }
+
+    const btnCancelBatchMode = document.getElementById('btnCancelBatchNotesMode');
+    if (btnCancelBatchMode) {
+      btnCancelBatchMode.addEventListener('click', () => {
+        isNotesBatchModeActive = false;
+        selectedNoteKeys.clear();
+        renderAllNotesView();
+      });
+    }
+
+    const batchSelectAllCb = document.getElementById('batchSelectAllNotesCheckbox');
+    if (batchSelectAllCb) {
+      batchSelectAllCb.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        document.querySelectorAll('.note-batch-checkbox').forEach(cb => {
+          cb.checked = checked;
+          const k = cb.getAttribute('data-item-key');
+          if (checked) selectedNoteKeys.add(k);
+          else selectedNoteKeys.delete(k);
+        });
+        updateBatchActionBarUI();
+      });
+    }
+
+    // Xóa các mục đã chọn trong Batch
+    const btnDeleteSelectedBatch = document.getElementById('btnDeleteSelectedBatchNotes');
+    if (btnDeleteSelectedBatch) {
+      btnDeleteSelectedBatch.addEventListener('click', () => {
+        if (selectedNoteKeys.size === 0) return;
+        if (confirm(`Bạn có chắc muốn xóa ${selectedNoteKeys.size} khung & ghi chú đã chọn?`)) {
+          selectedNoteKeys.forEach(key => {
+            const [lId, hId] = key.split('::');
+            if (lId && hId) {
+              if (state.learningData.frames && state.learningData.frames[lId]) {
+                state.learningData.frames[lId] = state.learningData.frames[lId].filter(h => h.id !== hId);
+              }
+              if (state.learningData.highlights && state.learningData.highlights[lId]) {
+                state.learningData.highlights[lId] = state.learningData.highlights[lId].filter(h => h.id !== hId);
+              }
+              if (state.activeLessonId === lId) {
+                postMessageToLessonIframe({ type: 'REMOVE_FRAME', id: hId });
+              }
+            }
+          });
+          saveLearningData();
+          selectedNoteKeys.clear();
+          isNotesBatchModeActive = false;
+          renderAllNotesView();
+          showToast("Đã xóa các mục đã chọn thành công!");
+        }
+      });
+    }
+
+    // Xóa toàn bộ ghi chú & khung toàn thư viện
+    const btnClearAllLibraryNotes = document.getElementById('btnClearAllLibraryNotes');
+    if (btnClearAllLibraryNotes) {
+      btnClearAllLibraryNotes.addEventListener('click', () => {
+        if (confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa TOÀN BỘ khung đánh dấu và ghi chú trong thư viện? Hành động này không thể hoàn tác.")) {
+          state.learningData.frames = {};
+          state.learningData.highlights = {};
+          saveLearningData();
+          if (state.activeLessonId) {
+            restoreFramesForLesson(state.activeLessonId);
+          }
+          renderAllNotesView();
+          showToast("Đã dọn sạch toàn bộ ghi chú & khung trong thư viện!");
+        }
+      });
+    }
+
+    // Xuất Markdown (.md) theo Mục > Bài > Trích đoạn & Ghi chú
     const btnExportMarkdown = document.getElementById('btnExportNotesMarkdown');
     if (btnExportMarkdown) {
       btnExportMarkdown.addEventListener('click', () => {
         let md = `# Tất cả Ghi chú & Khung Đánh Dấu - Thư viện Sách HTML\n`;
         md += `*Xuất ngày: ${new Date().toLocaleString('vi-VN')}*\n\n`;
 
-        for (const les of (state.lessons || [])) {
-          const list = (state.learningData.frames && state.learningData.frames[les.id]) ||
-                       (state.learningData.highlights && state.learningData.highlights[les.id]) || [];
-          if (list.length > 0) {
-            md += `## ${les.title}\n\n`;
-            for (const h of list) {
-              const textVal = h.anchor?.exact || h.text || '';
-              const labelVal = h.label ? ` **[Nhãn: ${h.label}]**` : '';
-              md += `> ${textVal}${labelVal}\n\n`;
-              if (h.note) md += `- **Ghi chú:** ${h.note}\n\n`;
+        const allCats = [...state.categories, { id: null, title: 'Chưa phân loại' }];
+        allCats.forEach(cat => {
+          const catLessons = (state.lessons || []).filter(l => cat.id ? l.categoryId === cat.id : (!l.categoryId || !state.categories.some(c => c.id === l.categoryId)));
+          let catHasItems = false;
+          let catContent = `\n# Mục: ${cat.title}\n\n`;
+
+          catLessons.forEach(les => {
+            const list = (state.learningData.frames && state.learningData.frames[les.id]) ||
+                         (state.learningData.highlights && state.learningData.highlights[les.id]) || [];
+            if (list.length > 0) {
+              catHasItems = true;
+              catContent += `## Bài: ${les.title}\n\n`;
+              list.forEach(h => {
+                const textVal = h.anchor?.exact || h.text || '';
+                const labelVal = h.label ? ` **[Nhãn: ${h.label}]**` : '';
+                catContent += `> ${textVal}${labelVal}\n\n`;
+                if (h.note) catContent += `- **Ghi chú:** ${h.note}\n\n`;
+              });
             }
+          });
+
+          if (catHasItems) {
+            md += catContent;
           }
-        }
+        });
 
         const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `khung_va_ghi_chu_${getTodayDateStr()}.md`;
+        a.download = `ghi_chu_va_khung_${getTodayDateStr()}.md`;
         a.click();
         URL.revokeObjectURL(url);
-        showToast("Đã tải file Markdown ghi chú & khung!");
+        showToast("Đã tải file Markdown ghi chú & khung thành công!");
       });
     }
 
@@ -20845,11 +21199,10 @@
       toggleShowTextFrames.addEventListener('change', (e) => {
         const checked = e.target.checked;
         localStorage.setItem('setting_show_text_frames', checked ? 'true' : 'false');
+        postMessageToLessonIframe({ type: 'UPDATE_FRAME_SETTINGS', showFrames: checked });
         const iframe = document.getElementById('lessonIframe');
         const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-          applyFrameSettingsToDoc(iframe.contentDocument);
-        }
+        if (_iDoc) applyFrameSettingsToDoc(iframe.contentDocument);
       });
     }
 
@@ -20862,15 +21215,13 @@
       toggleShowFrameBadges.addEventListener('change', (e) => {
         const checked = e.target.checked;
         localStorage.setItem('setting_show_frame_badges', checked ? 'true' : 'false');
+        postMessageToLessonIframe({ type: 'UPDATE_FRAME_SETTINGS', showBadges: checked });
         const iframe = document.getElementById('lessonIframe');
         const _iDoc = getSafeIframeDocument(iframe);
-        if (_iDoc) {
-          applyFrameSettingsToDoc(iframe.contentDocument);
-        }
+        if (_iDoc) applyFrameSettingsToDoc(iframe.contentDocument);
       });
     }
 
-    // -------------------------------------------------------------------------
     // // FEATURE-3: ÔN TẬP NGẮT QUÃNG ("CẦN ÔN HÔM NAY")
     // -------------------------------------------------------------------------
     const REVIEW_INTERVALS = [1, 3, 7, 14, 30];
@@ -23524,7 +23875,11 @@
         { name: 'Modal Chia sẻ nhanh', sel: '#quickShareModal' },
         { name: 'Icon Bảng màu Palette', sel: '#optIcoPalette' },
         { name: 'Công tắc Giữ màu gốc', sel: '#togglePreserveOriginalTheme' },
-        { name: 'Banner báo lỗi hệ thống', sel: '#appCrashBanner' }
+        { name: 'Banner báo lỗi hệ thống', sel: '#appCrashBanner' },
+        { name: 'Thanh công cụ bôi đen', sel: '#highlightFloatingToolbar' },
+        { name: 'Modal Tất cả Ghi chú & Khung', sel: '#allNotesModal' },
+        { name: 'Dropdown Sắp xếp bài học', sel: '#sortOrderDropdownMenu' },
+        { name: 'Nút chọn màu tùy ý', sel: '#customFrameColorInput' }
       ];
 
       const coreFunctions = [
@@ -23602,7 +23957,7 @@
       if (new URLSearchParams(window.location.search).get('debug') === '1') {
         setTimeout(selfTest, 500);
       }
-    console.log("%c Thư viện Sách HTML v4.7.2 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.7.3 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
