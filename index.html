@@ -4823,7 +4823,7 @@
   </div>
 
   <!-- // FIX: Thanh thông báo lỗi khẩn cấp & Chẩn đoán lỗi (Crash Watchdog Banner & Diagnostic Mode) -->
-  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[9999] max-w-lg w-[calc(100vw-2rem)] sm:w-auto bg-stone-900/98 dark:bg-stone-950/98 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md border border-rose-500/30 flex flex-col gap-3 text-xs pointer-events-auto">
+  <div id="appCrashBanner" class="hidden fixed bottom-4 right-4 z-[45] max-w-lg w-[calc(100vw-2rem)] sm:w-auto bg-stone-900/98 dark:bg-stone-950/98 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md border border-rose-500/30 flex flex-col gap-3 text-xs pointer-events-none">
     <div class="flex items-start justify-between gap-3 min-w-0">
       <div class="flex items-start gap-2.5 min-w-0 flex-1">
         <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0 mt-1"></span>
@@ -4832,19 +4832,19 @@
             <p class="font-semibold text-stone-100">Khởi tạo giao diện gặp sự cố</p>
             <span id="appCrashBlockBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-rose-950/80 text-rose-300 border border-rose-800/60 font-mono font-medium">Khởi tạo</span>
           </div>
-          <p id="appCrashDesc" class="text-stone-200 text-[11px] mt-1 break-words font-mono bg-black/50 p-2 rounded-lg leading-relaxed border border-stone-800"></p>
-          <pre id="appCrashStack" class="hidden text-[10px] text-stone-400 font-mono mt-1.5 p-2 bg-black/60 rounded max-h-28 overflow-y-auto whitespace-pre-wrap break-all border border-stone-800"></pre>
+          <p id="appCrashDesc" class="text-stone-200 text-[11px] mt-1 break-words font-mono bg-black/50 p-2 rounded-lg leading-relaxed border border-stone-800 pointer-events-auto"></p>
+          <pre id="appCrashStack" class="hidden pointer-events-auto text-[10px] text-stone-400 font-mono mt-1.5 p-2 bg-black/60 rounded max-h-28 overflow-y-auto whitespace-pre-wrap break-all border border-stone-800"></pre>
         </div>
       </div>
-      <button id="btnCrashDismiss" class="text-stone-400 hover:text-white p-1 cursor-pointer shrink-0 transition" title="Đóng">✕</button>
+      <button id="btnCrashDismiss" class="pointer-events-auto text-stone-400 hover:text-white p-1 cursor-pointer shrink-0 transition" title="Đóng">✕</button>
     </div>
     <div class="flex items-center justify-end gap-2 shrink-0 pt-2 border-t border-white/10 flex-wrap">
-      <button id="btnCrashCopyDetails" class="px-2.5 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white font-medium transition cursor-pointer text-[11px] flex items-center gap-1.5 border border-stone-700">
+      <button id="btnCrashCopyDetails" class="pointer-events-auto px-2.5 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white font-medium transition cursor-pointer text-[11px] flex items-center gap-1.5 border border-stone-700">
         <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
         <span id="btnCrashCopyText">Sao chép chi tiết lỗi</span>
       </button>
-      <button id="btnCrashReload" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition cursor-pointer text-[11px]">Tải lại</button>
-      <button id="btnCrashClearAndReload" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition cursor-pointer text-[11px] shadow-sm">Xóa cache & tải lại</button>
+      <button id="btnCrashReload" class="pointer-events-auto px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition cursor-pointer text-[11px]">Tải lại</button>
+      <button id="btnCrashClearAndReload" class="pointer-events-auto px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition cursor-pointer text-[11px] shadow-sm">Xóa cache & tải lại</button>
     </div>
   </div>
 
@@ -5600,6 +5600,72 @@
         reportError(err, blockName);
       }
     }
+
+    // VIỆC 1.6: Tiện ích truy cập iframe an toàn tuyệt đối chống SecurityError cross-origin
+    function getSafeIframeDocument(iframeEl) {
+      try {
+        if (!iframeEl) return null;
+        return iframeEl.contentDocument || (iframeEl.contentWindow ? iframeEl.contentWindow.document : null);
+      } catch (_) {
+        return null;
+      }
+    }
+    window.getSafeIframeDocument = getSafeIframeDocument;
+
+    // VIỆC 2: Cổng lưu dữ liệu thống nhất toàn app - saveLessons() & saveLessonsState()
+    async function saveLessons() {
+      try {
+        if (typeof saveLocalLessons === 'function') {
+          saveLocalLessons();
+        }
+        if (typeof saveLearningData === 'function') {
+          saveLearningData();
+        }
+        if (typeof syncToCloud === 'function') {
+          await syncToCloud();
+        } else if (typeof syncLocalDataToFirestore === 'function') {
+          await syncLocalDataToFirestore();
+        }
+      } catch (e) {
+        console.warn('[Storage] Lỗi saveLessons fallback:', e);
+      }
+    }
+    function saveLessonsState() {
+      return saveLessons();
+    }
+    window.saveLessons = saveLessons;
+    window.saveLessonsState = saveLessons;
+
+    // Các hàm tương thích alias để chống lỗi ReferenceError hàm chưa định nghĩa
+    function goToAdjacentLesson(direction) {
+      if (typeof stepLesson === 'function') return stepLesson(direction);
+    }
+    window.goToAdjacentLesson = goToAdjacentLesson;
+
+    function openAllNotesModal() {
+      const modal = document.getElementById('allNotesModal');
+      if (modal) {
+        if (typeof renderAllNotesList === 'function') renderAllNotesList();
+        showModalAnimated(modal);
+      }
+    }
+    window.openAllNotesModal = openAllNotesModal;
+
+    function toggleSidebarDesktop(open) {
+      if (typeof open === 'boolean') {
+        if (typeof applyDesktopSidebarState === 'function') applyDesktopSidebarState(open);
+      } else {
+        if (typeof toggleDesktopSidebar === 'function') toggleDesktopSidebar();
+      }
+    }
+    window.toggleSidebarDesktop = toggleSidebarDesktop;
+
+    function openHighlightNoteModal(id) {
+      if (typeof openHlDetailModalById === 'function') {
+        openHlDetailModalById(id);
+      }
+    }
+    window.openHighlightNoteModal = openHighlightNoteModal;
 
     // Expose helpers globally for accessibility, debugging, and testing
     window.$ = $;
@@ -13053,25 +13119,6 @@
     }
     window.updateFavoriteStyleUI = updateFavoriteStyleUI;
 
-    // VIỆC 2: Cổng lưu thống nhất saveLessons() và saveLessonsState()
-    async function saveLessons() {
-      try {
-        saveLocalLessons();
-        if (typeof syncToCloud === 'function') {
-          await syncToCloud();
-        } else if (typeof syncLocalDataToFirestore === 'function') {
-          await syncLocalDataToFirestore();
-        }
-      } catch (e) {
-        console.warn('Lỗi saveLessons fallback:', e);
-      }
-    }
-    window.saveLessons = saveLessons;
-    window.saveLessonsState = saveLessons;
-    function saveLessonsState() {
-      return saveLessons();
-    }
-
     async function updateLessonField(lessonId, updateFields) {
       const lIdx = state.lessons.findIndex(l => l.id === lessonId);
       if (lIdx === -1) return;
@@ -19792,8 +19839,8 @@
     function applyFramingToCurrentSelection(colorName, labelText, noteText) {
       if (!state.activeLessonId) return null;
       const iframe = document.getElementById('lessonIframe');
-      if (!iframe || !iframe.contentDocument) return null;
-      const doc = iframe.contentDocument;
+      if (!iframe || !getSafeIframeDocument(iframe)) return null;
+      const doc = getSafeIframeDocument(iframe); if (!doc) return null;
       injectHighlightStyles(doc);
 
       let text = '', range = null, prefix = '', suffix = '';
@@ -19881,8 +19928,8 @@
     function eraseCurrentSelectionOrHighlight() {
       if (!state.activeLessonId) return;
       const iframe = document.getElementById('lessonIframe');
-      if (!iframe || !iframe.contentDocument) return;
-      const doc = iframe.contentDocument;
+      if (!iframe || !getSafeIframeDocument(iframe)) return;
+      const doc = getSafeIframeDocument(iframe); if (!doc) return null;
 
       const targetFrameIds = new Set();
 
@@ -19976,8 +20023,8 @@
       try {
         if (!lessonId) return;
       const iframe = document.getElementById('lessonIframe');
-      if (!iframe || !iframe.contentDocument) return;
-      const doc = iframe.contentDocument;
+      if (!iframe || !getSafeIframeDocument(iframe)) return;
+      const doc = getSafeIframeDocument(iframe); if (!doc) return null;
       injectHighlightStyles(doc);
 
       const items = (state.learningData.frames && state.learningData.frames[lessonId]) ||
@@ -20156,7 +20203,8 @@
 
           // Cập nhật nhãn góc hiển thị trực tiếp trong iframe
           const iframe = document.getElementById('lessonIframe');
-          if (iframe && iframe.contentDocument) {
+          const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
             const badge = iframe.contentDocument.querySelector(`.frame-corner-badge[data-frame-id="${activeHighlightItem.id}"]`);
             if (badge) {
               badge.innerText = newLabel || '•';
@@ -20187,7 +20235,8 @@
           saveLearningData();
 
           const iframe = document.getElementById('lessonIframe');
-          if (iframe && iframe.contentDocument) {
+          const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
             removeFrameFromDoc(iframe.contentDocument, targetItem.id);
           }
 
@@ -20279,7 +20328,8 @@
       // Nếu bài này đang mở trên màn hình, gỡ bỏ ngay lập tức khung khỏi DOM
       if (state.activeLessonId === lessonId) {
         const iframe = document.getElementById('lessonIframe');
-        if (iframe && iframe.contentDocument) {
+        const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
           removeFrameFromDoc(iframe.contentDocument, frameId);
         }
       }
@@ -20501,7 +20551,8 @@
 
             if (state.activeLessonId === lId) {
               const iframe = document.getElementById('lessonIframe');
-              if (iframe && iframe.contentDocument) {
+              const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
                 itemsToRemove.forEach(h => removeFrameFromDoc(iframe.contentDocument, h.id));
               }
             }
@@ -20610,7 +20661,8 @@
           // Gỡ bỏ trong DOM iframe nếu bài đang mở bị ảnh hưởng
           if (affectedLessonIds.has(state.activeLessonId)) {
             const iframe = document.getElementById('lessonIframe');
-            if (iframe && iframe.contentDocument) {
+            const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
               removedBatch.filter(h => h.lessonId === state.activeLessonId).forEach(h => {
                 removeFrameFromDoc(iframe.contentDocument, h.id);
               });
@@ -20666,7 +20718,8 @@
           saveLearningData();
 
           const iframe = document.getElementById('lessonIframe');
-          if (iframe && iframe.contentDocument) {
+          const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
             const allElements = iframe.contentDocument.querySelectorAll('.text-frame, .frame-corner-badge, mark.custom-highlight');
             allElements.forEach(el => {
               if (el.classList.contains('frame-corner-badge')) {
@@ -20708,7 +20761,7 @@
       const triggerScrollAndFlash = () => {
         setTimeout(() => {
           const iframe = document.getElementById('lessonIframe');
-          if (!iframe || !iframe.contentDocument) return;
+          if (!iframe || !getSafeIframeDocument(iframe)) return;
           const target = iframe.contentDocument.querySelector(`[data-frame-id="${frameId}"], [data-hl-id="${frameId}"]`);
           if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -20793,7 +20846,8 @@
         const checked = e.target.checked;
         localStorage.setItem('setting_show_text_frames', checked ? 'true' : 'false');
         const iframe = document.getElementById('lessonIframe');
-        if (iframe && iframe.contentDocument) {
+        const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
           applyFrameSettingsToDoc(iframe.contentDocument);
         }
       });
@@ -20809,7 +20863,8 @@
         const checked = e.target.checked;
         localStorage.setItem('setting_show_frame_badges', checked ? 'true' : 'false');
         const iframe = document.getElementById('lessonIframe');
-        if (iframe && iframe.contentDocument) {
+        const _iDoc = getSafeIframeDocument(iframe);
+        if (_iDoc) {
           applyFrameSettingsToDoc(iframe.contentDocument);
         }
       });
@@ -23455,14 +23510,18 @@
     function selfTest() {
       console.group('%c [Thư viện HTML] Kiểm tra tự động (Self-Test System) %c', 'background:#4F46E5;color:#fff;font-weight:bold;padding:3px 6px;border-radius:3px;', '');
       const coreElements = [
-        { name: 'Khung header chính', sel: '#mainHeader' },
-        { name: 'Sidebar thư viện', sel: '#sidebarContainer' },
+        { name: 'Khung header chính', sel: 'header.editorial-header' },
+        { name: 'Sidebar thư viện', sel: '#mainSidebar' },
+        { name: 'Khung đọc bài học', sel: '#readingContentContainer' },
         { name: 'Iframe bài học', sel: '#lessonIframe' },
         { name: 'Nút Trước bài', sel: '#btnPrevLesson' },
         { name: 'Nút Sau bài', sel: '#btnNextLesson' },
         { name: 'Nút Đã học', sel: '#btnToggleLearned' },
         { name: 'Nút Yêu thích', sel: '#btnToggleFavorite' },
         { name: 'Popover Tùy chọn hiển thị', sel: '#displaySettingsPopover' },
+        { name: 'Popover Tài khoản & tùy chọn', sel: '#userDropdown' },
+        { name: 'Nút Tạo liên kết chia sẻ', sel: '#btnHeaderQuickShare' },
+        { name: 'Modal Chia sẻ nhanh', sel: '#quickShareModal' },
         { name: 'Icon Bảng màu Palette', sel: '#optIcoPalette' },
         { name: 'Công tắc Giữ màu gốc', sel: '#togglePreserveOriginalTheme' },
         { name: 'Banner báo lỗi hệ thống', sel: '#appCrashBanner' }
@@ -23471,11 +23530,13 @@
       const coreFunctions = [
         { name: 'saveLessons (cổng lưu thống nhất)', fn: typeof window.saveLessons === 'function' },
         { name: 'saveLocalLessons (lưu local)', fn: typeof window.saveLocalLessons === 'function' },
+        { name: 'saveLearningData (lưu tiến độ & ghi chú)', fn: typeof window.saveLearningData === 'function' },
         { name: 'updateLessonField (cập nhật bài)', fn: typeof window.updateLessonField === 'function' },
         { name: 'renderCategoriesAndLessons', fn: typeof window.renderCategoriesAndLessons === 'function' },
         { name: 'stepLesson (chuyển bài Trước/Sau)', fn: typeof window.stepLesson === 'function' },
         { name: 'reportError (xử lý lỗi an toàn)', fn: typeof window.reportError === 'function' },
-        { name: 'safe (tiện ích bọc lỗi)', fn: typeof window.safe === 'function' }
+        { name: 'safe (tiện ích bọc lỗi)', fn: typeof window.safe === 'function' },
+        { name: 'getSafeIframeDocument (truy cập iframe an toàn)', fn: typeof window.getSafeIframeDocument === 'function' }
       ];
 
       console.log('%c--- Kiểm tra Phần tử DOM Cốt lõi ---', 'font-weight:bold;color:#0ea5e9;');
