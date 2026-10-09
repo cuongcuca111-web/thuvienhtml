@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.0.0';
+    const CURRENT_APP_VERSION = 'v4.1.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1492,11 +1492,11 @@
           <span class="hidden min-[1200px]:inline">Tạo link nhanh</span>
         </button>
 
-        <!-- Chấm trạng thái đồng bộ (>= 1200px hiện chữ, < 1200px chấm tròn + tooltip) -->
-        <div id="syncBadge" class="flex items-center gap-1.5 text-[11px] text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition cursor-default shrink-0" title="Trạng thái lưu trữ đám mây">
-          <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-          <span id="syncText" class="hidden min-[1200px]:inline">Đã đồng bộ</span>
-        </div>
+        <!-- Nút chỉ báo trạng thái đồng bộ (>= 1200px hiện chữ, < 1200px chấm tròn, bấm mở popover chi tiết) -->
+        <button id="btnSyncStatusIndicator" type="button" class="flex items-center gap-1.5 text-[11px] text-[#6E6B65] dark:text-[#979DA8] px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
+          <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+          <span id="syncText" class="hidden min-[1200px]:inline font-medium">Đã đồng bộ</span>
+        </button>
 
         <!-- Cài App PWA (Nếu hỗ trợ) -->
         <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition shrink-0" title="Cài đặt ứng dụng" aria-label="Cài đặt ứng dụng">
@@ -1624,6 +1624,15 @@
                 <input id="toggleLearnedBadge" type="checkbox" class="sr-only peer" checked>
                 <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
               </label>
+            <!-- Nhóm 8: Mở Bảng Tùy chỉnh đọc chi tiết -->
+            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
+              <button id="btnHeaderOpenReadingSettings" type="button" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition active:scale-98">
+                <span class="flex items-center gap-2">
+                  <span class="font-serif font-bold text-sm bg-indigo-200/60 dark:bg-indigo-900/60 w-5 h-5 rounded flex items-center justify-center leading-none">Aa</span>
+                  <span>Bảng tùy chỉnh đọc...</span>
+                </span>
+                <svg class="w-3.5 h-3.5 opacity-70"><use href="#icon-chevron-right"></use></svg>
+              </button>
             </div>
 
           </div>
@@ -1850,7 +1859,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.0.0 - build 09/10/2026 09:30
+        Thư viện Sách HTML v4.1.0 - build 09/10/2026 10:00
       </div>
     </aside>
 
@@ -1904,16 +1913,24 @@
         <!-- VẠCH NGĂN CÁCH 1 -->
         <div class="h-5 w-[1px] bg-[#E7E5DF] dark:bg-[#262C36] shrink-0 hidden md:block mx-0.5"></div>
 
-        <!-- NHÓM 2: HIỂN THỊ ĐỘ RỘNG (Segmented Pill Switcher) -->
-        <div class="hidden md:flex items-center bg-[#F2F0EB] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-pill p-0.5 text-xs shrink-0" title="Độ rộng khung đọc bài">
-          <button data-width-opt="compact" class="width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
-            Vừa
-          </button>
-          <button data-width-opt="wide" class="width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
-            Rộng
-          </button>
-          <button data-width-opt="full" class="width-tab px-3 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition">
-            Toàn màn
+        <!-- NHÓM 2: HIỂN THỊ ĐỘ RỘNG & TÙY CHỈNH ĐỌC (Segmented Pill Switcher + Nút Aa) -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <div class="hidden md:flex items-center bg-[#F2F0EB] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-pill p-0.5 text-xs shrink-0" title="Độ rộng khung đọc bài">
+            <button data-width-opt="compact" class="width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
+              Vừa
+            </button>
+            <button data-width-opt="wide" class="width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium">
+              Rộng
+            </button>
+            <button data-width-opt="full" class="width-tab px-3 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition">
+              Toàn màn
+            </button>
+          </div>
+
+          <!-- Nút Tùy chỉnh đọc (Aa) mở Bảng Tùy chỉnh đọc -->
+          <button id="btnReadingSettings" type="button" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs shrink-0" title="Tùy chỉnh đọc (Cỡ chữ, Phông, Nền, Giãn dòng...)" aria-label="Tùy chỉnh đọc">
+            <span class="font-serif font-bold text-sm leading-none text-indigo-600 dark:text-indigo-400">Aa</span>
+            <span class="hidden lg:inline font-semibold">Tùy chỉnh</span>
           </button>
         </div>
 
@@ -2389,7 +2406,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.0.0 - build 09/10/2026 09:30
+      Thư viện Sách HTML v4.1.0 - build 09/10/2026 10:00
     </div>
   </div>
 
@@ -3708,6 +3725,366 @@
     </div>
   </div>
 
+    <!-- // FEATURE-1: Modal Xử Lý Xung Đột Đồng Bộ (Sync Conflict Resolution Modal) -->
+  <div id="syncConflictModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-2xl rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[90vh] flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-0 overflow-hidden">
+      <!-- Handle mobile -->
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mt-2.5 mb-1"></div>
+
+      <!-- Header Modal -->
+      <div class="flex items-center justify-between p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4"><use href="#icon-alert-triangle"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif text-base sm:text-lg font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Dữ liệu trên máy và tài khoản khác nhau</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Phát hiện thay đổi ở cả hai phía kể từ lần đồng bộ trước</p>
+          </div>
+        </div>
+        <button id="btnCloseConflictModalX" class="touch-target p-1 text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] rounded-lg transition" aria-label="Để sau">
+          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Body Modal (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        <!-- 4 Thẻ tóm tắt số liệu khác biệt -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+          <div class="p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50">
+            <span id="conflictStatLocalOnly" class="block font-bold text-base text-indigo-700 dark:text-indigo-300">0</span>
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] leading-tight">Chỉ có trên máy</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/50">
+            <span id="conflictStatCloudOnly" class="block font-bold text-base text-sky-700 dark:text-sky-300">0</span>
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] leading-tight">Chỉ có trên tài khoản</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900/50">
+            <span id="conflictStatModified" class="block font-bold text-base text-amber-700 dark:text-amber-300">0</span>
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] leading-tight">Khác nội dung / ngày</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50">
+            <span id="conflictStatDeleted" class="block font-bold text-base text-rose-700 dark:text-rose-300">0</span>
+            <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] leading-tight">Đã xóa ở một phía</span>
+          </div>
+        </div>
+
+        <!-- 3 Lựa chọn hành động chính -->
+        <div class="space-y-2.5 pt-1">
+          <p class="text-xs font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">Chọn phương án đồng bộ:</p>
+
+          <!-- Lựa chọn 1: Gộp cả hai (Khuyến nghị) -->
+          <label class="flex items-start gap-3 p-3 rounded-xl border-2 border-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/30 cursor-pointer transition hover:bg-indigo-50/60">
+            <input type="radio" name="conflictResolutionOption" value="merge" checked class="mt-1 text-indigo-600 focus:ring-indigo-500" />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1]">Gộp cả hai phía</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">Khuyến nghị</span>
+              </div>
+              <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-0.5 leading-relaxed">
+                Giữ toàn bộ bài học của cả hai phía. Bài trùng ID lấy bản sửa mới hơn. Bài đã xóa vẫn giữ trạng thái xóa an toàn (không sinh zombie).
+              </p>
+            </div>
+          </label>
+
+          <!-- Lựa chọn 2: Giữ bản trên máy -->
+          <label class="flex items-start gap-3 p-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-[#FAF9F5] dark:hover:bg-white/5 cursor-pointer transition">
+            <input type="radio" name="conflictResolutionOption" value="keep_local" class="mt-1 text-indigo-600 focus:ring-indigo-500" />
+            <div class="flex-1 min-w-0">
+              <span class="font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1]">Giữ bản trên máy này</span>
+              <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-0.5 leading-relaxed">
+                Đẩy toàn bộ dữ liệu hiện có trên máy này lên tài khoản đám mây (ghi đè dữ liệu tài khoản).
+              </p>
+            </div>
+          </label>
+
+          <!-- Lựa chọn 3: Giữ bản trên tài khoản -->
+          <label class="flex items-start gap-3 p-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-[#FAF9F5] dark:hover:bg-white/5 cursor-pointer transition">
+            <input type="radio" name="conflictResolutionOption" value="keep_cloud" class="mt-1 text-indigo-600 focus:ring-indigo-500" />
+            <div class="flex-1 min-w-0">
+              <span class="font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1]">Giữ bản trên tài khoản</span>
+              <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-0.5 leading-relaxed">
+                Tải toàn bộ dữ liệu từ tài khoản về máy này (thay thế dữ liệu hiện có trên máy).
+              </p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Nút mở rộng xem chi tiết -->
+        <div class="pt-1">
+          <button id="btnToggleConflictDetails" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+            <span id="conflictDetailToggleText">Xem chi tiết từng mục khác biệt</span>
+            <svg class="w-3.5 h-3.5 transition-transform" id="conflictDetailToggleIcon"><use href="#icon-chevron-down"></use></svg>
+          </button>
+
+          <!-- Bảng chi tiết danh sách bài xung đột -->
+          <div id="conflictDetailsContainer" class="hidden mt-2 p-2 rounded-xl bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] max-h-56 overflow-y-auto space-y-2 text-xs">
+            <div id="conflictItemsList" class="space-y-1.5">
+              <!-- Render động từng bài khác biệt -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Modal -->
+      <div class="p-3.5 sm:p-4 bg-[#FAF9F5] dark:bg-[#111317] border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2.5 shrink-0">
+        <button id="btnPostponeConflict" class="px-3.5 py-2 rounded-xl text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">
+          Để sau
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="btnApplyConflictResolution" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition active:scale-98">
+            Áp dụng và Đồng bộ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- // FEATURE-2: Popover Chi tiết Trạng thái Đồng bộ (Dynamic Positioning) -->
+  <div id="syncStatusPopover" class="hidden fixed z-[68] w-[310px] max-w-[92vw] bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl shadow-2xl p-4 text-xs space-y-3.5 animate-scale-in">
+    <!-- Header popover -->
+    <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
+      <div class="flex items-center gap-2">
+        <span id="popoverDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+        <h4 class="font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1]">Đồng bộ đám mây</h4>
+      </div>
+      <button id="btnCloseSyncPopover" class="p-1 text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng">
+        <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+      </button>
+    </div>
+
+    <!-- Nội dung mô tả -->
+    <div class="space-y-1.5">
+      <p id="popoverStatusSentence" class="font-medium text-xs text-[#1C1B18] dark:text-[#E8E6E1] leading-relaxed">
+        Dữ liệu đã được lưu trữ an toàn trên tài khoản của bạn.
+      </p>
+      <div class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] space-y-0.5">
+        <p id="popoverLastSyncTime">Đồng bộ gần nhất: Vừa xong</p>
+        <p id="popoverPendingCount">Số thay đổi đang chờ: 0</p>
+      </div>
+    </div>
+
+    <!-- Thông báo lỗi (ẩn nếu không lỗi) -->
+    <div id="popoverErrorContainer" class="hidden p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-[11px] space-y-1.5">
+      <div class="flex items-start gap-1.5">
+        <svg class="w-3.5 h-3.5 shrink-0 mt-0.5 text-rose-600"><use href="#icon-alert-circle"></use></svg>
+        <span id="popoverFriendlyErrorMsg" class="font-medium leading-relaxed">Không thể kết nối đến máy chủ.</span>
+      </div>
+      <button id="btnToggleTechnicalError" class="text-[10px] text-rose-600 dark:text-rose-400 hover:underline block pt-0.5">
+        Xem chi tiết kỹ thuật
+      </button>
+      <pre id="popoverTechnicalErrorDetails" class="hidden p-1.5 bg-rose-100/60 dark:bg-rose-900/40 rounded text-[9px] font-mono text-rose-900 dark:text-rose-200 whitespace-pre-wrap break-all max-h-24 overflow-y-auto"></pre>
+    </div>
+
+    <!-- Nút hành động -->
+    <div class="pt-1 flex items-center justify-end gap-2">
+      <button id="btnManualSyncNow" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition active:scale-98 flex items-center justify-center gap-1.5">
+        <svg class="w-3.5 h-3.5"><use href="#icon-rotate-ccw"></use></svg>
+        <span id="btnManualSyncLabel">Đồng bộ ngay</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- // FEATURE-3: BẢNG TÙY CHỈNH ĐỌC (Reading Customizer Modal / Bottom-Sheet) -->
+  <div id="readingSettingsModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/50 backdrop-blur-xs z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl max-h-[90vh] flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-0 overflow-hidden">
+      <!-- Handle bar for mobile -->
+      <div class="sm:hidden w-10 h-1 bg-stone-300 dark:bg-stone-600 rounded-full mx-auto mt-2.5 mb-1 shrink-0"></div>
+
+      <!-- Header -->
+      <div class="px-5 py-3.5 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#14171C]">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-serif font-bold text-base shadow-2xs">Aa</span>
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tùy chỉnh đọc</h3>
+            <p class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]">Cá nhân hóa phông chữ, màu nền &amp; bố cục</p>
+          </div>
+        </div>
+        <button id="btnCloseReadingSettingsModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng bảng tùy chỉnh đọc">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Body (Scrollable) -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs text-[#1C1917] dark:text-[#EDECE8]">
+        
+        <!-- Live Preview Box -->
+        <div id="readingSettingsPreviewBox" class="p-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] transition-all duration-200 shadow-inner" style="background-color: #FFFFFF; color: #1A1A1A;">
+          <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mb-1 flex items-center justify-between">
+            <span>Xem trước mẫu</span>
+            <span id="previewDetailsTag" class="text-[9px] opacity-80 font-normal">Sáng • Serif • 100%</span>
+          </div>
+          <div id="readingPreviewText" class="font-serif text-[14px] leading-relaxed transition-all">
+            Học tập là ngọn đèn soi sáng tri thức. Một không gian đọc thoải mái giúp bạn tiếp thu bài học sâu sắc và bền bỉ hơn.
+          </div>
+        </div>
+
+        <!-- Phạm vi áp dụng (Segmented Scope) -->
+        <div>
+          <div class="bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-xl flex items-center text-xs font-medium border border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+            <button id="scopeApplyAll" type="button" class="flex-1 py-1.5 px-2 rounded-lg text-center transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 font-semibold shadow-xs">
+              Áp dụng cho tất cả bài
+            </button>
+            <button id="scopeApplyCurrent" type="button" class="flex-1 py-1.5 px-2 rounded-lg text-center transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]">
+              Chỉ bài này
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 1: Chủ đề nền (Theme) -->
+        <div>
+          <label class="block font-semibold mb-2 text-[#44403C] dark:text-[#D6D3D1]">Chủ đề nền</label>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="themePickerContainer">
+            <!-- Sáng -->
+            <button type="button" data-theme-val="light" class="theme-choice-btn flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-indigo-600 bg-white text-[#1C1917] transition shadow-2xs">
+              <span class="w-6 h-6 rounded-full border border-gray-300 bg-[#FFFFFF] shadow-inner"></span>
+              <span class="text-[11px] font-medium">Sáng</span>
+            </button>
+            <!-- Giấy ấm -->
+            <button type="button" data-theme-val="warm" class="theme-choice-btn flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-transparent bg-[#FAF9F5] text-[#2D2B28] hover:border-gray-300 transition shadow-2xs">
+              <span class="w-6 h-6 rounded-full border border-[#E2DDD3] bg-[#FAF9F5] shadow-inner"></span>
+              <span class="text-[11px] font-medium">Giấy ấm</span>
+            </button>
+            <!-- Sepia -->
+            <button type="button" data-theme-val="sepia" class="theme-choice-btn flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-transparent bg-[#F4ECD8] text-[#433422] hover:border-gray-300 transition shadow-2xs">
+              <span class="w-6 h-6 rounded-full border border-[#DFCFA9] bg-[#F4ECD8] shadow-inner"></span>
+              <span class="text-[11px] font-medium">Sepia</span>
+            </button>
+            <!-- Tối -->
+            <button type="button" data-theme-val="dark" class="theme-choice-btn flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-transparent bg-[#161A20] text-[#ECEEF2] hover:border-gray-600 transition shadow-2xs">
+              <span class="w-6 h-6 rounded-full border border-[#313742] bg-[#161A20] shadow-inner"></span>
+              <span class="text-[11px] font-medium">Tối</span>
+            </button>
+            <!-- OLED -->
+            <button type="button" data-theme-val="oled" class="theme-choice-btn flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-transparent bg-[#000000] text-[#E5E7EB] hover:border-gray-600 transition shadow-2xs">
+              <span class="w-6 h-6 rounded-full border border-gray-700 bg-[#000000] shadow-inner"></span>
+              <span class="text-[11px] font-medium">Tối sâu</span>
+            </button>
+            <!-- Tự động -->
+            <button type="button" data-theme-val="auto" class="theme-choice-btn flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-transparent bg-slate-100 dark:bg-slate-800 text-[#1C1917] dark:text-[#EDECE8] hover:border-gray-400 transition shadow-2xs">
+              <span class="w-6 h-6 rounded-full border border-gray-400 bg-gradient-to-r from-white to-gray-800 shadow-inner"></span>
+              <span class="text-[11px] font-medium">Tự động</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 2: Kiểu chữ (Font family) -->
+        <div>
+          <label class="block font-semibold mb-2 text-[#44403C] dark:text-[#D6D3D1]">Kiểu chữ</label>
+          <div class="grid grid-cols-3 gap-2" id="fontFamilyPickerContainer">
+            <button type="button" data-font-family="serif" class="font-family-btn py-2 px-2 sm:px-3 rounded-xl border-2 border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 font-serif font-bold text-center transition">
+              Serif (Cổ điển)
+            </button>
+            <button type="button" data-font-family="sans" class="font-family-btn py-2 px-2 sm:px-3 rounded-xl border-2 border-[#E7E5DF] dark:border-[#262C36] hover:border-gray-400 bg-white dark:bg-[#181B20] font-sans font-medium text-center transition">
+              Sans-serif (Hiện đại)
+            </button>
+            <button type="button" data-font-family="dyslexic" class="font-family-btn py-2 px-2 sm:px-3 rounded-xl border-2 border-[#E7E5DF] dark:border-[#262C36] hover:border-gray-400 bg-white dark:bg-[#181B20] font-mono tracking-wide text-center transition">
+              Dễ đọc Dyslexic
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 3: Cỡ chữ (Slider + A-/A+ + Nút đặt lại 100%) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="font-semibold text-[#44403C] dark:text-[#D6D3D1]">Cỡ chữ bài viết</label>
+            <div class="flex items-center gap-2">
+              <span id="readingFontScalePercent" class="font-bold text-indigo-600 dark:text-indigo-400 text-sm">100%</span>
+              <button id="btnResetFontScale100" type="button" class="text-[10px] px-2 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 transition font-medium text-gray-500">
+                100%
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btnModalFontDec" type="button" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-bold text-xs hover:bg-black/5 transition">
+              A-
+            </button>
+            <input id="readingFontScaleSlider" type="range" min="80" max="150" step="5" value="100" class="flex-1 accent-indigo-600 cursor-pointer h-2 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+            <button id="btnModalFontInc" type="button" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-bold text-xs hover:bg-black/5 transition">
+              A+
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 4: Giãn dòng & Giãn đoạn -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold mb-2 text-[#44403C] dark:text-[#D6D3D1]">Giãn dòng</label>
+            <div class="grid grid-cols-3 gap-1.5 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-xl">
+              <button type="button" data-line-height="compact" class="line-height-btn py-1.5 px-1.5 rounded-lg text-center font-medium transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]">
+                Gọn (1.4)
+              </button>
+              <button type="button" data-line-height="normal" class="line-height-btn py-1.5 px-1.5 rounded-lg text-center font-semibold transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs">
+                Vừa (1.7)
+              </button>
+              <button type="button" data-line-height="relaxed" class="line-height-btn py-1.5 px-1.5 rounded-lg text-center font-medium transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]">
+                Thoáng (2.0)
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold mb-2 text-[#44403C] dark:text-[#D6D3D1]">Khoảng cách đoạn</label>
+            <div class="grid grid-cols-2 gap-1.5 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-xl">
+              <button type="button" data-para-spacing="normal" class="para-spacing-btn py-1.5 px-2 rounded-lg text-center font-semibold transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs">
+                Tiêu chuẩn
+              </button>
+              <button type="button" data-para-spacing="relaxed" class="para-spacing-btn py-1.5 px-2 rounded-lg text-center font-medium transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]">
+                Rộng rãi
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mục 5: Độ rộng cột đọc -->
+        <div>
+          <label class="block font-semibold mb-2 text-[#44403C] dark:text-[#D6D3D1]">Độ rộng cột đọc</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="columnWidthPickerContainer">
+            <button type="button" data-col-width="narrow" class="col-width-btn py-2 px-2.5 rounded-xl border-2 border-[#E7E5DF] dark:border-[#262C36] hover:border-gray-400 bg-white dark:bg-[#181B20] text-center transition">
+              <div class="font-semibold text-xs">Hẹp</div>
+              <div class="text-[10px] text-gray-500">~680px</div>
+            </button>
+            <button type="button" data-col-width="normal" class="col-width-btn py-2 px-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 text-center transition">
+              <div class="font-semibold text-xs">Vừa</div>
+              <div class="text-[10px] opacity-75">~860px</div>
+            </button>
+            <button type="button" data-col-width="wide" class="col-width-btn py-2 px-2.5 rounded-xl border-2 border-[#E7E5DF] dark:border-[#262C36] hover:border-gray-400 bg-white dark:bg-[#181B20] text-center transition">
+              <div class="font-semibold text-xs">Rộng</div>
+              <div class="text-[10px] text-gray-500">~1100px</div>
+            </button>
+            <button type="button" data-col-width="full" class="col-width-btn py-2 px-2.5 rounded-xl border-2 border-[#E7E5DF] dark:border-[#262C36] hover:border-gray-400 bg-white dark:bg-[#181B20] text-center transition">
+              <div class="font-semibold text-xs">Tự do</div>
+              <div class="text-[10px] text-gray-500">Toàn màn</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 6: Giữ màu gốc -->
+        <div class="pt-2 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
+          <div>
+            <div class="font-semibold text-[#1C1917] dark:text-[#EDECE8]">Giữ màu sắc gốc bài viết</div>
+            <div class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]">Không ghi đè màu nền và màu chữ định dạng sẵn của tài liệu</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input id="toggleModalPreserveOriginal" type="checkbox" class="sr-only peer">
+            <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between bg-[#FAF9F5] dark:bg-[#14171C] shrink-0">
+        <button id="btnResetReadingSettingsDefault" type="button" class="touch-target px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium transition">
+          Đặt lại mặc định
+        </button>
+        <button id="btnDoneReadingSettings" type="button" class="touch-target px-5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition">
+          Hoàn tất
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
@@ -4006,6 +4383,1201 @@
 
     
     
+    
+    
+    // =========================================================================
+    // // FEATURE-2: HỆ THỐNG TRẠNG THÁI ĐỒNG BỘ RÕ RÀNG & HÀNG ĐỢI THỰC TẾ
+    // =========================================================================
+    let syncStateData = {
+      status: 'synced', // 'synced' | 'syncing' | 'pending' | 'offline' | 'error' | 'guest'
+      lastSyncTime: Date.now(),
+      pendingCount: 0,
+      errorMessage: '',
+      technicalError: '',
+      pendingQueue: []
+    };
+
+    // Đọc hàng đợi lưu trữ cục bộ khi khởi động
+    try {
+      const savedQueue = localStorage.getItem('pending_sync_queue');
+      if (savedQueue) {
+        syncStateData.pendingQueue = JSON.parse(savedQueue) || [];
+        syncStateData.pendingCount = syncStateData.pendingQueue.length;
+      }
+      const savedLastTime = localStorage.getItem('last_sync_success_time');
+      if (savedLastTime) syncStateData.lastSyncTime = parseInt(savedLastTime, 10);
+    } catch (_) {}
+
+    // Cập nhật giao diện chỉ báo ở Header & Popover
+    function updateSyncIndicatorUI(status = null, customSentence = null) {
+      if (status) {
+        syncStateData.status = status;
+      } else {
+        // Tự động xác định trạng thái dựa trên điều kiện mạng & auth
+        if (!navigator.onLine) {
+          syncStateData.status = 'offline';
+        } else if (!state.user || state.user.isAnonymous) {
+          syncStateData.status = 'guest';
+        } else if (syncStateData.pendingQueue && syncStateData.pendingQueue.length > 0) {
+          syncStateData.status = 'pending';
+        } else {
+          syncStateData.status = 'synced';
+        }
+      }
+
+      const dot = document.getElementById('syncDot');
+      const text = document.getElementById('syncText');
+      const popoverDot = document.getElementById('popoverDot');
+      const popoverSentence = document.getElementById('popoverStatusSentence');
+      const popoverLastTime = document.getElementById('popoverLastSyncTime');
+      const popoverPendingCount = document.getElementById('popoverPendingCount');
+      const popoverErrorContainer = document.getElementById('popoverErrorContainer');
+      const popoverFriendlyError = document.getElementById('popoverFriendlyErrorMsg');
+      const popoverTechError = document.getElementById('popoverTechnicalErrorDetails');
+      const btnSyncLabel = document.getElementById('btnManualSyncLabel');
+
+      const s = syncStateData.status;
+      let dotColor = 'bg-emerald-500';
+      let dotAnimation = '';
+      let shortText = 'Đã đồng bộ';
+      let sentence = 'Dữ liệu đã được lưu trữ an toàn trên tài khoản của bạn.';
+
+      if (s === 'synced') {
+        dotColor = 'bg-emerald-500';
+        shortText = 'Đã đồng bộ';
+        sentence = 'Dữ liệu đã được lưu trữ an toàn và đồng bộ trên đám mây.';
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Đồng bộ ngay';
+      } else if (s === 'syncing') {
+        dotColor = 'bg-blue-500';
+        dotAnimation = 'animate-pulse';
+        shortText = 'Đang đồng bộ...';
+        sentence = 'Đang đẩy các thay đổi lên máy chủ đám mây...';
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Đang đồng bộ...';
+      } else if (s === 'pending') {
+        dotColor = 'bg-amber-400';
+        const cnt = syncStateData.pendingCount || syncStateData.pendingQueue.length || 1;
+        shortText = `Chưa đồng bộ (${cnt})`;
+        sentence = `Có ${cnt} thay đổi đang chờ được gửi lên tài khoản đám mây.`;
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Đồng bộ ngay';
+      } else if (s === 'offline') {
+        dotColor = 'bg-gray-400';
+        shortText = 'Đang offline';
+        const cnt = syncStateData.pendingQueue.length;
+        sentence = cnt > 0 
+          ? `Mất kết nối mạng. ${cnt} thay đổi sẽ tự động đồng bộ khi có mạng lại.`
+          : 'Bạn đang ngoại tuyến. Dữ liệu vẫn được đọc và lưu an toàn trên máy.';
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Thử kết nối lại';
+      } else if (s === 'error') {
+        dotColor = 'bg-rose-500';
+        dotAnimation = 'animate-bounce';
+        shortText = 'Lỗi đồng bộ';
+        sentence = syncStateData.errorMessage || 'Gặp lỗi trong quá trình đồng bộ dữ liệu.';
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Thử lại ngay';
+      } else if (s === 'guest') {
+        dotColor = 'bg-slate-300 dark:bg-slate-600';
+        shortText = 'Chế độ khách';
+        sentence = 'Dữ liệu đang lưu tạm trên trình duyệt này. Đăng ký để lưu vĩnh viễn.';
+        if (btnSyncLabel) btnSyncLabel.innerText = 'Đăng nhập / Đăng ký';
+      }
+
+      if (customSentence) sentence = customSentence;
+
+      // Cập nhật Header
+      if (dot) dot.className = `w-2.5 h-2.5 rounded-full ${dotColor} ${dotAnimation} shrink-0 transition-colors`;
+      if (text) text.innerText = shortText;
+
+      // Cập nhật Popover
+      if (popoverDot) popoverDot.className = `w-2.5 h-2.5 rounded-full ${dotColor} shrink-0`;
+      if (popoverSentence) popoverSentence.innerText = sentence;
+      if (popoverPendingCount) popoverPendingCount.innerText = `Số thay đổi đang chờ: ${syncStateData.pendingQueue.length}`;
+
+      // Tính thời gian tương đối
+      if (popoverLastTime) {
+        const diffMs = Date.now() - (syncStateData.lastSyncTime || Date.now());
+        let relTime = 'Vừa xong';
+        if (diffMs > 60 * 1000 && diffMs < 60 * 60 * 1000) {
+          relTime = `${Math.floor(diffMs / 60000)} phút trước`;
+        } else if (diffMs >= 60 * 60 * 1000) {
+          relTime = new Date(syncStateData.lastSyncTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        }
+        popoverLastTime.innerText = `Đồng bộ gần nhất: ${relTime}`;
+      }
+
+      // Xử lý khối lỗi
+      if (popoverErrorContainer) {
+        if (s === 'error') {
+          popoverErrorContainer.classList.remove('hidden');
+          if (popoverFriendlyError) popoverFriendlyError.innerText = syncStateData.errorMessage || 'Lỗi kết nối máy chủ.';
+          if (popoverTechError) popoverTechError.innerText = syncStateData.technicalError || 'Unknown Error';
+        } else {
+          popoverErrorContainer.classList.add('hidden');
+        }
+      }
+    }
+
+    // Đẩy một tác vụ vào hàng đợi đồng bộ thực tế
+    function enqueueSyncOperation(opType, docPath, payload) {
+      syncStateData.pendingQueue.push({
+        id: 'op_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        opType, // 'set' | 'update' | 'delete'
+        docPath,
+        payload,
+        timestamp: Date.now()
+      });
+      syncStateData.pendingCount = syncStateData.pendingQueue.length;
+      try {
+        localStorage.setItem('pending_sync_queue', JSON.stringify(syncStateData.pendingQueue));
+      } catch (_) {}
+      updateSyncIndicatorUI('pending');
+    }
+
+    // Xả hàng đợi đồng bộ (Flush Queue) lên Firestore
+    async function flushPendingSyncQueue() {
+      if (!navigator.onLine || !db || !state.userId || state.useLocalFallback) {
+        updateSyncIndicatorUI();
+        return;
+      }
+      if (syncStateData.pendingQueue.length === 0) {
+        updateSyncIndicatorUI('synced');
+        return;
+      }
+
+      updateSyncIndicatorUI('syncing');
+      const queueCopy = [...syncStateData.pendingQueue];
+
+      try {
+        for (const item of queueCopy) {
+          const docRef = doc(db, ...item.docPath);
+          if (item.opType === 'set') {
+            await setDoc(docRef, item.payload);
+          } else if (item.opType === 'update') {
+            await updateDoc(docRef, item.payload);
+          } else if (item.opType === 'delete') {
+            await deleteDoc(docRef);
+          }
+          // Xóa từng mục thành công
+          syncStateData.pendingQueue = syncStateData.pendingQueue.filter(q => q.id !== item.id);
+        }
+
+        syncStateData.lastSyncTime = Date.now();
+        localStorage.setItem('last_sync_success_time', syncStateData.lastSyncTime.toString());
+        localStorage.removeItem('pending_sync_queue');
+        updateSyncIndicatorUI('synced');
+      } catch (err) {
+        console.error("[FEATURE-2] Lỗi khi xả hàng đợi đồng bộ:", err);
+        const errMsg = err.message || String(err);
+        let friendly = "Không thể kết nối với dịch vụ đám mây.";
+        if (errMsg.includes("permission") || errMsg.includes("PERMISSION_DENIED")) {
+          friendly = "Tài khoản của bạn đã hết phiên hoặc không có quyền truy cập.";
+        } else if (errMsg.includes("quota")) {
+          friendly = "Vượt quá giới hạn lưu trữ dữ liệu của đám mây.";
+        } else if (!navigator.onLine) {
+          friendly = "Mất kết nối Internet.";
+        }
+        syncStateData.errorMessage = friendly;
+        syncStateData.technicalError = errMsg;
+        updateSyncIndicatorUI('error');
+      }
+    }
+
+    // Mở Popover định vị động sát cạnh nút chỉ báo
+    function openSyncStatusPopover() {
+      const popover = document.getElementById('syncStatusPopover');
+      const btn = document.getElementById('btnSyncStatusIndicator');
+      if (!popover || !btn) return;
+
+      updateSyncIndicatorUI();
+
+      const rect = btn.getBoundingClientRect();
+      const popWidth = Math.min(310, window.innerWidth - 24);
+
+      // Tính vị trí top / left để không tràn màn hình
+      const top = Math.min(window.innerHeight - 300, rect.bottom + 8);
+      let left = rect.left + (rect.width / 2) - (popWidth / 2);
+      if (left < 12) left = 12;
+      if (left + popWidth > window.innerWidth - 12) {
+        left = window.innerWidth - popWidth - 12;
+      }
+
+      popover.style.top = `${top}px`;
+      popover.style.left = `${left}px`;
+      popover.classList.remove('hidden');
+    }
+
+    function closeSyncStatusPopover() {
+      const popover = document.getElementById('syncStatusPopover');
+      if (popover) popover.classList.add('hidden');
+    }
+
+    // Cảnh báo người dùng khi còn thay đổi chưa lưu mà đóng tab (beforeunload)
+    window.addEventListener('beforeunload', (e) => {
+      if (syncStateData.pendingQueue.length > 0 || state.syncPendingConflict) {
+        e.preventDefault();
+        e.returnValue = 'Bạn còn thay đổi chưa được đồng bộ lên tài khoản. Bạn có chắc muốn đóng?';
+        return e.returnValue;
+      }
+    });
+
+    // Lắng nghe sự kiện online / offline
+    window.addEventListener('online', () => {
+      showToast("Đã có kết nối Internet. Đang kiểm tra đồng bộ...", "info");
+      flushPendingSyncQueue();
+    });
+
+    window.addEventListener('offline', () => {
+      updateSyncIndicatorUI('offline');
+      showToast("Bạn đang ngoại tuyến. Dữ liệu sẽ lưu trên máy và đồng bộ khi có mạng.", "warning");
+    });
+
+    // Gắn sự kiện các nút Popover
+    function initSyncStatusEvents() {
+      const btnIndicator = document.getElementById('btnSyncStatusIndicator');
+      const btnClosePopover = document.getElementById('btnCloseSyncPopover');
+      const btnManualSync = document.getElementById('btnManualSyncNow');
+      const btnToggleTech = document.getElementById('btnToggleTechnicalError');
+      const techDetails = document.getElementById('popoverTechnicalErrorDetails');
+
+      if (btnIndicator) {
+        btnIndicator.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const popover = document.getElementById('syncStatusPopover');
+          if (popover && !popover.classList.contains('hidden')) {
+            closeSyncStatusPopover();
+          } else {
+            openSyncStatusPopover();
+          }
+        });
+      }
+
+      if (btnClosePopover) {
+        btnClosePopover.addEventListener('click', closeSyncStatusPopover);
+      }
+
+      if (btnToggleTech && techDetails) {
+        btnToggleTech.addEventListener('click', () => {
+          techDetails.classList.toggle('hidden');
+        });
+      }
+
+      if (btnManualSync) {
+        btnManualSync.addEventListener('click', async () => {
+          if (syncStateData.status === 'guest') {
+            closeSyncStatusPopover();
+            const btnAuth = document.getElementById('btnHeaderAccount');
+            if (btnAuth) btnAuth.click();
+            return;
+          }
+          await flushPendingSyncQueue();
+        });
+      }
+
+      // Đóng khi click ngoài
+      document.addEventListener('click', (e) => {
+        const popover = document.getElementById('syncStatusPopover');
+        const btn = document.getElementById('btnSyncStatusIndicator');
+        if (popover && !popover.classList.contains('hidden')) {
+          if (!popover.contains(e.target) && (!btn || !btn.contains(e.target))) {
+            closeSyncStatusPopover();
+          }
+        }
+      });
+    }
+
+    // Tự động khởi tạo sự kiện sync popover
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSyncStatusEvents);
+    } else {
+      initSyncStatusEvents();
+    }
+
+    window.syncStateData = syncStateData;
+    window.updateSyncIndicatorUI = updateSyncIndicatorUI;
+    window.enqueueSyncOperation = enqueueSyncOperation;
+    window.flushPendingSyncQueue = flushPendingSyncQueue;
+    window.openSyncStatusPopover = openSyncStatusPopover;
+    window.closeSyncStatusPopover = closeSyncStatusPopover;
+
+
+    // =========================================================================
+    // // FEATURE-1: HỆ THỐNG PHÁT HIỆN & XỬ LÝ XUNG ĐỘT ĐỒNG BỘ (CONFLICT RESOLUTION)
+    // =========================================================================
+    let isConflictModalOpen = false;
+    let pendingConflictReport = null;
+    let pendingConflictResolver = null;
+    let lastSyncUndoSnapshot = null;
+
+    // So sánh đối chiếu 2 tập dữ liệu để phát hiện xung đột chi tiết
+    function detectSyncConflict(localState, cloudData) {
+      const localLessons = localState.lessons || [];
+      const cloudLessons = cloudData.lessons || [];
+      const localCats = localState.categories || [];
+      const cloudCats = cloudData.categories || [];
+      const tombstones = typeof getTombstones === 'function' ? getTombstones() : {};
+      const trashIds = new Set((localState.trash || []).map(t => t.item?.id).filter(Boolean));
+
+      const localLessonMap = new Map();
+      localLessons.forEach(l => localLessonMap.set(l.id, l));
+
+      const cloudLessonMap = new Map();
+      cloudLessons.forEach(l => cloudLessonMap.set(l.id, l));
+
+      const onlyLocal = [];
+      const onlyCloud = [];
+      const modifiedConflicts = [];
+      const deletedConflicts = [];
+
+      // Kiểm tra các bài trên máy
+      localLessons.forEach(localL => {
+        const cloudL = cloudLessonMap.get(localL.id);
+        if (!cloudL) {
+          // Chỉ có trên máy (nếu cloud chưa xóa)
+          onlyLocal.push(localL);
+        } else {
+          // Có ở cả hai phía: so sánh nội dung & thời gian
+          const localTime = new Date(localL.updatedAt || localL.lastOpenedAt || 0).getTime();
+          const cloudTime = new Date(cloudL.updatedAt || cloudL.lastOpenedAt || 0).getTime();
+          const isContentDiff = (localL.title !== cloudL.title) ||
+                                (localL.isLearned !== cloudL.isLearned) ||
+                                (localL.isFavorite !== cloudL.isFavorite) ||
+                                (localL.notes !== cloudL.notes) ||
+                                (localL.fileSize && cloudL.fileSize && Math.abs(localL.fileSize - cloudL.fileSize) > 20);
+
+          if (isContentDiff || Math.abs(localTime - cloudTime) > 2000) {
+            modifiedConflicts.push({
+              id: localL.id,
+              title: localL.title || cloudL.title,
+              local: localL,
+              cloud: cloudL,
+              localTime,
+              cloudTime,
+              newer: localTime >= cloudTime ? 'local' : 'cloud'
+            });
+          }
+        }
+      });
+
+      // Kiểm tra các bài chỉ có trên cloud
+      cloudLessons.forEach(cloudL => {
+        if (!localLessonMap.has(cloudL.id)) {
+          // Nếu ở máy đã xóa (có tombstone hoặc trong trash)
+          if (tombstones[cloudL.id] || trashIds.has(cloudL.id)) {
+            deletedConflicts.push({ id: cloudL.id, title: cloudL.title, deletedOn: 'local', item: cloudL });
+          } else {
+            onlyCloud.push(cloudL);
+          }
+        }
+      });
+
+      // Xung đột thật sự (True Conflict) khi cả hai phía đều có dữ liệu độc lập khác biệt
+      const hasConflict = (modifiedConflicts.length > 0) ||
+                          (deletedConflicts.length > 0) ||
+                          (onlyLocal.length > 0 && onlyCloud.length > 0);
+
+      return {
+        hasConflict,
+        onlyLocal,
+        onlyCloud,
+        modifiedConflicts,
+        deletedConflicts,
+        localState,
+        cloudData,
+        totalIssues: onlyLocal.length + onlyCloud.length + modifiedConflicts.length + deletedConflicts.length
+      };
+    }
+
+    // Hiển thị hộp thoại Xung đột Đồng bộ
+    function showSyncConflictModal(conflictReport) {
+      return new Promise((resolve) => {
+        if (isConflictModalOpen) {
+          resolve('postpone');
+          return;
+        }
+
+        const modal = document.getElementById('syncConflictModal');
+        if (!modal) {
+          resolve('merge');
+          return;
+        }
+
+        isConflictModalOpen = true;
+        pendingConflictReport = conflictReport;
+        pendingConflictResolver = resolve;
+
+        // Cập nhật số liệu tóm tắt
+        document.getElementById('conflictStatLocalOnly').textContent = conflictReport.onlyLocal.length;
+        document.getElementById('conflictStatCloudOnly').textContent = conflictReport.onlyCloud.length;
+        document.getElementById('conflictStatModified').textContent = conflictReport.modifiedConflicts.length;
+        document.getElementById('conflictStatDeleted').textContent = conflictReport.deletedConflicts.length;
+
+        // Render danh sách chi tiết
+        renderConflictDetailsList(conflictReport);
+
+        modal.classList.remove('hidden');
+        if (typeof refreshIcons === 'function') refreshIcons(modal);
+      });
+    }
+
+    function closeSyncConflictModal() {
+      const modal = document.getElementById('syncConflictModal');
+      if (modal) modal.classList.add('hidden');
+      isConflictModalOpen = false;
+    }
+
+    // Render danh sách chi tiết các bài khác biệt
+    function renderConflictDetailsList(report) {
+      const listEl = document.getElementById('conflictItemsList');
+      if (!listEl) return;
+
+      let html = '';
+      if (report.modifiedConflicts.length > 0) {
+        html += '<div class="font-bold text-[11px] text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-1">Khác nội dung / thời điểm sửa:</div>';
+        report.modifiedConflicts.forEach(item => {
+          const lDate = item.localTime ? new Date(item.localTime).toLocaleString('vi-VN') : 'Không rõ';
+          const cDate = item.cloudTime ? new Date(item.cloudTime).toLocaleString('vi-VN') : 'Không rõ';
+          html += `
+            <div class="p-2 rounded-lg bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <span class="font-semibold text-xs text-[#1C1B18] dark:text-[#E8E6E1] truncate block">${item.title}</span>
+                <span class="text-[10px] text-gray-500 block">Máy: ${lDate} • Cloud: ${cDate}</span>
+              </div>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${item.newer === 'local' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300'} shrink-0">
+                ${item.newer === 'local' ? 'Máy mới hơn' : 'Cloud mới hơn'}
+              </span>
+            </div>
+          `;
+        });
+      }
+
+      if (report.deletedConflicts.length > 0) {
+        html += '<div class="font-bold text-[11px] text-rose-700 dark:text-rose-300 uppercase tracking-wider mt-2 mb-1">Đã xóa ở một phía:</div>';
+        report.deletedConflicts.forEach(item => {
+          html += `
+            <div class="p-2 rounded-lg bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2">
+              <span class="font-semibold text-xs text-[#1C1B18] dark:text-[#E8E6E1] truncate">${item.title}</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 shrink-0">
+                Đã xóa trên máy
+              </span>
+            </div>
+          `;
+        });
+      }
+
+      if (!html) {
+        html = '<div class="text-center py-3 text-gray-400">Không có xung đột nội dung nghiêm trọng.</div>';
+      }
+
+      listEl.innerHTML = html;
+    }
+
+    // Áp dụng phương án giải quyết xung đột (Merge, Keep Local, Keep Cloud)
+    async function applySyncResolution(strategy, conflictReport) {
+      try {
+        setSyncStatus(true, "Đang xử lý đồng bộ...");
+
+        // BƯỚC 1: LƯỚI AN TOÀN - Tự động chụp Snapshot máy trước khi áp dụng
+        if (typeof captureSnapshot === 'function') {
+          lastSyncUndoSnapshot = await captureSnapshot(`Trước khi đồng bộ xung đột (${strategy})`);
+        }
+
+        const localLessons = conflictReport.localState.lessons || [];
+        const cloudLessons = conflictReport.cloudData.lessons || [];
+        const localCats = conflictReport.localState.categories || [];
+        const cloudCats = conflictReport.cloudData.categories || [];
+        const tombstones = typeof getTombstones === 'function' ? getTombstones() : {};
+        const trashLessonIds = new Set((state.trash || []).map(t => t.item?.id).filter(Boolean));
+
+        let finalLessons = [];
+        let finalCats = [];
+
+        if (strategy === 'keep_local') {
+          // Giữ nguyên bản máy, đẩy lên cloud
+          finalLessons = [...localLessons];
+          finalCats = [...localCats];
+
+          if (db && state.userId && !state.useLocalFallback) {
+            for (const cat of finalCats) {
+              await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', cat.id), cat);
+            }
+            for (const les of finalLessons) {
+              await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', les.id), les);
+            }
+          }
+        } else if (strategy === 'keep_cloud') {
+          // Tải toàn bộ cloud về máy
+          finalLessons = [...cloudLessons];
+          finalCats = [...cloudCats];
+
+          // Nạp htmlContent của từng bài từ cloud vào IndexedDB nếu có
+          for (const les of finalLessons) {
+            if (les.htmlContent && typeof putLessonContentToIDB === 'function') {
+              await putLessonContentToIDB(les.id, les.htmlContent);
+            }
+          }
+        } else {
+          // MẶC ĐỊNH & KHUYẾN NGHỊ: GỘP CẢ HAI (MERGE)
+          // 1. Danh mục
+          const catMap = new Map();
+          cloudCats.forEach(c => catMap.set(c.id, c));
+          localCats.forEach(c => {
+            if (!catMap.has(c.id) || (c.order !== undefined && c.order > (catMap.get(c.id).order || 0))) {
+              catMap.set(c.id, c);
+            }
+          });
+          finalCats = Array.from(catMap.values());
+
+          // 2. Bài học
+          const lessonMap = new Map();
+          // Đưa cloud lessons vào trước
+          cloudLessons.forEach(cL => {
+            // Không nhận bài nếu máy đã xóa (có tombstone hoặc trong trash)
+            if (!tombstones[cL.id] && !trashLessonIds.has(cL.id)) {
+              lessonMap.set(cL.id, cL);
+            }
+          });
+
+          // Đối chiếu và gộp local lessons
+          localLessons.forEach(lL => {
+            if (tombstones[lL.id] || trashLessonIds.has(lL.id)) {
+              lessonMap.delete(lL.id); // Giữ nguyên trạng thái xóa!
+              return;
+            }
+
+            if (!lessonMap.has(lL.id)) {
+              lessonMap.set(lL.id, lL);
+            } else {
+              // Cùng ID: chọn bản sửa mới hơn
+              const cL = lessonMap.get(lL.id);
+              const lTime = new Date(lL.updatedAt || lL.lastOpenedAt || 0).getTime();
+              const cTime = new Date(cL.updatedAt || cL.lastOpenedAt || 0).getTime();
+              if (lTime >= cTime) {
+                lessonMap.set(lL.id, lL);
+              }
+            }
+          });
+
+          finalLessons = Array.from(lessonMap.values());
+
+          // Lưu bài vào IndexedDB và đồng bộ cloud
+          for (const les of finalLessons) {
+            if (les.htmlContent && typeof putLessonContentToIDB === 'function') {
+              await putLessonContentToIDB(les.id, les.htmlContent);
+            }
+          }
+
+          if (db && state.userId && !state.useLocalFallback) {
+            for (const cat of finalCats) {
+              await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', cat.id), cat);
+            }
+            for (const les of finalLessons) {
+              await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', les.id), les);
+            }
+          }
+        }
+
+        // Cập nhật State
+        state.categories = finalCats;
+        state.lessons = finalLessons;
+        saveLocalCategories();
+        saveLocalLessons();
+
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+        setSyncStatus(false);
+
+        // BƯỚC 2: Thông báo Toast kèm nút HOÀN TÁC
+        showToastWithAction("Đã đồng bộ dữ liệu thành công", "Hoàn tác", async () => {
+          await undoSyncResolution();
+        }, 8000);
+
+        return true;
+      } catch (err) {
+        console.error("[FEATURE-1] Lỗi áp dụng giải pháp đồng bộ:", err);
+        setSyncStatus(false);
+        showToast("Lỗi khi áp dụng giải pháp đồng bộ", "error");
+        return false;
+      }
+    }
+
+    // Hoàn tác đồng bộ quay về bản sao lưu trước đó
+    async function undoSyncResolution() {
+      if (!lastSyncUndoSnapshot) {
+        showToast("Không tìm thấy bản sao lưu để hoàn tác", "warning");
+        return;
+      }
+      try {
+        setSyncStatus(true, "Đang hoàn tác đồng bộ...");
+        if (typeof restoreSnapshotById === 'function') {
+          await restoreSnapshotById(lastSyncUndoSnapshot.id);
+          showToast("Đã hoàn tác đồng bộ về trạng thái trước đó!");
+        }
+      } catch (e) {
+        console.error("Lỗi hoàn tác đồng bộ:", e);
+        showToast("Lỗi khi hoàn tác đồng bộ", "error");
+      } finally {
+        setSyncStatus(false);
+      }
+    }
+
+    // Hiển thị Toast có nút Hành động (Action Toast)
+    function showToastWithAction(message, actionLabel, onActionClick, durationMs = 8000) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl bg-[#1C1B18] text-white dark:bg-[#E8E6E1] dark:text-[#161A20] shadow-xl text-xs flex items-center justify-between gap-3 animate-slide-up border border-white/10';
+      toast.innerHTML = `
+        <span class="truncate">${message}</span>
+        <button class="px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shrink-0 transition shadow-2xs">${actionLabel}</button>
+      `;
+
+      const btn = toast.querySelector('button');
+      btn.addEventListener('click', () => {
+        try { toast.remove(); } catch (_) {}
+        if (onActionClick) onActionClick();
+      });
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        try { toast.remove(); } catch (_) {}
+      }, durationMs);
+    }
+
+    // Gắn sự kiện các nút Modal Xung đột
+    function initSyncConflictModalEvents() {
+      const modal = document.getElementById('syncConflictModal');
+      const btnCloseX = document.getElementById('btnCloseConflictModalX');
+      const btnPostpone = document.getElementById('btnPostponeConflict');
+      const btnApply = document.getElementById('btnApplyConflictResolution');
+      const btnToggleDetails = document.getElementById('btnToggleConflictDetails');
+      const detailsContainer = document.getElementById('conflictDetailsContainer');
+      const toggleText = document.getElementById('conflictDetailToggleText');
+
+      if (btnCloseX) btnCloseX.addEventListener('click', () => handleConflictDismiss('postpone'));
+      if (btnPostpone) btnPostpone.addEventListener('click', () => handleConflictDismiss('postpone'));
+
+      if (btnApply) {
+        btnApply.addEventListener('click', async () => {
+          const selectedRadio = document.querySelector('input[name="conflictResolutionOption"]:checked');
+          const strategy = selectedRadio ? selectedRadio.value : 'merge';
+          closeSyncConflictModal();
+          if (pendingConflictResolver) pendingConflictResolver(strategy);
+          if (pendingConflictReport) {
+            await applySyncResolution(strategy, pendingConflictReport);
+          }
+        });
+      }
+
+      if (btnToggleDetails && detailsContainer) {
+        btnToggleDetails.addEventListener('click', () => {
+          const isHidden = detailsContainer.classList.contains('hidden');
+          if (isHidden) {
+            detailsContainer.classList.remove('hidden');
+            if (toggleText) toggleText.innerText = 'Thu gọn chi tiết';
+          } else {
+            detailsContainer.classList.add('hidden');
+            if (toggleText) toggleText.innerText = 'Xem chi tiết từng mục khác biệt';
+          }
+        });
+      }
+    }
+
+    function handleConflictDismiss(choice) {
+      closeSyncConflictModal();
+      state.syncPendingConflict = true;
+      if (typeof updateSyncIndicatorUI === 'function') {
+        updateSyncIndicatorUI('pending', 'Có thay đổi chưa đồng bộ');
+      }
+      if (pendingConflictResolver) pendingConflictResolver(choice);
+    }
+
+    window.detectSyncConflict = detectSyncConflict;
+    window.showSyncConflictModal = showSyncConflictModal;
+    window.applySyncResolution = applySyncResolution;
+    window.undoSyncResolution = undoSyncResolution;
+    window.initSyncConflictModalEvents = initSyncConflictModalEvents;
+
+    // Tự động khởi tạo sự kiện modal ngay khi tải xong DOM
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSyncConflictModalEvents);
+    } else {
+      initSyncConflictModalEvents();
+    }
+
+
+
+    // =========================================================================
+    // // FEATURE-3: HỆ THỐNG TÙY CHỈNH ĐỌC NÂNG CAO (READING CUSTOMIZER)
+    // =========================================================================
+
+    const DEFAULT_READING_SETTINGS = {
+      theme: 'light', // 'light' | 'warm' | 'sepia' | 'dark' | 'oled' | 'auto'
+      fontFamily: 'serif', // 'serif' | 'sans' | 'dyslexic'
+      fontScale: 100, // 80 -> 150 (%)
+      lineHeight: 'normal', // 'compact' (1.4) | 'normal' (1.7) | 'relaxed' (2.0)
+      paragraphSpacing: 'normal', // 'normal' | 'relaxed'
+      columnWidth: 'normal', // 'narrow' (680px) | 'normal' (860px) | 'wide' (1100px) | 'full'
+      preserveOriginal: false,
+      scope: 'all' // 'all' | 'current'
+    };
+
+    let globalReadingSettings = { ...DEFAULT_READING_SETTINGS };
+
+    // Tải cài đặt toàn cục đã lưu từ LocalStorage
+    try {
+      const savedGlobal = localStorage.getItem('thuvienhtml_reading_settings');
+      if (savedGlobal) {
+        globalReadingSettings = { ...DEFAULT_READING_SETTINGS, ...JSON.parse(savedGlobal) };
+      }
+    } catch (_) {}
+
+    // Lấy cài đặt đọc có hiệu lực (ưu tiên bài hiện tại nếu có cấu hình riêng)
+    function getEffectiveReadingSettings(lessonId = null) {
+      const activeId = lessonId || state.activeLessonId;
+      if (activeId && state.lessons) {
+        const curLesson = state.lessons.find(l => l.id === activeId);
+        if (curLesson && curLesson.customReadingSettings) {
+          return { ...globalReadingSettings, ...curLesson.customReadingSettings, scope: 'current' };
+        }
+      }
+      return { ...globalReadingSettings, scope: 'all' };
+    }
+
+    // Cập nhật khung xem trước Live Preview Box trong Modal
+    function updateReadingPreviewBox(settings) {
+      const previewBox = document.getElementById('readingSettingsPreviewBox');
+      const previewText = document.getElementById('readingPreviewText');
+      const detailsTag = document.getElementById('previewDetailsTag');
+      if (!previewBox || !previewText) return;
+
+      let bg = '#FFFFFF';
+      let fg = '#1A1A1A';
+      let themeLabel = 'Sáng';
+
+      if (settings.theme === 'warm') {
+        bg = '#FAF9F5'; fg = '#2D2B28'; themeLabel = 'Giấy ấm';
+      } else if (settings.theme === 'sepia') {
+        bg = '#F4ECD8'; fg = '#433422'; themeLabel = 'Sepia';
+      } else if (settings.theme === 'dark') {
+        bg = '#161A20'; fg = '#ECEEF2'; themeLabel = 'Tối';
+      } else if (settings.theme === 'oled') {
+        bg = '#000000'; fg = '#E5E7EB'; themeLabel = 'Tối sâu';
+      } else if (settings.theme === 'auto') {
+        const isDarkOS = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        bg = isDarkOS ? '#161A20' : '#FFFFFF';
+        fg = isDarkOS ? '#ECEEF2' : '#1A1A1A';
+        themeLabel = isDarkOS ? 'Tự động (Tối)' : 'Tự động (Sáng)';
+      }
+
+      previewBox.style.backgroundColor = bg;
+      previewBox.style.color = fg;
+
+      // Font family
+      let fontLabel = 'Serif';
+      if (settings.fontFamily === 'sans') {
+        previewText.style.fontFamily = 'Inter, system-ui, sans-serif';
+        fontLabel = 'Sans-serif';
+      } else if (settings.fontFamily === 'dyslexic') {
+        previewText.style.fontFamily = '"OpenDyslexic", "Comic Sans MS", monospace, sans-serif';
+        previewText.style.letterSpacing = '0.05em';
+        fontLabel = 'Dyslexic';
+      } else {
+        previewText.style.fontFamily = 'Merriweather, Georgia, serif';
+        previewText.style.letterSpacing = 'normal';
+      }
+
+      // Cỡ chữ
+      const scalePercent = settings.fontScale || 100;
+      previewText.style.fontSize = `${Math.round(14 * (scalePercent / 100))}px`;
+
+      // Giãn dòng
+      if (settings.lineHeight === 'compact') {
+        previewText.style.lineHeight = '1.4';
+      } else if (settings.lineHeight === 'relaxed') {
+        previewText.style.lineHeight = '2.0';
+      } else {
+        previewText.style.lineHeight = '1.7';
+      }
+
+      if (detailsTag) {
+        detailsTag.innerText = `${themeLabel} • ${fontLabel} • ${scalePercent}%`;
+      }
+    }
+
+    // Áp dụng Tùy chỉnh đọc ngay lập tức (Live Apply)
+    function applyReadingSettings(newSettings = null, lessonId = null, persist = true) {
+      const activeId = lessonId || state.activeLessonId;
+      const curLesson = (activeId && state.lessons) ? state.lessons.find(l => l.id === activeId) : null;
+      
+      let effective = getEffectiveReadingSettings(activeId);
+      if (newSettings) {
+        effective = { ...effective, ...newSettings };
+      }
+
+      // 1. Lưu trữ cấu hình bền
+      if (persist) {
+        if (effective.scope === 'current' && curLesson) {
+          curLesson.customReadingSettings = { ...effective };
+          if (typeof saveLessonsState === 'function') saveLessonsState();
+        } else {
+          globalReadingSettings = { ...effective, scope: 'all' };
+          try {
+            localStorage.setItem('thuvienhtml_reading_settings', JSON.stringify(globalReadingSettings));
+          } catch (_) {}
+          if (curLesson && curLesson.customReadingSettings) {
+            delete curLesson.customReadingSettings;
+            if (typeof saveLessonsState === 'function') saveLessonsState();
+          }
+        }
+        if (typeof saveUserSettings === 'function') saveUserSettings();
+      }
+
+      // 2. Độ rộng cột đọc
+      const container = document.getElementById('readingContentContainer');
+      if (container) {
+        container.classList.remove('max-w-[680px]', 'max-w-[860px]', 'max-w-[900px]', 'max-w-[1100px]', 'max-w-[1280px]', 'max-w-full');
+        if (effective.columnWidth === 'narrow') {
+          container.classList.add('max-w-[680px]');
+          state.readingWidth = 'compact';
+        } else if (effective.columnWidth === 'wide') {
+          container.classList.add('max-w-[1100px]');
+          state.readingWidth = 'wide';
+        } else if (effective.columnWidth === 'full') {
+          container.classList.add('max-w-full');
+          state.readingWidth = 'full';
+        } else {
+          container.classList.add('max-w-[860px]');
+          state.readingWidth = 'compact';
+        }
+      }
+
+      // Đồng bộ các nút phân đoạn Vừa / Rộng / Toàn màn trên thanh công cụ
+      document.querySelectorAll('.width-tab').forEach(tab => {
+        const val = tab.getAttribute('data-width-opt');
+        const isMatched = (val === 'compact' && (effective.columnWidth === 'narrow' || effective.columnWidth === 'normal')) ||
+                          (val === 'wide' && effective.columnWidth === 'wide') ||
+                          (val === 'full' && effective.columnWidth === 'full');
+        if (isMatched) {
+          tab.className = "width-tab px-3 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition";
+        } else {
+          tab.className = "width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium";
+        }
+      });
+
+      // 3. Toàn bộ App Dark Mode & Thẻ Meta Theme-color
+      const metaThemeLight = document.querySelector('meta[name="theme-color"][media*="light"]');
+      const metaThemeDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
+      const metaThemeGeneral = document.querySelector('meta[name="theme-color"]:not([media])');
+
+      let isDarkApp = false;
+      let themeHex = '#FFFFFF';
+
+      if (effective.theme === 'dark') {
+        isDarkApp = true;
+        themeHex = '#161A20';
+      } else if (effective.theme === 'oled') {
+        isDarkApp = true;
+        themeHex = '#000000';
+      } else if (effective.theme === 'auto') {
+        isDarkApp = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        themeHex = isDarkApp ? '#161A20' : '#FFFFFF';
+      } else if (effective.theme === 'warm') {
+        isDarkApp = false;
+        themeHex = '#FAF9F5';
+      } else if (effective.theme === 'sepia') {
+        isDarkApp = false;
+        themeHex = '#F4ECD8';
+      } else {
+        isDarkApp = false;
+        themeHex = '#FFFFFF';
+      }
+
+      state.isDarkMode = isDarkApp;
+      if (isDarkApp) {
+        document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+      }
+
+      if (metaThemeLight) metaThemeLight.setAttribute('content', themeHex);
+      if (metaThemeDark) metaThemeDark.setAttribute('content', isDarkApp ? themeHex : '#111317');
+      if (metaThemeGeneral) metaThemeGeneral.setAttribute('content', themeHex);
+
+      // Cập nhật trạng thái giữ màu gốc
+      state.preserveOriginalTheme = !!effective.preserveOriginal;
+
+      // Đồng bộ biến state.fontSizeOffset với scalePercent
+      state.fontSizeOffset = Math.round((effective.fontScale - 100) / 10);
+
+      // 4. Truyền cài đặt mượt mà vào Iframe sandbox qua postMessage
+      postMessageToLessonIframe({
+        type: 'APPLY_READING_SETTINGS',
+        settings: effective
+      });
+
+      // 5. Cập nhật preview box & đồng bộ UI controls
+      updateReadingPreviewBox(effective);
+      syncReadingSettingsModalUI(effective);
+
+      return effective;
+    }
+
+    // Đồng bộ trạng thái các nút bấm và controls trong Modal Tùy chỉnh đọc
+    function syncReadingSettingsModalUI(settings) {
+      // 1. Theme buttons
+      document.querySelectorAll('.theme-choice-btn').forEach(btn => {
+        const val = btn.getAttribute('data-theme-val');
+        if (val === settings.theme) {
+          btn.classList.add('border-indigo-600', 'ring-2', 'ring-indigo-500/20');
+          btn.classList.remove('border-transparent');
+        } else {
+          btn.classList.remove('border-indigo-600', 'ring-2', 'ring-indigo-500/20');
+          btn.classList.add('border-transparent');
+        }
+      });
+
+      // 2. Font family buttons
+      document.querySelectorAll('.font-family-btn').forEach(btn => {
+        const val = btn.getAttribute('data-font-family');
+        if (val === settings.fontFamily) {
+          btn.classList.add('border-indigo-600', 'bg-indigo-50/50', 'dark:bg-indigo-950/30', 'text-indigo-700', 'dark:text-indigo-300', 'font-bold');
+          btn.classList.remove('border-[#E7E5DF]', 'dark:border-[#262C36]');
+        } else {
+          btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'dark:bg-indigo-950/30', 'text-indigo-700', 'dark:text-indigo-300', 'font-bold');
+          btn.classList.add('border-[#E7E5DF]', 'dark:border-[#262C36]');
+        }
+      });
+
+      // 3. Slider & Cỡ chữ
+      const slider = document.getElementById('readingFontScaleSlider');
+      const percentDisplay = document.getElementById('readingFontScalePercent');
+      if (slider) slider.value = settings.fontScale || 100;
+      if (percentDisplay) percentDisplay.innerText = `${settings.fontScale || 100}%`;
+
+      // 4. Line height buttons
+      document.querySelectorAll('.line-height-btn').forEach(btn => {
+        const val = btn.getAttribute('data-line-height');
+        if (val === settings.lineHeight) {
+          btn.className = "line-height-btn py-1.5 px-1.5 rounded-lg text-center font-semibold transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs";
+        } else {
+          btn.className = "line-height-btn py-1.5 px-1.5 rounded-lg text-center font-medium transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]";
+        }
+      });
+
+      // 5. Paragraph spacing buttons
+      document.querySelectorAll('.para-spacing-btn').forEach(btn => {
+        const val = btn.getAttribute('data-para-spacing');
+        if (val === settings.paragraphSpacing) {
+          btn.className = "para-spacing-btn py-1.5 px-2 rounded-lg text-center font-semibold transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-xs";
+        } else {
+          btn.className = "para-spacing-btn py-1.5 px-2 rounded-lg text-center font-medium transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]";
+        }
+      });
+
+      // 6. Column width buttons
+      document.querySelectorAll('.col-width-btn').forEach(btn => {
+        const val = btn.getAttribute('data-col-width');
+        if (val === settings.columnWidth) {
+          btn.classList.add('border-indigo-600', 'bg-indigo-50/50', 'dark:bg-indigo-950/30', 'text-indigo-700', 'dark:text-indigo-300');
+          btn.classList.remove('border-[#E7E5DF]', 'dark:border-[#262C36]');
+        } else {
+          btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'dark:bg-indigo-950/30', 'text-indigo-700', 'dark:text-indigo-300');
+          btn.classList.add('border-[#E7E5DF]', 'dark:border-[#262C36]');
+        }
+      });
+
+      // 7. Checkbox Giữ màu gốc
+      const checkPreserve = document.getElementById('toggleModalPreserveOriginal');
+      if (checkPreserve) checkPreserve.checked = !!settings.preserveOriginal;
+
+      // 8. Scope buttons
+      const btnScopeAll = document.getElementById('scopeApplyAll');
+      const btnScopeCur = document.getElementById('scopeApplyCurrent');
+      if (btnScopeAll && btnScopeCur) {
+        if (settings.scope === 'current') {
+          btnScopeCur.className = "flex-1 py-1.5 px-2 rounded-lg text-center transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 font-semibold shadow-xs";
+          btnScopeAll.className = "flex-1 py-1.5 px-2 rounded-lg text-center transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]";
+        } else {
+          btnScopeAll.className = "flex-1 py-1.5 px-2 rounded-lg text-center transition bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 font-semibold shadow-xs";
+          btnScopeCur.className = "flex-1 py-1.5 px-2 rounded-lg text-center transition text-[#6E6B65] dark:text-[#9AA3B2] hover:text-[#1C1917]";
+        }
+      }
+
+      updateReadingPreviewBox(settings);
+    }
+
+    // Mở Bảng Tùy chỉnh đọc
+    function openReadingSettingsModal() {
+      const modal = document.getElementById('readingSettingsModal');
+      if (!modal) return;
+      const settings = getEffectiveReadingSettings();
+      syncReadingSettingsModalUI(settings);
+      modal.classList.remove('hidden');
+    }
+
+    // Đóng Bảng Tùy chỉnh đọc
+    function closeReadingSettingsModal() {
+      const modal = document.getElementById('readingSettingsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // Đặt lại mặc định
+    function resetReadingSettingsToDefault() {
+      applyReadingSettings({ ...DEFAULT_READING_SETTINGS, scope: 'all' }, null, true);
+      const settings = getEffectiveReadingSettings();
+      syncReadingSettingsModalUI(settings);
+      showToast('Đã đặt lại tùy chỉnh đọc về mặc định.');
+    }
+
+    // Khởi tạo toàn bộ sự kiện cho Bảng Tùy Chỉnh Đọc
+    function initReadingSettingsEvents() {
+      const btnOpenSticky = document.getElementById('btnReadingSettings');
+      const btnOpenHeader = document.getElementById('btnHeaderOpenReadingSettings');
+      const btnCloseModal = document.getElementById('btnCloseReadingSettingsModal');
+      const btnDoneModal = document.getElementById('btnDoneReadingSettings');
+      const btnResetDefault = document.getElementById('btnResetReadingSettingsDefault');
+      const modal = document.getElementById('readingSettingsModal');
+
+      if (btnOpenSticky) btnOpenSticky.addEventListener('click', openReadingSettingsModal);
+      if (btnOpenHeader) btnOpenHeader.addEventListener('click', () => {
+        closeDisplaySettingsPopover();
+        openReadingSettingsModal();
+      });
+      if (btnCloseModal) btnCloseModal.addEventListener('click', closeReadingSettingsModal);
+      if (btnDoneModal) btnDoneModal.addEventListener('click', closeReadingSettingsModal);
+      if (btnResetDefault) btnResetDefault.addEventListener('click', resetReadingSettingsToDefault);
+
+      // Đóng khi click ngoài backdrop
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeReadingSettingsModal();
+        });
+      }
+
+      // 1. Theme choices
+      document.querySelectorAll('.theme-choice-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-theme-val');
+          const updated = applyReadingSettings({ theme: val });
+          syncReadingSettingsModalUI(updated);
+        });
+      });
+
+      // 2. Font family choices
+      document.querySelectorAll('.font-family-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-font-family');
+          const updated = applyReadingSettings({ fontFamily: val });
+          syncReadingSettingsModalUI(updated);
+        });
+      });
+
+      // 3. Slider cỡ chữ
+      const slider = document.getElementById('readingFontScaleSlider');
+      if (slider) {
+        slider.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value, 10);
+          const updated = applyReadingSettings({ fontScale: val });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+
+      // Nút A- / A+ trong Modal
+      const btnModalDec = document.getElementById('btnModalFontDec');
+      const btnModalInc = document.getElementById('btnModalFontInc');
+      const btnReset100 = document.getElementById('btnResetFontScale100');
+
+      if (btnModalDec) {
+        btnModalDec.addEventListener('click', () => {
+          const cur = getEffectiveReadingSettings().fontScale || 100;
+          const updated = applyReadingSettings({ fontScale: Math.max(80, cur - 5) });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+      if (btnModalInc) {
+        btnModalInc.addEventListener('click', () => {
+          const cur = getEffectiveReadingSettings().fontScale || 100;
+          const updated = applyReadingSettings({ fontScale: Math.min(150, cur + 5) });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+      if (btnReset100) {
+        btnReset100.addEventListener('click', () => {
+          const updated = applyReadingSettings({ fontScale: 100 });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+
+      // 4. Line height
+      document.querySelectorAll('.line-height-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-line-height');
+          const updated = applyReadingSettings({ lineHeight: val });
+          syncReadingSettingsModalUI(updated);
+        });
+      });
+
+      // 5. Paragraph spacing
+      document.querySelectorAll('.para-spacing-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-para-spacing');
+          const updated = applyReadingSettings({ paragraphSpacing: val });
+          syncReadingSettingsModalUI(updated);
+        });
+      });
+
+      // 6. Column width
+      document.querySelectorAll('.col-width-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-col-width');
+          const updated = applyReadingSettings({ columnWidth: val });
+          syncReadingSettingsModalUI(updated);
+        });
+      });
+
+      // 7. Checkbox Giữ màu gốc
+      const checkPreserve = document.getElementById('toggleModalPreserveOriginal');
+      if (checkPreserve) {
+        checkPreserve.addEventListener('change', (e) => {
+          const updated = applyReadingSettings({ preserveOriginal: e.target.checked });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+
+      // 8. Scope tabs
+      const btnScopeAll = document.getElementById('scopeApplyAll');
+      const btnScopeCur = document.getElementById('scopeApplyCurrent');
+      if (btnScopeAll) {
+        btnScopeAll.addEventListener('click', () => {
+          const updated = applyReadingSettings({ scope: 'all' });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+      if (btnScopeCur) {
+        btnScopeCur.addEventListener('click', () => {
+          const updated = applyReadingSettings({ scope: 'current' });
+          syncReadingSettingsModalUI(updated);
+        });
+      }
+    }
+
+    // Export ra window để gọi từ các module khác
+    window.getEffectiveReadingSettings = getEffectiveReadingSettings;
+    window.applyReadingSettings = applyReadingSettings;
+    window.openReadingSettingsModal = openReadingSettingsModal;
+    window.closeReadingSettingsModal = closeReadingSettingsModal;
+    window.resetReadingSettingsToDefault = resetReadingSettingsToDefault;
+    window.initReadingSettingsEvents = initReadingSettingsEvents;
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initReadingSettingsEvents);
+    } else {
+      initReadingSettingsEvents();
+    }
+
+
+
     // =========================================================================
     // // HANGMUC-1: CÁCH LY BÀI HỌC TRONG IFRAME SANDBOX & CẦU NỐI POSTMESSAGE 2 CHIỀU
     // =========================================================================
@@ -4171,6 +5743,63 @@
     return chunks;
   }
 
+  // // FEATURE-3: ÁP DỤNG TÙY CHỈNH ĐỌC NỘI BỘ IFRAME
+  function applyCustomReadingSettings(s) {
+    if (!s) return;
+    let styleEl = document.getElementById('bridge_reading_custom_style');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'bridge_reading_custom_style';
+      document.head.appendChild(styleEl);
+    }
+
+    let css = '';
+    if (!s.preserveOriginal) {
+      let bg = '#FFFFFF';
+      let fg = '#1A1A1A';
+      if (s.theme === 'warm') { bg = '#FAF9F5'; fg = '#2D2B28'; }
+      else if (s.theme === 'sepia') { bg = '#F4ECD8'; fg = '#433422'; }
+      else if (s.theme === 'dark') { bg = '#161A20'; fg = '#ECEEF2'; }
+      else if (s.theme === 'oled') { bg = '#000000'; fg = '#E5E7EB'; }
+      else if (s.theme === 'auto') {
+        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        bg = isDark ? '#161A20' : '#FFFFFF';
+        fg = isDark ? '#ECEEF2' : '#1A1A1A';
+      }
+      css += 'body, html { background-color: ' + bg + ' !important; color: ' + fg + ' !important; }\\n';
+    }
+
+    if (s.fontFamily === 'serif') {
+      css += 'body, p, span, div, li, h1, h2, h3, h4, h5, h6 { font-family: Merriweather, Georgia, Cambria, "Times New Roman", serif !important; }\\n';
+    } else if (s.fontFamily === 'sans') {
+      css += 'body, p, span, div, li, h1, h2, h3, h4, h5, h6 { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; }\\n';
+    } else if (s.fontFamily === 'dyslexic') {
+      css += 'body, p, span, div, li, h1, h2, h3, h4, h5, h6 { font-family: "OpenDyslexic", "Comic Sans MS", -apple-system, sans-serif !important; letter-spacing: 0.05em !important; word-spacing: 0.1em !important; }\\n';
+    }
+
+    if (s.fontScale) {
+      const px = Math.round((s.fontScale / 100) * 16);
+      css += 'body { font-size: ' + px + 'px !important; }\\n';
+    }
+
+    if (s.lineHeight === 'compact') {
+      css += 'body, p, div, li { line-height: 1.4 !important; }\\n';
+    } else if (s.lineHeight === 'relaxed') {
+      css += 'body, p, div, li { line-height: 2.0 !important; }\\n';
+    } else if (s.lineHeight === 'normal') {
+      css += 'body, p, div, li { line-height: 1.7 !important; }\\n';
+    }
+
+    if (s.paragraphSpacing === 'relaxed') {
+      css += 'p { margin-top: 1.25em !important; margin-bottom: 1.25em !important; }\\n';
+    } else if (s.paragraphSpacing === 'normal') {
+      css += 'p { margin-top: 0.75em !important; margin-bottom: 0.75em !important; }\\n';
+    }
+
+    styleEl.textContent = css;
+    sendHeight();
+  }
+
   // 7. LẮNG NGHE LỆNH TỪ APP CHA
   window.addEventListener('message', (e) => {
     const msg = e.data;
@@ -4178,7 +5807,10 @@
 
     switch (msg.type) {
       case 'INIT_CONFIG': {
-        if (msg.fontSizeOffset !== undefined) {
+        if (msg.readingSettings) {
+          applyCustomReadingSettings(msg.readingSettings);
+        }
+        if (msg.fontSizeOffset !== undefined && !msg.readingSettings) {
           applyScale(msg.fontSizeOffset);
         }
         if (msg.highlights && Array.isArray(msg.highlights)) {
@@ -4191,6 +5823,14 @@
           bg: getNativeBg(),
           ttsChunks: chunks
         }, '*');
+        sendHeight();
+        break;
+      }
+
+      case 'APPLY_READING_SETTINGS': {
+        if (msg.settings) {
+          applyCustomReadingSettings(msg.settings);
+        }
         sendHeight();
         break;
       }
@@ -5560,15 +7200,8 @@
 
     function setSyncStatus(isSyncing, label = 'Đã đồng bộ') {
       state.syncing = isSyncing;
-      const dot = document.getElementById('syncDot');
-      const text = document.getElementById('syncText');
-      if (!dot || !text) return;
-      if (isSyncing) {
-        dot.setAttribute('class', "w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping");
-        text.innerText = "Đang lưu...";
-      } else {
-        dot.setAttribute('class', "w-2.5 h-2.5 rounded-full bg-emerald-500");
-        text.innerText = label;
+      if (typeof updateSyncIndicatorUI === 'function') {
+        updateSyncIndicatorUI(isSyncing ? 'syncing' : 'synced');
       }
     }
 
@@ -9264,13 +10897,21 @@
         // Gửi cấu hình ban đầu vào trong iframe qua postMessage
         const curLesson = state.lessons.find(l => l.id === state.activeLessonId);
         const highlights = curLesson?.highlights || [];
+        const effectiveReading = typeof getEffectiveReadingSettings === 'function' ? getEffectiveReadingSettings(state.activeLessonId) : null;
+
         postMessageToLessonIframe({
           type: 'INIT_CONFIG',
           fontSizeOffset: state.fontSizeOffset,
           preserveOriginalTheme: state.preserveOriginalTheme,
           isDarkMode: state.isDarkMode,
-          highlights: highlights
+          highlights: highlights,
+          readingSettings: effectiveReading
         });
+
+        // Áp dụng độ rộng cột đọc và giao diện ngoài ăn khớp với cấu hình bài này
+        if (typeof applyReadingSettings === 'function') {
+          applyReadingSettings(null, state.activeLessonId, false);
+        }
       };
     }
 
@@ -11381,7 +13022,8 @@
           fontSizeOffset: state.fontSizeOffset,
           isDarkMode: state.isDarkMode,
           sortOrder: state.sortOrder,
-          swipeEnabled: state.swipeEnabled
+          swipeEnabled: state.swipeEnabled,
+          readingSettings: typeof getEffectiveReadingSettings === 'function' ? getEffectiveReadingSettings() : null
         },
         learningData: state.learningData
       };
@@ -11447,6 +13089,10 @@
           state.pomodoro.autoSwitch = data.settings.pomodoro.autoSwitch !== false;
           state.pomodoro.soundEnabled = data.settings.pomodoro.soundEnabled !== false;
           savePomodoroSettings();
+        }
+
+        if (data.settings && data.settings.readingSettings && typeof applyReadingSettings === 'function') {
+          applyReadingSettings(data.settings.readingSettings, null, true);
         }
 
         if (!state.useLocalFallback && db && state.userId) {
@@ -15528,7 +17174,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v4.0.0 - build 09/10/2026 09:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.1.0 - build 09/10/2026 10:00 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
