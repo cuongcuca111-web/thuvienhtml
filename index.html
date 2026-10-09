@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.1.0';
+    const CURRENT_APP_VERSION = 'v4.2.0';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -776,19 +776,24 @@
     #mainSidebar {
       transition: transform var(--dur-base) var(--ease-out), margin-left var(--dur-base) var(--ease-out);
     }
-    /* Header 1 hàng duy nhất chuẩn Editorial */
+    /* Header 1 hàng duy nhất chuẩn Editorial - Chiều cao cố định 58px không vỡ dòng */
+    :root {
+      --header-height: 58px;
+    }
     header.editorial-header {
       display: flex !important;
       align-items: center !important;
       flex-wrap: nowrap !important;
-      gap: 10px !important;
-      height: 60px !important;
+      height: var(--header-height) !important;
+      min-height: var(--header-height) !important;
+      max-height: var(--header-height) !important;
       position: sticky;
       top: 0;
       z-index: 50;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid #E7E5DF;
+      box-sizing: border-box;
     }
     .dark header.editorial-header {
       border-bottom-color: #262C36;
@@ -1084,7 +1089,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.8.3', { scope: './' })
+        navigator.serviceWorker.register('./sw.js?v=4.2.0', { scope: './' })
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
@@ -1119,6 +1124,68 @@
       <path d="M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M12 6.5V18.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
       <circle cx="12" cy="3.8" r="1.2" fill="currentColor"/>
+    </symbol>
+    <!-- // FIX-1: BỘ ICON SVG ĐỘC BẢN CHO BẢNG TÙY CHỌN HIỂN THỊ (VIEWBOX 24X24, STROKE 1.75PX, PHONG CÁCH SÁCH EDITORIAL) -->
+    <symbol id="icon-ds-font-size" viewBox="0 0 24 24">
+      <path d="M4 19L8.5 6.5L13 19" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5.8 14.5H11.2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M15.5 19L18 12L20.5 19" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.5 16.5H19.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-ds-fit-width" viewBox="0 0 24 24">
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7 12H17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M9.5 9.5L7 12L9.5 14.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14.5 9.5L17 12L14.5 14.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-ds-theme" viewBox="0 0 24 24">
+      <path d="M12 3A9 9 0 0 0 12 21A9 9 0 0 1 12 3Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M12 3V21" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-ds-learned-style" viewBox="0 0 24 24">
+      <path d="M3.5 6C5.5 5 8.5 4.5 12 6C15.5 4.5 18.5 5 20.5 6V19.5C18.5 18.5 15.5 18 12 19.5C8.5 18 5.5 18.5 3.5 19.5V6Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 6V19.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M7 11.5L9 13.5L13.5 9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-ds-learned-badge" viewBox="0 0 24 24">
+      <circle cx="12" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M9.5 10L11 11.5L14.5 8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.5 15.5L7 21L12 18.5L17 21L15.5 15.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-ds-hide-toolbar" viewBox="0 0 24 24">
+      <path d="M7 4.5H4.5V7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17 4.5H19.5V7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7 19.5H4.5V17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17 19.5H19.5V17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="8" y="7.5" width="8" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-ds-swipe" viewBox="0 0 24 24">
+      <rect x="7" y="5" width="13" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 8.5V17C4 18.4 5.1 19.5 6.5 19.5H15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M11 12H16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M13.5 9.5L16 12L13.5 14.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-ds-pomodoro" viewBox="0 0 24 24">
+      <circle cx="12" cy="13" r="7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M12 9.5V13L14.5 14.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10 2.5H14" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M12 2.5V5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M18.5 6.5L17.5 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-ds-library" viewBox="0 0 24 24">
+      <path d="M4 19.5H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <rect x="5.5" y="5.5" width="3.5" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="10.5" y="4.5" width="3.5" height="15" rx="1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15.5 8.5L19 6L19 19.5L15.5 19.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-ds-settings-advanced" viewBox="0 0 24 24">
+      <path d="M4 7H9M13 7H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <circle cx="11" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M4 12H15M19 12H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <circle cx="17" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M4 17H7M11 17H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <circle cx="9" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
     </symbol>
     <symbol id="icon-book-open" viewBox="0 0 24 24">
       <path d="M2 4.5C4.5 4 8 3.5 12 5C16 3.5 19.5 4 22 4.5V19.5C19.5 19 16 18.5 12 20C8 18.5 4.5 19 2 19.5V4.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1438,34 +1505,34 @@
     </div>
 
     <!-- // REDESIGN: HEADER 1 HÀNG GỌN GÀNG, CHUẨN EDITORIAL (TIÊU ĐỀ SERIF, TRÁI - GIỮA - PHẢI CÂN ĐỐI) -->
-    <header class="editorial-header h-[60px] px-3 sm:px-6 flex items-center justify-between gap-2.5 flex-nowrap shrink-0 sticky top-0 z-50 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36]">
+    <header class="editorial-header h-[58px] min-h-[58px] max-h-[58px] px-2.5 sm:px-4 md:px-6 flex items-center justify-between gap-1 sm:gap-2 flex-nowrap shrink-0 sticky top-0 z-50 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] overflow-hidden select-none">
       
-      <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif -->
-      <div class="flex items-center gap-2.5 min-w-0 shrink-0">
-        <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" title="Mục lục bài học" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">
+      <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif (Không bao giờ rớt dòng) -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
+        <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" title="Mục lục bài học" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0">
           <svg class="w-5 h-5"><use href="#icon-panel-left"></use></svg>
         </button>
 
-        <div class="flex items-center gap-2.5 min-w-0">
+        <div class="flex items-center gap-2 min-w-0">
           <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
             <svg class="w-4 h-4"><use href="#icon-logo"></use></svg>
           </div>
           <div class="flex flex-col min-w-0">
-            <span class="font-serif font-bold text-[15px] sm:text-base tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-tight truncate">Sách HTML</span>
-            <span class="hidden md:inline text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider font-medium leading-none mt-0.5">Thư viện &amp; Ôn tập</span>
+            <span class="font-serif font-bold text-sm sm:text-base tracking-tight text-[#1C1917] dark:text-[#EDECE8] leading-tight truncate">Sách HTML</span>
+            <span class="hidden xl:inline text-[10px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider font-medium leading-none mt-0.5">Thư viện &amp; Ôn tập</span>
           </div>
         </div>
       </div>
 
-      <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (với phím tắt Ctrl K) -->
-      <div class="hidden min-[900px]:block relative flex-1 min-w-0 max-w-[520px] mx-2">
+      <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (Tự co giãn mượt mà theo không gian còn lại) -->
+      <div class="hidden min-[840px]:block relative flex-1 min-w-0 max-w-[420px] mx-1 sm:mx-2">
         <div class="relative flex items-center">
-          <svg class="w-4 h-4 absolute left-3.5 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
+          <svg class="w-4 h-4 absolute left-3 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
           <input 
             id="globalSearchInput" 
             type="text" 
             placeholder="Tìm kiếm bài học, câu hỏi ôn tập..." 
-            class="w-full bg-[#F2F0EB] dark:bg-[#16181E] text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] pl-9 pr-14 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] focus:border-indigo-500 focus:bg-white dark:focus:bg-[#181B20] focus:ring-2 focus:ring-indigo-500/10 transition placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/60"
+            class="w-full bg-[#F2F0EB] dark:bg-[#16181E] text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] pl-9 pr-14 py-1.5 sm:py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] focus:border-indigo-500 focus:bg-white dark:focus:bg-[#181B20] focus:ring-2 focus:ring-indigo-500/10 transition placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/60"
           />
           <span class="absolute right-3 hidden lg:flex items-center text-[10px] font-medium text-[#6E6B65] dark:text-[#979DA8] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36]">
             Ctrl K
@@ -1474,162 +1541,271 @@
         <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 text-sm"></div>
       </div>
 
-      <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0) -->
-      <div class="flex items-center gap-2 shrink-0 flex-nowrap">
+      <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0, ml-auto) -->
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap ml-auto">
         
-        <!-- Nút Tiếp tục học & Tìm kiếm khi màn hình nhỏ (< 900px) -->
-        <button id="btnMobileResumeHeader" class="md:hidden hidden items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold border border-indigo-200/80 dark:border-indigo-800/80 shadow-2xs transition active:scale-95 shrink-0" title="Mở nhanh bài đang học">
-          <svg class="w-3 h-3 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-play"></use></svg>
-          <span id="mobileResumeHeaderText" class="max-w-[75px] truncate">Tiếp tục</span>
-        </button>
-        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[900px]:hidden touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0">
+        <!-- Nút Tìm kiếm khi màn hình nhỏ (< 840px) -->
+        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[840px]:hidden touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Tìm kiếm">
           <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
         </button>
 
-        <!-- Nút Tạo link nhanh (>= 1200px hiện chữ, 900-1199px thu icon) -->
-        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
+        <!-- Nút Tạo link nhanh (>= 1180px hiện chữ, < 1180px thu gọn icon) -->
+        <button id="btnHeaderQuickShare" class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
           <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-link"></use></svg>
-          <span class="hidden min-[1200px]:inline">Tạo link nhanh</span>
+          <span class="hidden min-[1180px]:inline">Tạo link nhanh</span>
         </button>
 
-        <!-- Nút chỉ báo trạng thái đồng bộ (>= 1200px hiện chữ, < 1200px chấm tròn, bấm mở popover chi tiết) -->
-        <button id="btnSyncStatusIndicator" type="button" class="flex items-center gap-1.5 text-[11px] text-[#6E6B65] dark:text-[#979DA8] px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
+        <!-- Nút chỉ báo trạng thái đồng bộ (>= 1360px hiện chữ, < 1360px chấm tròn, bấm mở popover) -->
+        <button id="btnSyncStatusIndicator" type="button" class="flex items-center gap-1 text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1.5 sm:px-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
           <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
-          <span id="syncText" class="hidden min-[1200px]:inline font-medium">Đã đồng bộ</span>
+          <span id="syncText" class="hidden min-[1360px]:inline font-medium">Đã đồng bộ</span>
         </button>
 
         <!-- Cài App PWA (Nếu hỗ trợ) -->
-        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition shrink-0" title="Cài đặt ứng dụng" aria-label="Cài đặt ứng dụng">
+        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition shrink-0" title="Cài đặt ứng dụng" aria-label="Cài đặt ứng dụng">
           <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
-          <span class="hidden min-[1200px]:inline">Cài App</span>
+          <span class="hidden min-[1360px]:inline">Cài App</span>
         </button>
 
-        <!-- Icon công cụ phụ: Ghi chú, Flashcards, Thống kê (hiển thị khi >= 900px) -->
-        <button id="btnHeaderNotes" class="hidden min-[900px]:flex touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Tất cả Ghi chú & Highlight toàn thư viện" aria-label="Ghi chú và Highlight">
-          <svg class="w-4 h-4"><use href="#icon-highlighter"></use></svg>
-        </button>
-        <button id="btnHeaderFlashcards" class="hidden min-[900px]:flex touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
-          <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
-        </button>
-        <button id="btnHeaderAnalytics" class="hidden min-[900px]:flex touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
-          <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
-        </button>
+        <!-- Icon công cụ phụ: Ghi chú, Flashcards, Thống kê (hiển thị khi >= 1040px) -->
+        <div class="hidden min-[1040px]:flex items-center gap-0.5 shrink-0">
+          <button id="btnHeaderNotes" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Tất cả Ghi chú & Highlight toàn thư viện" aria-label="Ghi chú và Highlight">
+            <svg class="w-4 h-4"><use href="#icon-highlighter"></use></svg>
+          </button>
+          <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
+            <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
+          </button>
+          <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
+            <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
+          </button>
+        </div>
 
         <!-- Menu Hiển thị (icon sliders + Popover phong cách đồng bộ) -->
         <div class="relative shrink-0">
-          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs">
+          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap">
             <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-sliders"></use></svg>
-            <span class="hidden min-[1200px]:inline">Hiển thị</span>
-            <svg class="w-3 h-3 opacity-60 hidden min-[1200px]:inline"><use href="#icon-chevron-down"></use></svg>
+            <span class="hidden sm:inline whitespace-nowrap font-medium">Hiển thị</span>
+            <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0"><use href="#icon-chevron-down"></use></svg>
           </button>
 
-          <!-- Popover Tùy Chọn Hiển Thị (Display Settings Popover) -->
-          <div id="displaySettingsPopover" class="hidden absolute top-full right-0 mt-2 z-50 w-72 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-3.5 space-y-3.5 text-xs">
-            <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
-              <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Tùy chọn hiển thị</span>
-              <button id="btnCloseDisplaySettings" class="text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] p-1 rounded-md hover:bg-black/5" aria-label="Đóng tùy chọn hiển thị">
-                <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+          <!-- Popover Tùy Chọn Hiển Thị (Display Settings Popover) - Thiết kế Editorial 4 nhóm rõ ràng -->
+          <div id="displaySettingsPopover" class="hidden absolute top-full right-0 mt-2 z-50 w-[350px] sm:w-[370px] max-w-[calc(100vw-20px)] max-h-[82dvh] overflow-y-auto no-scrollbar shadow-2xl rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] p-4 text-xs select-none">
+            
+            <!-- HEADER BẢNG: Tiêu đề + Nút đóng -->
+            <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
+                <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] tracking-tight">Tùy chọn hiển thị</span>
+              </div>
+              <button id="btnCloseDisplaySettings" class="text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng tùy chọn hiển thị">
+                <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
               </button>
             </div>
 
-            <!-- Nhóm 1: Cỡ chữ bài đọc -->
-            <div>
-              <div class="text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] mb-1.5 flex items-center justify-between">
-                <span>Cỡ chữ bài viết</span>
-                <span id="fontScaleDisplay" class="font-semibold text-indigo-600 dark:text-indigo-400">100%</span>
-              </div>
-              <div class="flex items-center justify-between bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] rounded-lg p-1">
-                <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="touch-target px-3 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#6E6B65] dark:text-[#979DA8] transition font-bold text-xs">
-                  A-
-                </button>
-                <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] font-serif select-none">Mẫu chữ</span>
-                <button id="btnFontInc" title="Tăng cỡ chữ (A+)" class="touch-target px-3 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#6E6B65] dark:text-[#979DA8] transition font-bold text-xs">
-                  A+
-                </button>
+            <!-- NHÓM 1: ĐỌC BÀI -->
+            <div class="pt-3">
+              <div class="text-[10px] uppercase font-bold tracking-wider text-[#979DA8] dark:text-[#6E7687] mb-2 px-1">ĐỌC BÀI</div>
+              <div class="space-y-2">
+                
+                <!-- Hàng 1: Cỡ chữ bài viết -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-font-size"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Cỡ chữ bài viết</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Thu phóng toàn trang (scale)</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1 bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] rounded-lg p-0.5 shrink-0">
+                    <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="touch-target px-2.5 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#1C1917] dark:text-[#EDECE8] font-bold text-xs transition">
+                      A-
+                    </button>
+                    <span id="fontScaleDisplay" class="font-mono font-semibold text-[11px] text-indigo-600 dark:text-indigo-400 px-1 select-none">100%</span>
+                    <button id="btnFontInc" title="Tăng cỡ chữ (A+)" class="touch-target px-2.5 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#1C1917] dark:text-[#EDECE8] font-bold text-xs transition">
+                      A+
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Hàng 2: Phóng vừa chiều ngang -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-fit-width"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Phóng vừa chiều ngang</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tự động căn bài vừa khít màn hình</div>
+                    </div>
+                  </div>
+                  <button id="btnFitWidthPopoverToggle" type="button" onclick="if(typeof toggleFitWidth==='function')toggleFitWidth()" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] text-xs font-medium transition shrink-0">
+                    Bật/Tắt
+                  </button>
+                </div>
+
               </div>
             </div>
 
-            <!-- Nhóm 2: Chế độ Sáng / Tối -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
-              <div>
-                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Giao diện đọc ban đêm</div>
-                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Nền tối dịu mắt, bảo vệ thị lực</div>
+            <!-- NHÓM 2: GIAO DIỆN -->
+            <div class="pt-3 border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 mt-3">
+              <div class="text-[10px] uppercase font-bold tracking-wider text-[#979DA8] dark:text-[#6E7687] mb-2 px-1">GIAO DIỆN</div>
+              <div class="space-y-2">
+                
+                <!-- Hàng 1: Chế độ Sáng / Tối -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-theme"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Giao diện sáng / tối</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Chỉ đổi khung app, giữ màu gốc bài</div>
+                    </div>
+                  </div>
+                  <button id="btnThemeToggle" aria-label="Chuyển chế độ sáng/tối" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] transition shrink-0">
+                    <svg class="w-4 h-4 dark:hidden"><use href="#icon-moon"></use></svg>
+                    <svg class="w-4 h-4 hidden dark:block"><use href="#icon-sun"></use></svg>
+                  </button>
+                </div>
+
+                <!-- Hàng 2: Kiểu hiển thị bài đã học -->
+                <div class="p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 mb-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-learned-style"></use></svg>
+                    </div>
+                    <div>
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Kiểu bài đã học</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Cách thể hiện thẻ bài đã hoàn thành</div>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36]">
+                    <button id="btnStyleBorder" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-0.5 bg-white dark:bg-[#20242D] text-emerald-600 dark:text-emerald-400 shadow-xs" title="Viền xanh emerald bao quanh thẻ">
+                      <span>Viền xanh</span>
+                    </button>
+                    <button id="btnStyleDim" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Làm mờ dịu mắt">
+                      <span>Làm mờ</span>
+                    </button>
+                    <button id="btnStyleStrike" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Gạch ngang tiêu đề">
+                      <span>Gạch ngang</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Hàng 3: Huy hiệu "Đã học" -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-learned-badge"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Huy hiệu "Đã học"</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Hiện nhãn ✓ Đã học cạnh tên bài</div>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input id="toggleLearnedBadge" type="checkbox" class="sr-only peer" checked>
+                    <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
+                </div>
+
               </div>
-              <button id="btnThemeToggle" aria-label="Chuyển chế độ sáng/tối" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] transition">
-                <svg class="w-4 h-4 dark:hidden"><use href="#icon-moon"></use></svg>
-                <svg class="w-4 h-4 hidden dark:block"><use href="#icon-sun"></use></svg>
-              </button>
             </div>
 
-            <!-- Nhóm 3: Toàn màn hình -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
-              <div>
-                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Toàn màn hình đọc</div>
-                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Ẩn thanh công cụ (Phím F)</div>
+            <!-- NHÓM 3: THAO TÁC -->
+            <div class="pt-3 border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 mt-3">
+              <div class="text-[10px] uppercase font-bold tracking-wider text-[#979DA8] dark:text-[#6E7687] mb-2 px-1">THAO TÁC</div>
+              <div class="space-y-2">
+                
+                <!-- Hàng 1: Ẩn thanh công cụ (F) -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-hide-toolbar"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Ẩn thanh công cụ (F)</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tập trung đọc, ẩn header &amp; điều hướng</div>
+                    </div>
+                  </div>
+                  <button id="btnFullscreen" aria-label="Ẩn thanh công cụ (F)" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition text-xs shrink-0">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-maximize-2"></use></svg>
+                    <span>Bật (F)</span>
+                  </button>
+                </div>
+
+                <!-- Hàng 2: Vuốt chuyển bài -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-swipe"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Vuốt chuyển bài</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Vuốt sang trái/phải trên màn hình</div>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input id="toggleSwipeGesture" type="checkbox" class="sr-only peer" checked>
+                    <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
+                </div>
+
+                <!-- Hàng 3: Chế độ tập trung (Pomodoro) -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-pomodoro"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Chế độ tập trung</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Ẩn giao diện, hẹn giờ Pomodoro</div>
+                    </div>
+                  </div>
+                  <button id="btnDisplaySettingsFocus" class="touch-target px-2.5 py-1 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold transition text-xs hover:bg-rose-100 shrink-0">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-focus"></use></svg>
+                    <span>Bật</span>
+                  </button>
+                </div>
+
               </div>
-              <button id="btnFullscreen" aria-label="Toàn màn hình đọc (F)" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1 font-medium transition">
-                <svg class="w-3.5 h-3.5"><use href="#icon-maximize-2"></use></svg>
-                <span>Bật (F)</span>
-              </button>
             </div>
 
-            <!-- Nhóm 4: Vuốt ngang chuyển bài (Mobile) -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
-              <div>
-                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Vuốt ngang chuyển bài</div>
-                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Vuốt sang trái/phải trên điện thoại</div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input id="toggleSwipeGesture" type="checkbox" class="sr-only peer" checked>
-                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
-              </label>
-            </div>
+            <!-- NHÓM 4: DANH SÁCH BÀI -->
+            <div class="pt-3 border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 mt-3">
+              <div class="text-[10px] uppercase font-bold tracking-wider text-[#979DA8] dark:text-[#6E7687] mb-2 px-1">DANH SÁCH BÀI</div>
+              <div class="space-y-2">
+                
+                <!-- Hàng: Ẩn bài đã hoàn thành -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4"><use href="#icon-ds-library"></use></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Ẩn bài đã học</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Thu gọn các bài đã đánh dấu xong</div>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input id="toggleHideCompletedLessons" type="checkbox" class="sr-only peer">
+                    <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-purple-600"></div>
+                  </label>
+                </div>
 
-            <!-- Nhóm 5: Chế độ tập trung (Pomodoro) -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
-              <div>
-                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Chế độ tập trung</div>
-                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Ẩn giao diện, hẹn giờ Pomodoro</div>
-              </div>
-              <button id="btnDisplaySettingsFocus" class="touch-target px-2.5 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold transition text-xs hover:bg-rose-100">
-                <svg class="w-3.5 h-3.5"><use href="#icon-focus"></use></svg>
-                <span>Bật</span>
-              </button>
-            </div>
-
-            <!-- Nhóm 6: PHẦN B - Kiểu hiển thị bài đã học (3 tùy chọn: Viền xanh / Làm mờ / Gạch ngang) -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
-              <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] mb-1">Kiểu bài đã học</div>
-              <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] mb-2">Chọn cách thể hiện thẻ bài và tiêu đề đã hoàn thành</div>
-              <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36]">
-                <button id="btnStyleBorder" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-0.5 bg-white dark:bg-[#20242D] text-emerald-600 dark:text-emerald-400 shadow-xs" title="Viền xanh emerald bao quanh thẻ (Mặc định)">
-                  <span>Viền xanh</span>
-                </button>
-                <button id="btnStyleDim" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Làm mờ dịu mắt, không viền nổi">
-                  <span>Làm mờ</span>
-                </button>
-                <button id="btnStyleStrike" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Gạch ngang nhẹ tiêu đề">
-                  <span>Gạch ngang</span>
-                </button>
               </div>
             </div>
 
-            <!-- Nhóm 7: PHẦN B - Huy hiệu "✓ Đã học" -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
-              <div>
-                <div class="font-medium text-[#1C1917] dark:text-[#EDECE8]">Huy hiệu "✓ Đã học"</div>
-                <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8]">Hiện pill xanh nhỏ bên cạnh tên file</div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input id="toggleLearnedBadge" type="checkbox" class="sr-only peer" checked>
-                <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
-              </label>
-            <!-- Nhóm 8: Mở Bảng Tùy chỉnh đọc chi tiết -->
-            <div class="pt-2.5 border-t border-[#E7E5DF] dark:border-[#262C36]">
-              <button id="btnHeaderOpenReadingSettings" type="button" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition active:scale-98">
-                <span class="flex items-center gap-2">
-                  <span class="font-serif font-bold text-sm bg-indigo-200/60 dark:bg-indigo-900/60 w-5 h-5 rounded flex items-center justify-center leading-none">Aa</span>
-                  <span>Bảng tùy chỉnh đọc...</span>
+            <!-- CUỐI BẢNG: Nút Tùy chỉnh khung đọc tách riêng full-width -->
+            <div class="pt-3 border-t border-[#E7E5DF] dark:border-[#262C36] mt-3">
+              <button id="btnHeaderOpenReadingSettings" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-semibold transition active:scale-98 shadow-2xs border border-indigo-100 dark:border-indigo-900/40">
+                <span class="flex items-center gap-2.5">
+                  <div class="w-6 h-6 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-ds-settings-advanced"></use></svg>
+                  </div>
+                  <span class="text-xs">Tùy chỉnh khung đọc nâng cao...</span>
                 </span>
                 <svg class="w-3.5 h-3.5 opacity-70"><use href="#icon-chevron-right"></use></svg>
               </button>
@@ -1641,15 +1817,15 @@
         <!-- Đường phân cách dọc 1px cao 24px phân tách nhóm công cụ và tài khoản -->
         <div class="header-divider-v mx-0.5 sm:mx-1 hidden sm:block"></div>
 
-        <!-- Avatar Nút Tài Khoản (tròn 36px kèm chấm trạng thái góc dưới phải) -->
+        <!-- Avatar Nút Tài Khoản - LUÔN Ở NGOÀI CÙNG BÊN PHẢI TRÊN CÙNG HÀNG, KHÔNG RỚT DÒNG -->
         <div class="relative shrink-0">
-          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 px-1 xl:px-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shrink-0" title="Tài khoản và tùy chọn">
-            <div class="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
+          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 p-0.5 sm:px-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shrink-0" title="Tài khoản và tùy chọn">
+            <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
               <span id="userInitial">U</span>
               <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
             </div>
-            <span id="headerAccountLabel" class="hidden min-[1200px]:inline-block font-medium max-w-[110px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
-            <svg class="w-3 h-3 hidden min-[1200px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-chevron-down"></use></svg>
+            <span id="headerAccountLabel" class="hidden min-[1280px]:inline-block font-medium max-w-[90px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
+            <svg class="w-3 h-3 hidden min-[1280px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-chevron-down"></use></svg>
           </button>
         </div>
 
@@ -1859,7 +2035,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.1.0 - build 09/10/2026 10:00
+        Thư viện Sách HTML v4.2.0 - build 09/10/2026 10:30
       </div>
     </aside>
 
@@ -1926,6 +2102,13 @@
               Toàn màn
             </button>
           </div>
+
+          <!-- // FIX-2: Nút Phóng vừa chiều ngang (Fit to width) -->
+          <button id="btnFitWidthToggle" type="button" class="touch-target p-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-center transition shadow-2xs shrink-0" title="Phóng vừa chiều ngang (Fit to width)" aria-label="Phóng vừa chiều ngang">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+            </svg>
+          </button>
 
           <!-- Nút Tùy chỉnh đọc (Aa) mở Bảng Tùy chỉnh đọc -->
           <button id="btnReadingSettings" type="button" class="touch-target px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs shrink-0" title="Tùy chỉnh đọc (Cỡ chữ, Phông, Nền, Giãn dòng...)" aria-label="Tùy chỉnh đọc">
@@ -2406,7 +2589,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.1.0 - build 09/10/2026 10:00
+      Thư viện Sách HTML v4.2.0 - build 09/10/2026 10:30
     </div>
   </div>
 
@@ -4163,6 +4346,51 @@
       return (str || '').normalize('NFC');
     }
 
+    // // FIX-2: ĐỌC FILE HTML AN TOÀN, TÔN TRỌNG BOM & CHARSET, KHÔNG LÀM HỎNG KÝ TỰ TIẾNG VIỆT
+    async function readFileContentSafely(file) {
+      try {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+
+        // 1. Kiểm tra UTF-8 BOM (0xEF, 0xBB, 0xBF)
+        if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+          return new TextDecoder('utf-8').decode(bytes.subarray(3));
+        }
+        // 2. Kiểm tra UTF-16LE BOM (0xFF, 0xFE)
+        if (bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xFE) {
+          return new TextDecoder('utf-16le').decode(bytes.subarray(2));
+        }
+        // 3. Kiểm tra UTF-16BE BOM (0xFE, 0xFF)
+        if (bytes.length >= 2 && bytes[0] === 0xFE && bytes[1] === 0xFF) {
+          return new TextDecoder('utf-16be').decode(bytes.subarray(2));
+        }
+
+        // 4. Quét thẻ <meta charset> trong 4096 byte đầu
+        const headText = new TextDecoder('ascii', { fatal: false }).decode(bytes.subarray(0, Math.min(bytes.length, 4096)));
+        const charsetMatch = headText.match(/<meta[^>]+charset=['"]*([^'"\s/>]+)/i) ||
+                             headText.match(/<meta[^>]+content=['"][^'"]*charset=([^'"\s;>]+)/i);
+
+        let encoding = 'utf-8';
+        if (charsetMatch && charsetMatch[1]) {
+          const detected = charsetMatch[1].trim().toLowerCase();
+          if (detected === 'windows-1258' || detected === 'cp1258') {
+            try { encoding = 'windows-1258'; } catch (_) {}
+          } else if (detected === 'iso-8859-1' || detected === 'windows-1252') {
+            try { encoding = detected; } catch (_) {}
+          }
+        }
+
+        try {
+          return new TextDecoder(encoding).decode(bytes);
+        } catch (_) {
+          return new TextDecoder('utf-8').decode(bytes);
+        }
+      } catch (e) {
+        // Fallback an toàn
+        return await file.text();
+      }
+    }
+
     function removeVietnameseTones(str) {
       if (!str) return '';
       return str.normalize('NFD')
@@ -5231,37 +5459,11 @@
         if (typeof saveUserSettings === 'function') saveUserSettings();
       }
 
-      // 2. Độ rộng cột đọc
-      const container = document.getElementById('readingContentContainer');
-      if (container) {
-        container.classList.remove('max-w-[680px]', 'max-w-[860px]', 'max-w-[900px]', 'max-w-[1100px]', 'max-w-[1280px]', 'max-w-full');
-        if (effective.columnWidth === 'narrow') {
-          container.classList.add('max-w-[680px]');
-          state.readingWidth = 'compact';
-        } else if (effective.columnWidth === 'wide') {
-          container.classList.add('max-w-[1100px]');
-          state.readingWidth = 'wide';
-        } else if (effective.columnWidth === 'full') {
-          container.classList.add('max-w-full');
-          state.readingWidth = 'full';
-        } else {
-          container.classList.add('max-w-[860px]');
-          state.readingWidth = 'compact';
-        }
-      }
-
-      // Đồng bộ các nút phân đoạn Vừa / Rộng / Toàn màn trên thanh công cụ
-      document.querySelectorAll('.width-tab').forEach(tab => {
-        const val = tab.getAttribute('data-width-opt');
-        const isMatched = (val === 'compact' && (effective.columnWidth === 'narrow' || effective.columnWidth === 'normal')) ||
-                          (val === 'wide' && effective.columnWidth === 'wide') ||
-                          (val === 'full' && effective.columnWidth === 'full');
-        if (isMatched) {
-          tab.className = "width-tab px-3 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition";
-        } else {
-          tab.className = "width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium";
-        }
-      });
+      // 2. Độ rộng cột đọc (gọi hàm applyReadingWidth dùng chung chuẩn xác)
+      const targetWidth = (effective.columnWidth === 'narrow' || effective.columnWidth === 'normal') ? 'compact' : 
+                          (effective.columnWidth === 'wide' ? 'wide' : 
+                          (effective.columnWidth === 'full' ? 'full' : (state.readingWidth || 'full')));
+      applyReadingWidth(targetWidth);
 
       // 3. Toàn bộ App Dark Mode & Thẻ Meta Theme-color
       const metaThemeLight = document.querySelector('meta[name="theme-color"][media*="light"]');
@@ -5743,60 +5945,15 @@
     return chunks;
   }
 
-  // // FEATURE-3: ÁP DỤNG TÙY CHỈNH ĐỌC NỘI BỘ IFRAME
-  function applyCustomReadingSettings(s) {
-    if (!s) return;
-    let styleEl = document.getElementById('bridge_reading_custom_style');
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'bridge_reading_custom_style';
-      document.head.appendChild(styleEl);
+  // // FIX-2: BẢO VỆ NGUYÊN BẢN GỐC - KHÔNG CHÈN STYLE GHI ĐÈ MÀU/FONT/LAYOUT VÀO NỘI DUNG BÀI
+  function applyNativeScale(scaleFactor) {
+    const factor = Math.max(0.7, Math.min(2.5, scaleFactor || 1.0));
+    currentScale = factor;
+    try {
+      document.documentElement.style.zoom = factor;
+    } catch (_) {
+      try { document.body.style.zoom = factor; } catch (_) {}
     }
-
-    let css = '';
-    if (!s.preserveOriginal) {
-      let bg = '#FFFFFF';
-      let fg = '#1A1A1A';
-      if (s.theme === 'warm') { bg = '#FAF9F5'; fg = '#2D2B28'; }
-      else if (s.theme === 'sepia') { bg = '#F4ECD8'; fg = '#433422'; }
-      else if (s.theme === 'dark') { bg = '#161A20'; fg = '#ECEEF2'; }
-      else if (s.theme === 'oled') { bg = '#000000'; fg = '#E5E7EB'; }
-      else if (s.theme === 'auto') {
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        bg = isDark ? '#161A20' : '#FFFFFF';
-        fg = isDark ? '#ECEEF2' : '#1A1A1A';
-      }
-      css += 'body, html { background-color: ' + bg + ' !important; color: ' + fg + ' !important; }\\n';
-    }
-
-    if (s.fontFamily === 'serif') {
-      css += 'body, p, span, div, li, h1, h2, h3, h4, h5, h6 { font-family: Merriweather, Georgia, Cambria, "Times New Roman", serif !important; }\\n';
-    } else if (s.fontFamily === 'sans') {
-      css += 'body, p, span, div, li, h1, h2, h3, h4, h5, h6 { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; }\\n';
-    } else if (s.fontFamily === 'dyslexic') {
-      css += 'body, p, span, div, li, h1, h2, h3, h4, h5, h6 { font-family: "OpenDyslexic", "Comic Sans MS", -apple-system, sans-serif !important; letter-spacing: 0.05em !important; word-spacing: 0.1em !important; }\\n';
-    }
-
-    if (s.fontScale) {
-      const px = Math.round((s.fontScale / 100) * 16);
-      css += 'body { font-size: ' + px + 'px !important; }\\n';
-    }
-
-    if (s.lineHeight === 'compact') {
-      css += 'body, p, div, li { line-height: 1.4 !important; }\\n';
-    } else if (s.lineHeight === 'relaxed') {
-      css += 'body, p, div, li { line-height: 2.0 !important; }\\n';
-    } else if (s.lineHeight === 'normal') {
-      css += 'body, p, div, li { line-height: 1.7 !important; }\\n';
-    }
-
-    if (s.paragraphSpacing === 'relaxed') {
-      css += 'p { margin-top: 1.25em !important; margin-bottom: 1.25em !important; }\\n';
-    } else if (s.paragraphSpacing === 'normal') {
-      css += 'p { margin-top: 0.75em !important; margin-bottom: 0.75em !important; }\\n';
-    }
-
-    styleEl.textContent = css;
     sendHeight();
   }
 
@@ -5807,11 +5964,10 @@
 
     switch (msg.type) {
       case 'INIT_CONFIG': {
-        if (msg.readingSettings) {
-          applyCustomReadingSettings(msg.readingSettings);
-        }
-        if (msg.fontSizeOffset !== undefined && !msg.readingSettings) {
-          applyScale(msg.fontSizeOffset);
+        if (msg.zoomFactor) {
+          applyNativeScale(msg.zoomFactor);
+        } else if (msg.fontSizeOffset !== undefined) {
+          applyNativeScale(1 + (msg.fontSizeOffset * 0.1));
         }
         if (msg.highlights && Array.isArray(msg.highlights)) {
           applySavedHighlights(msg.highlights);
@@ -5827,25 +5983,44 @@
         break;
       }
 
+      case 'APPLY_FONT_SIZE': {
+        const factor = typeof msg.zoomFactor === 'number' ? msg.zoomFactor : (1 + ((msg.fontSizeOffset || 0) * 0.1));
+        applyNativeScale(factor);
+        break;
+      }
+
       case 'APPLY_READING_SETTINGS': {
-        if (msg.settings) {
-          applyCustomReadingSettings(msg.settings);
+        // Chỉ nhận zoom/cỡ chữ, tuyệt đối không ghi đè màu/font lên bài
+        if (msg.settings && msg.settings.fontScale) {
+          applyNativeScale(msg.settings.fontScale / 100);
         }
         sendHeight();
         break;
       }
 
-      case 'APPLY_FONT_SIZE': {
-        applyScale(msg.fontSizeOffset);
-        sendHeight();
+      case 'MEASURE_NATURAL_WIDTH': {
+        try {
+          const body = document.body;
+          const html = document.documentElement;
+          let w = Math.max(body ? body.scrollWidth : 0, html ? html.scrollWidth : 0);
+          if (body && body.firstElementChild && body.firstElementChild.offsetWidth > 200) {
+            w = Math.max(w, body.firstElementChild.offsetWidth);
+          }
+          window.parent.postMessage({
+            type: 'NATURAL_WIDTH_REPORT',
+            width: w
+          }, '*');
+        } catch (_) {}
+        break;
+      }
+
+      case 'RESET_FIT_WIDTH': {
+        applyNativeScale(1.0);
         break;
       }
 
       case 'APPLY_THEME': {
-        if (!msg.preserveOriginalTheme) {
-          document.body.style.backgroundColor = msg.isDarkMode ? '#161A20' : '#FFFFFF';
-          document.body.style.color = msg.isDarkMode ? '#ECEEF2' : '#1A1A1A';
-        }
+        // Giao diện ban đêm chỉ áp dụng cho khung ngoài app, không can thiệp vào trong file gốc
         sendHeight();
         break;
       }
@@ -6143,6 +6318,13 @@
         case 'FORWARD_SWIPE': {
           if (state.swipeEnabled && typeof goToAdjacentLesson === 'function') {
             goToAdjacentLesson(msg.direction === 'next' ? 1 : -1);
+          }
+          break;
+        }
+
+        case 'NATURAL_WIDTH_REPORT': {
+          if (typeof handleFitWidthReport === 'function') {
+            handleFitWidthReport(msg.width);
           }
           break;
         }
@@ -10874,22 +11056,10 @@
         iframe.style.transition = 'opacity 250ms var(--ease-out)';
       }
 
-      let contentToInject = rawHtml || '<p>Nội dung rỗng.</p>';
-      if (!state.preserveOriginalTheme) {
-        const baseFontSize = 16 + (state.fontSizeOffset * 2);
-        let injectedThemeCss = state.isDarkMode 
-          ? `body { background-color: #161A20 !important; color: #ECEEF2 !important; } a { color: #818CF8 !important; }`
-          : `body { background-color: #FFFFFF !important; color: #1A1A1A !important; }`;
-        contentToInject = `
-          <!DOCTYPE html><html><head><meta charset="utf-8"><style>
-            html, body { margin:0; padding:12px; font-size:${baseFontSize}px; line-height:1.7; overflow-x:hidden; }
-            img { max-width:100%; height:auto; }
-            ${injectedThemeCss}
-          </style></head><body>${contentToInject}</body></html>
-        `;
-      }
+      // // FIX-2: HIỂN THỊ NGUYÊN BẢN GỐC 100% - KHÔNG BỌC THÊM HTML/CSS GHI ĐÈ MÀU/FONT/LAYOUT
+      const contentToInject = rawHtml || '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><p>Nội dung rỗng.</p></body></html>';
 
-      // // HANGMUC-1: Tiêm CSP Meta và Cầu nối Bridge Script vào nội dung
+      // Tiêm Bridge Script tối thiểu vào cuối bài để đo chiều cao & nhận lệnh
       const sandboxedHtml = injectBridgeAndCspIntoHtml(contentToInject);
       iframe.srcdoc = sandboxedHtml;
 
@@ -10914,6 +11084,7 @@
         }
       };
     }
+    window.loadHtmlIntoIframe = loadHtmlIntoIframe;
 
     function inspectIframeNativeBackgroundAndResize() {
       const iframe = document.getElementById('lessonIframe');
@@ -11239,7 +11410,8 @@
       if (noteEl) noteEl.innerText = "Đang kiểm tra dữ liệu file...";
 
       try {
-        const content = await file.text();
+        // // FIX-2: Đọc an toàn với BOM & Charset
+        const content = await readFileContentSafely(file);
         let title = '';
         const titleMatch = content.match(/<title[^>]*>([^<]+)<\/title>/i);
         if (titleMatch && titleMatch[1]) {
@@ -11953,7 +12125,8 @@
 
       for (const file of validFiles) {
         try {
-          const content = await file.text();
+          // // FIX-2: Đọc file an toàn với BOM & Charset, không làm hỏng ký tự tiếng Việt
+          const content = await readFileContentSafely(file);
           let extractedTitle = '';
           const titleMatch = content.match(/<title[^>]*>([^<]+)<\/title>/i);
           if (titleMatch && titleMatch[1]) {
@@ -12616,29 +12789,108 @@
       });
     }
 
+    // // FIX-2: Xử lý 3 chế độ độ rộng: Vừa (~900px), Rộng (~1280px), Toàn màn (100% không bị đè bởi max-w-*)
     function applyReadingWidth(mode) {
+      if (!mode) mode = 'full';
       state.readingWidth = mode;
       const container = document.getElementById('readingContentContainer');
       if (!container) return;
 
-      container.classList.remove('max-w-[900px]', 'max-w-[1280px]', 'max-w-full');
+      // Xóa triệt để TẤT CẢ các class max-w Tailwind từng gây xung đột
+      container.classList.remove(
+        'max-w-[680px]', 'max-w-[860px]', 'max-w-[900px]',
+        'max-w-[1100px]', 'max-w-[1280px]', 'max-w-full',
+        'max-w-none', 'max-w-prose', 'max-w-screen-sm',
+        'max-w-screen-md', 'max-w-screen-lg', 'max-w-screen-xl', 'max-w-screen-2xl'
+      );
 
       if (mode === 'compact') {
-        container.classList.add('max-w-[900px]');
+        container.style.maxWidth = '900px';
+        container.style.paddingLeft = '';
+        container.style.paddingRight = '';
       } else if (mode === 'wide') {
-        container.classList.add('max-w-[1280px]');
+        container.style.maxWidth = '1280px';
+        container.style.paddingLeft = '';
+        container.style.paddingRight = '';
       } else {
-        container.classList.add('max-w-full');
+        // mode === 'full': Giãn hết chiều ngang, lề rất nhỏ để tận dụng khoảng trống hai bên
+        container.style.maxWidth = '100%';
+        container.style.paddingLeft = '4px';
+        container.style.paddingRight = '4px';
       }
 
+      // Cập nhật trạng thái active cho nút chuyển Vừa / Rộng / Toàn màn
       document.querySelectorAll('.width-tab').forEach(tab => {
         const val = tab.getAttribute('data-width-opt');
         if (val === mode) {
-          tab.className = "width-tab px-2 py-1 rounded bg-white dark:bg-[#262C36] text-[#4F46E5] dark:text-[#818CF8] shadow-sm font-semibold transition";
+          tab.className = "width-tab px-3 py-1 rounded-pill bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition";
         } else {
-          tab.className = "width-tab px-2 py-1 rounded text-[#6B6B66] dark:text-[#9AA3B2] hover:text-[#1A1A1A] transition font-medium";
+          tab.className = "width-tab px-3 py-1 rounded-pill text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium";
         }
       });
+
+      // Nếu đang bật chế độ Phóng vừa chiều ngang (Fit to width), tự động đo và scale lại
+      if (state.fitWidthActive) {
+        setTimeout(requestFitWidthMeasurement, 100);
+      }
+    }
+
+    // // FIX-2: Yêu cầu đo chiều rộng tự nhiên của bài trong iframe
+    function requestFitWidthMeasurement() {
+      postMessageToLessonIframe({ type: 'MEASURE_NATURAL_WIDTH' });
+    }
+
+    // // FIX-2: Xử lý báo cáo chiều rộng tự nhiên từ iframe và áp dụng scale khít màn hình
+    function handleFitWidthReport(naturalWidth) {
+      const container = document.getElementById('readingContentContainer');
+      const lessonIframe = document.getElementById('lessonIframe');
+      const btnFit = document.getElementById('btnFitWidthToggle');
+      if (!container || !lessonIframe || !state.fitWidthActive) return;
+
+      const availWidth = (container.clientWidth || window.innerWidth) - 8;
+      if (naturalWidth && naturalWidth > 100 && availWidth > 0) {
+        let scale = availWidth / naturalWidth;
+        scale = Math.max(0.6, Math.min(2.5, Math.round(scale * 100) / 100));
+        postMessageToLessonIframe({ type: 'SET_SCALE', scale: scale });
+        state.currentFitScale = scale;
+        if (btnFit) {
+          btnFit.classList.add('bg-indigo-50', 'dark:bg-indigo-950/60', 'text-indigo-600', 'dark:text-indigo-400', 'border-indigo-300', 'dark:border-indigo-700');
+          btnFit.setAttribute('title', `Đang phóng vừa chiều ngang: ${Math.round(scale * 100)}% (Bấm để tắt)`);
+        }
+        showToast(`Đã phóng vừa chiều ngang (${Math.round(scale * 100)}%)`);
+      } else {
+        if (btnFit) {
+          btnFit.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/60', 'text-indigo-600', 'dark:text-indigo-400', 'border-indigo-300', 'dark:border-indigo-700');
+        }
+        showToast('Nội dung đã vừa khít chiều ngang');
+      }
+    }
+
+    // // FIX-2: Bật/Tắt tính năng Phóng vừa chiều ngang
+    function toggleFitWidth() {
+      state.fitWidthActive = !state.fitWidthActive;
+      const btnFit = document.getElementById('btnFitWidthToggle');
+      if (state.fitWidthActive) {
+        requestFitWidthMeasurement();
+      } else {
+        postMessageToLessonIframe({ type: 'RESET_FIT_WIDTH' });
+        applyFontSizeToIframe();
+        if (btnFit) {
+          btnFit.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/60', 'text-indigo-600', 'dark:text-indigo-400', 'border-indigo-300', 'dark:border-indigo-700');
+          btnFit.setAttribute('title', 'Phóng vừa chiều ngang (Fit to width)');
+        }
+        showToast('Đã khôi phục kích thước chuẩn');
+      }
+    }
+
+    window.toggleFitWidth = toggleFitWidth;
+    window.handleFitWidthReport = handleFitWidthReport;
+    window.requestFitWidthMeasurement = requestFitWidthMeasurement;
+    window.applyReadingWidth = applyReadingWidth;
+
+    const btnFitWidthToggleEl = document.getElementById('btnFitWidthToggle');
+    if (btnFitWidthToggleEl) {
+      btnFitWidthToggleEl.addEventListener('click', toggleFitWidth);
     }
 
     document.querySelectorAll('.width-tab').forEach(btn => {
@@ -13184,7 +13436,7 @@
     // // FIX: Đăng ký Service Worker tệp sw.js (v3.4) chuẩn, hỗ trợ bắt sự kiện updatefound
     function registerPwaServiceWorker() {
       if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-        navigator.serviceWorker.register('./sw.js?v=3.8.3', { scope: './' }).then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=4.2.0', { scope: './' }).then((reg) => {
           console.debug("PWA Service Worker đã sẵn sàng.", reg);
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
@@ -13246,10 +13498,48 @@
       bootApp();
     }
   
-    // // REDESIGN: Tương tác đóng/mở popover menu "Hiển thị" trên Header
+    // // FIX-1: Tương tác đóng/mở & tự động căn chỉnh vị trí popover "Hiển thị" chống tràn mép
     const btnDisplaySettingsToggle = document.getElementById('btnDisplaySettingsToggle');
     const displaySettingsPopover = document.getElementById('displaySettingsPopover');
     const btnCloseDisplaySettings = document.getElementById('btnCloseDisplaySettings');
+
+    function positionDisplaySettingsPopover() {
+      if (!displaySettingsPopover || displaySettingsPopover.classList.contains('hidden')) return;
+      if (displaySettingsPopover.parentElement !== document.body) {
+        document.body.appendChild(displaySettingsPopover);
+      }
+      
+      const screenW = window.innerWidth || document.documentElement.clientWidth;
+      const isMobile = screenW < 640;
+      if (isMobile) {
+        // Bottom sheet trên điện thoại (< 640px)
+        displaySettingsPopover.style.setProperty('position', 'fixed', 'important');
+        displaySettingsPopover.style.setProperty('top', 'auto', 'important');
+        displaySettingsPopover.style.setProperty('bottom', '0px', 'important');
+        displaySettingsPopover.style.setProperty('left', '0px', 'important');
+        displaySettingsPopover.style.setProperty('right', '0px', 'important');
+        displaySettingsPopover.style.setProperty('width', '100vw', 'important');
+        displaySettingsPopover.style.setProperty('max-width', '100vw', 'important');
+        displaySettingsPopover.style.setProperty('border-bottom-left-radius', '0px', 'important');
+        displaySettingsPopover.style.setProperty('border-bottom-right-radius', '0px', 'important');
+        displaySettingsPopover.style.setProperty('z-index', '100', 'important');
+      } else {
+        // Desktop / Tablet: căn lề phải thẳng hàng với nút, cách 8px phía dưới nút
+        const btnRect = btnDisplaySettingsToggle ? btnDisplaySettingsToggle.getBoundingClientRect() : null;
+        displaySettingsPopover.style.setProperty('position', 'fixed', 'important');
+        displaySettingsPopover.style.setProperty('top', btnRect ? `${btnRect.bottom + 8}px` : '66px', 'important');
+        displaySettingsPopover.style.setProperty('bottom', 'auto', 'important');
+        displaySettingsPopover.style.setProperty('left', 'auto', 'important');
+        const rightOffset = btnRect ? Math.max(12, window.innerWidth - btnRect.right) : 16;
+        displaySettingsPopover.style.setProperty('right', `${rightOffset}px`, 'important');
+        displaySettingsPopover.style.setProperty('width', '360px', 'important');
+        displaySettingsPopover.style.setProperty('max-width', 'calc(100vw - 24px)', 'important');
+        displaySettingsPopover.style.removeProperty('border-bottom-left-radius');
+        displaySettingsPopover.style.removeProperty('border-bottom-right-radius');
+        displaySettingsPopover.style.setProperty('z-index', '999', 'important');
+      }
+    }
+    window.positionDisplaySettingsPopover = positionDisplaySettingsPopover;
 
     if (btnDisplaySettingsToggle && displaySettingsPopover) {
       btnDisplaySettingsToggle.addEventListener('click', (e) => {
@@ -13260,6 +13550,7 @@
         }
         displaySettingsPopover.classList.toggle('hidden');
         if (!displaySettingsPopover.classList.contains('hidden')) {
+          positionDisplaySettingsPopover();
           refreshIcons(displaySettingsPopover);
         }
       });
@@ -13272,6 +13563,21 @@
         if (!displaySettingsPopover.contains(e.target) && !btnDisplaySettingsToggle.contains(e.target)) {
           displaySettingsPopover.classList.add('hidden');
         }
+      });
+      window.addEventListener('resize', () => {
+        if (!displaySettingsPopover.classList.contains('hidden')) {
+          positionDisplaySettingsPopover();
+        }
+      });
+    }
+
+    // Xử lý nút ẩn bài đã học trong Nhóm 4
+    const toggleHideCompletedLessonsEl = document.getElementById('toggleHideCompletedLessons');
+    if (toggleHideCompletedLessonsEl) {
+      toggleHideCompletedLessonsEl.addEventListener('change', (e) => {
+        document.body.classList.toggle('hide-completed-lessons', e.target.checked);
+        localStorage.setItem('cfg_hide_completed_lessons', e.target.checked ? 'true' : 'false');
+        if (typeof renderCategoryCards === 'function') renderCategoryCards();
       });
     }
 
@@ -17174,7 +17480,7 @@
     loadPomodoroSettings();
 
     // // FIX: Thông báo phiên bản phát hành ra console để kiểm tra
-    console.log("%c Thư viện Sách HTML v4.1.0 - build 09/10/2026 10:00 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.2.0 - build 09/10/2026 10:30 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
