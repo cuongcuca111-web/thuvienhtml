@@ -1505,7 +1505,7 @@
     </div>
 
     <!-- // REDESIGN: HEADER 1 HÀNG GỌN GÀNG, CHUẨN EDITORIAL (TIÊU ĐỀ SERIF, TRÁI - GIỮA - PHẢI CÂN ĐỐI) -->
-    <header class="editorial-header h-[58px] min-h-[58px] max-h-[58px] px-2.5 sm:px-4 md:px-6 flex items-center justify-between gap-1 sm:gap-2 flex-nowrap shrink-0 sticky top-0 z-50 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] overflow-hidden select-none">
+    <header class="editorial-header h-[58px] min-h-[58px] max-h-[58px] px-2.5 sm:px-4 md:px-6 flex items-center justify-between gap-1 sm:gap-2 flex-nowrap shrink-0 sticky top-0 z-50 bg-white/95 dark:bg-[#161A20]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] overflow-visible select-none">
       
       <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif (Không bao giờ rớt dòng) -->
       <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
@@ -1538,7 +1538,7 @@
             Ctrl K
           </span>
         </div>
-        <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 text-sm"></div>
+        <div id="searchResultsDropdown" class="hidden absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-2xl z-[100] p-2 text-sm"></div>
       </div>
 
       <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0, ml-auto) -->
@@ -12172,13 +12172,16 @@
         clearTimeout(searchDebounceTimer);
         searchDebounceTimer = setTimeout(() => {
           performSearch(e.target.value.trim(), dropdownEl);
-        }, 250);
+        }, 200);
       });
 
       inputEl.addEventListener('focus', () => {
-        if (inputEl.value.trim().length > 0) {
-          dropdownEl.classList.remove('hidden');
-        }
+        performSearch(inputEl.value.trim(), dropdownEl);
+      });
+
+      inputEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        performSearch(inputEl.value.trim(), dropdownEl);
       });
     }
 
@@ -12221,6 +12224,21 @@
     let pendingSearchJump = null;
     let lastSearchQuery = '';
 
+    // Cờ gỡ lỗi nhẹ nhàng (bật bằng localStorage.debugSearch = '1')
+    function isSearchDebugEnabled() {
+      try {
+        return localStorage.getItem('debugSearch') === '1';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function searchDebugLog(...args) {
+      if (isSearchDebugEnabled()) {
+        console.log('[SearchDebug]', ...args);
+      }
+    }
+
     function escapeHtml(str) {
       if (!str) return '';
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -12261,16 +12279,29 @@
       }
     }
 
-    // Lập chỉ mục cho 1 bài học (có cache theo id + updatedAt)
-    function indexLesson(lesson) {
+    // Lập chỉ mục cho 1 bài học (Tự động nạp IndexedDB nếu chưa có htmlContent trong bộ nhớ)
+    async function indexLesson(lesson) {
       if (!lesson || !lesson.id) return null;
       const cacheKey = `${lesson.id}_${lesson.updatedAt || lesson.createdAt || 0}`;
       if (searchIndexCache.has(lesson.id)) {
         const cached = searchIndexCache.get(lesson.id);
-        if (cached.key === cacheKey) return cached;
+        if (cached.key === cacheKey && cached.plainText && cached.plainText.length > 0) {
+          return cached;
+        }
       }
 
-      const plain = extractCleanTextFromHtml(lesson.htmlContent || '');
+      // Nạp từ IndexedDB nếu nội dung chưa có trong bộ nhớ (do lưu trữ nhẹ HANGMUC-2)
+      let html = lesson.htmlContent;
+      if (!html && typeof getLessonContentFromIDB === 'function') {
+        try {
+          html = await getLessonContentFromIDB(lesson.id);
+          if (html) lesson.htmlContent = html;
+        } catch (e) {
+          searchDebugLog("Lỗi nạp IDB cho bài", lesson.id, e);
+        }
+      }
+
+      const plain = extractCleanTextFromHtml(html || '');
       const normText = normalizeVietnamese1to1(plain).toLowerCase();
       const normTitle = normalizeVietnamese1to1(lesson.title || '').toLowerCase();
       const normDesc = normalizeVietnamese1to1(lesson.description || '').toLowerCase();
@@ -12293,42 +12324,32 @@
     }
 
     // Lập chỉ mục lười chạy nền (Background Idle Indexing)
-    function scheduleBackgroundIndexing() {
+    async function scheduleBackgroundIndexing() {
       if (isIndexingActive || !state.lessons || state.lessons.length === 0) return;
       isIndexingActive = true;
-      let idx = 0;
       const nonTrashed = state.lessons.filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
+      searchDebugLog("Bắt đầu lập chỉ mục nền cho", nonTrashed.length, "bài học.");
 
-      function runBatch() {
-        const start = Date.now();
-        while (idx < nonTrashed.length && (Date.now() - start < 12)) {
-          indexLesson(nonTrashed[idx]);
-          idx++;
-        }
-        if (idx < nonTrashed.length) {
-          if (typeof requestIdleCallback !== 'undefined') {
-            requestIdleCallback(runBatch);
-          } else {
-            setTimeout(runBatch, 25);
-          }
-        } else {
-          isIndexingActive = false;
+      for (let i = 0; i < nonTrashed.length; i++) {
+        try {
+          await indexLesson(nonTrashed[i]);
+        } catch (_) {}
+        // Tạm nghỉ nhỏ giữa các bài để không chiếm luồng chính
+        if (i % 3 === 0) {
+          await new Promise(r => setTimeout(r, 16));
         }
       }
-
-      if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(runBatch);
-      } else {
-        setTimeout(runBatch, 50);
-      }
+      isIndexingActive = false;
+      searchDebugLog("Hoàn tất lập chỉ mục nền.");
     }
 
     // Gọi lập chỉ mục nền khi app rảnh rỗi
-    setTimeout(scheduleBackgroundIndexing, 1500);
+    setTimeout(scheduleBackgroundIndexing, 1200);
 
     // Nhảy tới đúng vị trí kết quả và gửi thông điệp vẽ khung nổi bật
     function jumpToSearchMatch(lessonId, occurrenceIndex, prefix, suffix, keyword) {
       if (!lessonId) return;
+      searchDebugLog("Nhảy tới kết quả bài:", lessonId, "vị trí:", occurrenceIndex, "từ khóa:", keyword);
 
       const payload = {
         type: 'HIGHLIGHT_BOX_TARGET',
@@ -12358,16 +12379,11 @@
     }
 
     // Thực hiện tìm kiếm theo phạm vi Thư viện hoặc Bài này
-    function performSearch(query, dropdownEl) {
+    async function performSearch(query, dropdownEl) {
+      if (!dropdownEl) return;
       lastSearchQuery = query || '';
-      if (!query || query.trim().length === 0) {
-        dropdownEl.classList.add('hidden');
-        dropdownEl.innerHTML = '';
-        searchActiveIndex = -1;
-        return;
-      }
+      searchDebugLog("performSearch:", query, "Scope:", searchScope);
 
-      const rawQ = query.trim();
       const scopeHeader = `
         <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E7E5DF] dark:border-[#262C36] px-1">
           <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
@@ -12382,19 +12398,29 @@
         </div>
       `;
 
+      if (!query || query.trim().length === 0) {
+        dropdownEl.innerHTML = scopeHeader + `
+          <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
+            Gõ từ khóa để tìm trong ${searchScope === 'current' ? 'bài đang mở' : 'tất cả bài học trong thư viện'}...
+          </div>
+        `;
+        bindScopeButtons(dropdownEl);
+        dropdownEl.classList.remove('hidden');
+        searchActiveIndex = -1;
+        return;
+      }
+
+      const rawQ = query.trim();
       if (rawQ.length < 2) {
         dropdownEl.innerHTML = scopeHeader + `
           <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs">
-            Nhập từ 2 ký tự trở lên để tìm kiếm trong ${searchScope === 'current' ? 'bài này' : 'toàn thư viện'}...
+            Gõ từ 2 ký tự trở lên để tìm kiếm...
           </div>
         `;
         bindScopeButtons(dropdownEl);
         dropdownEl.classList.remove('hidden');
         return;
       }
-
-      const normQ = normalizeVietnamese1to1(rawQ).toLowerCase();
-      const words = normQ.split(/\s+/).filter(Boolean);
 
       // Xác định tập bài học cần tìm
       let targetLessons = [];
@@ -12404,7 +12430,7 @@
           if (cur && !cur.trashed && !cur.isDeleted && !cur.deletedAt) targetLessons = [cur];
         }
       } else {
-        targetLessons = state.lessons.filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
+        targetLessons = (state.lessons || []).filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
       }
 
       if (targetLessons.length === 0) {
@@ -12418,19 +12444,43 @@
         return;
       }
 
+      // Đảm bảo tất cả các bài được lập chỉ mục (nạp nội dung từ IndexedDB nếu cần)
+      let unindexedCount = 0;
+      targetLessons.forEach(l => {
+        if (!searchIndexCache.has(l.id) || !searchIndexCache.get(l.id).plainText) unindexedCount++;
+      });
+
+      if (unindexedCount > 0) {
+        dropdownEl.innerHTML = scopeHeader + `
+          <div class="p-3 text-center text-[#6E6B65] dark:text-[#9AA3B2] text-xs flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 animate-spin text-indigo-600"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="32" stroke-linecap="round"></circle></svg>
+            <span>Đang chuẩn bị chỉ mục (${targetLessons.length - unindexedCount}/${targetLessons.length} bài)...</span>
+          </div>
+        `;
+        bindScopeButtons(dropdownEl);
+        dropdownEl.classList.remove('hidden');
+
+        for (const lesson of targetLessons) {
+          await indexLesson(lesson);
+        }
+      }
+
+      const normQ = normalizeVietnamese1to1(rawQ).toLowerCase();
+      const words = normQ.split(/\s+/).filter(Boolean);
+
       const lessonMatches = [];
       let totalMatchCount = 0;
 
       for (const lesson of targetLessons) {
-        const indexed = indexLesson(lesson);
+        const indexed = await indexLesson(lesson);
         if (!indexed) continue;
 
         const cat = state.categories.find(c => c.id === lesson.categoryId);
         const catTitle = cat ? cat.title : 'Chưa phân loại';
 
-        const normTitle = indexed.normTitle;
-        const normText = indexed.normText;
-        const plainText = indexed.plainText;
+        const normTitle = indexed.normTitle || '';
+        const normText = indexed.normText || '';
+        const plainText = indexed.plainText || '';
         const titleHasKw = normTitle.includes(normQ);
 
         // 1. Tìm tất cả các lần xuất hiện của cụm từ chuẩn xác trong bài
@@ -12451,7 +12501,7 @@
             prefix,
             matchedText,
             suffix,
-            snippet: (start > 0 ? '…' : '') + prefix + `<mark class="bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-1 py-0.5 rounded">${matchedText}</mark>` + suffix + (end < plainText.length ? '…' : '')
+            snippet: (start > 0 ? '…' : '') + escapeHtml(prefix) + `<mark class="bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-100 font-semibold px-1 py-0.5 rounded shadow-2xs">${escapeHtml(matchedText)}</mark>` + escapeHtml(suffix) + (end < plainText.length ? '…' : '')
           });
 
           searchPos = idx + Math.max(1, normQ.length);
@@ -12462,7 +12512,6 @@
         if (occurrences.length === 0 && words.length > 1) {
           const allWordsMatch = words.every(w => normText.includes(w) || normTitle.includes(w));
           if (allWordsMatch) {
-            // Lấy vị trí từ đầu tiên xuất hiện
             const firstWordIdx = normText.indexOf(words[0]);
             if (firstWordIdx !== -1) {
               const start = Math.max(0, firstWordIdx - 30);
@@ -12473,7 +12522,7 @@
                 prefix: plainText.substring(start, firstWordIdx),
                 matchedText: plainText.substring(firstWordIdx, firstWordIdx + words[0].length),
                 suffix: plainText.substring(firstWordIdx + words[0].length, end),
-                snippet: (start > 0 ? '…' : '') + snippetRaw + (end < plainText.length ? '…' : '')
+                snippet: (start > 0 ? '…' : '') + escapeHtml(snippetRaw) + (end < plainText.length ? '…' : '')
               });
             }
           }
@@ -12491,6 +12540,8 @@
           });
         }
       }
+
+      searchDebugLog("Tìm thấy:", lessonMatches.length, "bài khớp, tổng số kết quả:", totalMatchCount);
 
       // Sắp xếp bài: có từ khóa trong tiêu đề lên trước, sau đó xếp theo số kết quả giảm dần
       lessonMatches.sort((a, b) => {
@@ -12561,7 +12612,7 @@
             </div>
 
             <div class="space-y-1">
-              ${topSnippets.map((occ, oIdx) => `
+              ${topSnippets.length > 0 ? topSnippets.map((occ, oIdx) => `
                 <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
                      data-lesson-id="${lm.lesson.id}" 
                      data-occ-idx="${occ.occurrenceIndex}" 
@@ -12572,7 +12623,18 @@
                     ${occ.snippet}
                   </p>
                 </div>
-              `).join('')}
+              `).join('') : `
+                <div class="search-result-item p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 min-h-[44px] flex flex-col justify-center" 
+                     data-lesson-id="${lm.lesson.id}" 
+                     data-occ-idx="0" 
+                     data-prefix="" 
+                     data-suffix="" 
+                     data-kw="${escapeHtml(query)}">
+                  <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed italic">
+                    Khớp từ khóa trong tiêu đề bài học
+                  </p>
+                </div>
+              `}
 
               ${remainingCount > 0 ? `
                 <div class="hidden remaining-snippets-box space-y-1" id="remainingSnippets_${lm.lesson.id}">
@@ -12653,8 +12715,35 @@
       if (!inp) return;
       inp.addEventListener('keydown', (e) => {
         const dd = (inp === searchInput) ? searchDropdown : mobileSearchDropdown;
-        if (!dd || dd.classList.contains('hidden')) return;
+        if (!dd) return;
 
+        if (e.key === 'Escape') {
+          dd.classList.add('hidden');
+          return;
+        }
+
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          clearTimeout(searchDebounceTimer);
+          
+          // Nếu bảng chưa mở hoặc rỗng, kích hoạt tìm ngay lập tức
+          if (dd.classList.contains('hidden') || dd.innerHTML.trim() === '') {
+            performSearch(inp.value.trim(), dd);
+            return;
+          }
+
+          const items = dd.querySelectorAll('.search-result-item');
+          if (items.length > 0) {
+            if (searchActiveIndex >= 0 && searchActiveIndex < items.length) {
+              items[searchActiveIndex].click();
+            } else {
+              items[0].click(); // Chọn ngay kết quả đầu tiên nếu chưa bấm mũi tên xuống
+            }
+          }
+          return;
+        }
+
+        if (dd.classList.contains('hidden')) return;
         const items = dd.querySelectorAll('.search-result-item');
         if (items.length === 0) return;
 
@@ -12668,13 +12757,6 @@
           searchActiveIndex = (searchActiveIndex - 1 + items.length) % items.length;
           items.forEach((it, idx) => it.classList.toggle('bg-black/5', idx === searchActiveIndex));
           items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          if (searchActiveIndex >= 0 && searchActiveIndex < items.length) {
-            items[searchActiveIndex].click();
-          }
-        } else if (e.key === 'Escape') {
-          dd.classList.add('hidden');
         }
       });
     });
