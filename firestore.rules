@@ -10,10 +10,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // 2. Khóa API Bí mật & Bộ nhớ đệm AI (ai_cache, admin_secrets, users_guest_usage):
+    // 2. Khóa API Bí mật & Bộ nhớ đệm (admin_secrets, payment_config, ai_cache, users_guest_usage):
     // TUYỆT ĐỐI CẤM ĐỌC & CẤM GHI từ phía Client!
     // Chỉ có mã nguồn chạy trên máy chủ (Firebase Admin SDK) mới có quyền truy cập.
     match /admin_secrets/{document=**} {
+      allow read, write: if false;
+    }
+    match /payment_config/{document=**} {
       allow read, write: if false;
     }
     match /ai_cache/{document=**} {
@@ -24,31 +27,24 @@ service cloud.firestore {
     }
 
     // 3. Giám sát Chi phí AI & Thống kê sử dụng (AI Usage):
-    // Chỉ Admin đã xác thực (custom claim admin == true) mới được ĐỌC để xem bảng chi phí.
-    // TUYỆT ĐỐI CẤM GHI từ client - Máy chủ tự động ghi nhận sau mỗi lượt gọi AI.
     match /ai_usage/{document=**} {
       allow read: if request.auth != null && request.auth.token.admin == true;
       allow write: if false;
     }
 
     // 4. Nhật ký quản trị (Audit Log):
-    // Chỉ Admin đã xác thực (có custom claim admin == true) mới được ĐỌC.
-    // TUYỆT ĐỐI CẤM GHI từ client - Server tự động ghi qua Firebase Admin SDK.
     match /admin_audit/{document=**} {
       allow read: if request.auth != null && request.auth.token.admin == true;
       allow write: if false;
     }
 
     // 5. Mã kích hoạt gói:
-    // Người dùng đã đăng nhập có thể đọc để kiểm tra mã. Cấm ghi trực tiếp từ client.
     match /activation_codes/{code} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
     // 6. Liên kết chia sẻ bài học công khai (Public Shares):
-    // Mọi người được phép đọc công khai (để xem bài học chia sẻ).
-    // Người dùng đã đăng nhập được tạo và cập nhật link chia sẻ của mình.
     match /artifacts/{appId}/public_shares/{shareId} {
       allow read: if true;
       allow create, update: if request.auth != null;
@@ -60,9 +56,24 @@ service cloud.firestore {
       }
     }
 
-    // 7. Dữ liệu cá nhân của người dùng (Bài học, danh mục, flashcard decks, study plan):
-    // Chỉ người sở hữu (request.auth.uid == userId) mới có quyền đọc và ghi dữ liệu của chính mình.
-    // Riêng mục billing/aiUsage chỉ cho phép đọc, cấm ghi từ client để bảo toàn lượt AI.
+    // 7. Đơn hàng Nâng cấp gói (Billing Orders):
+    // Người dùng chỉ được ĐỌC đơn hàng do chính mình tạo (resource.data.uid == request.auth.uid).
+    // TUYỆT ĐỐI CẤM GHI từ client - Đơn hàng do Server tạo và cập nhật trạng thái.
+    match /billing_orders/{orderId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // 8. Đơn chưa khớp & Nhật ký Webhook: Cấm toàn bộ client
+    match /billing_unmatched/{document=**} {
+      allow read, write: if false;
+    }
+    match /billing_webhook_logs/{document=**} {
+      allow read, write: if false;
+    }
+
+    // 9. Dữ liệu cá nhân của người dùng:
+    // CẤM client tự ý ghi vào nhánh billing/.* (chỉ Server qua Admin SDK mới được ghi billing/plan)
     match /artifacts/{appId}/users/{userId}/{allPaths=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }

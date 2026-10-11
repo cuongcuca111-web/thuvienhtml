@@ -204,6 +204,11 @@ function ensureAdminModalsInDOM() {
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             <span>Nhật ký (Audit)</span>
           </button>
+          <button data-tab="billing" class="admin-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span>Thanh toán VietQR</span>
+            <span id="adminPendingOrdersDot" class="w-2 h-2 rounded-full bg-rose-500 hidden animate-pulse"></span>
+          </button>
           <button data-tab="ai" class="admin-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
             <span>AI &amp; API key</span>
@@ -537,6 +542,9 @@ function loadTabData(tabName) {
       break;
     case 'ai':
       renderAiTab(container);
+      break;
+    case 'billing':
+      renderBillingTab(container);
       break;
   }
 }
@@ -2024,4 +2032,439 @@ function bindAiTabEvents(container) {
       }
     };
   }
+}
+
+
+// =========================================================================
+// 3.7 MỤC 7: QUẢN TRỊ THANH TOÁN VIETQR & ĐƠN HÀNG NÂNG CẤP (BILLING)
+// =========================================================================
+let currentBillingSubTab = 'orders'; // 'orders' hoặc 'config'
+
+async function renderBillingTab(container) {
+  container.innerHTML = `
+    <div class="flex items-center justify-center py-16 text-gray-400 text-xs gap-2">
+      <svg class="w-5 h-5 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
+      <span>Đang tải dữ liệu thanh toán VietQR & Đơn hàng...</span>
+    </div>
+  `;
+
+  try {
+    const [cfgRes, ordersRes] = await Promise.all([
+      callAdminApi('/api/admin/billing/config').catch(() => ({ bankTransfer: {}, vietqrSecrets: {} })),
+      callAdminApi('/api/admin/billing/orders?status=all&limit=50').catch(() => ({ orders: [], counts: {} }))
+    ]);
+
+    const bankTransfer = cfgRes.bankTransfer || {};
+    const secrets = cfgRes.vietqrSecrets || {};
+    const orders = ordersRes.orders || [];
+    const counts = ordersRes.counts || {};
+
+    const userConfirmedCount = counts.userConfirmed || 0;
+    const pendingDot = document.getElementById('adminPendingOrdersDot');
+    if (pendingDot) {
+      if (userConfirmedCount > 0) pendingDot.classList.remove('hidden');
+      else pendingDot.classList.add('hidden');
+    }
+
+    container.innerHTML = `
+      <div class="space-y-5">
+        <!-- TIÊU ĐỀ KHU VỰC VÀ THANH ĐIỀU HƯỚNG TAB CON -->
+        <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Quản lý Thanh toán VietQR &amp; Đơn hàng</h3>
+            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Cấu hình nhận tiền chuyển khoản, kiểm tra tạo mã QR và duyệt kích hoạt gói thủ công.</p>
+          </div>
+          <div class="flex items-center gap-2 bg-[#F8F7F4] dark:bg-[#14171C] p-1 rounded-xl border border-gray-200 dark:border-gray-800 text-xs font-semibold">
+            <button type="button" id="btnSubTabOrders" class="px-3.5 py-1.5 rounded-lg transition ${currentBillingSubTab === 'orders' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600'}">
+              <span>Đơn hàng (${orders.length})</span>
+              ${userConfirmedCount > 0 ? `<span class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px]">${userConfirmedCount}</span>` : ''}
+            </button>
+            <button type="button" id="btnSubTabConfig" class="px-3.5 py-1.5 rounded-lg transition ${currentBillingSubTab === 'config' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600'}">
+              Cấu hình VietQR
+            </button>
+          </div>
+        </div>
+
+        <!-- NỘI DUNG TAB CON 1: DANH SÁCH ĐƠN HÀNG -->
+        <div id="billingSubTabOrdersContainer" class="${currentBillingSubTab === 'orders' ? '' : 'hidden'} space-y-4">
+          <div class="bg-white dark:bg-[#1A1D23] p-4 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <input type="text" id="billingSearchOrderInput" placeholder="Tìm theo mã TVH, email, UID..." class="w-full sm:w-64 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-medium" />
+              <select id="billingStatusFilter" class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-semibold">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="user_confirmed">Khách báo đã chuyển</option>
+                <option value="pending">Chờ thanh toán</option>
+                <option value="paid">Đã kích hoạt (Paid)</option>
+                <option value="expired">Hết hạn</option>
+                <option value="cancelled">Đã hủy</option>
+              </select>
+            </div>
+            <div class="text-xs text-gray-500">
+              Có <strong>${userConfirmedCount}</strong> đơn khách báo đã chuyển cần duyệt.
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-100 dark:border-gray-800 bg-[#F8F7F4]/60 dark:bg-[#14171C]/60 text-gray-500 font-semibold">
+                    <th class="py-3 px-3.5">Mã đơn</th>
+                    <th class="py-3 px-3.5">Người dùng</th>
+                    <th class="py-3 px-3.5">Gói / Chu kỳ</th>
+                    <th class="py-3 px-3.5 text-right">Số tiền</th>
+                    <th class="py-3 px-3.5 text-center">Trạng thái</th>
+                    <th class="py-3 px-3.5">Thời gian</th>
+                    <th class="py-3 px-3.5 text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800" id="billingOrdersTableBody">
+                  ${renderOrdersTableRows(orders)}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- NỘI DUNG TAB CON 2: CẤU HÌNH VIETQR -->
+        <div id="billingSubTabConfigContainer" class="${currentBillingSubTab === 'config' ? '' : 'hidden'} space-y-4">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <!-- KHỐI 1: THÔNG TIN TÀI KHOẢN NGÂN HÀNG NHẬN TIỀN -->
+            <div class="lg:col-span-2 bg-white dark:bg-[#1A1D23] p-5 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+              <div class="border-b border-gray-100 dark:border-gray-800 pb-3">
+                <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Thông tin tài khoản nhận tiền (VietQR)</h4>
+                <p class="text-xs text-gray-500">Mã QR tạo ra sẽ chứa thông tin tài khoản này cùng nội dung chuyển khoản tự động.</p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Ngân hàng nhận:</label>
+                  <select id="cfgBankId" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium">
+                    <option value="970422" ${bankTransfer.bankId === '970422' ? 'selected' : ''}>MBBank (Quân Đội - 970422)</option>
+                    <option value="970436" ${bankTransfer.bankId === '970436' ? 'selected' : ''}>Vietcombank (970436)</option>
+                    <option value="970415" ${bankTransfer.bankId === '970415' ? 'selected' : ''}>VietinBank (970415)</option>
+                    <option value="970418" ${bankTransfer.bankId === '970418' ? 'selected' : ''}>BIDV (970418)</option>
+                    <option value="970407" ${bankTransfer.bankId === '970407' ? 'selected' : ''}>Techcombank (970407)</option>
+                    <option value="970416" ${bankTransfer.bankId === '970416' ? 'selected' : ''}>ACB (Á Châu - 970416)</option>
+                    <option value="970432" ${bankTransfer.bankId === '970432' ? 'selected' : ''}>VPBank (970432)</option>
+                    <option value="970423" ${bankTransfer.bankId === '970423' ? 'selected' : ''}>TPBank (970423)</option>
+                    <option value="970405" ${bankTransfer.bankId === '970405' ? 'selected' : ''}>Agribank (970405)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Số tài khoản nhận:</label>
+                  <input type="text" id="cfgAccountNo" value="${esc(bankTransfer.accountNo || '')}" placeholder="0987654321" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] font-mono font-bold" />
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Tên chủ tài khoản (Viết hoa không dấu):</label>
+                  <input type="text" id="cfgAccountName" value="${esc(bankTransfer.accountName || '')}" placeholder="VU MINH CUONG" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] uppercase font-bold" />
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Mẫu mã QR (Template):</label>
+                  <select id="cfgTemplate" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium">
+                    <option value="compact" ${bankTransfer.template === 'compact' ? 'selected' : ''}>compact (Gọn, kèm STK và tên - Đề xuất)</option>
+                    <option value="compact2" ${bankTransfer.template === 'compact2' ? 'selected' : ''}>compact2 (Hiện đại bo tròn)</option>
+                    <option value="qr_only" ${bankTransfer.template === 'qr_only' ? 'selected' : ''}>qr_only (Chỉ mã QR)</option>
+                    <option value="print" ${bankTransfer.template === 'print' ? 'selected' : ''}>print (Mẫu in thẻ lớn)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Thời hạn đơn hàng (Phút):</label>
+                  <input type="number" id="cfgTimeoutMinutes" min="5" max="60" value="${bankTransfer.orderTimeoutMinutes || 15}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] font-bold" />
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Chế độ sinh QR:</label>
+                  <select id="cfgQrMode" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium">
+                    <option value="quick" ${bankTransfer.qrMode !== 'api' ? 'selected' : ''}>Ảnh QR nhanh (img.vietqr.io - Miễn phí, ổn định)</option>
+                    <option value="api" ${bankTransfer.qrMode === 'api' ? 'selected' : ''}>VietQR Open API v2 (Dùng Client ID & API Key)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- KHÓA BÍ MẬT VIETQR API (NẾU DÙNG CHẾ ĐỘ API) -->
+              <div id="cfgApiSecretsGroup" class="p-4 rounded-xl bg-gray-50 dark:bg-[#161A20] border border-gray-200 dark:border-gray-800 space-y-3 ${bankTransfer.qrMode === 'api' ? '' : 'hidden'}">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-indigo-600">Khóa bí mật VietQR Open API v2 (Lưu mã hóa AES-256)</span>
+                  <span>${secrets.isConfigured ? '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">Đã lưu khóa</span>' : '<span class="px-2 py-0.5 rounded text-[10px] bg-gray-200 text-gray-600">Chưa có khóa</span>'}</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <label class="block text-gray-500 mb-1">Client ID ${secrets.maskedClientId ? `(${esc(secrets.maskedClientId)})` : ''}</label>
+                    <input type="password" id="cfgVietqrClientId" placeholder="Nhập Client ID mới..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs" />
+                  </div>
+                  <div>
+                    <label class="block text-gray-500 mb-1">API Key ${secrets.maskedApiKey ? `(${esc(secrets.maskedApiKey)})` : ''}</label>
+                    <input type="password" id="cfgVietqrApiKey" placeholder="Nhập API Key mới..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 flex items-center justify-end gap-2.5">
+                <button type="button" id="btnTestQr" class="px-4 py-2.5 rounded-xl border border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold text-xs hover:bg-indigo-50 transition">
+                  Kiểm tra tạo QR mẫu
+                </button>
+                <button type="button" id="btnSaveBillingConfig" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition">
+                  Lưu cấu hình thanh toán
+                </button>
+              </div>
+            </div>
+
+            <!-- KHỐI 2: XEM TRƯỚC MÃ QR VÀ THÔNG TIN CHUYỂN KHOẢN -->
+            <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4 flex flex-col justify-between">
+              <div>
+                <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1] mb-1">Xem trước như khách thấy</h4>
+                <p class="text-xs text-gray-500 mb-3">Mã QR mẫu với số tiền thử nghiệm 50.000 ₫.</p>
+
+                <div class="p-3 bg-gray-50 dark:bg-[#14171C] rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col items-center">
+                  <div class="bg-white p-2 rounded-xl shadow-xs border border-gray-200">
+                    <img id="previewQrImg" src="https://img.vietqr.io/image/${bankTransfer.bankId || '970422'}-${bankTransfer.accountNo || '0987654321'}-${bankTransfer.template || 'compact'}.png?amount=50000&addInfo=TVHTEST123&accountName=${encodeURIComponent((bankTransfer.accountName || 'VU MINH CUONG').toUpperCase())}" alt="QR Preview" class="w-48 h-48 object-contain rounded" />
+                  </div>
+                  <div class="mt-3 text-center text-xs space-y-1">
+                    <div class="font-bold font-mono text-indigo-600">TVHTEST123</div>
+                    <div class="font-bold uppercase text-[11px]">${esc(bankTransfer.accountName || 'VU MINH CUONG')}</div>
+                    <div class="text-[11px] text-gray-500">${esc(bankTransfer.accountNo || '0987654321')}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    bindBillingTabEvents(container, orders);
+  } catch (err) {
+    container.innerHTML = `
+      <div class="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-rose-700 text-xs">
+        Lỗi tải bảng thanh toán: ${esc(err.message)}
+      </div>
+    `;
+  }
+}
+
+function renderOrdersTableRows(orders) {
+  if (!orders || orders.length === 0) {
+    return `<tr><td colspan="7" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
+  }
+
+  return orders.map(ord => {
+    let statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600">Chờ thanh toán</span>`;
+    if (ord.status === 'paid') {
+      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Đã kích hoạt</span>`;
+    } else if (ord.status === 'user_confirmed') {
+      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse">Khách báo đã chuyển</span>`;
+    } else if (ord.status === 'expired') {
+      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-500">Hết hạn</span>`;
+    } else if (ord.status === 'cancelled') {
+      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Đã hủy</span>`;
+    }
+
+    const createdDate = ord.createdAt ? new Date(ord.createdAt).toLocaleString('vi-VN') : '—';
+    const amountStr = (ord.amount || 0).toLocaleString('vi-VN') + ' ₫';
+    const planText = `${(ord.planId || '').toUpperCase()} (${ord.period === 'yearly' ? 'Năm' : 'Tháng'})`;
+
+    return `
+      <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
+        <td class="py-3 px-3.5 font-mono font-bold text-indigo-600">${esc(ord.code)}</td>
+        <td class="py-3 px-3.5">
+          <div class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">${esc(ord.userEmail || 'Ẩn danh')}</div>
+          <div class="text-[10px] text-gray-400 font-mono">${esc((ord.uid || '').substring(0, 10))}...</div>
+        </td>
+        <td class="py-3 px-3.5 font-semibold text-gray-700 dark:text-gray-300">${esc(planText)}</td>
+        <td class="py-3 px-3.5 text-right font-mono font-bold text-[#1C1B18] dark:text-[#E8E6E1]">${esc(amountStr)}</td>
+        <td class="py-3 px-3.5 text-center">${statusBadge}</td>
+        <td class="py-3 px-3.5 text-gray-500 text-[11px]">${esc(createdDate)}</td>
+        <td class="py-3 px-3.5 text-right space-x-1">
+          ${ord.status !== 'paid' ? `
+            <button type="button" class="btn-admin-confirm-order px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs transition" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}">
+              Duyệt
+            </button>
+            <button type="button" class="btn-admin-cancel-order px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 hover:text-rose-600 text-gray-600 dark:text-gray-300 font-semibold text-[11px] transition" data-id="${esc(ord.id)}">
+              Hủy
+            </button>
+          ` : `
+            <span class="text-[11px] text-emerald-600 font-semibold">Hoàn tất</span>
+          `}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function bindBillingTabEvents(container, orders) {
+  // Chuyển tab con: Đơn hàng vs Cấu hình
+  const btnOrders = container.querySelector('#btnSubTabOrders');
+  const btnConfig = container.querySelector('#btnSubTabConfig');
+  const boxOrders = container.querySelector('#billingSubTabOrdersContainer');
+  const boxConfig = container.querySelector('#billingSubTabConfigContainer');
+
+  if (btnOrders && btnConfig) {
+    btnOrders.onclick = () => {
+      currentBillingSubTab = 'orders';
+      boxOrders.classList.remove('hidden');
+      boxConfig.classList.add('hidden');
+      btnOrders.className = 'px-3.5 py-1.5 rounded-lg transition bg-indigo-600 text-white shadow-2xs';
+      btnConfig.className = 'px-3.5 py-1.5 rounded-lg transition text-gray-600 dark:text-gray-300 hover:text-indigo-600';
+    };
+    btnConfig.onclick = () => {
+      currentBillingSubTab = 'config';
+      boxConfig.classList.remove('hidden');
+      boxOrders.classList.add('hidden');
+      btnConfig.className = 'px-3.5 py-1.5 rounded-lg transition bg-indigo-600 text-white shadow-2xs';
+      btnOrders.className = 'px-3.5 py-1.5 rounded-lg transition text-gray-600 dark:text-gray-300 hover:text-indigo-600';
+    };
+  }
+
+  // Chuyển chế độ QR -> Hiện/ẩn nhóm khóa API
+  const qrModeSelect = container.querySelector('#cfgQrMode');
+  const secretsGroup = container.querySelector('#cfgApiSecretsGroup');
+  if (qrModeSelect && secretsGroup) {
+    qrModeSelect.onchange = () => {
+      if (qrModeSelect.value === 'api') secretsGroup.classList.remove('hidden');
+      else secretsGroup.classList.add('hidden');
+    };
+  }
+
+  // Thử nghiệm tạo mã QR mẫu
+  const btnTestQr = container.querySelector('#btnTestQr');
+  if (btnTestQr) {
+    btnTestQr.onclick = async () => {
+      btnTestQr.disabled = true;
+      btnTestQr.innerText = 'Đang tạo QR...';
+      try {
+        const res = await callAdminApi('/api/admin/billing/test-qr', {
+          method: 'POST',
+          body: JSON.stringify({
+            bankId: document.getElementById('cfgBankId').value,
+            accountNo: document.getElementById('cfgAccountNo').value.trim(),
+            accountName: document.getElementById('cfgAccountName').value.trim(),
+            template: document.getElementById('cfgTemplate').value,
+            amount: 50000,
+            mode: document.getElementById('cfgQrMode').value
+          })
+        });
+        const previewImg = document.getElementById('previewQrImg');
+        if (previewImg && res.qrUrl) {
+          previewImg.src = res.qrUrl;
+        }
+        toast('Tạo mã QR mẫu thành công! Bạn có thể quét thử bằng app ngân hàng.');
+      } catch (err) {
+        alert('Lỗi tạo mã QR: ' + err.message);
+      } finally {
+        btnTestQr.disabled = false;
+        btnTestQr.innerText = 'Kiểm tra tạo QR mẫu';
+      }
+    };
+  }
+
+  // Lưu cấu hình thanh toán
+  const btnSaveConfig = container.querySelector('#btnSaveBillingConfig');
+  if (btnSaveConfig) {
+    btnSaveConfig.onclick = async () => {
+      btnSaveConfig.disabled = true;
+      btnSaveConfig.innerText = 'Đang lưu...';
+      try {
+        const payload = {
+          bankTransfer: {
+            bankId: document.getElementById('cfgBankId').value,
+            bankName: document.getElementById('cfgBankId').selectedOptions[0].text.split('(')[0].trim(),
+            accountNo: document.getElementById('cfgAccountNo').value.trim(),
+            accountName: document.getElementById('cfgAccountName').value.trim().toUpperCase(),
+            template: document.getElementById('cfgTemplate').value,
+            orderTimeoutMinutes: parseInt(document.getElementById('cfgTimeoutMinutes').value, 10) || 15,
+            qrMode: document.getElementById('cfgQrMode').value
+          },
+          vietqrClientId: document.getElementById('cfgVietqrClientId') ? document.getElementById('cfgVietqrClientId').value.trim() : '',
+          vietqrApiKey: document.getElementById('cfgVietqrApiKey') ? document.getElementById('cfgVietqrApiKey').value.trim() : ''
+        };
+        await callAdminApi('/api/admin/billing/config', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        toast('Đã lưu cấu hình thanh toán VietQR thành công!');
+        renderBillingTab(container);
+      } catch (err) {
+        alert('Lỗi lưu cấu hình: ' + err.message);
+      } finally {
+        btnSaveConfig.disabled = false;
+        btnSaveConfig.innerText = 'Lưu cấu hình thanh toán';
+      }
+    };
+  }
+
+  // Duyệt đơn hàng thủ công
+  container.querySelectorAll('.btn-admin-confirm-order').forEach(btn => {
+    btn.onclick = async () => {
+      const orderId = btn.dataset.id;
+      const orderCode = btn.dataset.code;
+      if (confirm(`Bạn có chắc chắn muốn XÁC NHẬN THANH TOÁN cho đơn ${orderCode}? Tài khoản khách hàng sẽ được kích hoạt gói ngay lập tức.`)) {
+        btn.disabled = true;
+        try {
+          const res = await callAdminApi('/api/admin/billing/orders-confirm', {
+            method: 'POST',
+            body: JSON.stringify({ orderId, reason: 'Duyệt thủ công từ bảng quản trị' })
+          });
+          toast(res.message || `Đã kích hoạt thành công đơn ${orderCode}!`);
+          renderBillingTab(container);
+        } catch (err) {
+          alert('Lỗi duyệt đơn: ' + err.message);
+          btn.disabled = false;
+        }
+      }
+    };
+  });
+
+  // Hủy đơn hàng
+  container.querySelectorAll('.btn-admin-cancel-order').forEach(btn => {
+    btn.onclick = async () => {
+      const orderId = btn.dataset.id;
+      const reason = prompt('Nhập lý do hủy đơn:', 'Hủy bởi quản trị viên');
+      if (reason !== null) {
+        btn.disabled = true;
+        try {
+          await callAdminApi('/api/admin/billing/orders-cancel', {
+            method: 'POST',
+            body: JSON.stringify({ orderId, reason })
+          });
+          toast('Đã hủy đơn hàng');
+          renderBillingTab(container);
+        } catch (err) {
+          alert('Lỗi hủy đơn: ' + err.message);
+          btn.disabled = false;
+        }
+      }
+    };
+  });
+
+  // Tìm kiếm & Lọc trạng thái đơn hàng
+  const searchInput = container.querySelector('#billingSearchOrderInput');
+  const statusFilter = container.querySelector('#billingStatusFilter');
+
+  const filterHandler = async () => {
+    const s = searchInput ? searchInput.value.trim() : '';
+    const st = statusFilter ? statusFilter.value : 'all';
+    try {
+      const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=50`);
+      const tbody = container.querySelector('#billingOrdersTableBody');
+      if (tbody) tbody.innerHTML = renderOrdersTableRows(res.orders || []);
+      // Gán lại sự kiện cho các nút mới
+      bindBillingTabEvents(container, res.orders || []);
+    } catch (e) {}
+  };
+
+  if (searchInput) searchInput.oninput = debounce(filterHandler, 300);
+  if (statusFilter) statusFilter.onchange = filterHandler;
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), ms);
+  };
 }

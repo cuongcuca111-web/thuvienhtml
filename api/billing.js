@@ -1,0 +1,317 @@
+// api/billing.js
+// Quản lý đơn hàng người dùng: Tạo đơn (create-order), Tra cứu (order-status), Xác nhận chuyển tiền (confirm-transfer), Hủy đơn (cancel-order)
+const crypto = require('crypto');
+const { initAdmin } = require('../lib/admin-auth');
+const { decryptKey } = require('../lib/crypto');
+
+function resolveAction(req) {
+  if (req.query && req.query.action) return String(req.query.action).toLowerCase();
+  const pathname = (req.url || '').split('?')[0];
+  const parts = pathname.split('/').filter(Boolean);
+  return (parts[parts.length - 1] || '').toLowerCase();
+}
+
+// Sinh mã chuyển khoản an toàn: "TVH" + 8 ký tự ngẫu nhiên (loại bỏ 0, O, 1, I để tránh nhầm lẫn)
+function generateOrderCode() {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const bytes = crypto.randomBytes(8);
+  let code = 'TVH';
+  for (let i = 0; i < 8; i++) {
+    code += chars[bytes[i] % chars.length];
+  }
+  return code;
+}
+
+// Xác thực Firebase Token của người dùng
+async function verifyUserAuth(req, res) {
+  const authHeader = req.headers.authorization || '';
+  if (!authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Yêu cầu đăng nhập để thực hiện giao dịch' });
+    return null;
+  }
+  const token = authHeader.substring(7).trim();
+  try {
+    const app = initAdmin();
+    const decoded = await app.auth().verifyIdToken(token);
+    if (!decoded || !decoded.uid) {
+      res.status(401).json({ error: 'Phiên đăng nhập không hợp lệ' });
+      return null;
+    }
+    // Không cho phép tài khoản ẩn danh tạo đơn
+    if (decoded.firebase && decoded.firebase.sign_in_provider === 'anonymous') {
+      res.status(403).json({ error: 'Vui lòng đăng ký hoặc đăng nhập tài khoản trước khi nâng cấp gói' });
+      return null;
+    }
+    return { adminApp: app, db: app.firestore(), uid: decoded.uid, email: decoded.email || '' };
+  } catch (err) {
+    res.status(401).json({ error: 'Token đã hết hạn hoặc không hợp lệ: ' + err.message });
+    return null;
+  }
+}
+
+module.exports = async function handler(req, res) {
+  const action = resolveAction(req);
+  const auth = await verifyUserAuth(req, res);
+  if (!auth) return;
+
+  const { db, uid, email } = auth;
+
+  // 1. TẠO ĐƠN HÀNG MỚI (POST /api/billing/create-order)
+  if (action === 'create-order') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { planId, period } = req.body || {};
+
+    if (!['plus', 'pro'].includes(planId)) {
+      return res.status(400).json({ error: 'Gói dịch vụ không hợp lệ. Chỉ áp dụng cho Plus hoặc Pro.' });
+    }
+    if (!['monthly', 'yearly'].includes(period)) {
+      return res.status(400).json({ error: 'Chu kỳ không hợp lệ. Chọn monthly hoặc yearly.' });
+    }
+
+    try {
+      // Giới hạn tần suất: Tối đa 10 đơn / giờ / người dùng
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const recentOrdersSnap = await db.collection('billing_orders')
+        .where('uid', '==', uid)
+        .where('createdAt', '>=', oneHourAgo)
+        .get();
+      if (recentOrdersSnap.size >= 10) {
+        return res.status(429).json({ error: 'Bạn đã tạo quá nhiều đơn trong 1 giờ qua. Vui lòng chờ thêm ít phút.' });
+      }
+
+      // Đọc bảng giá chuẩn và cấu hình thanh toán từ server (TUYỆT ĐỐI không tin giá client gửi)
+      const plansDoc = await db.doc('config/plans').get();
+      const plansData = plansDoc.exists ? plansDoc.data() : {};
+      const pricing = plansData.pricing || {
+        plusMonthly: 59000,
+        plusYearly: 590000,
+        proMonthly: 129000,
+        proYearly: 1290000
+      };
+
+      const priceKey = `${planId}${period === 'yearly' ? 'Yearly' : 'Monthly'}`;
+      const amount = parseInt(pricing[priceKey], 10);
+      if (!amount || isNaN(amount) || amount <= 0) {
+        return res.status(500).json({ error: 'Không tìm thấy bảng giá hợp lệ cho gói đã chọn' });
+      }
+
+      // Đọc thông tin tài khoản ngân hàng từ cấu hình
+      const bankConfig = plansData.bankTransfer || {
+        bankId: '970422',
+        bankName: 'MBBank (Napas)',
+        accountNo: '0987654321',
+        accountName: 'VU MINH CUONG',
+        template: 'compact',
+        orderTimeoutMinutes: 15,
+        qrMode: 'quick'
+      };
+
+      // Tự động hủy các đơn pending cũ của người dùng đối với gói này
+      const oldPendingSnap = await db.collection('billing_orders')
+        .where('uid', '==', uid)
+        .where('status', '==', 'pending')
+        .get();
+      const batch = db.batch();
+      oldPendingSnap.forEach(docSnap => {
+        batch.update(docSnap.ref, {
+          status: 'cancelled',
+          cancelledReason: 'Thay thế bằng đơn mới',
+          updatedAt: new Date().toISOString()
+        });
+      });
+
+      const orderCode = generateOrderCode();
+      const orderRef = db.collection('billing_orders').doc();
+      const orderId = orderRef.id;
+
+      const timeoutMins = parseInt(bankConfig.orderTimeoutMinutes, 10) || 15;
+      const now = Date.now();
+      const expiresAt = new Date(now + timeoutMins * 60 * 1000).toISOString();
+      const createdAt = new Date(now).toISOString();
+
+      // Bản chụp thông tin chuyển khoản tại thời điểm tạo đơn
+      const bankSnapshot = {
+        bankId: bankConfig.bankId || '970422',
+        bankName: bankConfig.bankName || 'MBBank',
+        accountNo: bankConfig.accountNo || '',
+        accountName: (bankConfig.accountName || '').toUpperCase(),
+        template: bankConfig.template || 'compact'
+      };
+
+      // Tạo QR URL: Chế độ A (Ảnh QR nhanh)
+      const safeAccName = encodeURIComponent(bankSnapshot.accountName);
+      const safeContent = encodeURIComponent(orderCode);
+      const quickQrUrl = `https://img.vietqr.io/image/${bankSnapshot.bankId}-${bankSnapshot.accountNo}-${bankSnapshot.template}.png?amount=${amount}&addInfo=${safeContent}&accountName=${safeAccName}`;
+
+      let finalQr = quickQrUrl;
+
+      // Nếu quản trị viên bật Chế độ B (VietQR API v2)
+      if (bankConfig.qrMode === 'api') {
+        try {
+          const secSnap = await db.doc('admin_secrets/payment').get();
+          if (secSnap.exists && secSnap.data().vietqrClientId && secSnap.data().vietqrApiKey) {
+            const clientId = decryptKey(secSnap.data().vietqrClientId);
+            const apiKey = decryptKey(secSnap.data().vietqrApiKey);
+            const apiRes = await fetch('https://api.vietqr.io/v2/generate', {
+              method: 'POST',
+              headers: {
+                'x-client-id': clientId,
+                'x-api-key': apiKey,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                accountNo: bankSnapshot.accountNo,
+                accountName: bankSnapshot.accountName,
+                acqId: parseInt(bankSnapshot.bankId, 10),
+                amount: amount,
+                addInfo: orderCode,
+                format: 'text',
+                template: bankSnapshot.template
+              })
+            });
+            if (apiRes.ok) {
+              const apiJson = await apiRes.json();
+              if (apiJson && apiJson.data && (apiJson.data.qrDataURL || apiJson.data.qrCode)) {
+                finalQr = apiJson.data.qrDataURL || apiJson.data.qrCode;
+              }
+            }
+          }
+        } catch (apiErr) {
+          console.warn('[Billing] Lỗi tạo QR qua API VietQR, tự động rơi về Chế độ A:', apiErr.message);
+        }
+      }
+
+      const orderData = {
+        id: orderId,
+        uid,
+        userEmail: email,
+        planId,
+        period,
+        amount,
+        currency: 'VND',
+        code: orderCode,
+        status: 'pending',
+        createdAt,
+        expiresAt,
+        bankSnapshot,
+        qr: finalQr,
+        qrMode: bankConfig.qrMode || 'quick'
+      };
+
+      batch.set(orderRef, orderData);
+      await batch.commit();
+
+      return res.status(200).json({
+        success: true,
+        orderId,
+        code: orderCode,
+        amount,
+        planId,
+        period,
+        expiresAt,
+        bankSnapshot,
+        qr: finalQr
+      });
+    } catch (err) {
+      console.error('[Billing] Lỗi tạo đơn hàng:', err);
+      return res.status(500).json({ error: 'Không thể khởi tạo đơn hàng: ' + err.message });
+    }
+  }
+
+  // 2. KIỂM TRA TRẠNG THÁI ĐƠN HÀNG (GET /api/billing/order-status?orderId=...)
+  if (action === 'order-status') {
+    if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
+    const orderId = String(req.query.orderId || '').trim();
+    if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
+
+    try {
+      const docSnap = await db.collection('billing_orders').doc(orderId).get();
+      if (!docSnap.exists) {
+        return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
+      }
+      const order = docSnap.data();
+      if (order.uid !== uid) {
+        return res.status(403).json({ error: 'Bạn không có quyền xem đơn hàng này' });
+      }
+
+      // Tự động đánh dấu hết hạn nếu đã qua expiresAt mà chưa trả
+      if (order.status === 'pending' && new Date() > new Date(order.expiresAt)) {
+        await docSnap.ref.update({ status: 'expired', updatedAt: new Date().toISOString() });
+        order.status = 'expired';
+      }
+
+      return res.status(200).json({
+        orderId: order.id,
+        code: order.code,
+        status: order.status,
+        planId: order.planId,
+        period: order.period,
+        amount: order.amount,
+        expiresAt: order.expiresAt,
+        paidAt: order.paidAt || null,
+        userConfirmedAt: order.userConfirmedAt || null
+      });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi kiểm tra đơn: ' + err.message });
+    }
+  }
+
+  // 3. NGƯỜI DÙNG BÁO ĐÃ CHUYỂN KHOẢN (POST /api/billing/confirm-transfer)
+  if (action === 'confirm-transfer') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { orderId } = req.body || {};
+    if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
+
+    try {
+      const docRef = db.collection('billing_orders').doc(orderId);
+      const docSnap = await docRef.get();
+      if (!docSnap.exists) return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
+
+      const order = docSnap.data();
+      if (order.uid !== uid) return res.status(403).json({ error: 'Không có quyền truy cập đơn' });
+      if (order.status === 'paid') return res.status(200).json({ success: true, status: 'paid' });
+
+      await docRef.update({
+        status: 'user_confirmed',
+        userConfirmedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      return res.status(200).json({
+        success: true,
+        status: 'user_confirmed',
+        message: 'Đã ghi nhận thông báo chuyển khoản. Hệ thống đang tiến hành kiểm tra.'
+      });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi cập nhật: ' + err.message });
+    }
+  }
+
+  // 4. HỦY ĐƠN HÀNG (POST /api/billing/cancel-order)
+  if (action === 'cancel-order') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { orderId } = req.body || {};
+    if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
+
+    try {
+      const docRef = db.collection('billing_orders').doc(orderId);
+      const docSnap = await docRef.get();
+      if (!docSnap.exists) return res.status(404).json({ error: 'Đơn không tồn tại' });
+      const order = docSnap.data();
+      if (order.uid !== uid) return res.status(403).json({ error: 'Không có quyền' });
+      if (order.status === 'paid') return res.status(400).json({ error: 'Đơn đã thanh toán, không thể hủy' });
+
+      await docRef.update({
+        status: 'cancelled',
+        cancelledReason: 'Người dùng tự hủy',
+        updatedAt: new Date().toISOString()
+      });
+
+      return res.status(200).json({ success: true, status: 'cancelled' });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi hủy đơn: ' + err.message });
+    }
+  }
+
+  return res.status(400).json({ error: 'Hành động không hợp lệ' });
+};

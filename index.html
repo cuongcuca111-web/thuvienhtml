@@ -2002,6 +2002,22 @@
       <path d="M7 2h12a2 2 0 0 1 2 2v14"/>
       <path d="M6 10h5M6 14h3"/>
     </symbol>
+    <symbol id="icon-tier-free" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3C8.5 3 5 6.5 5 11c0 4.5 4 8 7 10 3-2 7-5.5 7-10 0-4.5-3.5-8-7-8z"/>
+      <path d="M12 8v6M9.5 11.5L14.5 11.5"/>
+    </symbol>
+    <symbol id="icon-tier-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2.5l2.4 5.8 6.1.6-4.6 4.1 1.3 6-5.2-3.1-5.2 3.1 1.3-6-4.6-4.1 6.1-.6z"/>
+    </symbol>
+    <symbol id="icon-tier-pro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 18h16M5 14l2.5-6L12 11l4.5-3L19 14H5z"/>
+      <circle cx="5" cy="8" r="1.2" fill="currentColor"/>
+      <circle cx="12" cy="6" r="1.2" fill="currentColor"/>
+      <circle cx="19" cy="8" r="1.2" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-upgrade-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    </symbol>
     <symbol id="icon-bar-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
       <line x1="12" x2="12" y1="20" y2="10"/>
       <line x1="18" x2="18" y1="20" y2="4"/>
@@ -2476,7 +2492,12 @@
             <span id="userInitial">U</span>
             <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
           </div>
-          <span id="headerAccountLabel" class="hidden min-[1180px]:inline-block font-medium max-w-[100px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
+          <!-- Huy hiệu Tier thu gọn trên header -->
+          <span id="headerTierBadge" class="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border transition shadow-2xs" title="Gói tài khoản">
+            <svg class="w-3 h-3 shrink-0"><use id="headerTierIcon" href="#icon-tier-free"></use></svg>
+            <span id="headerTierText">Free</span>
+          </span>
+          <span id="headerAccountLabel" class="hidden min-[1180px]:inline-block font-medium max-w-[90px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
           <svg class="w-3 h-3 hidden min-[1180px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-chevron-down"></use></svg>
         </button>
       </div>
@@ -3253,20 +3274,43 @@
       </button>
     </div>
 
-    <!-- Thông tin người dùng (Avatar lớn 40px, tên, email, nhãn) -->
+    <!-- Thông tin người dùng (Avatar, Tên, Huy hiệu Tier, Hạn dùng) -->
     <div class="px-1 py-1.5 border-b border-[#E6E6E1] dark:border-[#262C36] mb-2 flex items-center gap-2.5">
       <div id="userDropdownAvatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
         <span id="userDropdownInitial">U</span>
       </div>
       <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between gap-1 mb-0.5">
+        <div class="flex items-center gap-1.5 mb-0.5">
           <span class="font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-xs" id="userNameDisplay">Người dùng</span>
-          <span id="userBadgeType" class="text-[9px] px-1.5 py-0.2 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 shrink-0">Đã đăng nhập</span>
+          <!-- Huy hiệu Tier không bao giờ bị cắt -->
+          <span id="userTierBadge" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border">
+            <svg class="w-3 h-3 shrink-0"><use id="userTierIcon" href="#icon-tier-free"></use></svg>
+            <span id="userTierLabel">Free</span>
+          </span>
+          <span id="userBadgeType" class="text-[9px] px-1.5 py-0.2 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 shrink-0">Đã đồng bộ</span>
         </div>
-        <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2] truncate" id="userEmailDisplay">loading...</p>
+        <!-- Dòng phụ hiển thị thời hạn sử dụng -->
+        <p id="userTierExpiryText" class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] font-medium truncate">Gói Free vĩnh viễn</p>
         <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
       </div>
     </div>
+
+    <!-- MỤC NÂNG CẤP GÓI NỔI BẬT (Ngay trên mục Hồ sơ & Thống kê) -->
+    <button id="btnOpenUpgradeModal" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100/70 dark:from-indigo-950/40 dark:to-indigo-900/40 hover:from-indigo-100 hover:to-indigo-200/70 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/60 border border-indigo-200/80 dark:border-indigo-800/60 text-indigo-950 dark:text-indigo-200 mb-2 transition shadow-xs cursor-pointer group">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+          <svg class="w-4 h-4"><use href="#icon-upgrade-sparkle"></use></svg>
+        </div>
+        <div class="text-left">
+          <div class="font-bold text-xs leading-tight" id="upgradeBtnTitle">Nâng cấp tài khoản</div>
+          <div class="text-[10px] text-indigo-700/80 dark:text-indigo-300/80" id="upgradeBtnSubtitle">Mở khóa AI &amp; Hạn mức cao</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span id="upgradeExpireDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse hidden"></span>
+        <span id="upgradeRecommendBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs">PRO</span>
+      </div>
+    </button>
 
     <!-- Mục Hồ sơ & Thống kê học tập -->
     <button id="btnUserProfile" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition">
@@ -6160,6 +6204,188 @@
     </div>
   </div>
 
+  <!-- MODAL: NÂNG CẤP GÓI DỊCH VỤ & THANH TOÁN VIETQR -->
+  <div id="upgradeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
+    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-xl max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
+      
+      <!-- Header Modal -->
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-[#E6E6E1] dark:border-[#262C36] shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+            <svg class="w-4 h-4"><use href="#icon-upgrade-sparkle"></use></svg>
+          </div>
+          <div>
+            <h3 id="upgradeModalTitle" class="font-serif font-bold text-base text-[#1A1A1A] dark:text-[#ECEEF2]">Nâng cấp Gói dịch vụ</h3>
+            <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]" id="upgradeModalSubtitle">Thanh toán tự động bằng mã VietQR</p>
+          </div>
+        </div>
+        <button id="btnCloseUpgradeModal" type="button" class="touch-target p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer" aria-label="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Nội dung Modal có thể cuộn -->
+      <div id="upgradeModalBody" class="flex-1 overflow-y-auto p-5 space-y-4">
+        
+        <!-- BƯỚC 1: CHỌN GÓI & CHU KỲ -->
+        <div id="upgradeStep1" class="space-y-4">
+          <!-- Chuyển đổi Tháng / Năm -->
+          <div class="flex items-center justify-center">
+            <div class="bg-gray-100 dark:bg-[#1F2228] p-1 rounded-xl flex items-center gap-1 border border-gray-200 dark:border-gray-800 text-xs font-semibold">
+              <button type="button" id="btnPeriodMonthly" class="px-4 py-1.5 rounded-lg bg-white dark:bg-[#161A20] text-indigo-600 dark:text-indigo-400 shadow-2xs transition">Thanh toán theo Tháng</button>
+              <button type="button" id="btnPeriodYearly" class="px-4 py-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition flex items-center gap-1">
+                <span>Thanh toán theo Năm</span>
+                <span class="text-[9px] px-1 rounded bg-amber-100 text-amber-800 font-bold">-17%</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lựa chọn Thẻ Gói: Plus & Pro -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Thẻ gói Plus -->
+            <div id="cardPlanPlus" class="plan-card p-4 rounded-2xl border-2 border-indigo-200 dark:border-indigo-900 bg-[#FAF9F5] dark:bg-[#1B1E24] hover:border-indigo-500 cursor-pointer transition relative flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+                    <svg class="w-4 h-4"><use href="#icon-tier-plus"></use></svg>
+                    <span>Gói Plus</span>
+                  </div>
+                  <span id="badgeCurrentPlus" class="hidden text-[9px] px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 font-bold">Đang dùng</span>
+                </div>
+                <div class="text-xl font-bold font-mono text-[#1C1B18] dark:text-[#E8E6E1] mb-1" id="priceDisplayPlus">59.000 ₫</div>
+                <p class="text-[11px] text-gray-500 mb-3">Tối ưu cho cá nhân học tập chuyên cần, tăng gấp 5 lần lưu trữ.</p>
+                <ul class="text-xs space-y-1.5 text-gray-600 dark:text-gray-300 border-t border-gray-200/60 dark:border-gray-800 pt-3">
+                  <li class="flex items-center gap-1.5">✓ <strong>100 bài học</strong> &amp; 20 danh mục</li>
+                  <li class="flex items-center gap-1.5">✓ <strong>20 lượt gọi AI</strong> mỗi ngày</li>
+                  <li class="flex items-center gap-1.5">✓ Tạo 20 link chia sẻ 7 ngày</li>
+                </ul>
+              </div>
+              <button type="button" class="btn-select-plan mt-4 w-full py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-semibold text-xs border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-600 hover:text-white transition" data-plan="plus">
+                Chọn gói Plus
+              </button>
+            </div>
+
+            <!-- Thẻ gói Pro -->
+            <div id="cardPlanPro" class="plan-card p-4 rounded-2xl border-2 border-amber-300 dark:border-amber-700 bg-gradient-to-b from-amber-50/40 to-white dark:from-amber-950/20 dark:to-[#1B1E24] hover:border-amber-500 cursor-pointer transition relative flex flex-col justify-between shadow-xs">
+              <span class="absolute -top-2.5 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs">PHỔ BIẾN NHẤT</span>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-sm">
+                    <svg class="w-4 h-4"><use href="#icon-tier-pro"></use></svg>
+                    <span>Gói Pro</span>
+                  </div>
+                  <span id="badgeCurrentPro" class="hidden text-[9px] px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 font-bold">Đang dùng</span>
+                </div>
+                <div class="text-xl font-bold font-mono text-amber-800 dark:text-amber-300 mb-1" id="priceDisplayPro">129.000 ₫</div>
+                <p class="text-[11px] text-gray-500 mb-3">Trải nghiệm không giới hạn với AI phân tích ngữ nghĩa sâu.</p>
+                <ul class="text-xs space-y-1.5 text-gray-600 dark:text-gray-300 border-t border-gray-200/60 dark:border-gray-800 pt-3">
+                  <li class="flex items-center gap-1.5">✓ <strong>Không giới hạn</strong> bài học &amp; danh mục</li>
+                  <li class="flex items-center gap-1.5">✓ <strong>100 lượt gọi AI</strong> mỗi ngày</li>
+                  <li class="flex items-center gap-1.5">✓ Đính kèm ảnh &amp; xuất file offline cao cấp</li>
+                </ul>
+              </div>
+              <button type="button" class="btn-select-plan mt-4 w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-xs transition" data-plan="pro">
+                Nâng cấp lên Pro
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 2: QUÉT MÃ QR THANH TOÁN VIETQR -->
+        <div id="upgradeStep2" class="hidden space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800 text-xs">
+            <button type="button" id="btnBackToStep1" class="text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1 hover:underline">
+              ← Đổi gói khác
+            </button>
+            <div class="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-mono font-bold">
+              <span>Đơn hết hạn sau:</span>
+              <span id="qrCountdownText">15:00</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4 items-center bg-[#FAF9F5] dark:bg-[#1B1E24] p-4 rounded-2xl border border-gray-200 dark:border-gray-800">
+            <!-- Mã QR VietQR (Nền trắng cố định kể cả dark mode để quét được) -->
+            <div class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm shrink-0 flex flex-col items-center">
+              <img id="qrImageElement" src="" alt="Mã QR VietQR" class="w-44 h-44 object-contain rounded" />
+              <div class="text-[10px] text-gray-500 font-semibold mt-1">Quét bằng App Ngân hàng</div>
+            </div>
+
+            <!-- Chi tiết chuyển khoản & Nút sao chép -->
+            <div class="flex-1 w-full space-y-2 text-xs">
+              <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#161A20] border border-gray-200/80 dark:border-gray-700/80">
+                <div>
+                  <div class="text-[10px] text-gray-400">Ngân hàng</div>
+                  <div class="font-bold text-[#1C1B18] dark:text-[#E8E6E1]" id="transferBankName">MBBank</div>
+                </div>
+                <button type="button" class="btn-copy-transfer-field px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-[11px] font-semibold text-indigo-600 hover:bg-gray-200 transition" data-text-id="transferBankName">Sao chép</button>
+              </div>
+
+              <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#161A20] border border-gray-200/80 dark:border-gray-700/80">
+                <div>
+                  <div class="text-[10px] text-gray-400">Số tài khoản</div>
+                  <div class="font-bold font-mono text-sm text-[#1C1B18] dark:text-[#E8E6E1]" id="transferAccountNo">0987654321</div>
+                </div>
+                <button type="button" class="btn-copy-transfer-field px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-[11px] font-semibold text-indigo-600 hover:bg-gray-200 transition" data-text-id="transferAccountNo">Sao chép</button>
+              </div>
+
+              <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#161A20] border border-gray-200/80 dark:border-gray-700/80">
+                <div>
+                  <div class="text-[10px] text-gray-400">Chủ tài khoản</div>
+                  <div class="font-bold uppercase text-[#1C1B18] dark:text-[#E8E6E1]" id="transferAccountName">VU MINH CUONG</div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+                <div>
+                  <div class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold">Số tiền chính xác</div>
+                  <div class="font-bold font-mono text-sm text-amber-900 dark:text-amber-200" id="transferAmount">59.000 ₫</div>
+                </div>
+                <button type="button" class="btn-copy-transfer-field px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/60 text-[11px] font-bold text-amber-800 dark:text-amber-200 hover:bg-amber-200 transition" data-raw-val="" id="btnCopyAmount">Sao chép</button>
+              </div>
+
+              <div class="flex items-center justify-between p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800">
+                <div>
+                  <div class="text-[10px] text-indigo-700 dark:text-indigo-300 font-bold">NỘI DUNG CHUYỂN KHOẢN (BẮT BUỘC)</div>
+                  <div class="font-bold font-mono text-sm text-indigo-900 dark:text-indigo-200" id="transferOrderCode">TVH8K9L2M4N</div>
+                </div>
+                <button type="button" class="btn-copy-transfer-field px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold shadow-2xs hover:bg-indigo-700 transition" data-text-id="transferOrderCode">Sao chép</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trạng thái chờ thanh toán & Nút đã chuyển -->
+          <div class="p-3.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 text-center space-y-2">
+            <div class="flex items-center justify-center gap-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <span class="w-2 h-2 rounded-full bg-indigo-600 animate-ping"></span>
+              <span id="qrStatusWaitingText">Đang chờ hệ thống xác nhận thanh toán tự động...</span>
+            </div>
+            <p class="text-[11px] text-gray-500">Sau khi bạn chuyển khoản thành công, tài khoản sẽ được nâng cấp tức thì trong vài giây.</p>
+            <div class="flex items-center justify-center gap-2 pt-1">
+              <button type="button" id="btnUserConfirmTransfer" class="px-4 py-2 rounded-xl bg-white dark:bg-[#161A20] border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                Tôi đã chuyển khoản
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MÀN HÌNH THÀNH CÔNG -->
+        <div id="upgradeStepSuccess" class="hidden text-center py-6 space-y-3">
+          <div class="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto text-2xl font-bold shadow-xs">
+            ✓
+          </div>
+          <h4 class="font-serif font-bold text-lg text-[#1C1B18] dark:text-[#E8E6E1]">Nâng cấp thành công!</h4>
+          <p class="text-xs text-gray-600 dark:text-gray-300 max-w-sm mx-auto" id="upgradeSuccessMsg">
+            Tài khoản của bạn đã được nâng cấp lên gói Pro với đầy đủ đặc quyền học tập &amp; AI.
+          </p>
+          <button type="button" id="btnFinishUpgrade" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition">
+            Bắt đầu trải nghiệm ngay
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
@@ -6457,6 +6683,346 @@
         console.warn("[PlansConfig] Không thể đọc config/plans từ Firestore, dùng bản mặc định:", err.message);
       }
     }
+
+    // =========================================================================
+    // ĐIỀU KHIỂN HỘP THOẠI NÂNG CẤP GÓI & THANH TOÁN VIETQR
+    // =========================================================================
+    let upgradeModalState = {
+      period: 'monthly', // 'monthly' hoặc 'yearly'
+      selectedPlan: 'pro',
+      currentOrderId: null,
+      unsubscribeOrderListener: null,
+      countdownTimer: null,
+      orderExpiresTime: 0
+    };
+
+    function openUpgradeModal(preSelectedPlan) {
+      if (state.user && state.user.isAnonymous) {
+        showToast("Vui lòng đăng ký hoặc đăng nhập tài khoản trước khi nâng cấp gói.");
+        const authModal = document.getElementById('authModal');
+        if (authModal) {
+          authModal.classList.remove('hidden');
+          authModal.classList.add('modal-active');
+        }
+        return;
+      }
+
+      if (preSelectedPlan && ['plus', 'pro'].includes(preSelectedPlan)) {
+        upgradeModalState.selectedPlan = preSelectedPlan;
+      } else {
+        upgradeModalState.selectedPlan = state.userTier === 'plus' ? 'pro' : 'plus';
+      }
+
+      const modal = document.getElementById('upgradeModal');
+      if (!modal) return;
+
+      showUpgradeStep(1);
+      updateUpgradePricingDisplay();
+
+      modal.classList.remove('hidden', 'modal-closing');
+      void modal.offsetWidth;
+      modal.classList.add('modal-active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeUpgradeModal() {
+      const modal = document.getElementById('upgradeModal');
+      if (!modal) return;
+
+      if (upgradeModalState.unsubscribeOrderListener) {
+        try { upgradeModalState.unsubscribeOrderListener(); } catch(e){}
+        upgradeModalState.unsubscribeOrderListener = null;
+      }
+      if (upgradeModalState.countdownTimer) {
+        clearInterval(upgradeModalState.countdownTimer);
+        upgradeModalState.countdownTimer = null;
+      }
+
+      modal.classList.remove('modal-active');
+      modal.classList.add('modal-closing');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('modal-closing');
+        const anyActive = document.querySelector('.modal-animated.modal-active');
+        if (!anyActive) document.body.style.overflow = '';
+      }, 220);
+    }
+
+    function showUpgradeStep(stepNumber) {
+      const step1 = document.getElementById('upgradeStep1');
+      const step2 = document.getElementById('upgradeStep2');
+      const stepSuccess = document.getElementById('upgradeStepSuccess');
+
+      if (step1) step1.classList.toggle('hidden', stepNumber !== 1);
+      if (step2) step2.classList.toggle('hidden', stepNumber !== 2);
+      if (stepSuccess) stepSuccess.classList.toggle('hidden', stepNumber !== 3);
+    }
+
+    function updateUpgradePricingDisplay() {
+      const pricing = (window.effectivePlans && window.effectivePlans.pricing) || {
+        plusMonthly: 59000,
+        plusYearly: 590000,
+        proMonthly: 129000,
+        proYearly: 1290000
+      };
+
+      const isYearly = upgradeModalState.period === 'yearly';
+      const plusPrice = isYearly ? pricing.plusYearly : pricing.plusMonthly;
+      const proPrice = isYearly ? pricing.proYearly : pricing.proMonthly;
+
+      const pricePlusEl = document.getElementById('priceDisplayPlus');
+      const priceProEl = document.getElementById('priceDisplayPro');
+      if (pricePlusEl) pricePlusEl.innerText = `${(plusPrice || 59000).toLocaleString('vi-VN')} ₫${isYearly ? '/năm' : '/tháng'}`;
+      if (priceProEl) priceProEl.innerText = `${(proPrice || 129000).toLocaleString('vi-VN')} ₫${isYearly ? '/năm' : '/tháng'}`;
+
+      const badgeCurrentPlus = document.getElementById('badgeCurrentPlus');
+      const badgeCurrentPro = document.getElementById('badgeCurrentPro');
+      if (badgeCurrentPlus) badgeCurrentPlus.classList.toggle('hidden', state.userTier !== 'plus');
+      if (badgeCurrentPro) badgeCurrentPro.classList.toggle('hidden', state.userTier !== 'pro');
+    }
+
+    async function handleSelectPlanToOrder(planId) {
+      upgradeModalState.selectedPlan = planId;
+      const period = upgradeModalState.period;
+
+      if (!auth || !auth.currentUser) {
+        showToast("Vui lòng đăng nhập để nâng cấp gói.");
+        return;
+      }
+
+      showToast("Đang khởi tạo mã QR thanh toán VietQR...");
+
+      try {
+        const token = await auth.currentUser.getIdToken(false);
+        const res = await fetch('/api/billing/create-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ planId, period })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Không thể tạo đơn hàng');
+        }
+
+        upgradeModalState.currentOrderId = data.orderId;
+        upgradeModalState.orderExpiresTime = new Date(data.expiresAt).getTime();
+
+        const qrImg = document.getElementById('qrImageElement');
+        if (qrImg) qrImg.src = data.qr;
+
+        const bankNameEl = document.getElementById('transferBankName');
+        const accNoEl = document.getElementById('transferAccountNo');
+        const accNameEl = document.getElementById('transferAccountName');
+        const amountEl = document.getElementById('transferAmount');
+        const codeEl = document.getElementById('transferOrderCode');
+        const btnCopyAmt = document.getElementById('btnCopyAmount');
+
+        if (bankNameEl) bankNameEl.innerText = data.bankSnapshot.bankName || 'MBBank';
+        if (accNoEl) accNoEl.innerText = data.bankSnapshot.accountNo || '';
+        if (accNameEl) accNameEl.innerText = data.bankSnapshot.accountName || '';
+        if (amountEl) amountEl.innerText = `${(data.amount || 0).toLocaleString('vi-VN')} ₫`;
+        if (codeEl) codeEl.innerText = data.code || '';
+        if (btnCopyAmt) btnCopyAmt.dataset.rawVal = String(data.amount || 0);
+
+        showUpgradeStep(2);
+        startQrCountdown();
+        subscribeOrderRealtime(data.orderId);
+
+      } catch (err) {
+        console.error("Lỗi tạo đơn:", err);
+        showToast("Lỗi: " + err.message);
+      }
+    }
+
+    function startQrCountdown() {
+      if (upgradeModalState.countdownTimer) clearInterval(upgradeModalState.countdownTimer);
+      const countdownEl = document.getElementById('qrCountdownText');
+
+      const tick = () => {
+        const now = Date.now();
+        const diff = upgradeModalState.orderExpiresTime - now;
+        if (diff <= 0) {
+          clearInterval(upgradeModalState.countdownTimer);
+          upgradeModalState.countdownTimer = null;
+          if (countdownEl) countdownEl.innerText = "00:00 (Hết hạn)";
+          const waitingText = document.getElementById('qrStatusWaitingText');
+          if (waitingText) waitingText.innerText = "Mã QR đã hết hạn. Vui lòng bấm 'Đổi gói khác' để tạo lại đơn mới.";
+          return;
+        }
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        if (countdownEl) countdownEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      };
+
+      tick();
+      upgradeModalState.countdownTimer = setInterval(tick, 1000);
+    }
+
+    function subscribeOrderRealtime(orderId) {
+      if (upgradeModalState.unsubscribeOrderListener) {
+        try { upgradeModalState.unsubscribeOrderListener(); } catch(e){}
+      }
+
+      if (!db) return;
+
+      try {
+        upgradeModalState.unsubscribeOrderListener = onSnapshot(doc(db, 'billing_orders', orderId), (docSnap) => {
+          if (!docSnap.exists()) return;
+          const order = docSnap.data();
+
+          if (order.status === 'paid') {
+            if (upgradeModalState.countdownTimer) {
+              clearInterval(upgradeModalState.countdownTimer);
+              upgradeModalState.countdownTimer = null;
+            }
+            if (upgradeModalState.unsubscribeOrderListener) {
+              try { upgradeModalState.unsubscribeOrderListener(); } catch(e){}
+              upgradeModalState.unsubscribeOrderListener = null;
+            }
+
+            const successMsg = document.getElementById('upgradeSuccessMsg');
+            if (successMsg) {
+              successMsg.innerText = `Chúc mừng! Bạn đã nâng cấp thành công lên gói ${order.planId.toUpperCase()} (${order.period === 'yearly' ? '1 Năm' : '1 Tháng'}).`;
+            }
+            showUpgradeStep(3);
+            showToast(`Kích hoạt thành công gói ${order.planId.toUpperCase()}!`);
+            
+            state.userTier = order.planId;
+            updateUserUI(state.user);
+            if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+          } else if (order.status === 'user_confirmed') {
+            const waitingText = document.getElementById('qrStatusWaitingText');
+            if (waitingText) waitingText.innerText = "Đã nhận thông báo của bạn. Đang chờ xác nhận giao dịch trong ít phút...";
+          }
+        }, (err) => {
+          console.warn("[Billing] Lỗi lắng nghe đơn hàng:", err);
+        });
+      } catch (e) {
+        console.warn("[Billing] Không thể gán onSnapshot trên đơn hàng:", e);
+      }
+    }
+
+    async function handleUserConfirmTransfer() {
+      const orderId = upgradeModalState.currentOrderId;
+      if (!orderId || !auth || !auth.currentUser) return;
+
+      const btn = document.getElementById('btnUserConfirmTransfer');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Đang gửi thông báo...";
+      }
+
+      try {
+        const token = await auth.currentUser.getIdToken(false);
+        const res = await fetch('/api/billing/confirm-transfer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ orderId })
+        });
+        const json = await res.json();
+        if (res.ok) {
+          showToast("Đã báo đã chuyển khoản! Hệ thống đang xử lý xác nhận.");
+          const waitingText = document.getElementById('qrStatusWaitingText');
+          if (waitingText) waitingText.innerText = "Đã ghi nhận thông báo chuyển khoản. Vui lòng giữ màn hình hoặc quay lại sau ít phút.";
+        } else {
+          showToast(json.error || "Không thể gửi xác nhận");
+        }
+      } catch (err) {
+        showToast("Lỗi: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "Tôi đã chuyển khoản";
+        }
+      }
+    }
+
+    window.openUpgradeModal = openUpgradeModal;
+    window.closeUpgradeModal = closeUpgradeModal;
+
+    // Gán sự kiện mở và đóng Upgrade Modal
+    const btnOpenUpgradeModal = document.getElementById('btnOpenUpgradeModal');
+    if (btnOpenUpgradeModal) {
+      btnOpenUpgradeModal.addEventListener('click', () => {
+        closeUserMenu();
+        openUpgradeModal();
+      });
+    }
+
+    const btnCloseUpgradeModal = document.getElementById('btnCloseUpgradeModal');
+    if (btnCloseUpgradeModal) {
+      btnCloseUpgradeModal.addEventListener('click', closeUpgradeModal);
+    }
+
+    const btnPeriodMonthly = document.getElementById('btnPeriodMonthly');
+    const btnPeriodYearly = document.getElementById('btnPeriodYearly');
+    if (btnPeriodMonthly && btnPeriodYearly) {
+      btnPeriodMonthly.addEventListener('click', () => {
+        upgradeModalState.period = 'monthly';
+        btnPeriodMonthly.className = 'px-4 py-1.5 rounded-lg bg-white dark:bg-[#161A20] text-indigo-600 dark:text-indigo-400 shadow-2xs transition';
+        btnPeriodYearly.className = 'px-4 py-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition flex items-center gap-1';
+        updateUpgradePricingDisplay();
+      });
+      btnPeriodYearly.addEventListener('click', () => {
+        upgradeModalState.period = 'yearly';
+        btnPeriodYearly.className = 'px-4 py-1.5 rounded-lg bg-white dark:bg-[#161A20] text-indigo-600 dark:text-indigo-400 shadow-2xs transition flex items-center gap-1';
+        btnPeriodMonthly.className = 'px-4 py-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition';
+        updateUpgradePricingDisplay();
+      });
+    }
+
+    document.querySelectorAll('.btn-select-plan').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const plan = btn.dataset.plan;
+        handleSelectPlanToOrder(plan);
+      });
+    });
+
+    const btnBackToStep1 = document.getElementById('btnBackToStep1');
+    if (btnBackToStep1) {
+      btnBackToStep1.addEventListener('click', () => {
+        showUpgradeStep(1);
+      });
+    }
+
+    const btnUserConfirmTransfer = document.getElementById('btnUserConfirmTransfer');
+    if (btnUserConfirmTransfer) {
+      btnUserConfirmTransfer.addEventListener('click', handleUserConfirmTransfer);
+    }
+
+    const btnFinishUpgrade = document.getElementById('btnFinishUpgrade');
+    if (btnFinishUpgrade) {
+      btnFinishUpgrade.addEventListener('click', closeUpgradeModal);
+    }
+
+    document.querySelectorAll('.btn-copy-transfer-field').forEach(btn => {
+      btn.addEventListener('click', () => {
+        let textToCopy = '';
+        if (btn.dataset.rawVal) {
+          textToCopy = btn.dataset.rawVal;
+        } else if (btn.dataset.textId) {
+          const el = document.getElementById(btn.dataset.textId);
+          if (el) textToCopy = el.innerText.trim();
+        }
+        if (textToCopy) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast(`Đã sao chép: ${textToCopy}`);
+            const originalText = btn.innerText;
+            btn.innerText = "Đã chép!";
+            setTimeout(() => { btn.innerText = originalText; }, 1500);
+          }).catch(() => {
+            showToast("Không thể sao chép tự động");
+          });
+        }
+      });
+    });
 
     // // FIX: Quản trị hệ thống - Dynamic Import, điều hướng hash #/admin tự xóa URL, lối vào ẩn và Nút Con Dấu ẩn
     async function openAdminModule() {
@@ -11799,6 +12365,24 @@
             } catch (claimErr) {
               console.warn("Lỗi đọc custom claims:", claimErr);
             }
+
+            // Lắng nghe realtime dữ liệu gói tại users/{uid}/billing/plan
+            if (state.unsubscribeBillingPlan) {
+              try { state.unsubscribeBillingPlan(); } catch(e){}
+            }
+            try {
+              state.unsubscribeBillingPlan = onSnapshot(doc(db, 'users', user.uid, 'billing', 'plan'), (snap) => {
+                if (snap.exists()) {
+                  const bData = snap.data();
+                  if (bData.active && bData.tier) {
+                    state.userTier = bData.tier;
+                    state.userTierExpiresAt = bData.expiresAt || null;
+                  }
+                }
+                updateUserUI(user);
+                if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+              }, (err) => console.warn('[Billing] Lỗi onSnapshot users/billing/plan:', err));
+            } catch (e) {}
           } else {
             state.isAdmin = false;
             state.userTier = 'guest';
@@ -11948,12 +12532,121 @@
         if (state.isAdmin) {
           badgeType.innerText = "Quản trị viên";
           badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300");
-        } else if (state.userTier === 'plus') {
-          badgeType.innerText = "Gói Plus";
-          badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300");
-        } else if (state.userTier === 'pro') {
-          badgeType.innerText = "Gói Pro";
-          badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300");
+        } else {
+          badgeType.innerText = user.providerData && user.providerData[0]?.providerId === 'google.com' ? "Google" : "Đã đồng bộ";
+          badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300");
+        }
+
+        // =========================================================================
+        // HUY HIỆU TIER (FREE / PLUS / PRO), THỜI HẠN & MỤC NÂNG CẤP GÓI
+        // =========================================================================
+        const currentTier = isAnonymous ? 'guest' : (state.userTier || 'free');
+
+        let tierIconHref = '#icon-tier-free';
+        let tierLabelText = 'Free';
+        let tierBadgeClass = 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
+        let headerTierClass = 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
+
+        if (currentTier === 'plus') {
+          tierIconHref = '#icon-tier-plus';
+          tierLabelText = 'Plus';
+          tierBadgeClass = 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800';
+          headerTierClass = 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800';
+        } else if (currentTier === 'pro') {
+          tierIconHref = '#icon-tier-pro';
+          tierLabelText = 'Pro';
+          tierBadgeClass = 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-300 dark:from-amber-950/70 dark:to-orange-950/70 dark:text-amber-200 dark:border-amber-700 shadow-2xs';
+          headerTierClass = 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-300 dark:from-amber-950/70 dark:to-orange-950/70 dark:text-amber-200 dark:border-amber-700';
+        } else if (currentTier === 'guest') {
+          tierIconHref = '#icon-tier-free';
+          tierLabelText = 'Khách';
+          tierBadgeClass = 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900';
+          headerTierClass = 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900';
+        }
+
+        const headerTierBadge = document.getElementById('headerTierBadge');
+        const headerTierIcon = document.getElementById('headerTierIcon');
+        const headerTierText = document.getElementById('headerTierText');
+        if (headerTierBadge) {
+          headerTierBadge.className = `hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border transition shadow-2xs ${headerTierClass}`;
+          headerTierBadge.title = `Gói tài khoản: ${tierLabelText}`;
+        }
+        if (headerTierIcon) headerTierIcon.setAttribute('href', tierIconHref);
+        if (headerTierText) headerTierText.innerText = tierLabelText;
+
+        const userTierBadge = document.getElementById('userTierBadge');
+        const userTierIcon = document.getElementById('userTierIcon');
+        const userTierLabel = document.getElementById('userTierLabel');
+        if (userTierBadge) {
+          userTierBadge.className = `inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border ${tierBadgeClass}`;
+        }
+        if (userTierIcon) userTierIcon.setAttribute('href', tierIconHref);
+        if (userTierLabel) userTierLabel.innerText = tierLabelText;
+
+        // Dòng phụ hiển thị thời hạn sử dụng
+        const userTierExpiryText = document.getElementById('userTierExpiryText');
+        let daysLeft = Infinity;
+        let isExpiringSoon = false;
+
+        if (userTierExpiryText) {
+          if (isAnonymous) {
+            userTierExpiryText.innerText = "Chế độ Khách (Lưu tạm trên máy)";
+            userTierExpiryText.className = "text-[10px] text-amber-600 dark:text-amber-400 font-medium truncate";
+          } else if (currentTier === 'free') {
+            userTierExpiryText.innerText = "Gói Free vĩnh viễn";
+            userTierExpiryText.className = "text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] font-medium truncate";
+          } else if (state.userTierExpiresAt) {
+            const expTime = new Date(state.userTierExpiresAt).getTime();
+            const now = Date.now();
+            daysLeft = Math.ceil((expTime - now) / (24 * 60 * 60 * 1000));
+            if (daysLeft <= 0) {
+              userTierExpiryText.innerText = `Gói ${tierLabelText} · Đã hết hạn`;
+              userTierExpiryText.className = "text-[10px] text-rose-600 dark:text-rose-400 font-bold truncate";
+            } else if (daysLeft <= 7) {
+              isExpiringSoon = true;
+              userTierExpiryText.innerText = `Gói ${tierLabelText} · còn ${daysLeft} ngày`;
+              userTierExpiryText.className = "text-[10px] text-amber-600 dark:text-amber-400 font-bold truncate";
+            } else {
+              userTierExpiryText.innerText = `Gói ${tierLabelText} · còn ${daysLeft} ngày`;
+              userTierExpiryText.className = "text-[10px] text-indigo-600 dark:text-indigo-400 font-medium truncate";
+            }
+          } else {
+            userTierExpiryText.innerText = `Gói ${tierLabelText} · Không giới hạn thời gian`;
+            userTierExpiryText.className = "text-[10px] text-emerald-600 dark:text-emerald-400 font-medium truncate";
+          }
+        }
+
+        // Mục Nâng cấp gói nổi bật trong menu
+        const btnOpenUpgradeModal = document.getElementById('btnOpenUpgradeModal');
+        const upgradeBtnTitle = document.getElementById('upgradeBtnTitle');
+        const upgradeBtnSubtitle = document.getElementById('upgradeBtnSubtitle');
+        const upgradeRecommendBadge = document.getElementById('upgradeRecommendBadge');
+        const upgradeExpireDot = document.getElementById('upgradeExpireDot');
+
+        if (btnOpenUpgradeModal) {
+          if (isExpiringSoon && upgradeExpireDot) {
+            upgradeExpireDot.classList.remove('hidden');
+          } else if (upgradeExpireDot) {
+            upgradeExpireDot.classList.add('hidden');
+          }
+
+          if (isAnonymous) {
+            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Đăng ký để nâng cấp";
+            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = "Lưu vĩnh viễn & mở khóa gói";
+            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "PRO";
+          } else if (currentTier === 'free') {
+            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Nâng cấp tài khoản";
+            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = "Mở khóa AI & Mở rộng lưu trữ";
+            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "PRO";
+          } else if (currentTier === 'plus') {
+            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Nâng lên Pro / Gia hạn";
+            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Trải nghiệm AI không giới hạn";
+            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "PRO";
+          } else if (currentTier === 'pro') {
+            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Gia hạn gói Pro";
+            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Duy trì đặc quyền học tập cao cấp";
+            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "GIA HẠN";
+          }
         }
         
         document.getElementById('guestWarningBanner').classList.add('hidden');

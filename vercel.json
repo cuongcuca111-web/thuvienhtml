@@ -1,6 +1,8 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/api/billing/:action", "destination": "/api/billing?action=:action" },
+    { "source": "/api/admin/billing/:action", "destination": "/api/admin/billing?action=:action" },
     { "source": "/api/admin/ai/:action", "destination": "/api/admin/ai?action=:action" },
     { "source": "/api/admin/plans/:action", "destination": "/api/admin/plans?action=:action" },
     { "source": "/api/admin/pricing/:action", "destination": "/api/admin/plans?action=pricing-:action" },
