@@ -6836,7 +6836,11 @@
 
       } catch (err) {
         console.error("Lỗi tạo đơn:", err);
-        showToast("Lỗi: " + err.message);
+        const errMsg = err.message || '';
+        const userFriendlyMsg = (!errMsg.includes('FAILED_PRECONDITION') && !errMsg.includes('firebase') && !errMsg.includes('index'))
+          ? errMsg
+          : 'Hệ thống đang chuẩn bị dữ liệu, vui lòng thử lại sau vài phút.';
+        showToast("Không thể tạo đơn: " + userFriendlyMsg);
       }
     }
 

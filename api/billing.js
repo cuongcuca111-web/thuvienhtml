@@ -69,17 +69,22 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-      // Giới hạn tần suất: Tối đa 10 đơn / giờ / người dùng
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-      const recentOrdersSnap = await db.collection('billing_orders')
-        .where('uid', '==', uid)
-        .where('createdAt', '>=', oneHourAgo)
-        .get();
-      if (recentOrdersSnap.size >= 10) {
+      // 1. Giới hạn tần suất: Tối đa 10 đơn / giờ / người dùng
+      // Dùng document bộ đếm riêng users/{uid}/billing/orderRate (0 truy vấn, 0 index, O(1))
+      const rateRef = db.doc(`users/${uid}/billing/orderRate`);
+      const rateSnap = await rateRef.get();
+      const nowMs = Date.now();
+      const oneHourAgoMs = nowMs - 60 * 60 * 1000;
+      let timestamps = [];
+      if (rateSnap.exists && Array.isArray(rateSnap.data().timestamps)) {
+        timestamps = rateSnap.data().timestamps.filter(t => typeof t === 'number' && t > oneHourAgoMs);
+      }
+      if (timestamps.length >= 10) {
         return res.status(429).json({ error: 'Bạn đã tạo quá nhiều đơn trong 1 giờ qua. Vui lòng chờ thêm ít phút.' });
       }
+      timestamps.push(nowMs);
 
-      // Đọc bảng giá chuẩn và cấu hình thanh toán từ server (TUYỆT ĐỐI không tin giá client gửi)
+      // 2. Đọc bảng giá chuẩn và cấu hình thanh toán từ server (TUYỆT ĐỐI không tin giá client gửi)
       const plansDoc = await db.doc('config/plans').get();
       const plansData = plansDoc.exists ? plansDoc.data() : {};
       const pricing = plansData.pricing || {
@@ -106,23 +111,40 @@ module.exports = async function handler(req, res) {
         qrMode: 'quick'
       };
 
-      // Tự động hủy các đơn pending cũ của người dùng đối với gói này
-      const oldPendingSnap = await db.collection('billing_orders')
+      // 3. Tự động hủy các đơn pending cũ của người dùng
+      // Chỉ dùng DUY NHẤT 1 điều kiện .where('uid', '==', uid) để KHÔNG BAO GIỜ cần composite index
+      const oldOrdersSnap = await db.collection('billing_orders')
         .where('uid', '==', uid)
-        .where('status', '==', 'pending')
+        .limit(50)
         .get();
+
       const batch = db.batch();
-      oldPendingSnap.forEach(docSnap => {
-        batch.update(docSnap.ref, {
-          status: 'cancelled',
-          cancelledReason: 'Thay thế bằng đơn mới',
-          updatedAt: new Date().toISOString()
-        });
+      oldOrdersSnap.forEach(docSnap => {
+        const oData = docSnap.data();
+        if (oData.status === 'pending') {
+          batch.update(docSnap.ref, {
+            status: 'cancelled',
+            cancelledReason: 'Thay thế bằng đơn mới',
+            updatedAt: new Date().toISOString()
+          });
+        }
       });
+
+      // Cập nhật bộ đếm giới hạn tần suất
+      batch.set(rateRef, { timestamps, updatedAt: new Date(nowMs).toISOString() }, { merge: true });
 
       const orderCode = generateOrderCode();
       const orderRef = db.collection('billing_orders').doc();
       const orderId = orderRef.id;
+
+      // Lưu document tra cứu nhanh O(1) theo mã đơn cho Webhook
+      const codeRef = db.doc(`billing_codes/${orderCode}`);
+      batch.set(codeRef, {
+        orderId,
+        uid,
+        code: orderCode,
+        createdAt: new Date(nowMs).toISOString()
+      });
 
       const timeoutMins = parseInt(bankConfig.orderTimeoutMinutes, 10) || 15;
       const now = Date.now();
@@ -214,7 +236,12 @@ module.exports = async function handler(req, res) {
       });
     } catch (err) {
       console.error('[Billing] Lỗi tạo đơn hàng:', err);
-      return res.status(500).json({ error: 'Không thể khởi tạo đơn hàng: ' + err.message });
+      const isIndexError = err.message && (err.message.includes('FAILED_PRECONDITION') || err.message.includes('requires an index'));
+      if (isIndexError) {
+        console.error('[Billing Firestore Index Required]:', err.message);
+        return res.status(500).json({ error: 'Hệ thống đang chuẩn bị dữ liệu, thử lại sau vài phút' });
+      }
+      return res.status(500).json({ error: 'Không thể khởi tạo đơn hàng: ' + (err.message || 'Lỗi hệ thống') });
     }
   }
 

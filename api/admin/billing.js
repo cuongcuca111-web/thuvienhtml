@@ -191,12 +191,38 @@ module.exports = async function handler(req, res) {
     const limitNum = Math.min(100, Math.max(10, parseInt(req.query.limit, 10) || 50));
 
     try {
-      let query = db.collection('billing_orders').orderBy('createdAt', 'desc').limit(limitNum);
-      if (statusFilter !== 'all') {
-        query = db.collection('billing_orders').where('status', '==', statusFilter).orderBy('createdAt', 'desc').limit(limitNum);
+      // Dùng 1 trường orderBy('createdAt', 'desc') an toàn 100% không cần composite index,
+      // sau đó lọc statusFilter và search ngay trong bộ nhớ.
+      const fetchLimit = statusFilter === 'all' && !search ? limitNum : 150;
+      let snap;
+      try {
+        if (statusFilter !== 'all') {
+          // Thử truy vấn có điều kiện nếu index đã tồn tại
+          snap = await db.collection('billing_orders')
+            .where('status', '==', statusFilter)
+            .orderBy('createdAt', 'desc')
+            .limit(limitNum)
+            .get();
+        } else {
+          snap = await db.collection('billing_orders')
+            .orderBy('createdAt', 'desc')
+            .limit(fetchLimit)
+            .get();
+        }
+      } catch (queryErr) {
+        // Fallback tự động khi chưa có composite index: Lấy theo createdAt rồi lọc trong RAM
+        const isIndexErr = queryErr.message && (queryErr.message.includes('FAILED_PRECONDITION') || queryErr.message.includes('requires an index'));
+        if (isIndexErr) {
+          console.warn('[Admin Billing Orders] Chưa có composite index status+createdAt, tự động chuyển sang lọc trong bộ nhớ:', queryErr.message);
+          snap = await db.collection('billing_orders')
+            .orderBy('createdAt', 'desc')
+            .limit(150)
+            .get();
+        } else {
+          throw queryErr;
+        }
       }
 
-      const snap = await query.get();
       let orders = [];
       let pendingCount = 0;
       let userConfirmedCount = 0;
@@ -205,6 +231,9 @@ module.exports = async function handler(req, res) {
         const data = docSnap.data();
         if (data.status === 'user_confirmed') userConfirmedCount++;
         if (data.status === 'pending') pendingCount++;
+
+        // Lọc trạng thái trong bộ nhớ nếu chạy chế độ fallback
+        if (statusFilter !== 'all' && data.status !== statusFilter) return;
 
         if (search) {
           const matchCode = (data.code || '').toLowerCase().includes(search);
@@ -229,6 +258,10 @@ module.exports = async function handler(req, res) {
         });
       });
 
+      if (orders.length > limitNum) {
+        orders = orders.slice(0, limitNum);
+      }
+
       return res.status(200).json({
         orders,
         counts: {
@@ -238,6 +271,13 @@ module.exports = async function handler(req, res) {
         }
       });
     } catch (err) {
+      console.error('[Admin Billing Orders] Lỗi tải đơn:', err);
+      const isIndexError = err.message && (err.message.includes('FAILED_PRECONDITION') || err.message.includes('requires an index'));
+      if (isIndexError) {
+        return res.status(500).json({
+          error: 'Cần khởi tạo Composite Index trên Firestore Console cho billing_orders: ' + err.message
+        });
+      }
       return res.status(500).json({ error: 'Lỗi tải danh sách đơn: ' + err.message });
     }
   }
