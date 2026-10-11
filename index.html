@@ -163,14 +163,17 @@
     window.__errorRepeatCount = 0;
     window.__bannerDismissTimer = null;
 
-    function shouldIgnoreError(msg) {
-      if (!msg) return true;
-      const s = String(msg).toLowerCase();
-      // Bỏ qua êm: iframe cross-origin, ResizeObserver, Script error, AbortError, mạng tạm thời, extension
+    function shouldIgnoreError(err) {
+      if (!err) return true;
+      if (typeof err === 'object' && err !== null) {
+        if (err.name === 'AbortError') return true;
+      }
+      const s = String((err && err.message) || err || '').toLowerCase();
+      // Bỏ qua êm: ViewTransition AbortError, transition was skipped, resizeobserver, v.v.
+      if (s.includes('viewtransition') || s.includes('transition was skipped') || s.includes('aborterror')) return true;
       if (s.includes('resizeobserver')) return true;
       if (s.includes('script error')) return true;
       if (s.includes('securityerror') || s.includes('cross-origin') || s.includes('blocked a frame')) return true;
-      if (s.includes('aborterror')) return true;
       if (s.includes('undelivered notifications')) return true;
       if (s.includes('chrome-extension://') || s.includes('moz-extension://')) return true;
       if (s.includes('liên kết không còn khả dụng') || s.includes('link đã hết hạn') || s.includes('thu hồi') || s.includes('không tìm thấy link')) return true;
@@ -179,11 +182,11 @@
 
     function reportError(error, contextName) {
       try {
-        const errMsg = String((error && error.message) || error || 'Lỗi không xác định');
-        if (shouldIgnoreError(errMsg)) {
-          console.warn(`[safe:${contextName || 'handler'}] Bỏ qua lỗi không nghiêm trọng:`, errMsg);
+        if (shouldIgnoreError(error)) {
+          console.debug(`[safe:${contextName || 'handler'}] Bỏ qua lỗi không nghiêm trọng:`, error);
           return;
         }
+        const errMsg = String((error && error.message) || error || 'Lỗi không xác định');
 
         console.error(`[Lỗi Hệ Thống:${contextName || 'app'}]`, error);
 
@@ -273,7 +276,7 @@
 
     window.addEventListener('error', function (e) {
       const err = e.error || e.message;
-      if (shouldIgnoreError(e.message || (e.error && e.error.message))) {
+      if (shouldIgnoreError(err)) {
         if (e.preventDefault) e.preventDefault();
         return true;
       }
@@ -282,7 +285,7 @@
 
     window.addEventListener('unhandledrejection', function (e) {
       const reason = e.reason;
-      if (shouldIgnoreError(reason && (reason.message || reason))) {
+      if (shouldIgnoreError(reason)) {
         if (e.preventDefault) e.preventDefault();
         return;
       }
@@ -2097,7 +2100,7 @@
       
       <!-- CỤM TRÁI: Nút Mục lục + Logo Độc Bản + Tên App Serif (Không bao giờ rớt dòng) -->
       <div class="header-left-cluster flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
-        <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" title="Mục lục bài học" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0">
+        <button id="btnToggleSidebar" aria-label="Bật/Tắt thanh bên mục lục" aria-expanded="true" title="Mục lục bài học" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 relative z-50 pointer-events-auto cursor-pointer">
           <svg class="w-5 h-5"><use href="#icon-panel-left"></use></svg>
         </button>
 
@@ -14262,8 +14265,29 @@
       }
     }
 
+    let currentVT = null;
+    function withTransition(update) {
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!document.startViewTransition || reduce) {
+        update();
+        return Promise.resolve();
+      }
+      try {
+        if (currentVT && typeof currentVT.skipTransition === 'function') {
+          currentVT.skipTransition();
+        }
+      } catch (e) {}
+      const t = document.startViewTransition(() => {
+        update();
+      });
+      currentVT = t;
+      t.ready.catch(() => {});
+      t.updateCallbackDone.catch(() => {});
+      return t.finished.catch(() => {});
+    }
+
     function selectLesson(lessonId) {
-      if (!lessonId) return;
+      if (!lessonId) return Promise.resolve();
       if (typeof stopTTS === 'function') stopTTS();
       state.activeLessonId = lessonId;
       if (typeof recordRecentLesson === 'function') recordRecentLesson(lessonId);
@@ -14291,19 +14315,15 @@
         if (ra) ra.scrollTo({ top: 0, behavior: 'smooth' });
       };
 
-      if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.startViewTransition(() => {
-          updateView();
-        });
-      } else {
-        updateView();
-      }
+      return withTransition(updateView);
     }
 
-    function stepLesson(direction) {
-      if (state.isSharedMode) return;
+    let navLock = false;
+    let navLockTimer = null;
+    function goRelative(delta) {
+      if (navLock || state.isSharedMode) return Promise.resolve();
       const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
-      if (!currentLesson) return;
+      if (!currentLesson) return Promise.resolve();
       // FIX: Chuyển bài hỗ trợ cả bài trong mục và bài chưa phân loại
       let catLessons = [];
       if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
@@ -14314,15 +14334,34 @@
       if (catLessons.length === 0) catLessons = state.lessons;
 
       const currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
-      const targetIndex = currentIndex + direction;
+      const nextIndex = currentIndex + delta;
 
-      if (targetIndex >= 0 && targetIndex < catLessons.length) {
-        state.transitionDirection = direction; // // ANIM: Đặt hướng trượt mượt mà (1 hoặc -1)
-        selectLesson(catLessons[targetIndex].id);
+      if (nextIndex < 0 || nextIndex >= catLessons.length) return Promise.resolve();
+
+      navLock = true;
+      clearTimeout(navLockTimer);
+      navLockTimer = setTimeout(() => { navLock = false; }, 600);
+
+      state.transitionDirection = delta; // // ANIM: Đặt hướng trượt mượt mà (1 hoặc -1)
+      const targetId = catLessons[nextIndex].id;
+
+      const res = selectLesson(targetId);
+      if (res && typeof res.finally === 'function') {
+        res.finally(() => {
+          navLock = false;
+          clearTimeout(navLockTimer);
+        });
+      } else {
+        navLock = false;
+        clearTimeout(navLockTimer);
       }
+      return res;
     }
+    const stepLesson = goRelative;
     window.selectLesson = selectLesson;
-    window.stepLesson = stepLesson;
+    window.stepLesson = goRelative;
+    window.goRelative = goRelative;
+    window.withTransition = withTransition;
 
         function closeDisplaySettingsPopover() {
       const popover = document.getElementById('displaySettingsPopover');
@@ -18033,17 +18072,7 @@
       });
     }
 
-    on('#btnPrevLesson', 'click', () => stepLesson(-1));
-    on('#btnNextLesson', 'click', () => stepLesson(1));
-    on('#btnBottomPrev', 'click', () => stepLesson(-1));
-    on('#btnBottomNext', 'click', () => stepLesson(1));
-    on('#fsBtnPrev', 'click', () => stepLesson(-1));
-    on('#fsBtnNext', 'click', () => stepLesson(1));
-
-    // Bottom Bar Mobile Listeners
-    on('#mbBtnPrev', 'click', () => stepLesson(-1));
-    on('#mbBtnNext', 'click', () => stepLesson(1));
-    on('#mbBtnToc', 'click', () => openMobileSidebar());
+    // Navigation buttons are initialized cleanly in initReader()
 
     on('#btnToggleLearned', 'click', async () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
@@ -18500,59 +18529,98 @@
     const sidebar = document.getElementById('mainSidebar');
     const backdrop = document.getElementById('sidebarBackdrop');
 
-    function applyDesktopSidebarState(isOpen) {
-      state.desktopSidebarOpen = isOpen;
-      if (isOpen) {
-        sidebar.classList.remove('md:-ml-72');
-      } else {
-        sidebar.classList.add('md:-ml-72');
-      }
-      setTimeout(() => inspectIframeNativeBackgroundAndResize(), 220);
-    }
-
-    function toggleDesktopSidebar() {
-      applyDesktopSidebarState(!state.desktopSidebarOpen);
-      saveUserSettings();
-    }
-
     function openMobileSidebar() {
-      state.mobileSidebarOpen = true;
-      sidebar.classList.remove('-translate-x-full');
-      backdrop.classList.remove('hidden');
-      void backdrop.offsetWidth;
-      backdrop.classList.add('backdrop-active');
-      document.body.style.overflow = 'hidden';
+      try {
+        state.mobileSidebarOpen = true;
+        const btnToggle = document.getElementById('btnToggleSidebar');
+        if (btnToggle) btnToggle.setAttribute('aria-expanded', 'true');
+        if (sidebar) sidebar.classList.remove('-translate-x-full');
+        if (backdrop) {
+          backdrop.classList.remove('hidden');
+          void backdrop.offsetWidth;
+          backdrop.classList.add('backdrop-active');
+        }
+        document.body.style.overflow = 'hidden';
+      } catch (e) {
+        console.warn('[openMobileSidebar]', e);
+      }
     }
 
     function closeMobileSidebar() {
-      state.mobileSidebarOpen = false;
-      sidebar.classList.add('-translate-x-full');
-      backdrop.classList.remove('backdrop-active');
-      setTimeout(() => {
-        backdrop.classList.add('hidden');
-        document.body.style.overflow = '';
-      }, 250);
+      try {
+        state.mobileSidebarOpen = false;
+        const btnToggle = document.getElementById('btnToggleSidebar');
+        if (btnToggle) btnToggle.setAttribute('aria-expanded', 'false');
+        if (sidebar) sidebar.classList.add('-translate-x-full');
+        if (backdrop) {
+          backdrop.classList.remove('backdrop-active');
+          setTimeout(() => {
+            backdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+          }, 250);
+        }
+      } catch (e) {
+        console.warn('[closeMobileSidebar]', e);
+      }
     }
 
-    on('#btnToggleSidebar', 'click', () => {
-      if (window.innerWidth >= 768) {
-        toggleDesktopSidebar();
-      } else {
-        if (state.mobileSidebarOpen) closeMobileSidebar();
-        else openMobileSidebar();
-      }
-    });
+    function setSidebar(open) {
+      try {
+        const isDesktop = window.innerWidth >= 768;
+        const targetOpen = Boolean(open);
 
-    on('#btnCollapseSidebarDesktop', 'click', () => {
-      if (window.innerWidth >= 768) {
-        applyDesktopSidebarState(false);
-        saveUserSettings();
-      } else {
-        closeMobileSidebar();
-      }
-    });
+        const btnToggle = document.getElementById('btnToggleSidebar');
+        if (btnToggle) {
+          btnToggle.setAttribute('aria-expanded', String(targetOpen));
+        }
 
-    backdrop.addEventListener('click', closeMobileSidebar);
+        if (isDesktop) {
+          state.desktopSidebarOpen = targetOpen;
+          try {
+            localStorage.setItem('sidebar_desktop_open', JSON.stringify(targetOpen));
+          } catch (_) {}
+          if (sidebar) {
+            if (targetOpen) {
+              sidebar.classList.remove('md:-ml-72');
+            } else {
+              sidebar.classList.add('md:-ml-72');
+            }
+          }
+          if (typeof saveUserSettings === 'function') saveUserSettings();
+          setTimeout(() => {
+            if (typeof inspectIframeNativeBackgroundAndResize === 'function') inspectIframeNativeBackgroundAndResize();
+          }, 220);
+        } else {
+          if (targetOpen) openMobileSidebar();
+          else closeMobileSidebar();
+        }
+      } catch (err) {
+        console.warn('[setSidebar]', err);
+      }
+    }
+
+    function toggleSidebar() {
+      const isDesktop = window.innerWidth >= 768;
+      const current = isDesktop ? Boolean(state.desktopSidebarOpen) : Boolean(state.mobileSidebarOpen);
+      setSidebar(!current);
+    }
+
+    function applyDesktopSidebarState(isOpen) {
+      setSidebar(isOpen);
+    }
+
+    function toggleDesktopSidebar() {
+      toggleSidebar();
+    }
+
+    window.setSidebar = setSidebar;
+    window.toggleSidebar = toggleSidebar;
+    window.toggleDesktopSidebar = toggleSidebar;
+    window.applyDesktopSidebarState = setSidebar;
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeMobileSidebar);
+    }
 
     const btnUserMenu = document.getElementById('btnUserMenu');
     const userDropdown = document.getElementById('userDropdown');
@@ -25687,13 +25755,13 @@
     // =========================================================================
     function initHeader() {
       on('#btnToggleSidebar', 'click', () => {
-        if (window.innerWidth < 768) {
-          openMobileSidebar();
-        } else {
-          toggleSidebarDesktop();
-        }
+        if (typeof toggleSidebar === 'function') toggleSidebar();
+        else toggleSidebarDesktop();
       });
-      on('#btnCollapseSidebarDesktop', 'click', () => toggleSidebarDesktop(false));
+      on('#btnCollapseSidebarDesktop', 'click', () => {
+        if (typeof setSidebar === 'function') setSidebar(false);
+        else toggleSidebarDesktop(false);
+      });
       on('#btnThemeToggle', 'click', toggleTheme);
       on('#fsBtnThemeToggle', 'click', toggleTheme);
       if (typeof initSyncStatusEvents === 'function') initSyncStatusEvents();
@@ -25707,34 +25775,16 @@
     }
 
     function initReader() {
-      on('#btnPrevLesson', 'click', () => stepLesson(-1));
-      on('#btnNextLesson', 'click', () => stepLesson(1));
-      on('#btnBottomPrev', 'click', () => stepLesson(-1));
-      on('#btnBottomNext', 'click', () => stepLesson(1));
-      on('#fsBtnPrev', 'click', () => stepLesson(-1));
-      on('#fsBtnNext', 'click', () => stepLesson(1));
-      on('#mbBtnPrev', 'click', () => stepLesson(-1));
-      on('#mbBtnNext', 'click', () => stepLesson(1));
-      on('#mbBtnToc', 'click', () => openMobileSidebar());
-      on('#btnToggleLearned', 'click', async () => {
-        if (!state.activeLessonId) return;
-        const cur = state.lessons.find(l => l.id === state.activeLessonId);
-        if (!cur) return;
-        cur.isCompleted = !cur.isCompleted;
-        updateLearnedStyleUI(cur.isCompleted);
-        await saveLessons();
-        renderCategoriesAndLessons();
-        showToast(cur.isCompleted ? "Đã đánh dấu hoàn thành bài học" : "Đã hủy đánh dấu hoàn thành");
-      });
-      on('#btnToggleFavorite', 'click', async () => {
-        if (!state.activeLessonId) return;
-        const cur = state.lessons.find(l => l.id === state.activeLessonId);
-        if (!cur) return;
-        cur.isFavorite = !cur.isFavorite;
-        updateFavoriteStyleUI(cur.isFavorite);
-        await saveLessons();
-        renderCategoriesAndLessons();
-        showToast(cur.isFavorite ? "Đã thêm vào mục yêu thích" : "Đã xóa khỏi mục yêu thích");
+      on('#btnPrevLesson', 'click', () => goRelative(-1));
+      on('#btnNextLesson', 'click', () => goRelative(1));
+      on('#btnBottomPrev', 'click', () => goRelative(-1));
+      on('#btnBottomNext', 'click', () => goRelative(1));
+      on('#fsBtnPrev', 'click', () => goRelative(-1));
+      on('#fsBtnNext', 'click', () => goRelative(1));
+      on('#mbBtnPrev', 'click', () => goRelative(-1));
+      on('#mbBtnNext', 'click', () => goRelative(1));
+      on('#mbBtnToc', 'click', () => {
+        if (typeof openMobileSidebar === 'function') openMobileSidebar();
       });
       on('#btnFullscreen', 'click', toggleFullscreen);
       on('#fsBtnExit', 'click', exitFullscreen);
