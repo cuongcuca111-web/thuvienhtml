@@ -3,11 +3,28 @@
 const { verifyAdmin, recordAuditLog } = require('../../lib/admin-auth');
 const { encryptKey, decryptKey, maskApiKey } = require('../../lib/crypto');
 
+// Bộ nhớ đệm danh sách ngân hàng VietQR (24 giờ TTL)
+let _cachedBanks = null;
+let _cachedBanksExpires = 0;
+
 function resolveAction(req) {
   if (req.query && req.query.action) return String(req.query.action).toLowerCase();
   const pathname = (req.url || '').split('?')[0];
   const parts = pathname.split('/').filter(Boolean);
   return (parts[parts.length - 1] || '').toLowerCase();
+}
+
+function normalizeAccountName(name) {
+  if (!name || typeof name !== 'string') return '';
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'D')
+    .replace(/Đ/g, 'D')
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 module.exports = async function handler(req, res) {
@@ -17,20 +34,86 @@ module.exports = async function handler(req, res) {
 
   const { db, uid } = ctx;
 
+  // 0. DANH SÁCH NGÂN HÀNG CHÍNH THỨC TỪ VIETQR (GET /api/admin/billing/banks)
+  if (action === 'banks' && req.method === 'GET') {
+    try {
+      const now = Date.now();
+      if (_cachedBanks && now < _cachedBanksExpires) {
+        return res.status(200).json({ success: true, banks: _cachedBanks, cached: true });
+      }
+
+      const response = await fetch('https://api.vietqr.io/v2/banks');
+      if (!response.ok) {
+        throw new Error(`VietQR API trả về mã lỗi HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      if (data && Array.isArray(data.data)) {
+        const banks = data.data.map(b => ({
+          id: b.id,
+          name: b.name,
+          code: b.code,
+          bin: b.bin,
+          shortName: b.shortName,
+          logo: b.logo
+        }));
+        _cachedBanks = banks;
+        _cachedBanksExpires = now + 24 * 60 * 60 * 1000; // Lưu cache 24h
+        return res.status(200).json({ success: true, banks, cached: false });
+      } else {
+        throw new Error('Dữ liệu ngân hàng từ VietQR không đúng định dạng');
+      }
+    } catch (err) {
+      console.warn('[Admin Billing] Lỗi tải danh sách ngân hàng VietQR:', err.message);
+      // Nếu có cache cũ thì dùng tạm
+      if (_cachedBanks) {
+        return res.status(200).json({ success: true, banks: _cachedBanks, cached: true, fallback: true });
+      }
+      return res.status(500).json({ error: 'Không thể tải danh sách ngân hàng từ VietQR: ' + err.message });
+    }
+  }
+
   // 1. LẤY CẤU HÌNH THANH TOÁN (GET /api/admin/billing/config)
   if (action === 'config' && req.method === 'GET') {
     try {
-      const plansDoc = await db.doc('config/plans').get();
-      const plansData = plansDoc.exists ? plansDoc.data() : {};
-      const bankTransfer = plansData.bankTransfer || {
-        bankId: '970422',
-        bankName: 'MBBank (Napas)',
-        accountNo: '0987654321',
-        accountName: 'VU MINH CUONG',
-        template: 'compact',
-        orderTimeoutMinutes: 15,
-        qrMode: 'quick'
-      };
+      let bankTransfer = null;
+
+      // Đọc từ payment_config/main (Single Source of Truth)
+      const payCfgDoc = await db.doc('payment_config/main').get();
+      if (payCfgDoc.exists) {
+        const pData = payCfgDoc.data();
+        bankTransfer = {
+          bankId: pData.bankId || (pData.bank && pData.bank.bin) || '',
+          bankName: pData.bankName || (pData.bank && (pData.bank.shortName || pData.bank.name)) || '',
+          accountNo: pData.accountNo || '',
+          accountName: pData.accountName || '',
+          template: pData.template || 'compact',
+          orderTimeoutMinutes: pData.orderTimeoutMinutes || pData.expireMinutes || 15,
+          qrMode: pData.qrMode || pData.mode || 'quick',
+          bank: pData.bank || null
+        };
+      }
+
+      // Tương thích ngược nếu payment_config/main chưa có nhưng config/plans có
+      if (!bankTransfer) {
+        const plansDoc = await db.doc('config/plans').get();
+        if (plansDoc.exists && plansDoc.data().bankTransfer) {
+          bankTransfer = plansDoc.data().bankTransfer;
+        }
+      }
+
+      // Nếu chưa hề cấu hình thì để trống, tuyệt đối không dùng giá trị mẫu MBBank
+      if (!bankTransfer) {
+        bankTransfer = {
+          bankId: '',
+          bankName: '',
+          accountNo: '',
+          accountName: '',
+          template: 'compact',
+          orderTimeoutMinutes: 15,
+          qrMode: 'quick',
+          bank: null
+        };
+      }
 
       const secDoc = await db.doc('admin_secrets/payment').get();
       let maskedClientId = '';
@@ -65,28 +148,70 @@ module.exports = async function handler(req, res) {
 
   // 2. LƯU CẤU HÌNH THANH TOÁN (POST /api/admin/billing/config)
   if (action === 'config' && req.method === 'POST') {
-    const { bankTransfer, vietqrClientId, vietqrApiKey } = req.body || {};
-    if (!bankTransfer || typeof bankTransfer !== 'object') {
-      return res.status(400).json({ error: 'Dữ liệu chuyển khoản không hợp lệ' });
+    const { bankTransfer, bank, vietqrClientId, vietqrApiKey } = req.body || {};
+    const inputTransfer = bankTransfer || {};
+
+    // Chuẩn bị dữ liệu tài khoản
+    const bankId = String(inputTransfer.bankId || (bank && bank.bin) || '').trim();
+    const bankName = String(inputTransfer.bankName || (bank && (bank.shortName || bank.name)) || '').trim();
+    const accountNo = String(inputTransfer.accountNo || '').trim();
+    const rawAccountName = String(inputTransfer.accountName || '').trim();
+    const accountName = normalizeAccountName(rawAccountName);
+
+    if (!bankId) {
+      return res.status(400).json({ error: 'Vui lòng chọn ngân hàng nhận tiền' });
+    }
+    if (!accountNo || !/^\d{6,19}$/.test(accountNo)) {
+      return res.status(400).json({ error: 'Số tài khoản không hợp lệ (phải gồm 6 đến 19 chữ số)' });
+    }
+    if (!accountName) {
+      return res.status(400).json({ error: 'Tên chủ tài khoản không hợp lệ (viết hoa không dấu)' });
     }
 
-    try {
-      const plansRef = db.doc('config/plans');
-      const snap = await plansRef.get();
-      const oldData = snap.exists ? snap.data() : {};
+    const template = ['compact', 'compact2', 'qr_only', 'print'].includes(inputTransfer.template) ? inputTransfer.template : 'compact';
+    const orderTimeoutMinutes = Math.max(5, Math.min(60, parseInt(inputTransfer.orderTimeoutMinutes || inputTransfer.expireMinutes, 10) || 15));
+    const qrMode = (inputTransfer.qrMode === 'api' || inputTransfer.mode === 'api') ? 'api' : 'quick';
 
+    try {
       const sanitizedBankTransfer = {
-        bankId: String(bankTransfer.bankId || '970422').trim(),
-        bankName: String(bankTransfer.bankName || 'MBBank').trim(),
-        accountNo: String(bankTransfer.accountNo || '').trim(),
-        accountName: String(bankTransfer.accountName || '').toUpperCase().trim(),
-        template: ['compact', 'compact2', 'qr_only', 'print'].includes(bankTransfer.template) ? bankTransfer.template : 'compact',
-        orderTimeoutMinutes: Math.max(5, Math.min(60, parseInt(bankTransfer.orderTimeoutMinutes, 10) || 15)),
-        qrMode: bankTransfer.qrMode === 'api' ? 'api' : 'quick'
+        bankId,
+        bankName,
+        accountNo,
+        accountName,
+        template,
+        orderTimeoutMinutes,
+        qrMode,
+        bank: bank || inputTransfer.bank || null
       };
 
+      const paymentMainData = {
+        mode: qrMode,
+        bank: bank || inputTransfer.bank || {
+          bin: bankId,
+          shortName: bankName,
+          name: bankName
+        },
+        bankId,
+        bankName,
+        accountNo,
+        accountName,
+        template,
+        expireMinutes: orderTimeoutMinutes,
+        orderTimeoutMinutes,
+        qrMode,
+        updatedAt: new Date().toISOString(),
+        updatedBy: uid
+      };
+
+      // 1. Lưu vào payment_config/main (Single Source of Truth)
+      await db.doc('payment_config/main').set(paymentMainData, { merge: true });
+
+      // 2. Đồng thời cập nhật config/plans.bankTransfer để tương thích hoàn toàn
+      const plansRef = db.doc('config/plans');
+      const snap = await plansRef.get();
+      const oldPlans = snap.exists ? snap.data() : {};
       await plansRef.set({
-        ...oldData,
+        ...oldPlans,
         bankTransfer: sanitizedBankTransfer,
         updatedAt: new Date().toISOString(),
         updatedBy: uid
@@ -113,10 +238,10 @@ module.exports = async function handler(req, res) {
         uid,
         action: 'UPDATE_PAYMENT_CONFIG',
         newVal: sanitizedBankTransfer,
-        details: 'Cập nhật tài khoản ngân hàng và cấu hình tạo mã QR VietQR'
+        details: `Cập nhật cấu hình nhận tiền VietQR: ${bankName} - ${accountNo} - ${accountName}`
       });
 
-      return res.status(200).json({ success: true, message: 'Đã lưu cấu hình thanh toán thành công' });
+      return res.status(200).json({ success: true, message: 'Đã lưu cấu hình thanh toán thành công', bankTransfer: sanitizedBankTransfer });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi lưu cấu hình: ' + err.message });
     }
@@ -127,14 +252,37 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
     const { bankId, accountNo, accountName, template, amount, mode } = req.body || {};
 
+    let testBankId = bankId;
+    let testAccountNo = accountNo;
+    let testAccountName = accountName ? normalizeAccountName(accountName) : '';
+    let testTemplate = template || 'compact';
+    let testMode = mode || 'quick';
+
+    // Nếu không truyền tham số, đọc từ payment_config/main
+    if (!testBankId || !testAccountNo || !testAccountName) {
+      const payCfgDoc = await db.doc('payment_config/main').get();
+      if (payCfgDoc.exists) {
+        const pData = payCfgDoc.data();
+        testBankId = testBankId || pData.bankId || (pData.bank && pData.bank.bin);
+        testAccountNo = testAccountNo || pData.accountNo;
+        testAccountName = testAccountName || pData.accountName;
+        testTemplate = testTemplate || pData.template || 'compact';
+        testMode = testMode || pData.qrMode || pData.mode || 'quick';
+      }
+    }
+
+    if (!testBankId || !testAccountNo || !testAccountName) {
+      return res.status(400).json({ error: 'Chưa cấu hình tài khoản nhận tiền hoặc thiếu thông tin ngân hàng' });
+    }
+
     const testAmount = parseInt(amount, 10) || 50000;
     const testCode = 'TVHTEST123';
-    const safeAccName = encodeURIComponent((accountName || 'VU MINH CUONG').toUpperCase());
+    const safeAccName = encodeURIComponent(testAccountName);
     const safeContent = encodeURIComponent(testCode);
 
-    const quickUrl = `https://img.vietqr.io/image/${bankId || '970422'}-${accountNo || '0987654321'}-${template || 'compact'}.png?amount=${testAmount}&addInfo=${safeContent}&accountName=${safeAccName}`;
+    const quickUrl = `https://img.vietqr.io/image/${testBankId}-${testAccountNo}-${testTemplate}.png?amount=${testAmount}&addInfo=${safeContent}&accountName=${safeAccName}`;
 
-    if (mode === 'api') {
+    if (testMode === 'api') {
       try {
         const secDoc = await db.doc('admin_secrets/payment').get();
         if (!secDoc.exists || !secDoc.data().vietqrClientId || !secDoc.data().vietqrApiKey) {
@@ -151,13 +299,13 @@ module.exports = async function handler(req, res) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            accountNo: accountNo || '0987654321',
-            accountName: (accountName || 'VU MINH CUONG').toUpperCase(),
-            acqId: parseInt(bankId || '970422', 10),
+            accountNo: testAccountNo,
+            accountName: testAccountName,
+            acqId: parseInt(testBankId, 10),
             amount: testAmount,
             addInfo: testCode,
             format: 'text',
-            template: template || 'compact'
+            template: testTemplate
           })
         });
 

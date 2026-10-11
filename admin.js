@@ -2156,6 +2156,19 @@ function bindAiTabEvents(container) {
 // =========================================================================
 let currentBillingSubTab = 'orders'; // 'orders' hoặc 'config'
 
+function normalizeAccountName(name) {
+  if (!name || typeof name !== 'string') return '';
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'D')
+    .replace(/Đ/g, 'D')
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 async function renderBillingTab(container) {
   container.innerHTML = `
     <div class="flex items-center justify-center py-16 text-gray-400 text-xs gap-2">
@@ -2165,9 +2178,10 @@ async function renderBillingTab(container) {
   `;
 
   try {
-    const [cfgRes, ordersRes] = await Promise.all([
+    const [cfgRes, ordersRes, banksRes] = await Promise.all([
       callAdminApi('/api/admin/billing/config').catch(() => ({ bankTransfer: {}, vietqrSecrets: {} })),
-      callAdminApi('/api/admin/billing/orders?status=all&limit=50').catch(() => ({ orders: [], counts: {} }))
+      callAdminApi('/api/admin/billing/orders?status=all&limit=50').catch(() => ({ orders: [], counts: {} })),
+      callAdminApi('/api/admin/billing/banks').catch(() => ({ banks: [] }))
     ]);
 
     const bankTransfer = cfgRes.bankTransfer || {};
@@ -2175,12 +2189,42 @@ async function renderBillingTab(container) {
     const orders = ordersRes.orders || [];
     const counts = ordersRes.counts || {};
 
+    // Danh sách ngân hàng VietQR chính thức
+    let banksList = (banksRes && Array.isArray(banksRes.banks) && banksRes.banks.length > 0) ? banksRes.banks : [
+      { bin: '970403', code: 'STB', shortName: 'Sacombank', name: 'Ngân hàng TMCP Sài Gòn Thương Tín' },
+      { bin: '970422', code: 'MB', shortName: 'MBBank', name: 'Ngân hàng TMCP Quân Đội' },
+      { bin: '970436', code: 'VCB', shortName: 'Vietcombank', name: 'Ngân hàng TMCP Ngoại Thương Việt Nam' },
+      { bin: '970415', code: 'CTG', shortName: 'VietinBank', name: 'Ngân hàng TMCP Công Thương Việt Nam' },
+      { bin: '970418', code: 'BIDV', shortName: 'BIDV', name: 'Ngân hàng TMCP Đầu Tư và Phát Triển Việt Nam' },
+      { bin: '970407', code: 'TCB', shortName: 'Techcombank', name: 'Ngân hàng TMCP Kỹ Thương Việt Nam' },
+      { bin: '970416', code: 'ACB', shortName: 'ACB', name: 'Ngân hàng TMCP Á Châu' },
+      { bin: '970432', code: 'VPB', shortName: 'VPBank', name: 'Ngân hàng TMCP Việt Nam Thịnh Vượng' },
+      { bin: '970423', code: 'TPB', shortName: 'TPBank', name: 'Ngân hàng TMCP Tiên Phong' }
+    ];
+
+    // Seed khởi tạo mặc định nếu Firestore chưa từng được cấu hình: Sacombank
+    const activeBankId = bankTransfer.bankId || '970403';
+    const activeAccountNo = bankTransfer.accountNo || '100071864927';
+    const activeAccountName = bankTransfer.accountName || 'LE BUI MINH CUONG';
+    const activeTemplate = bankTransfer.template || 'compact';
+    const activeTimeout = bankTransfer.orderTimeoutMinutes || 15;
+    const activeQrMode = bankTransfer.qrMode || 'quick';
+
     const userConfirmedCount = counts.userConfirmed || 0;
     const pendingDot = document.getElementById('adminPendingOrdersDot');
     if (pendingDot) {
       if (userConfirmedCount > 0) pendingDot.classList.remove('hidden');
       else pendingDot.classList.add('hidden');
     }
+
+    // Tạo các option cho dropdown ngân hàng
+    const bankOptionsHtml = banksList.map(b => {
+      const isSelected = String(b.bin) === String(activeBankId) || String(b.code).toUpperCase() === String(bankTransfer.bankName || '').toUpperCase();
+      return `<option value="${esc(b.bin)}" data-code="${esc(b.code)}" data-short="${esc(b.shortName)}" data-name="${esc(b.name)}" ${isSelected ? 'selected' : ''}>${esc(b.shortName)} - ${esc(b.name)} (${esc(b.bin)})</option>`;
+    }).join('');
+
+    const safeAccName = encodeURIComponent(activeAccountName);
+    const initialPreviewUrl = `https://img.vietqr.io/image/${activeBankId}-${activeAccountNo}-${activeTemplate}.png?amount=50000&addInfo=TVHTEST123&accountName=${safeAccName}`;
 
     container.innerHTML = `
       <div class="space-y-5">
@@ -2247,63 +2291,63 @@ async function renderBillingTab(container) {
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <!-- KHỐI 1: THÔNG TIN TÀI KHOẢN NGÂN HÀNG NHẬN TIỀN -->
             <div class="lg:col-span-2 bg-white dark:bg-[#1A1D23] p-5 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
-              <div class="border-b border-gray-100 dark:border-gray-800 pb-3">
-                <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Thông tin tài khoản nhận tiền (VietQR)</h4>
-                <p class="text-xs text-gray-500">Mã QR tạo ra sẽ chứa thông tin tài khoản này cùng nội dung chuyển khoản tự động.</p>
+              <div class="border-b border-gray-100 dark:border-gray-800 pb-3 flex items-center justify-between">
+                <div>
+                  <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Thông tin tài khoản nhận tiền (VietQR)</h4>
+                  <p class="text-xs text-gray-500">Mã QR tạo ra sẽ chứa thông tin tài khoản này cùng nội dung chuyển khoản tự động.</p>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">VietQR v2</span>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div>
-                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Ngân hàng nhận:</label>
-                  <select id="cfgBankId" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium">
-                    <option value="970422" ${bankTransfer.bankId === '970422' ? 'selected' : ''}>MBBank (Quân Đội - 970422)</option>
-                    <option value="970436" ${bankTransfer.bankId === '970436' ? 'selected' : ''}>Vietcombank (970436)</option>
-                    <option value="970415" ${bankTransfer.bankId === '970415' ? 'selected' : ''}>VietinBank (970415)</option>
-                    <option value="970418" ${bankTransfer.bankId === '970418' ? 'selected' : ''}>BIDV (970418)</option>
-                    <option value="970407" ${bankTransfer.bankId === '970407' ? 'selected' : ''}>Techcombank (970407)</option>
-                    <option value="970416" ${bankTransfer.bankId === '970416' ? 'selected' : ''}>ACB (Á Châu - 970416)</option>
-                    <option value="970432" ${bankTransfer.bankId === '970432' ? 'selected' : ''}>VPBank (970432)</option>
-                    <option value="970423" ${bankTransfer.bankId === '970423' ? 'selected' : ''}>TPBank (970423)</option>
-                    <option value="970405" ${bankTransfer.bankId === '970405' ? 'selected' : ''}>Agribank (970405)</option>
+                <div class="sm:col-span-2">
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block font-semibold text-gray-700 dark:text-gray-300">Ngân hàng nhận:</label>
+                    <span class="text-[11px] text-gray-400">${banksList.length} ngân hàng được hỗ trợ</span>
+                  </div>
+                  <select id="cfgBankId" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium text-xs">
+                    ${bankOptionsHtml}
                   </select>
                 </div>
 
                 <div>
                   <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Số tài khoản nhận:</label>
-                  <input type="text" id="cfgAccountNo" value="${esc(bankTransfer.accountNo || '')}" placeholder="0987654321" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] font-mono font-bold" />
+                  <input type="text" id="cfgAccountNo" value="${esc(activeAccountNo)}" placeholder="100071864927" maxlength="19" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] font-mono font-bold" />
+                  <p class="text-[10px] text-gray-400 mt-1">Chỉ gồm chữ số (từ 6 đến 19 số)</p>
                 </div>
 
                 <div>
                   <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Tên chủ tài khoản (Viết hoa không dấu):</label>
-                  <input type="text" id="cfgAccountName" value="${esc(bankTransfer.accountName || '')}" placeholder="VU MINH CUONG" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] uppercase font-bold" />
+                  <input type="text" id="cfgAccountName" value="${esc(activeAccountName)}" placeholder="LE BUI MINH CUONG" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] uppercase font-bold" />
+                  <p class="text-[10px] text-gray-400 mt-1">Tự động viết hoa và chuyển tiếng Việt không dấu</p>
                 </div>
 
                 <div>
                   <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Mẫu mã QR (Template):</label>
                   <select id="cfgTemplate" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium">
-                    <option value="compact" ${bankTransfer.template === 'compact' ? 'selected' : ''}>compact (Gọn, kèm STK và tên - Đề xuất)</option>
-                    <option value="compact2" ${bankTransfer.template === 'compact2' ? 'selected' : ''}>compact2 (Hiện đại bo tròn)</option>
-                    <option value="qr_only" ${bankTransfer.template === 'qr_only' ? 'selected' : ''}>qr_only (Chỉ mã QR)</option>
-                    <option value="print" ${bankTransfer.template === 'print' ? 'selected' : ''}>print (Mẫu in thẻ lớn)</option>
+                    <option value="compact" ${activeTemplate === 'compact' ? 'selected' : ''}>compact (Gọn, kèm STK và tên - Đề xuất)</option>
+                    <option value="compact2" ${activeTemplate === 'compact2' ? 'selected' : ''}>compact2 (Hiện đại bo tròn)</option>
+                    <option value="qr_only" ${activeTemplate === 'qr_only' ? 'selected' : ''}>qr_only (Chỉ mã QR)</option>
+                    <option value="print" ${activeTemplate === 'print' ? 'selected' : ''}>print (Mẫu in thẻ lớn)</option>
                   </select>
                 </div>
 
                 <div>
                   <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Thời hạn đơn hàng (Phút):</label>
-                  <input type="number" id="cfgTimeoutMinutes" min="5" max="60" value="${bankTransfer.orderTimeoutMinutes || 15}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] font-bold" />
+                  <input type="number" id="cfgTimeoutMinutes" min="5" max="60" value="${activeTimeout}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] font-bold" />
                 </div>
 
-                <div>
+                <div class="sm:col-span-2">
                   <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Chế độ sinh QR:</label>
                   <select id="cfgQrMode" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-medium">
-                    <option value="quick" ${bankTransfer.qrMode !== 'api' ? 'selected' : ''}>Ảnh QR nhanh (img.vietqr.io - Miễn phí, ổn định)</option>
-                    <option value="api" ${bankTransfer.qrMode === 'api' ? 'selected' : ''}>VietQR Open API v2 (Dùng Client ID & API Key)</option>
+                    <option value="quick" ${activeQrMode !== 'api' ? 'selected' : ''}>Ảnh QR nhanh (img.vietqr.io - Miễn phí, ổn định, không cần key)</option>
+                    <option value="api" ${activeQrMode === 'api' ? 'selected' : ''}>VietQR Open API v2 (Dùng Client ID & API Key)</option>
                   </select>
                 </div>
               </div>
 
               <!-- KHÓA BÍ MẬT VIETQR API (NẾU DÙNG CHẾ ĐỘ API) -->
-              <div id="cfgApiSecretsGroup" class="p-4 rounded-xl bg-gray-50 dark:bg-[#161A20] border border-gray-200 dark:border-gray-800 space-y-3 ${bankTransfer.qrMode === 'api' ? '' : 'hidden'}">
+              <div id="cfgApiSecretsGroup" class="p-4 rounded-xl bg-gray-50 dark:bg-[#161A20] border border-gray-200 dark:border-gray-800 space-y-3 ${activeQrMode === 'api' ? '' : 'hidden'}">
                 <div class="flex items-center justify-between text-xs">
                   <span class="font-bold text-indigo-600">Khóa bí mật VietQR Open API v2 (Lưu mã hóa AES-256)</span>
                   <span>${secrets.isConfigured ? '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">Đã lưu khóa</span>' : '<span class="px-2 py-0.5 rounded text-[10px] bg-gray-200 text-gray-600">Chưa có khóa</span>'}</span>
@@ -2338,12 +2382,12 @@ async function renderBillingTab(container) {
 
                 <div class="p-3 bg-gray-50 dark:bg-[#14171C] rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col items-center">
                   <div class="bg-white p-2 rounded-xl shadow-xs border border-gray-200">
-                    <img id="previewQrImg" src="https://img.vietqr.io/image/${bankTransfer.bankId || '970422'}-${bankTransfer.accountNo || '0987654321'}-${bankTransfer.template || 'compact'}.png?amount=50000&addInfo=TVHTEST123&accountName=${encodeURIComponent((bankTransfer.accountName || 'VU MINH CUONG').toUpperCase())}" alt="QR Preview" class="w-48 h-48 object-contain rounded" />
+                    <img id="previewQrImg" src="${initialPreviewUrl}" alt="QR Preview" class="w-48 h-48 object-contain rounded" />
                   </div>
                   <div class="mt-3 text-center text-xs space-y-1">
                     <div class="font-bold font-mono text-indigo-600">TVHTEST123</div>
-                    <div class="font-bold uppercase text-[11px]">${esc(bankTransfer.accountName || 'VU MINH CUONG')}</div>
-                    <div class="text-[11px] text-gray-500">${esc(bankTransfer.accountNo || '0987654321')}</div>
+                    <div id="previewAccountName" class="font-bold uppercase text-[11px]">${esc(activeAccountName)}</div>
+                    <div id="previewAccountNo" class="text-[11px] text-gray-500">${esc(activeAccountNo)}</div>
                   </div>
                 </div>
               </div>
@@ -2446,6 +2490,54 @@ function bindBillingTabEvents(container, orders) {
     };
   }
 
+  // Tự động cập nhật ảnh xem trước thời gian thực
+  const bankSelect = container.querySelector('#cfgBankId');
+  const accNoInput = container.querySelector('#cfgAccountNo');
+  const accNameInput = container.querySelector('#cfgAccountName');
+  const templateSelect = container.querySelector('#cfgTemplate');
+  const previewImg = container.querySelector('#previewQrImg');
+  const previewAccName = container.querySelector('#previewAccountName');
+  const previewAccNo = container.querySelector('#previewAccountNo');
+
+  function updatePreview() {
+    if (!previewImg) return;
+    const bId = bankSelect ? bankSelect.value : '970403';
+    const aNo = accNoInput ? accNoInput.value.trim() : '';
+    const rawName = accNameInput ? accNameInput.value.trim() : '';
+    const normName = normalizeAccountName(rawName);
+    const tmpl = templateSelect ? templateSelect.value : 'compact';
+
+    if (previewAccName) previewAccName.textContent = normName || 'CHỦ TÀI KHOẢN';
+    if (previewAccNo) previewAccNo.textContent = aNo || 'SỐ TÀI KHOẢN';
+
+    if (bId && aNo && normName) {
+      previewImg.src = `https://img.vietqr.io/image/${bId}-${aNo}-${tmpl}.png?amount=50000&addInfo=TVHTEST123&accountName=${encodeURIComponent(normName)}`;
+    }
+  }
+
+  if (accNoInput) {
+    accNoInput.oninput = () => {
+      // Chỉ cho phép nhập số
+      accNoInput.value = accNoInput.value.replace(/\D/g, '').slice(0, 19);
+      updatePreview();
+    };
+  }
+
+  if (accNameInput) {
+    accNameInput.oninput = () => {
+      // Tự động viết hoa
+      accNameInput.value = accNameInput.value.toUpperCase();
+      updatePreview();
+    };
+    accNameInput.onblur = () => {
+      accNameInput.value = normalizeAccountName(accNameInput.value);
+      updatePreview();
+    };
+  }
+
+  if (bankSelect) bankSelect.onchange = updatePreview;
+  if (templateSelect) templateSelect.onchange = updatePreview;
+
   // Thử nghiệm tạo mã QR mẫu
   const btnTestQr = container.querySelector('#btnTestQr');
   if (btnTestQr) {
@@ -2453,18 +2545,30 @@ function bindBillingTabEvents(container, orders) {
       btnTestQr.disabled = true;
       btnTestQr.innerText = 'Đang tạo QR...';
       try {
+        const bId = document.getElementById('cfgBankId').value;
+        const aNo = document.getElementById('cfgAccountNo').value.trim();
+        const aName = normalizeAccountName(document.getElementById('cfgAccountName').value.trim());
+        const tmpl = document.getElementById('cfgTemplate').value;
+        const mode = document.getElementById('cfgQrMode').value;
+
+        if (!aNo || !/^\d{6,19}$/.test(aNo)) {
+          throw new Error('Vui lòng nhập số tài khoản hợp lệ (từ 6 đến 19 chữ số)');
+        }
+        if (!aName) {
+          throw new Error('Vui lòng nhập tên chủ tài khoản (viết hoa không dấu)');
+        }
+
         const res = await callAdminApi('/api/admin/billing/test-qr', {
           method: 'POST',
           body: JSON.stringify({
-            bankId: document.getElementById('cfgBankId').value,
-            accountNo: document.getElementById('cfgAccountNo').value.trim(),
-            accountName: document.getElementById('cfgAccountName').value.trim(),
-            template: document.getElementById('cfgTemplate').value,
+            bankId: bId,
+            accountNo: aNo,
+            accountName: aName,
+            template: tmpl,
             amount: 50000,
-            mode: document.getElementById('cfgQrMode').value
+            mode: mode
           })
         });
-        const previewImg = document.getElementById('previewQrImg');
         if (previewImg && res.qrUrl) {
           previewImg.src = res.qrUrl;
         }
@@ -2482,15 +2586,56 @@ function bindBillingTabEvents(container, orders) {
   const btnSaveConfig = container.querySelector('#btnSaveBillingConfig');
   if (btnSaveConfig) {
     btnSaveConfig.onclick = async () => {
+      const bSelect = document.getElementById('cfgBankId');
+      const selectedOption = bSelect.selectedOptions[0];
+      const bankId = bSelect.value;
+      const bankCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+      const bankShortName = selectedOption ? (selectedOption.dataset.short || '') : '';
+      const bankName = selectedOption ? (selectedOption.dataset.name || selectedOption.text.split('-')[0].trim()) : '';
+      const accountNo = document.getElementById('cfgAccountNo').value.trim();
+      const rawAccountName = document.getElementById('cfgAccountName').value.trim();
+      const accountName = normalizeAccountName(rawAccountName);
+
+      if (!bankId) {
+        alert('Vui lòng chọn ngân hàng nhận tiền.');
+        return;
+      }
+      if (!accountNo || !/^\d{6,19}$/.test(accountNo)) {
+        alert('Số tài khoản không hợp lệ. Vui lòng nhập từ 6 đến 19 chữ số.');
+        document.getElementById('cfgAccountNo').focus();
+        return;
+      }
+      if (!accountName) {
+        alert('Vui lòng nhập tên chủ tài khoản (viết hoa không dấu).');
+        document.getElementById('cfgAccountName').focus();
+        return;
+      }
+
+      const confirmMsg = `Bạn có chắc chắn muốn LƯU cấu hình thanh toán VietQR với thông tin:\n` +
+        `- Ngân hàng: ${bankShortName || bankName} (BIN: ${bankId})\n` +
+        `- Số tài khoản: ${accountNo}\n` +
+        `- Tên chủ tài khoản: ${accountName}\n\n` +
+        `Mã QR thanh toán cho tất cả đơn hàng mới sẽ tự động cập nhật theo tài khoản này.`;
+
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
       btnSaveConfig.disabled = true;
       btnSaveConfig.innerText = 'Đang lưu...';
       try {
         const payload = {
+          bank: {
+            bin: bankId,
+            code: bankCode,
+            shortName: bankShortName,
+            name: bankName
+          },
           bankTransfer: {
-            bankId: document.getElementById('cfgBankId').value,
-            bankName: document.getElementById('cfgBankId').selectedOptions[0].text.split('(')[0].trim(),
-            accountNo: document.getElementById('cfgAccountNo').value.trim(),
-            accountName: document.getElementById('cfgAccountName').value.trim().toUpperCase(),
+            bankId: bankId,
+            bankName: bankShortName || bankName,
+            accountNo: accountNo,
+            accountName: accountName,
             template: document.getElementById('cfgTemplate').value,
             orderTimeoutMinutes: parseInt(document.getElementById('cfgTimeoutMinutes').value, 10) || 15,
             qrMode: document.getElementById('cfgQrMode').value
@@ -2498,11 +2643,12 @@ function bindBillingTabEvents(container, orders) {
           vietqrClientId: document.getElementById('cfgVietqrClientId') ? document.getElementById('cfgVietqrClientId').value.trim() : '',
           vietqrApiKey: document.getElementById('cfgVietqrApiKey') ? document.getElementById('cfgVietqrApiKey').value.trim() : ''
         };
+
         await callAdminApi('/api/admin/billing/config', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        toast('Đã lưu cấu hình thanh toán VietQR thành công!');
+        toast('Đã lưu cấu hình tài khoản nhận tiền VietQR thành công!');
         renderBillingTab(container);
       } catch (err) {
         alert('Lỗi lưu cấu hình: ' + err.message);

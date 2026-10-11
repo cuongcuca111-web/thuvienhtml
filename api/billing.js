@@ -100,16 +100,34 @@ module.exports = async function handler(req, res) {
         return res.status(500).json({ error: 'Không tìm thấy bảng giá hợp lệ cho gói đã chọn' });
       }
 
-      // Đọc thông tin tài khoản ngân hàng từ cấu hình
-      const bankConfig = plansData.bankTransfer || {
-        bankId: '970422',
-        bankName: 'MBBank (Napas)',
-        accountNo: '0987654321',
-        accountName: 'VU MINH CUONG',
-        template: 'compact',
-        orderTimeoutMinutes: 15,
-        qrMode: 'quick'
-      };
+      // Đọc thông tin tài khoản ngân hàng từ cấu hình payment_config/main (Single Source of Truth)
+      // Tương thích ngược với config/plans.bankTransfer nếu chưa migrate
+      let bankConfig = null;
+      try {
+        const payCfgDoc = await db.doc('payment_config/main').get();
+        if (payCfgDoc.exists) {
+          bankConfig = payCfgDoc.data();
+        }
+      } catch (errCfg) {
+        console.warn('[Billing] Lỗi đọc payment_config/main:', errCfg.message);
+      }
+
+      if (!bankConfig && plansData.bankTransfer) {
+        bankConfig = plansData.bankTransfer;
+      }
+
+      // Xác thực cấu hình tài khoản nhận tiền
+      const rawBankId = (bankConfig && (bankConfig.bankId || (bankConfig.bank && bankConfig.bank.bin))) || '';
+      const rawBankName = (bankConfig && (bankConfig.bankName || (bankConfig.bank && (bankConfig.bank.shortName || bankConfig.bank.name)))) || '';
+      const rawAccountNo = (bankConfig && bankConfig.accountNo) || '';
+      const rawAccountName = (bankConfig && bankConfig.accountName) || '';
+
+      if (!rawBankId || !rawAccountNo || !rawAccountName) {
+        return res.status(503).json({
+          error: 'payment_not_configured',
+          message: 'Thanh toán đang được cấu hình, vui lòng quay lại sau'
+        });
+      }
 
       // 3. Tự động hủy các đơn pending cũ của người dùng
       // Chỉ dùng DUY NHẤT 1 điều kiện .where('uid', '==', uid) để KHÔNG BAO GIỜ cần composite index
@@ -153,10 +171,10 @@ module.exports = async function handler(req, res) {
 
       // Bản chụp thông tin chuyển khoản tại thời điểm tạo đơn
       const bankSnapshot = {
-        bankId: bankConfig.bankId || '970422',
-        bankName: bankConfig.bankName || 'MBBank',
-        accountNo: bankConfig.accountNo || '',
-        accountName: (bankConfig.accountName || '').toUpperCase(),
+        bankId: rawBankId,
+        bankName: rawBankName,
+        accountNo: rawAccountNo,
+        accountName: rawAccountName.toUpperCase().trim(),
         template: bankConfig.template || 'compact'
       };
 
