@@ -201,6 +201,44 @@ Tiêu đề mục: ${context.sectionTitle || 'Không có'}
 <selected_text>
 ${rawText}
 </selected_text>`;
+    } else if (mode === 'flashcard') {
+      userPrompt = `[YÊU CẦU: TẠO FLASHCARD HỌC TẬP TỪ ĐOẠN TRÍCH]
+- Tạo câu hỏi (mặt trước) và câu trả lời trọng tâm (mặt sau) bám sát kiến thức trong <selected_text>.
+- Đặt nội dung vào trường "text" theo định dạng:
+**Câu hỏi:** [Nội dung câu hỏi ôn tập]
+**Trả lời:** [Câu trả lời giải thích súc tích]
+
+<context>
+Tiêu đề mục: ${context.sectionTitle || 'Không có'}
+Đoạn trước: ${context.before || 'Không có'}
+Đoạn sau: ${context.after || 'Không có'}
+</context>
+
+<selected_text>
+${rawText}
+</selected_text>`;
+    } else if (mode === 'quiz') {
+      userPrompt = `[YÊU CẦU: TẠO CÂU HỎI TRẮC NGHIỆM QUIZ TỪ ĐOẠN TRÍCH]
+- Tạo 1 câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có 1 đáp án đúng và 3 đáp án nhiễu hợp lý từ <selected_text>.
+- Đặt nội dung vào trường "text" gồm:
+**Câu hỏi:** [Nội dung câu hỏi]
+A. [Phương án A]
+B. [Phương án B]
+C. [Phương án C]
+D. [Phương án D]
+
+**Đáp án đúng:** [Phương án đúng]
+**Giải thích:** [Phân tích chi tiết tại sao đúng và tại sao các phương án khác chưa chính xác]
+
+<context>
+Tiêu đề mục: ${context.sectionTitle || 'Không có'}
+Đoạn trước: ${context.before || 'Không có'}
+Đoạn sau: ${context.after || 'Không có'}
+</context>
+
+<selected_text>
+${rawText}
+</selected_text>`;
     }
 
     const jsonSchema = {

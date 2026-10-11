@@ -1,7 +1,11 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v4.9.2)
-// FIX: Sử dụng chiến lược Mạng trước - Cache sau (Network-First) cho index.html để tránh bị kẹt bản cũ
+// Service Worker cho Ứng dụng Sách HTML (PWA v4.9.3)
+// FIX-1: Khắc phục lỗi tự tải lại liên tục (infinite reload loop).
+// - Nguồn phiên bản duy nhất APP_VERSION đồng bộ với index.html.
+// - KHÔNG gọi skipWaiting() tự động trong install. Chỉ skipWaiting khi client gửi tin nhắn SKIP_WAITING có kiểm soát.
+// - Dùng chiến lược Mạng trước - Cache sau (fetch với cache: 'no-cache') cho HTML để luôn lấy bản mới nhất khi online.
 
-const CACHE_NAME = 'thuvienhtml-cache-v4.9.2';
+const APP_VERSION = 'v4.9.3';
+const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [
   './',
@@ -9,13 +13,13 @@ const PRECACHE_ASSETS = [
   './manifest.json'
 ];
 
-// 1. Cài đặt Service Worker và kích hoạt ngay bản mới
+// 1. Cài đặt Service Worker (Precache tài nguyên ban đầu)
+// // FIX-1: Tuyệt đối không gọi self.skipWaiting() tại đây. Worker mới phải ở trạng thái waiting cho đến khi người dùng xác nhận.
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn("Lỗi precache:", err);
+        console.warn("[SW] Lỗi precache tài nguyên ban đầu:", err);
       });
     })
   );
@@ -28,7 +32,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((name) => {
           if (name !== CACHE_NAME) {
-            console.log("Xóa cache cũ:", name);
+            console.log("[SW] Dọn dẹp cache cũ:", name);
             return caches.delete(name);
           }
         })
@@ -42,16 +46,20 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Bỏ qua các request không phải GET hoặc yêu cầu từ Firebase Firestore / Google APIs / Auth
-  if (req.method !== 'GET' || url.hostname.includes('firebaseio.com') || url.hostname.includes('googleapis.com') || url.hostname.includes('identitytoolkit')) {
+  // Bỏ qua các request không phải GET hoặc yêu cầu từ Firebase Firestore / Google APIs / Auth / Vercel API
+  if (req.method !== 'GET' || 
+      url.pathname.startsWith('/api/') ||
+      url.hostname.includes('firebaseio.com') || 
+      url.hostname.includes('googleapis.com') || 
+      url.hostname.includes('identitytoolkit')) {
     return;
   }
 
-  // Đối với điều hướng HTML hoặc tải trang chính: LUÔN ƯU TIÊN MẠNG TRƯỚC (Network-First)
+  // Đối với điều hướng HTML hoặc tải trang chính: LUÔN ƯU TIÊN MẠNG TRƯỚC (Network-First với cache: 'no-cache')
   const isHtmlPage = req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/') || url.pathname === '';
   if (isHtmlPage) {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
@@ -85,7 +93,8 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// 4. Nhận tin nhắn từ app (khi người dùng bấm "Tải lại" hoặc "Xóa cache")
+// 4. Nhận tin nhắn từ app (khi người dùng chủ động bấm "Cập nhật ngay" hoặc "Xóa cache")
+// // FIX-1: Chỉ kích hoạt skipWaiting khi có sự kiện chỉ định từ client
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

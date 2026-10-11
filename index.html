@@ -41,6 +41,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v4.9.3',
+        date: '2026-10-11T17:30:00+07:00',
+        title: 'Tối ưu PWA trên di động: Khắc phục tải lại lặp & Thanh công cụ bôi đen chuẩn iOS',
+        items: [
+          { type: 'fixed', text: 'Sửa triệt để lỗi tự động tải lại trang liên tục khi phát hiện bản Service Worker mới trên PWA và Safari' },
+          { type: 'fixed', text: 'Chuyển thanh công cụ bôi đen chữ trên thiết bị cảm ứng xuống cố định ở đáy màn hình, không đè menu hệ thống của iOS' },
+          { type: 'improved', text: 'Thêm cơ chế chống lặp cập nhật, nút Để sau và Xóa cache an toàn khi có sự cố Service Worker' },
+          { type: 'improved', text: 'Vùng chạm thanh công cụ đạt chuẩn 44px, hỗ trợ hoàn tác và chống mất vùng chọn văn bản khi thao tác' }
+        ]
+      },
+      {
         version: 'v4.9.1',
         date: '2026-10-11T10:30:00+07:00',
         title: 'Hỗ trợ AI giải thích tại chỗ, Quiz trắc nghiệm & Mã hóa API Key',
@@ -75,9 +86,17 @@
     ];
     window.CHANGELOG = CHANGELOG;
 
-    // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v4.9.1';
+    // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v4.9.3';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
+
+    function isTouchDevice() {
+      return (typeof window !== 'undefined') && (
+        window.matchMedia('(pointer: coarse)').matches ||
+        ('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0)
+      );
+    }
 
     function sanitizeHtml(value) { return escapeHtml(value); }
 
@@ -1666,38 +1685,8 @@
 
 
   </style>
-  <!-- // FEATURE-11: Đăng ký Service Worker và PWA Manifest -->
+  <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.9.2', { scope: './' })
-          .then(reg => {
-            reg.update();
-            reg.addEventListener('updatefound', () => {
-              const newWorker = reg.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  const banner = document.getElementById('appUpdateBanner');
-                  if (banner) banner.classList.remove('hidden');
-                  newWorker.postMessage({ type: 'SKIP_WAITING' });
-                }
-              });
-            });
-          })
-          .catch(err => console.warn('PWA ServiceWorker error:', err));
-
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-          }
-        });
-      });
-    }
-  </script>
-
 </head>
 <body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
   <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
@@ -3126,6 +3115,80 @@
       <span class="text-[10px] mt-0.5">Tiếp</span>
     </button>
   </nav>
+
+  <!-- // FIX-2: THANH CÔNG CỤ BÔI ĐEN CỐ ĐỊNH Ở ĐÁY MÀN HÌNH CHO THIẾT BỊ CẢM ỨNG (TOUCH / COARSE POINTER) -->
+  <aside id="mobileSelectionActionBar" class="hidden md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-2 pt-1 pb-[max(0.6rem,env(safe-area-inset-bottom,0px))] flex items-center justify-between gap-1 shadow-2xl transition-all duration-200 select-none" aria-label="Thao tác đoạn văn bản đã chọn">
+    <!-- 4 chấm màu tròn viền nổi -->
+    <div class="flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded-full bg-black/5 dark:bg-white/5">
+      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="yellow" title="Khung màu Vàng" aria-label="Màu Vàng">
+        <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #d97706;"></span>
+      </button>
+      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="green" title="Khung màu Xanh" aria-label="Màu Xanh">
+        <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #059669;"></span>
+      </button>
+      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="pink" title="Khung màu Hồng" aria-label="Màu Hồng">
+        <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #db2777;"></span>
+      </button>
+      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="purple" title="Khung màu Tím" aria-label="Màu Tím">
+        <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #7c3aed;"></span>
+      </button>
+    </div>
+
+    <!-- Nút Đóng khung chính -->
+    <button id="mbBtnApplyFraming" type="button" class="min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer shrink-0" aria-label="Đóng khung đoạn đã chọn">
+      <svg class="w-4 h-4 shrink-0"><use href="#frame-glyph"></use></svg>
+      <span class="whitespace-nowrap font-medium">Khung</span>
+    </button>
+
+    <!-- Nút Ghi chú -->
+    <button id="mbBtnAddNote" type="button" class="min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs flex items-center gap-1 transition cursor-pointer shrink-0" aria-label="Thêm ghi chú">
+      <svg class="w-4 h-4 shrink-0"><use href="#icon-pencil"></use></svg>
+      <span class="whitespace-nowrap">Ghi chú</span>
+    </button>
+
+    <!-- Nút Cục tẩy (chỉ hiện khi selection giao với khung) -->
+    <button id="mbBtnEraser" type="button" class="hidden min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium text-xs flex items-center gap-1 transition cursor-pointer shrink-0" aria-label="Xóa khung">
+      <svg class="w-4 h-4 shrink-0"><use href="#icon-trash-2"></use></svg>
+      <span class="whitespace-nowrap">Xóa</span>
+    </button>
+
+    <!-- Nút AI (mở menu AI) -->
+    <div class="relative shrink-0">
+      <button id="mbBtnAiDropdown" type="button" class="min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer" aria-label="Tác vụ AI">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span class="whitespace-nowrap">AI ▾</span>
+      </button>
+
+      <!-- Popup menu AI trên thanh di động -->
+      <div id="mbAiMenuPopup" class="hidden absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-[#1C1917] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] rounded-2xl shadow-2xl p-1.5 flex flex-col gap-1 z-50">
+        <button id="mbAiActionExplain" type="button" class="min-h-[44px] text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+          <span class="font-medium">Giải thích đơn giản</span>
+        </button>
+        <button id="mbAiActionExample" type="button" class="min-h-[44px] text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+          <span class="font-medium">Ví dụ thực tế</span>
+        </button>
+        <button id="mbAiActionTranslate" type="button" class="min-h-[44px] text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+          <span class="font-medium">Dịch nhanh</span>
+        </button>
+        <button id="mbAiActionFlashcard" type="button" class="min-h-[44px] text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400"><use href="#icon-cards"></use></svg>
+          <span class="font-medium">Tạo flashcard</span>
+        </button>
+        <button id="mbAiActionQuiz" type="button" class="min-h-[44px] text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl text-xs flex items-center gap-2.5 transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400"><use href="#icon-check-circle"></use></svg>
+          <span class="font-medium">Tạo quiz</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Nút Bỏ chọn -->
+    <button id="mbBtnCancelSelection" type="button" class="min-w-[40px] min-h-[44px] w-10 h-11 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#9AA3B2] flex items-center justify-center transition shrink-0 cursor-pointer" title="Bỏ chọn" aria-label="Bỏ chọn">
+      <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+    </button>
+  </aside>
 
   <!-- THANH CÔNG CỤ NỔI KHI ĐỌC TOÀN MÀN HÌNH -->
   <div id="fullscreenFloatingBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#181B20]/95 backdrop-blur-md text-white border border-white/10 px-4 py-2 rounded-pill shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
@@ -5334,14 +5397,23 @@
     </div>
   </div>
 
-  <!-- // FEATURE-11: Banner thông báo cập nhật bản mới -->
-  <div id="appUpdateBanner" class="hidden fixed bottom-4 left-4 z-[9998] max-w-sm bg-indigo-900/95 text-white p-3.5 rounded-2xl shadow-2xl backdrop-blur-md border border-indigo-700/60 flex items-center justify-between gap-3 text-xs">
-    <div class="flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-indigo-300 animate-ping shrink-0"></span>
-      <p class="font-medium text-[11px]">Đã có bản cập nhật mới cho Thư viện Sách.</p>
+  <!-- // FIX-1: Banner thông báo cập nhật bản mới an toàn, không modal, vị trí trên thanh điều hướng đáy và safe-area -->
+  <aside id="appUpdateBanner" class="hidden fixed bottom-[calc(max(3.75rem,env(safe-area-inset-bottom,0px))+0.75rem)] md:bottom-4 left-3 right-3 sm:left-4 sm:right-auto sm:max-w-md z-[9998] bg-[#1C1917]/95 dark:bg-[#20252F]/95 text-white p-3 sm:p-3.5 rounded-2xl shadow-2xl backdrop-blur-md border border-white/15 dark:border-white/10 flex flex-col gap-2.5 text-xs transition-all duration-200 select-none" aria-label="Thông báo cập nhật ứng dụng">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span id="appUpdateBannerDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <p id="appUpdateBannerText" class="font-medium text-xs text-white/95 truncate">Đã có bản cập nhật mới cho Thư viện Sách.</p>
+      </div>
+      <button id="btnDismissAppUpdate" type="button" class="touch-target p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition cursor-pointer" title="Để sau" aria-label="Đóng thông báo">
+        <svg class="w-4 h-4 shrink-0"><use href="#icon-x"></use></svg>
+      </button>
     </div>
-    <button id="btnReloadAppUpdate" class="px-2.5 py-1.5 rounded-lg bg-white text-indigo-900 font-bold hover:bg-indigo-50 transition cursor-pointer text-[11px] shrink-0">Cập nhật ngay</button>
-  </div>
+    <div id="appUpdateBannerActions" class="flex items-center justify-end gap-2 pt-1 border-t border-white/10">
+      <button id="btnDismissAppUpdateText" type="button" class="touch-target px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-medium text-xs transition cursor-pointer">Để sau</button>
+      <button id="btnReloadAppUpdate" type="button" class="touch-target px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-semibold text-xs shadow-md transition cursor-pointer">Cập nhật ngay</button>
+      <button id="btnClearCacheAppUpdate" type="button" class="hidden touch-target px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-semibold text-xs shadow-md transition cursor-pointer">Xóa cache & tải lại</button>
+    </div>
+  </aside>
 
     <!-- // FEATURE-1: Thanh tiến độ cuộn bài siêu mảnh trong Chế độ tập trung -->
   <div id="focusProgressBar" class="hidden"></div>
@@ -8873,8 +8945,11 @@
     }, 40);
   }
 
+  // // FIX-2: Debounce sự kiện selectionchange 250ms chống giật lag và tối ưu thao tác trên cảm ứng
+  let _iframeSelectionDebounceTimer = null;
   document.addEventListener('selectionchange', () => {
-    setTimeout(() => {
+    clearTimeout(_iframeSelectionDebounceTimer);
+    _iframeSelectionDebounceTimer = setTimeout(() => {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || !sel.toString().trim()) {
         window.parent.postMessage({ type: 'TEXT_DESELECTED' }, '*');
@@ -8943,7 +9018,7 @@
         quoteFont: quoteFont,
         rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
-    }, 30);
+    }, 250);
   });
 
   // VIỆC 1: Click 1 lần KHÔNG làm gì cả
@@ -9105,6 +9180,15 @@
     if (!msg || typeof msg !== 'object') return;
 
     switch (msg.type) {
+      // // FIX-2: Xóa vùng chọn trong iframe khi hoàn thành thao tác để tắt menu mặc định của iOS
+      case 'CLEAR_SELECTION': {
+        try {
+          const sel = window.getSelection();
+          if (sel) sel.removeAllRanges();
+        } catch (_) {}
+        break;
+      }
+
       case 'INIT_CONFIG': {
         if (msg.zoomFactor) {
           applyNativeScale(msg.zoomFactor);
@@ -9710,6 +9794,88 @@
     let bridgeReadableChunks = [];
     let currentSelectionInfoBridge = null;
 
+    // // FIX-2: ĐIỀU HƯỚNG HIỂN THỊ THANH CÔNG CỤ BÔI ĐEN TRÊN DESKTOP VS CẢM ỨNG DI ĐỘNG (IOS SAFARI)
+    function showSelectionToolbar(hasIntersectingFrames = false, rect = null, ifr = null) {
+      const mbBar = document.getElementById('mobileBottomBar');
+      const mbActionBar = document.getElementById('mobileSelectionActionBar');
+      const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+      const mbEraser = document.getElementById('mbBtnEraser');
+
+      if (isTouchDevice()) {
+        // Trên thiết bị cảm ứng: Ẩn thanh nổi để không đè popup hệ thống iOS, hiện thanh cố định ở đáy
+        if (hlToolbar) hlToolbar.classList.add('hidden');
+        if (mbBar) mbBar.classList.add('hidden');
+        if (mbActionBar) {
+          mbActionBar.classList.remove('hidden');
+          if (mbEraser) {
+            if (hasIntersectingFrames) mbEraser.classList.remove('hidden');
+            else mbEraser.classList.add('hidden');
+          }
+        }
+        if (typeof updateToolbarColorIndicators === 'function') {
+          updateToolbarColorIndicators();
+        }
+      } else {
+        // Desktop: Giữ thanh nổi floating gần vị trí selection
+        if (mbActionBar) mbActionBar.classList.add('hidden');
+        if (mbBar) mbBar.classList.remove('hidden');
+        if (hlToolbar && rect) {
+          const ifRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
+          const isNearTop = (ifRect.top + rect.top) < 60;
+          const topPos = isNearTop
+            ? Math.max(10, ifRect.top + rect.bottom + 8)
+            : Math.max(10, ifRect.top + rect.top - 46);
+          const centerHoriz = ifRect.left + rect.left + ((rect.width || 0) / 2);
+          const leftPos = Math.max(12, Math.min(window.innerWidth - 320, centerHoriz - 140));
+          hlToolbar.style.top = `${topPos}px`;
+          hlToolbar.style.left = `${leftPos}px`;
+          hlToolbar.classList.remove('hidden');
+          if (typeof updateToolbarColorIndicators === 'function') {
+            updateToolbarColorIndicators();
+          }
+          if (typeof updateToolbarEraserState === 'function') {
+            updateToolbarEraserState(hasIntersectingFrames);
+          }
+        }
+      }
+    }
+
+    function hideSelectionToolbar() {
+      const mbBar = document.getElementById('mobileBottomBar');
+      const mbActionBar = document.getElementById('mobileSelectionActionBar');
+      const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+      const mbAiMenuPopup = document.getElementById('mbAiMenuPopup');
+
+      if (mbActionBar) mbActionBar.classList.add('hidden');
+      if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+      if (mbBar) mbBar.classList.remove('hidden');
+      if (hlToolbar && !hlToolbar.matches(':hover')) {
+        hlToolbar.classList.add('hidden');
+        if (typeof updateToolbarEraserState === 'function') {
+          updateToolbarEraserState(false);
+        }
+      }
+    }
+
+    function clearAllSelectionContexts() {
+      try {
+        const sel = window.getSelection();
+        if (sel) sel.removeAllRanges();
+      } catch (_) {}
+      try {
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        if (doc && doc.getSelection) {
+          const iSel = doc.getSelection();
+          if (iSel) iSel.removeAllRanges();
+        }
+      } catch (_) {}
+      postMessageToLessonIframe({ type: 'CLEAR_SELECTION' });
+      currentSelectionInfo = null;
+      currentSelectionInfoBridge = null;
+      hideSelectionToolbar();
+    }
+
     function handleBridgeMessageFromIframe(e) {
       const iframe = document.getElementById('lessonIframe');
       if (!iframe || e.source !== iframe.contentWindow) return; // Bảo mật: Chỉ nhận từ iframe bài học
@@ -9773,22 +9939,8 @@
           if (typeof updateAiButtonsVisibility === 'function') {
             updateAiButtonsVisibility(msg.text);
           }
-          const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
-          if (hlToolbar && msg.rect) {
-            const ifRect = iframe.getBoundingClientRect();
-            const isNearTop = (ifRect.top + msg.rect.top) < 60;
-            const topPos = isNearTop
-              ? Math.max(10, ifRect.top + msg.rect.bottom + 8)
-              : Math.max(10, ifRect.top + msg.rect.top - 46);
-            const centerHoriz = ifRect.left + msg.rect.left + ((msg.rect.width || 0) / 2);
-            const leftPos = Math.max(12, Math.min(window.innerWidth - 320, centerHoriz - 140));
-            hlToolbar.style.top = `${topPos}px`;
-            hlToolbar.style.left = `${leftPos}px`;
-            hlToolbar.classList.remove('hidden');
-            if (typeof updateToolbarEraserState === 'function') {
-              updateToolbarEraserState(checkSelectionIntersectsFrames());
-            }
-          }
+          const hasIntersect = typeof checkSelectionIntersectsFrames === 'function' ? checkSelectionIntersectsFrames() : false;
+          showSelectionToolbar(hasIntersect, msg.rect, iframe);
           break;
         }
 
@@ -9797,13 +9949,7 @@
           if (typeof updateAiButtonsVisibility === 'function') {
             updateAiButtonsVisibility('');
           }
-          const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
-          if (hlToolbar && !hlToolbar.matches(':hover')) {
-            hlToolbar.classList.add('hidden');
-            if (typeof updateToolbarEraserState === 'function') {
-              updateToolbarEraserState(false);
-            }
-          }
+          hideSelectionToolbar();
           break;
         }
 
@@ -19813,41 +19959,237 @@
       showToast("Cài đặt thành công! Mở ứng dụng từ màn hình chính.");
     });
 
-    // // FIX: Đăng ký Service Worker tệp sw.js (v3.4) chuẩn, hỗ trợ bắt sự kiện updatefound
-    function registerPwaServiceWorker() {
-      if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-        navigator.serviceWorker.register('./sw.js?v=4.2.0', { scope: './' }).then((reg) => {
-          console.debug("PWA Service Worker đã sẵn sàng.", reg);
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  const banner = document.getElementById('appUpdateBanner');
-                  if (banner) banner.classList.remove('hidden');
-                }
-              });
-            }
-          });
-        }).catch((err) => {
-          console.warn("Không thể kích hoạt Service Worker:", err);
-        });
-      }
+    // // FIX-1: HỆ THỐNG QUẢN LÝ SERVICE WORKER CHUẨN XÁC, CHỐNG RELOAD LOOP & QUÁ TẢI CẬP NHẬT
+    let _swWaitingWorker = null;
+    let _swReloadTriggered = false;
+
+    // Kiểm tra xem người dùng có đang bận thao tác hay không (bôi đen, gõ chữ, soạn ghi chú...)
+    function isUserBusyWithContent() {
+      try {
+        const hasSelection = (window.getSelection && !window.getSelection().isCollapsed && window.getSelection().toString().trim().length > 0)
+          || Boolean(currentSelectionInfoBridge && currentSelectionInfoBridge.text)
+          || Boolean(currentSelectionInfo && currentSelectionInfo.text);
+        if (hasSelection) return true;
+
+        const activeEl = document.activeElement;
+        if (activeEl && (['INPUT', 'TEXTAREA'].includes(activeEl.tagName) || activeEl.isContentEditable)) {
+          return true;
+        }
+
+        const noteModal = document.getElementById('highlightDetailModal');
+        if (noteModal && !noteModal.classList.contains('hidden')) return true;
+
+        const pasteModal = document.getElementById('pasteContentModal');
+        if (pasteModal && !pasteModal.classList.contains('hidden')) return true;
+      } catch (_) {}
+      return false;
     }
 
+    // Hiển thị banner cập nhật một cách an toàn (tránh làm phiền khi đang đọc/chọn chữ)
+    function promptAppUpdateSafely(isLoopDetected = false) {
+      const banner = document.getElementById('appUpdateBanner');
+      if (!banner) return;
+
+      const dismissedUntil = parseInt(localStorage.getItem('sw_dismissed_' + CURRENT_APP_VERSION) || '0', 10);
+      if (!isLoopDetected && dismissedUntil > Date.now()) {
+        console.debug("[SW] Bản cập nhật đã bị tạm ẩn bởi người dùng.");
+        return;
+      }
+
+      if (isUserBusyWithContent()) {
+        console.debug("[SW] Người dùng đang thao tác văn bản, hoãn hiện thông báo cập nhật.");
+        setTimeout(() => promptAppUpdateSafely(isLoopDetected), 5000);
+        return;
+      }
+
+      const bannerText = document.getElementById('appUpdateBannerText');
+      const btnReload = document.getElementById('btnReloadAppUpdate');
+      const btnClearCache = document.getElementById('btnClearCacheAppUpdate');
+      const dot = document.getElementById('appUpdateBannerDot');
+
+      if (isLoopDetected) {
+        if (bannerText) bannerText.textContent = "Cập nhật chưa xong • Đã dừng tải lại tự động";
+        if (btnReload) btnReload.classList.add('hidden');
+        if (btnClearCache) btnClearCache.classList.remove('hidden');
+        if (dot) {
+          dot.classList.remove('bg-emerald-400');
+          dot.classList.add('bg-amber-400');
+        }
+      } else {
+        if (bannerText) bannerText.textContent = "Đã có bản cập nhật mới cho Thư viện Sách.";
+        if (btnReload) btnReload.classList.remove('hidden');
+        if (btnClearCache) btnClearCache.classList.add('hidden');
+        if (dot) {
+          dot.classList.remove('bg-amber-400');
+          dot.classList.add('bg-emerald-400');
+        }
+      }
+
+      banner.classList.remove('hidden');
+    }
+
+    // Xóa cache triệt để và tải lại (dùng khi xảy ra vòng lặp cập nhật)
+    async function clearAppCacheAndReload() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const reg of registrations) {
+            await reg.unregister();
+          }
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          for (const key of keys) {
+            await caches.delete(key);
+          }
+        }
+        sessionStorage.removeItem('sw_reload_timestamps');
+        sessionStorage.removeItem('sw_attempted_version');
+      } catch (err) {
+        console.warn("[SW] Lỗi khi xóa cache:", err);
+      }
+      window.location.reload(true);
+    }
+
+    function registerPwaServiceWorker() {
+      if (!('serviceWorker' in navigator)) return;
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') return;
+
+      // 1. Kiểm tra vòng lặp tải lại trong 60 giây (Loop Guard)
+      let reloadTimestamps = [];
+      try {
+        reloadTimestamps = JSON.parse(sessionStorage.getItem('sw_reload_timestamps') || '[]');
+      } catch (_) { reloadTimestamps = []; }
+      
+      const now = Date.now();
+      reloadTimestamps = reloadTimestamps.filter(t => (now - t) < 60000);
+      sessionStorage.setItem('sw_reload_timestamps', JSON.stringify(reloadTimestamps));
+
+      const attemptedVer = sessionStorage.getItem('sw_attempted_version');
+      const isLoopDetected = reloadTimestamps.length >= 2 || (attemptedVer === CURRENT_APP_VERSION && reloadTimestamps.length >= 1);
+
+      if (isLoopDetected) {
+        console.warn("[SW] Phát hiện khả năng lặp cập nhật (>=2 lần reload trong 60s). Dừng reload tự động.");
+        promptAppUpdateSafely(true);
+        return;
+      }
+
+      // 2. Đăng ký Service Worker với đúng CURRENT_APP_VERSION
+      navigator.serviceWorker.register(`./sw.js?v=${CURRENT_APP_VERSION}`, { scope: './' })
+        .then((reg) => {
+          console.debug("[SW] Đăng ký thành công:", reg);
+
+          // Nếu có worker đang waiting sẵn
+          if (reg.waiting) {
+            _swWaitingWorker = reg.waiting;
+            promptAppUpdateSafely(false);
+          }
+
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                _swWaitingWorker = newWorker;
+                promptAppUpdateSafely(false);
+              }
+            });
+          });
+
+          // 3. Kiểm tra cập nhật định kỳ tối đa mỗi 30 phút
+          const checkUpdateThrottled = () => {
+            const lastCheck = parseInt(localStorage.getItem('sw_last_check_time') || '0', 10);
+            if (Date.now() - lastCheck > 30 * 60 * 1000) {
+              localStorage.setItem('sw_last_check_time', Date.now().toString());
+              try { reg.update(); } catch (_) {}
+            }
+          };
+
+          checkUpdateThrottled();
+
+          // Khi tab quay trở lại foreground (visibilitychange)
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              checkUpdateThrottled();
+            }
+          });
+        })
+        .catch((err) => {
+          console.warn("[SW] Lỗi kích hoạt Service Worker:", err);
+        });
+
+      // 4. Lắng nghe controllerchange: CHỈ reload DUY NHẤT một lần khi người dùng ĐÃ BẤM cập nhật
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (_swReloadTriggered) return;
+        const userExplicitlyClicked = sessionStorage.getItem('sw_user_triggered_reload') === 'true';
+        if (userExplicitlyClicked) {
+          _swReloadTriggered = true;
+          sessionStorage.removeItem('sw_user_triggered_reload');
+          window.location.reload();
+        }
+      });
+    }
+
+    // Nút "Cập nhật ngay"
     const btnReloadAppUpdate = document.getElementById('btnReloadAppUpdate');
     if (btnReloadAppUpdate) {
       btnReloadAppUpdate.addEventListener('click', () => {
-        if ('serviceWorker' in navigator) {
+        if (isUserBusyWithContent()) {
+          showToast("Vui lòng hoàn thành thao tác hiện tại trước khi cập nhật", "info");
+          return;
+        }
+
+        // Ghi nhận lần thử cập nhật vào sessionStorage để chống vòng lặp
+        try {
+          let timestamps = JSON.parse(sessionStorage.getItem('sw_reload_timestamps') || '[]');
+          timestamps.push(Date.now());
+          sessionStorage.setItem('sw_reload_timestamps', JSON.stringify(timestamps));
+          sessionStorage.setItem('sw_attempted_version', CURRENT_APP_VERSION);
+          sessionStorage.setItem('sw_user_triggered_reload', 'true');
+        } catch (_) {}
+
+        if (_swWaitingWorker) {
+          _swWaitingWorker.postMessage({ type: 'SKIP_WAITING' });
+        } else if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistration().then(reg => {
             if (reg && reg.waiting) {
               reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+              window.location.reload();
             }
-            window.location.reload();
           });
         } else {
           window.location.reload();
         }
+
+        // Chốt chặn an toàn: nếu sau 2.5s không nhận được controllerchange thì tải lại một lần
+        setTimeout(() => {
+          if (!_swReloadTriggered) {
+            _swReloadTriggered = true;
+            window.location.reload();
+          }
+        }, 2500);
+      });
+    }
+
+    // Nút "Để sau" (cả icon X lẫn nút chữ)
+    const btnDismissAppUpdate = document.getElementById('btnDismissAppUpdate');
+    const btnDismissAppUpdateText = document.getElementById('btnDismissAppUpdateText');
+    const handleDismissUpdate = () => {
+      const banner = document.getElementById('appUpdateBanner');
+      if (banner) banner.classList.add('hidden');
+      // Tạm ẩn ít nhất 6 giờ cho cùng phiên bản
+      localStorage.setItem('sw_dismissed_' + CURRENT_APP_VERSION, (Date.now() + 6 * 3600 * 1000).toString());
+    };
+    if (btnDismissAppUpdate) btnDismissAppUpdate.addEventListener('click', handleDismissUpdate);
+    if (btnDismissAppUpdateText) btnDismissAppUpdateText.addEventListener('click', handleDismissUpdate);
+
+    // Nút "Xóa cache & tải lại" khi có lỗi vòng lặp
+    const btnClearCacheAppUpdate = document.getElementById('btnClearCacheAppUpdate');
+    if (btnClearCacheAppUpdate) {
+      btnClearCacheAppUpdate.addEventListener('click', () => {
+        clearAppCacheAndReload();
       });
     }
 
@@ -22416,29 +22758,59 @@
 
     // Cập nhật viền vòng tròn thể hiện màu đang chọn trên thanh công cụ
     function updateToolbarColorIndicators() {
-      if (!hlToolbar) return;
-      hlToolbar.querySelectorAll('.hl-color-btn').forEach(btn => {
-        const col = btn.getAttribute('data-color');
-        if (activeFramingColor !== 'custom' && col === activeFramingColor) {
-          btn.classList.add('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
-        } else {
-          btn.classList.remove('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
-        }
-      });
-      const customLabel = document.getElementById('btnCustomColorLabel');
-      if (customLabel) {
-        if (activeFramingColor === 'custom') {
-          customLabel.classList.add('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
-        } else {
-          customLabel.classList.remove('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+      if (hlToolbar) {
+        hlToolbar.querySelectorAll('.hl-color-btn').forEach(btn => {
+          const col = btn.getAttribute('data-color');
+          if (activeFramingColor !== 'custom' && col === activeFramingColor) {
+            btn.classList.add('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+          } else {
+            btn.classList.remove('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+          }
+        });
+        const customLabel = document.getElementById('btnCustomColorLabel');
+        if (customLabel) {
+          if (activeFramingColor === 'custom') {
+            customLabel.classList.add('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+          } else {
+            customLabel.classList.remove('ring-2', 'ring-white', 'dark:ring-black', 'scale-110');
+          }
         }
       }
+
+      // // FIX-2: Cập nhật viền thể hiện màu trên thanh bôi đen di động
+      document.querySelectorAll('.mobile-hl-color-btn').forEach(btn => {
+        const col = btn.getAttribute('data-color');
+        const dot = btn.querySelector('span');
+        if (dot) {
+          if (activeFramingColor !== 'custom' && col === activeFramingColor) {
+            dot.classList.add('ring-2', 'ring-indigo-600', 'dark:ring-indigo-400', 'scale-110');
+          } else {
+            dot.classList.remove('ring-2', 'ring-indigo-600', 'dark:ring-indigo-400', 'scale-110');
+          }
+        }
+      });
     }
 
     // Ngăn chặn việc mất vùng chọn (selection blur) khi nhấn vào thanh công cụ nổi
     if (hlToolbar) {
       ['mousedown', 'touchstart', 'pointerdown'].forEach(evtType => {
         hlToolbar.addEventListener(evtType, (e) => {
+          if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+          }
+        }, { passive: false });
+      });
+    }
+
+    // // FIX-2: Chống mất vùng chọn (selection blur) khi chạm vào thanh công cụ di động
+    const mbActionBarEl = document.getElementById('mobileSelectionActionBar');
+    if (mbActionBarEl) {
+      ['mousedown', 'touchstart', 'pointerdown'].forEach(evtType => {
+        mbActionBarEl.addEventListener(evtType, (e) => {
+          if (typeof getCurrentSelectionOffsets === 'function') {
+            window._lastCapturedSelectionOffsets = getCurrentSelectionOffsets();
+            window._lastCapturedSelectionTime = Date.now();
+          }
           if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
             e.preventDefault();
           }
@@ -22598,17 +22970,12 @@
           setTimeout(() => {
             const sel = doc.getSelection();
             if (!sel || sel.isCollapsed || !sel.toString().trim()) {
-              if (hlToolbar && !hlToolbar.matches(':hover')) {
-                hlToolbar.classList.add('hidden');
-                if (typeof updateToolbarEraserState === 'function') {
-                  updateToolbarEraserState(false);
-                }
-              }
               if (typeof updateAiButtonsVisibility === 'function') {
                 updateAiButtonsVisibility('');
               }
               currentSelectionInfo = null;
               lastHintedFrameId = null;
+              hideSelectionToolbar();
               return;
             }
 
@@ -22673,7 +23040,6 @@
             } catch (_) {}
 
             const rect = range.getBoundingClientRect();
-            const ifRect = iframe.getBoundingClientRect();
 
             currentSelectionInfo = {
               text: text,
@@ -22689,28 +23055,15 @@
               updateAiButtonsVisibility(text);
             }
 
-            if (hlToolbar) {
-              const isNearTop = (ifRect.top + rect.top) < 60;
-              const topPos = isNearTop
-                ? Math.max(10, ifRect.top + rect.bottom + 8)
-                : Math.max(10, ifRect.top + rect.top - 46);
-              const centerHoriz = ifRect.left + rect.left + (rect.width / 2);
-              const leftPos = Math.max(12, Math.min(window.innerWidth - 320, centerHoriz - 140));
-
-              hlToolbar.style.top = `${topPos}px`;
-              hlToolbar.style.left = `${leftPos}px`;
-              hlToolbar.classList.remove('hidden');
-              updateToolbarColorIndicators();
-              if (typeof updateToolbarEraserState === 'function') {
-                updateToolbarEraserState(checkSelectionIntersectsFrames());
-              }
-            }
+            const hasIntersect = typeof checkSelectionIntersectsFrames === 'function' ? checkSelectionIntersectsFrames() : false;
+            showSelectionToolbar(hasIntersect, rect, iframe);
           }, 30);
         };
 
+        // // FIX-2: Debounce sự kiện selectionchange 250ms trên tài liệu đọc
         doc.addEventListener('selectionchange', () => {
           clearTimeout(selectionDebounceTimer);
-          selectionDebounceTimer = setTimeout(() => handleSelection(false), 80);
+          selectionDebounceTimer = setTimeout(() => handleSelection(false), 250);
         });
 
         // VIỆC 1:
@@ -23594,6 +23947,149 @@
       });
     }
 
+    // // FIX-2: GẮN SỰ KIỆN CÁC NÚT TRÊN THANH CÔNG CỤ BÔI ĐEN DI ĐỘNG (mobileSelectionActionBar)
+    // 4 nút màu trên mobile
+    document.querySelectorAll('.mobile-hl-color-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const color = btn.getAttribute('data-color') || 'yellow';
+        activeFramingColor = color;
+        localStorage.setItem('last_framing_color', color);
+        updateToolbarColorIndicators();
+
+        if (activeHighlightItem) {
+          activeHighlightItem.color = color;
+          activeHighlightItem.customColor = null;
+          activeHighlightItem.updatedAt = Date.now();
+          saveLearningData();
+          postMessageToLessonIframe({ type: 'APPLY_COLOR', id: activeHighlightItem.id, color: color });
+          showToast(`Đã đổi màu khung sang ${color === 'yellow' ? 'Vàng' : color === 'green' ? 'Xanh' : color === 'pink' ? 'Hồng' : 'Tím'}`);
+        } else if (currentSelectionInfoBridge || currentSelectionInfo) {
+          applyFramingToCurrentSelection(color);
+        }
+        clearAllSelectionContexts();
+      });
+    });
+
+    // Nút Đóng khung trên mobile
+    const mbBtnApplyFraming = document.getElementById('mbBtnApplyFraming');
+    if (mbBtnApplyFraming) {
+      mbBtnApplyFraming.addEventListener('click', (e) => {
+        e.preventDefault();
+        applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
+        clearAllSelectionContexts();
+      });
+    }
+
+    // Nút Ghi chú trên mobile
+    const mbBtnAddNote = document.getElementById('mbBtnAddNote');
+    if (mbBtnAddNote) {
+      mbBtnAddNote.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentSelectionInfoBridge || currentSelectionInfo) {
+          const item = applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
+          clearAllSelectionContexts();
+          if (item) {
+            setTimeout(() => openFrameDetailModal(item.id), 120);
+          }
+        } else if (activeHighlightItem) {
+          const id = activeHighlightItem.id;
+          clearAllSelectionContexts();
+          openFrameDetailModal(id);
+        } else {
+          showToast("Vui lòng bôi đen đoạn văn bản để thêm ghi chú", "error");
+        }
+      });
+    }
+
+    // Nút Cục tẩy trên mobile
+    const mbBtnEraser = document.getElementById('mbBtnEraser');
+    if (mbBtnEraser) {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+        mbBtnEraser.addEventListener(evt, (e) => {
+          e.preventDefault();
+          window._lastCapturedSelectionOffsets = getCurrentSelectionOffsets();
+          window._lastCapturedSelectionTime = Date.now();
+        }, { passive: false });
+      });
+      mbBtnEraser.addEventListener('click', (e) => {
+        e.preventDefault();
+        eraseCurrentSelectionOrHighlight();
+        clearAllSelectionContexts();
+      });
+    }
+
+    // Nút Bỏ chọn trên mobile
+    const mbBtnCancelSelection = document.getElementById('mbBtnCancelSelection');
+    if (mbBtnCancelSelection) {
+      mbBtnCancelSelection.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearAllSelectionContexts();
+      });
+    }
+
+    // Nút AI ▾ trên mobile
+    const mbBtnAiDropdown = document.getElementById('mbBtnAiDropdown');
+    const mbAiMenuPopup = document.getElementById('mbAiMenuPopup');
+    if (mbBtnAiDropdown && mbAiMenuPopup) {
+      mbBtnAiDropdown.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        mbAiMenuPopup.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!mbBtnAiDropdown.contains(e.target) && !mbAiMenuPopup.contains(e.target)) {
+          mbAiMenuPopup.classList.add('hidden');
+        }
+      });
+    }
+
+    const mbAiActionExplain = document.getElementById('mbAiActionExplain');
+    if (mbAiActionExplain) {
+      mbAiActionExplain.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+        requestAiExplain('explain');
+      });
+    }
+
+    const mbAiActionExample = document.getElementById('mbAiActionExample');
+    if (mbAiActionExample) {
+      mbAiActionExample.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+        requestAiExplain('example');
+      });
+    }
+
+    const mbAiActionTranslate = document.getElementById('mbAiActionTranslate');
+    if (mbAiActionTranslate) {
+      mbAiActionTranslate.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+        requestAiExplain('translate');
+      });
+    }
+
+    const mbAiActionFlashcard = document.getElementById('mbAiActionFlashcard');
+    if (mbAiActionFlashcard) {
+      mbAiActionFlashcard.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+        requestAiExplain('flashcard');
+      });
+    }
+
+    const mbAiActionQuiz = document.getElementById('mbAiActionQuiz');
+    if (mbAiActionQuiz) {
+      mbAiActionQuiz.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+        requestAiExplain('quiz');
+      });
+    }
+
     // =========================================================================
     // TÍNH NĂNG AI (A): GIẢI THÍCH TẠI CHỖ, VÍ DỤ & DỊCH THUẬT TRÊN THANH NỔI
     // =========================================================================
@@ -23659,6 +24155,8 @@
       if (titleEl) {
         titleEl.textContent = mode === 'explain' ? 'Giải thích đơn giản' :
                               mode === 'example' ? 'Ví dụ minh họa' :
+                              mode === 'flashcard' ? 'Tạo Flashcard học tập' :
+                              mode === 'quiz' ? 'Tạo Quiz trắc nghiệm' :
                               'Dịch thuật (' + currentAiTargetLang + ')';
       }
       if (iconEl) {
@@ -23666,6 +24164,10 @@
           ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>'
           : mode === 'example'
           ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>'
+          : mode === 'flashcard'
+          ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 15h10M7 9h6"/></svg>'
+          : mode === 'quiz'
+          ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>'
           : '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>';
       }
 
@@ -23740,10 +24242,11 @@
       let html = '<div class="space-y-2 text-[#1C1917] dark:text-[#EDECE8] leading-relaxed">';
       if (paragraphs.length > 0) {
         paragraphs.forEach(p => {
-          html += '<p>' + p.replace(/\n/g, '<br/>') + '</p>';
+          const formatted = p.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-indigo-700 dark:text-indigo-300">$1</strong>').replace(/\n/g, '<br/>');
+          html += '<p>' + formatted + '</p>';
         });
       } else {
-        html += '<p>' + safeText + '</p>';
+        html += '<p>' + safeText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-indigo-700 dark:text-indigo-300">$1</strong>') + '</p>';
       }
       html += '</div>';
 
