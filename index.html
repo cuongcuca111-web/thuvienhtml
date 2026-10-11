@@ -37,8 +37,46 @@
   </script>
 
   <script>
+    // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG bên dưới.
+    // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
+    const CHANGELOG = [
+      {
+        version: 'v4.9.1',
+        date: '2026-10-11T10:30:00+07:00',
+        title: 'Hỗ trợ AI giải thích tại chỗ, Quiz trắc nghiệm & Mã hóa API Key',
+        items: [
+          { type: 'new', text: 'AI giải thích tại chỗ: Đơn giản hóa, ví dụ minh họa và dịch thuật 6 ngôn ngữ từ thanh nổi khi bôi đen văn bản' },
+          { type: 'new', text: 'Tự động tạo Quiz trắc nghiệm 4 lựa chọn (A/B/C/D) kèm phân tích cặn kẽ đáp án đúng/sai' },
+          { type: 'improved', text: 'Hệ thống Admin: Quản lý API Key Gemini/Claude/OpenAI mã hóa đa tầng AES-256-GCM ở máy chủ' },
+          { type: 'improved', text: 'Lịch học thông minh ước lượng độ khó bài đọc và tối ưu hóa chu kỳ ôn tập ngắt quãng' },
+          { type: 'fixed', text: 'Khắc phục lỗi cuộn trang trên Safari iOS và tối ưu hiển thị khung viền bậc thang SVG trên màn hình Retina' }
+        ]
+      },
+      {
+        version: 'v4.9.0',
+        date: '2026-10-10T15:00:00+07:00',
+        title: 'Đóng khung tài liệu dạng bậc thang & Tối ưu thanh nổi',
+        items: [
+          { type: 'new', text: 'Tính năng đóng khung tài liệu kiểu bậc thang (stepped frame) độc bản với 4 màu highlight' },
+          { type: 'improved', text: 'Tối ưu hiệu năng nạp font serif phong cách Editorial Giấy Ấm và các hoạt ảnh chuyển trang' },
+          { type: 'fixed', text: 'Sửa lỗi chạm nhầm nút đóng trên màn hình cảm ứng Safari iOS khi vuốt nhanh' }
+        ]
+      },
+      {
+        version: 'v4.8.0',
+        date: '2026-10-09T09:15:00+07:00',
+        title: 'Tìm kiếm toàn văn ngoại tuyến & Tối ưu Flashcard',
+        items: [
+          { type: 'new', text: 'Công cụ tìm kiếm toàn văn ngoại tuyến tốc độ cao hỗ trợ tiếng Việt có dấu và không dấu' },
+          { type: 'improved', text: 'Nâng cấp giao diện ôn tập Flashcard lật mặt với thống kê tỷ lệ nhớ/quên' },
+          { type: 'fixed', text: 'Khắc phục sự cố đồng bộ dữ liệu ngoại tuyến khi kết nối mạng chập chờn' }
+        ]
+      }
+    ];
+    window.CHANGELOG = CHANGELOG;
+
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.9.1';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v4.9.1';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -1426,6 +1464,46 @@
       --search-highlight-text: #FEF08A;
     }
 
+    /* // CHANGELOG & WHAT'S NEW MODAL THEMES SUPPORT (LIGHT, WARM PAPER, SEPIA, DARK, OLED) */
+    #whatsNewModalCard, #changelogModalCard {
+      background-color: var(--bg-card, #FFFFFF);
+      color: var(--text-main, #1C1917);
+      border-color: var(--border-color, #E7E5DF);
+    }
+    body.theme-warm-paper #whatsNewModalCard,
+    body.theme-warm-paper #changelogModalCard {
+      background-color: #FAF9F5;
+      color: #2D2820;
+      border-color: #E3DDD1;
+    }
+    body.theme-sepia #whatsNewModalCard,
+    body.theme-sepia #changelogModalCard {
+      background-color: #FBF0D9;
+      color: #3B2E1E;
+      border-color: #DECDB0;
+    }
+    html.dark #whatsNewModalCard,
+    body.theme-dark #whatsNewModalCard,
+    html.dark #changelogModalCard,
+    body.theme-dark #changelogModalCard {
+      background-color: #161A22;
+      color: #ECEEF2;
+      border-color: #272C38;
+    }
+    body.theme-deep-dark #whatsNewModalCard,
+    body.theme-deep-dark #changelogModalCard {
+      background-color: #0D1017;
+      color: #E6EDF3;
+      border-color: #202531;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #whatsNewModal, #changelogModal,
+      #whatsNewModal *, #changelogModal * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
     /* Header CSS Grid: Giữ ô search chính giữa hoàn hảo */
     @media (min-width: 901px) {
       .editorial-header {
@@ -1979,6 +2057,12 @@
     </symbol>
     <symbol id="icon-shield-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 1l22 22M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.11 1.17M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/>
+    </symbol>
+    <!-- // SVG SYMBOLS V4.9.1: CÓ GÌ MỚI & LỊCH SỬ CẬP NHẬT (CHỈ DÙNG CUSTOM SVG 24x24 STROKE-WIDTH 1.6) -->
+    <symbol id="version-glyph" viewBox="0 0 24 24">
+      <path d="M4.5 12.2V6.5a2 2 0 0 1 2-2h5.7l7.2 7.2a2 2 0 0 1 0 2.8l-4.9 4.9a2 2 0 0 1-2.8 0L4.5 12.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="8.8" cy="8.8" r="1.2" fill="currentColor"/>
+      <path d="M18 4l.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5z" fill="currentColor"/>
     </symbol>
     <!-- // SVG SYMBOLS V4.5.0: GHIM & TÌM KIẾM ĐỘC BẢN (CHỈ DÙNG CUSTOM SVG 24x24 STROKE-WIDTH 1.6) -->
     <symbol id="check-glyph" viewBox="0 0 24 24">
@@ -2611,8 +2695,11 @@
           <span>Tải file</span>
         </button>
       </div>
-      <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.9.1 - build 11/10/2026
+      <div class="border-t border-gray-200/50 dark:border-gray-800/50">
+        <button id="btnDesktopVersionChangelog" type="button" class="w-full px-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
+          <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v4.9.1 • build 11/10/2026 10:30</span>
+        </button>
       </div>
     </aside>
 
@@ -3164,6 +3251,15 @@
       <span>Cài app lên màn hình chính</span>
     </button>
 
+    <!-- Xem Có gì mới & Lịch sử cập nhật -->
+    <button id="btnMenuWhatsNew" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] transition cursor-pointer">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#version-glyph"></use></svg>
+        <span>Có gì mới &amp; Lịch sử</span>
+      </div>
+      <span id="menuVersionBadge" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v4.9.1</span>
+    </button>
+
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
 
     <!-- Nút Đăng xuất màu đỏ nhạt, đặt cuối (Ẩn khi ở Chế độ Khách) -->
@@ -3172,9 +3268,12 @@
       <span>Đăng xuất</span>
     </button>
 
-    <!-- // FIX: Hiển thị phiên bản build app -->
-    <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.9.1 - build 11/10/2026
+    <!-- // FIX: Hiển thị phiên bản build app & bấm xem lịch sử cập nhật -->
+    <div class="border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
+      <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
+        <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v4.9.1 • build 11/10/2026 10:30</span>
+      </button>
     </div>
   </div>
 
@@ -5864,6 +5963,91 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- // ========================================================================= -->
+  <!-- // MODAL: CÓ GÌ MỚI (WHAT'S NEW NOTIFICATION MODAL) - HIỆN ĐÚNG 1 LẦN KHI CẬP NHẬT -->
+  <!-- // ========================================================================= -->
+  <div id="whatsNewModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
+    <div id="whatsNewModalCard" class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-[480px] max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
+      <!-- Header -->
+      <div class="flex items-start gap-3 pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3">
+        <div class="w-10 h-10 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-sm">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#version-glyph"></use></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v4.9.1</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v4.9.1</span>
+          </div>
+          <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
+        </div>
+        <button id="btnCloseWhatsNewX" type="button" class="touch-target p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer -mr-1" aria-label="Đóng">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Scrollable content area -->
+      <div class="overflow-y-auto flex-1 space-y-3 pr-0.5">
+        <!-- Missed versions alert banner -->
+        <div id="whatsNewMissedBanner" class="hidden p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0"><use href="#s-question"></use></svg>
+            <span>Bạn đã bỏ lỡ <strong id="whatsNewMissedCount">0</strong> bản cập nhật trước</span>
+          </div>
+          <button type="button" id="btnWhatsNewViewMissed" class="text-xs font-semibold underline text-amber-800 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 touch-target cursor-pointer">Xem tất cả</button>
+        </div>
+
+        <!-- Release title summary -->
+        <div id="whatsNewSummary" class="text-xs sm:text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] bg-[#FAF9F5] dark:bg-[#111317]/60 p-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36]">
+          Tóm tắt cập nhật
+        </div>
+
+        <!-- Grouped items -->
+        <div id="whatsNewItemsContainer" class="space-y-3">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="pt-3 border-t border-[#E6E6E1] dark:border-[#262C36] mt-3 flex flex-col gap-1.5 shrink-0">
+        <button id="btnWhatsNewGotIt" type="button" class="touch-target w-full py-2.5 px-4 rounded-xl bg-[#4F46E5] hover:bg-indigo-700 active:scale-[0.99] text-white font-medium text-sm transition shadow-sm text-center cursor-pointer">
+          Đã hiểu
+        </button>
+        <button id="btnWhatsNewOpenHistory" type="button" class="touch-target text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 py-1.5 text-center transition flex items-center justify-center gap-1 cursor-pointer">
+          <span>Xem các bản trước</span>
+          <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- // ========================================================================= -->
+  <!-- // MODAL: LỊCH SỬ CẬP NHẬT (FULL CHANGELOG ACCORDION MODAL) -->
+  <!-- // ========================================================================= -->
+  <div id="changelogModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="changelogModalTitle">
+    <div id="changelogModalCard" class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[90dvh] overflow-hidden shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-[#818CF8] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" aria-hidden="true"><use href="#version-glyph"></use></svg>
+          </div>
+          <div>
+            <h3 id="changelogModalTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Lịch sử cập nhật</h3>
+            <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]">Toàn bộ các phiên bản đã phát hành ngoại tuyến</p>
+          </div>
+        </div>
+        <button id="btnCloseChangelogModal" type="button" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer" aria-label="Đóng">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Scrollable accordion list -->
+      <div id="changelogListContainer" class="overflow-y-auto overscroll-contain flex-1 space-y-3 pr-0.5" style="-webkit-overflow-scrolling: touch;">
+        <!-- Populated dynamically from CHANGELOG -->
+      </div>
     </div>
   </div>
 
@@ -27821,10 +28005,436 @@
         if (typeof loadRecentLessons === 'function') loadRecentLessons();
       });
 
+      safeRun('initWhatsNewAndChangelog', () => {
+        if (typeof initWhatsNewAndChangelog === 'function') initWhatsNewAndChangelog();
+      });
+
       try { autoCleanupDuplicateData(); } catch (_) {}
       try { applyReadingWidth(state.readingWidth); } catch (_) {}
       try { refreshIcons(); } catch (_) {}
       try { registerPwaServiceWorker(); } catch (_) {}
+    }
+
+    // =========================================================================
+    // SECTION: CÓ GÌ MỚI & LỊCH SỬ CẬP NHẬT (WHAT'S NEW & CHANGELOG SYSTEM)
+    // =========================================================================
+    let whatsNewPreviousFocus = null;
+
+    function getRelativeTimeVi(dateInput) {
+      try {
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return '';
+        const now = new Date();
+        const diffSec = Math.floor((now.getTime() - d.getTime()) / 1000);
+        if (diffSec < 60) return 'Vừa xong';
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) return diffMin + ' phút trước';
+        const diffHours = Math.floor(diffMin / 60);
+        if (diffHours < 24) return diffHours + ' giờ trước';
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays === 1) return 'Hôm qua';
+        if (diffDays < 30) return diffDays + ' ngày trước';
+        const diffMonths = Math.floor(diffDays / 30);
+        if (diffMonths < 12) return diffMonths + ' tháng trước';
+        const diffYears = Math.floor(diffDays / 365);
+        return diffYears + ' năm trước';
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function formatChangelogDateVi(dateInput) {
+      try {
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return '';
+        const dd = ('0' + d.getDate()).slice(-2);
+        const mm = ('0' + (d.getMonth() + 1)).slice(-2);
+        const yyyy = d.getFullYear();
+        const hh = ('0' + d.getHours()).slice(-2);
+        const mi = ('0' + d.getMinutes()).slice(-2);
+        return hh + ':' + mi + ', ' + dd + '/' + mm + '/' + yyyy;
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function renderChangelogGroupedItems(items) {
+      if (!Array.isArray(items) || items.length === 0) return '';
+      const groups = {
+        'new': { label: 'Mới', class: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60', items: [] },
+        'improved': { label: 'Cải thiện', class: 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/60', items: [] },
+        'fixed': { label: 'Sửa lỗi', class: 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60', items: [] }
+      };
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const t = item.type || 'new';
+        if (groups[t]) {
+          groups[t].items.push(item.text);
+        } else {
+          groups['new'].items.push(item.text);
+        }
+      }
+
+      let html = '';
+      const order = ['new', 'improved', 'fixed'];
+      for (let i = 0; i < order.length; i++) {
+        const gKey = order[i];
+        const g = groups[gKey];
+        if (g.items.length === 0) continue;
+        html += '<div class="space-y-1.5">';
+        html += '<div class="flex items-center gap-2">';
+        html += '<span class="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border ' + g.class + '">' + g.label + '</span>';
+        html += '</div>';
+        html += '<ul class="space-y-1.5 text-xs sm:text-sm text-[#2D2820] dark:text-[#D1D5DB] pl-1">';
+        for (let j = 0; j < g.items.length; j++) {
+          const txt = typeof sanitizeHtml === 'function' ? sanitizeHtml(g.items[j]) : g.items[j];
+          html += '<li class="flex items-start gap-2 leading-relaxed">';
+          html += '<span class="text-indigo-500 dark:text-indigo-400 font-bold shrink-0 mt-0.5 select-none">•</span>';
+          html += '<span>' + txt + '</span>';
+          html += '</li>';
+        }
+        html += '</ul>';
+        html += '</div>';
+      }
+      return html;
+    }
+
+    function updateAppVersionLabels() {
+      try {
+        const list = window.CHANGELOG || (typeof CHANGELOG !== 'undefined' ? CHANGELOG : []);
+        if (!list || list.length === 0) return;
+        const latest = list[0];
+        const d = new Date(latest.date);
+        let dateStr = '';
+        if (!isNaN(d.getTime())) {
+          const dd = ('0' + d.getDate()).slice(-2);
+          const mm = ('0' + (d.getMonth() + 1)).slice(-2);
+          const yyyy = d.getFullYear();
+          const hh = ('0' + d.getHours()).slice(-2);
+          const mi = ('0' + d.getMinutes()).slice(-2);
+          dateStr = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi;
+        }
+        const fullText = 'Thư viện Sách HTML ' + latest.version + ' • build ' + dateStr;
+
+        const desktopLbl = document.getElementById('desktopAppVersionLabel');
+        if (desktopLbl) desktopLbl.textContent = fullText;
+
+        const mobileLbl = document.getElementById('mobileAppVersionLabel');
+        if (mobileLbl) mobileLbl.textContent = fullText;
+
+        const menuBadge = document.getElementById('menuVersionBadge');
+        if (menuBadge) menuBadge.textContent = latest.version;
+      } catch (err) {
+        console.warn('Lỗi cập nhật nhãn phiên bản:', err);
+      }
+    }
+
+    function openWhatsNewModal(versionData, missedCount = 0) {
+      const modal = document.getElementById('whatsNewModal');
+      if (!modal || !versionData) return;
+
+      whatsNewPreviousFocus = document.activeElement;
+
+      // Cập nhật nội dung modal
+      const titleEl = document.getElementById('whatsNewTitle');
+      if (titleEl) titleEl.textContent = 'Có gì mới ở ' + versionData.version;
+
+      const badgeEl = document.getElementById('whatsNewVersionBadge');
+      if (badgeEl) badgeEl.textContent = versionData.version;
+
+      const dateEl = document.getElementById('whatsNewDate');
+      if (dateEl) {
+        const formattedDate = formatChangelogDateVi(versionData.date);
+        const rel = getRelativeTimeVi(versionData.date);
+        dateEl.textContent = formattedDate + (rel ? ' • ' + rel : '');
+      }
+
+      const summaryEl = document.getElementById('whatsNewSummary');
+      if (summaryEl) {
+        summaryEl.textContent = versionData.title || '';
+      }
+
+      const missedBanner = document.getElementById('whatsNewMissedBanner');
+      const missedCountEl = document.getElementById('whatsNewMissedCount');
+      if (missedBanner) {
+        if (missedCount > 0) {
+          missedBanner.classList.remove('hidden');
+          if (missedCountEl) missedCountEl.textContent = missedCount;
+        } else {
+          missedBanner.classList.add('hidden');
+        }
+      }
+
+      const itemsContainer = document.getElementById('whatsNewItemsContainer');
+      if (itemsContainer) {
+        itemsContainer.innerHTML = renderChangelogGroupedItems(versionData.items);
+      }
+
+      showModalAnimated(modal);
+
+      setTimeout(() => {
+        const btnGotIt = document.getElementById('btnWhatsNewGotIt');
+        if (btnGotIt) btnGotIt.focus();
+      }, 60);
+    }
+
+    function closeWhatsNewModal() {
+      const modal = document.getElementById('whatsNewModal');
+      if (!modal) return;
+      hideModalAnimated(modal);
+      if (whatsNewPreviousFocus && typeof whatsNewPreviousFocus.focus === 'function') {
+        try { whatsNewPreviousFocus.focus(); } catch (_) {}
+        whatsNewPreviousFocus = null;
+      }
+    }
+
+    function renderChangelogList() {
+      const listContainer = document.getElementById('changelogListContainer');
+      if (!listContainer) return;
+      const list = window.CHANGELOG || (typeof CHANGELOG !== 'undefined' ? CHANGELOG : []);
+      if (!list || list.length === 0) {
+        listContainer.innerHTML = '<p class="text-xs text-gray-500 text-center py-4">Chưa có thông tin cập nhật.</p>';
+        return;
+      }
+
+      let html = '';
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        const isLatest = (i === 0);
+        const isOpen = isLatest ? 'open' : '';
+        const badgeClass = isLatest ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
+        const formattedDate = formatChangelogDateVi(item.date);
+        const rel = getRelativeTimeVi(item.date);
+        const safeTitle = typeof sanitizeHtml === 'function' ? sanitizeHtml(item.title) : item.title;
+
+        html += '<details class="group bg-[#FAF9F5]/90 dark:bg-[#111317]/50 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] overflow-hidden transition" ' + isOpen + '>';
+        html += '<summary class="flex items-center justify-between p-3.5 cursor-pointer select-none hover:bg-black/[0.02] dark:hover:bg-white/[0.02] list-none">';
+        html += '<div class="flex-1 min-w-0 pr-2">';
+        html += '<div class="flex items-center gap-2 flex-wrap mb-1">';
+        html += '<span class="text-xs font-mono font-bold px-2 py-0.5 rounded-md ' + badgeClass + '">' + item.version + '</span>';
+        if (isLatest) {
+          html += '<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">Bản mới nhất</span>';
+        }
+        html += '<span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">' + formattedDate + '</span>';
+        if (rel) {
+          html += '<span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">• ' + rel + '</span>';
+        }
+        html += '</div>';
+        html += '<div class="text-xs sm:text-sm font-semibold text-[#1C1917] dark:text-[#EDECE8] line-clamp-1">' + safeTitle + '</div>';
+        html += '</div>';
+        html += '<div class="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform shrink-0 flex items-center justify-center">';
+        html += '<svg class="w-4 h-4"><use href="#icon-chevron-down"></use></svg>';
+        html += '</div>';
+        html += '</summary>';
+        html += '<div class="p-3.5 pt-0 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60 space-y-3 mt-2">';
+        html += renderChangelogGroupedItems(item.items);
+        html += '</div>';
+        html += '</details>';
+      }
+
+      listContainer.innerHTML = html;
+    }
+
+    function openChangelogModal() {
+      const changelogModal = document.getElementById('changelogModal');
+      if (!changelogModal) return;
+
+      if (!whatsNewPreviousFocus) {
+        whatsNewPreviousFocus = document.activeElement;
+      }
+
+      // Đóng whatsNewModal nếu đang mở
+      const whatsNewModal = document.getElementById('whatsNewModal');
+      if (whatsNewModal && !whatsNewModal.classList.contains('hidden')) {
+        hideModalAnimated(whatsNewModal);
+      }
+
+      renderChangelogList();
+      showModalAnimated(changelogModal);
+
+      setTimeout(() => {
+        const btnClose = document.getElementById('btnCloseChangelogModal');
+        if (btnClose) btnClose.focus();
+      }, 60);
+    }
+
+    function closeChangelogModal() {
+      const modal = document.getElementById('changelogModal');
+      if (!modal) return;
+      hideModalAnimated(modal);
+      if (whatsNewPreviousFocus && typeof whatsNewPreviousFocus.focus === 'function') {
+        try { whatsNewPreviousFocus.focus(); } catch (_) {}
+        whatsNewPreviousFocus = null;
+      }
+    }
+
+    function checkWhatsNewNotification() {
+      try {
+        const list = window.CHANGELOG || (typeof CHANGELOG !== 'undefined' ? CHANGELOG : []);
+        if (!list || list.length === 0) return;
+        const latest = list[0];
+        const latestVer = latest.version;
+        const lastSeen = localStorage.getItem('lastSeenVersion');
+
+        // 1. Người dùng mới (chưa có lastSeenVersion) KHÔNG hiện thông báo; chỉ ghi nhận phiên bản hiện tại
+        if (lastSeen === null) {
+          localStorage.setItem('lastSeenVersion', latestVer);
+          return;
+        }
+
+        // 2. Nếu đã xem phiên bản hiện tại (so sánh chuỗi bằng nhau) -> không hiện lại
+        if (lastSeen === latestVer) {
+          return;
+        }
+
+        // 3. Không hiện khi đang mở link chia sẻ (?share=, ?sid=, ?share_url=)
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('share') || urlParams.get('sid') || urlParams.get('share_url')) {
+            return;
+          }
+        } catch (_) {}
+
+        // 4. Kiểm tra xem có hộp thoại khác đang mở hoặc đang chạy tác vụ chặn màn hình không
+        function isScreenBlocked() {
+          const activeModal = document.querySelector('.modal-animated.modal-active:not(#whatsNewModal):not(#changelogModal)');
+          const isDrawerOpen = document.getElementById('userDropdownBackdrop') && document.getElementById('userDropdownBackdrop').classList.contains('backdrop-active');
+          return !!(activeModal || isDrawerOpen);
+        }
+
+        function triggerPopup() {
+          // Tính số bản bị bỏ lỡ
+          let missedCount = 0;
+          let foundIndex = -1;
+          for (let i = 0; i < list.length; i++) {
+            if (list[i].version === lastSeen) {
+              foundIndex = i;
+              break;
+            }
+          }
+          if (foundIndex > 1) {
+            missedCount = foundIndex - 1;
+          } else if (foundIndex === -1 && list.length > 1) {
+            missedCount = list.length - 1;
+          }
+
+          // Ghi lastSeenVersion NGAY khi hộp hiện ra (không đợi bấm)
+          // để đóng tab hay tải lại cũng không hiện lại
+          localStorage.setItem('lastSeenVersion', latestVer);
+
+          openWhatsNewModal(latest, missedCount);
+        }
+
+        if (isScreenBlocked()) {
+          let attempts = 0;
+          const waitInterval = setInterval(() => {
+            attempts++;
+            if (!isScreenBlocked()) {
+              clearInterval(waitInterval);
+              triggerPopup();
+            } else if (attempts >= 25) {
+              clearInterval(waitInterval);
+            }
+          }, 500);
+          return;
+        }
+
+        triggerPopup();
+      } catch (err) {
+        console.warn('Lỗi kiểm tra thông báo Có gì mới:', err);
+      }
+    }
+
+    function initWhatsNewAndChangelog() {
+      try {
+        updateAppVersionLabels();
+
+        // Nút mở lịch sử ở Desktop footer & Mobile drawer
+        const btnDesktopVer = document.getElementById('btnDesktopVersionChangelog');
+        if (btnDesktopVer) {
+          btnDesktopVer.addEventListener('click', () => openChangelogModal());
+        }
+        const btnMobileVer = document.getElementById('btnMobileVersionChangelog');
+        if (btnMobileVer) {
+          btnMobileVer.addEventListener('click', () => openChangelogModal());
+        }
+
+        // Mục trong menu Dropdown tài khoản
+        const btnMenuWhatsNew = document.getElementById('btnMenuWhatsNew');
+        if (btnMenuWhatsNew) {
+          btnMenuWhatsNew.addEventListener('click', () => {
+            const backdrop = document.getElementById('userDropdownBackdrop');
+            if (backdrop) backdrop.click();
+            openChangelogModal();
+          });
+        }
+
+        // Nút trong What's New modal
+        const btnGotIt = document.getElementById('btnWhatsNewGotIt');
+        if (btnGotIt) {
+          btnGotIt.addEventListener('click', () => closeWhatsNewModal());
+        }
+        const btnCloseX = document.getElementById('btnCloseWhatsNewX');
+        if (btnCloseX) {
+          btnCloseX.addEventListener('click', () => closeWhatsNewModal());
+        }
+        const btnOpenHistory = document.getElementById('btnWhatsNewOpenHistory');
+        if (btnOpenHistory) {
+          btnOpenHistory.addEventListener('click', () => {
+            closeWhatsNewModal();
+            setTimeout(openChangelogModal, 200);
+          });
+        }
+        const btnViewMissed = document.getElementById('btnWhatsNewViewMissed');
+        if (btnViewMissed) {
+          btnViewMissed.addEventListener('click', () => {
+            closeWhatsNewModal();
+            setTimeout(openChangelogModal, 200);
+          });
+        }
+
+        // Nút đóng Changelog modal
+        const btnCloseChangelog = document.getElementById('btnCloseChangelogModal');
+        if (btnCloseChangelog) {
+          btnCloseChangelog.addEventListener('click', () => closeChangelogModal());
+        }
+
+        // Khóa phím Tab (Focus Trap) & Esc cho cả 2 modal
+        const setupModalKeys = (modalEl, closeFn) => {
+          if (!modalEl) return;
+          modalEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              closeFn();
+            } else if (e.key === 'Tab') {
+              const focusables = modalEl.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+              if (!focusables || focusables.length === 0) return;
+              const first = focusables[0];
+              const last = focusables[focusables.length - 1];
+              if (e.shiftKey) {
+                if (document.activeElement === first || !modalEl.contains(document.activeElement)) {
+                  e.preventDefault();
+                  last.focus();
+                }
+              } else {
+                if (document.activeElement === last || !modalEl.contains(document.activeElement)) {
+                  e.preventDefault();
+                  first.focus();
+                }
+              }
+            }
+          });
+        };
+
+        setupModalKeys(document.getElementById('whatsNewModal'), closeWhatsNewModal);
+        setupModalKeys(document.getElementById('changelogModal'), closeChangelogModal);
+
+        // Sau khi nạp app ~600ms, kiểm tra và hiện thông báo
+        setTimeout(checkWhatsNewNotification, 600);
+      } catch (err) {
+        console.warn('Lỗi khởi tạo hệ thống Có gì mới:', err);
+      }
     }
 
     if (document.readyState === 'loading') {
