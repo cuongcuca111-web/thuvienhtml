@@ -274,7 +274,7 @@ ${rawText}
       prompt: userPrompt,
       schema: jsonSchema,
       taskType: 'fast',
-      maxTokens: 1024,
+      maxTokens: 350,
       purpose: mode
     });
 
@@ -306,40 +306,22 @@ ${rawText}
       finalResult.examples = [];
     }
 
-    // 7. Lưu Cache vào Firestore
-    try {
-      await cacheDocRef.set({
+    // 7 & 8. Lưu Cache và cập nhật lượt dùng song song không chặn response (Fire-and-forget)
+    Promise.all([
+      cacheDocRef.set({
         key: cacheKey,
         mode: mode,
         targetLang: targetLang,
         result: finalResult,
         createdAt: new Date().toISOString()
-      });
-    } catch (cacheSaveErr) {
-      console.warn('Lỗi lưu cache AI:', cacheSaveErr.message);
-    }
+      }).catch(e => console.warn('Cache save:', e.message)),
+      (isGuest
+        ? db.doc(`users_guest_usage/${guestId}`).set({ count: admin.firestore.FieldValue.increment(1), lastUsed: new Date().toISOString() }, { merge: true })
+        : db.doc(`users/${userId}/billing/ai_${new Date().toISOString().substring(0, 7)}`).set({ requests: admin.firestore.FieldValue.increment(1), lastUsed: new Date().toISOString() }, { merge: true })
+      ).catch(e => console.warn('Quota save:', e.message))
+    ]).catch(() => {});
 
-    // 8. Cập nhật lượt dùng
-    try {
-      if (isGuest) {
-        const guestUsageRef = db.doc(`users_guest_usage/${guestId}`);
-        await guestUsageRef.set({
-          count: admin.firestore.FieldValue.increment(1),
-          lastUsed: new Date().toISOString()
-        }, { merge: true });
-      } else {
-        const currentMonth = new Date().toISOString().substring(0, 7);
-        const userMonthlyRef = db.doc(`users/${userId}/billing/ai_${currentMonth}`);
-        await userMonthlyRef.set({
-          requests: admin.firestore.FieldValue.increment(1),
-          lastUsed: new Date().toISOString()
-        }, { merge: true });
-      }
-    } catch (quotaErr) {
-      console.warn('Lỗi cập nhật quota AI:', quotaErr.message);
-    }
-
-    // 9. Trả kết quả về Client
+    // 9. Trả kết quả về Client NGAY LẬP TỨC
     return res.status(200).json({
       success: true,
       cached: false,
