@@ -41,13 +41,21 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v4.9.5',
+        date: '2026-10-11T18:45:00+07:00',
+        title: 'Hoàn thiện đăng nhập quản trị & tăng cường bảo mật',
+        items: [
+          { type: 'fixed', text: 'Sửa lỗi chuẩn hóa tên đăng nhập và ghi nhận lỗi xác thực chính xác hơn cho khu vực quản trị' },
+          { type: 'improved', text: 'Tối ưu bảo mật lối vào khu vực quản trị' }
+        ]
+      },
+      {
         version: 'v4.9.4',
         date: '2026-10-11T18:15:00+07:00',
         title: 'Bảo mật lối vào Quản trị hệ thống & Tối ưu xác thực',
         items: [
           { type: 'fixed', text: 'Khắc phục triệt để lỗi điều hướng và khởi tạo bảng Quản trị hệ thống khi truy cập qua đường dẫn hoặc phím tắt' },
           { type: 'improved', text: 'Tích hợp biểu tượng con dấu thư viện ẩn tinh tế ở chân sidebar với cơ chế kích hoạt an toàn (nhấn giữ / nhấp đúp)' },
-          { type: 'improved', text: 'Hỗ trợ phím tắt Ctrl+Shift+A và đường dẫn hash #/admin với cơ chế tự động dọn dẹp URL' },
           { type: 'improved', text: 'Nâng cao bảo mật máy chủ, kiểm tra quyền admin và giới hạn tần suất yêu cầu chống brute-force' }
         ]
       },
@@ -98,7 +106,7 @@
     window.CHANGELOG = CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v4.9.3';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v4.9.5';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function isTouchDevice() {
@@ -2698,7 +2706,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v4.9.4 • build 11/10/2026 18:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v4.9.5 • build 11/10/2026 18:45</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -3355,7 +3363,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v4.9.4 • build 11/10/2026 18:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v4.9.5 • build 11/10/2026 18:45</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -6449,7 +6457,7 @@
       }
     }
 
-    // // FIX: Quản trị hệ thống - Dynamic Import, điều hướng hash #/admin tự xóa URL, phím tắt Ctrl+Shift+A và Nút Con Dấu ẩn
+    // // FIX: Quản trị hệ thống - Dynamic Import, điều hướng hash #/admin tự xóa URL, lối vào ẩn và Nút Con Dấu ẩn
     async function openAdminModule() {
       try {
         // Tự động xóa #/admin khỏi thanh địa chỉ ngay lập tức để không lưu vết
@@ -6559,13 +6567,14 @@
       initSecretAdminSeals();
     }
 
-    // Phím tắt dự phòng Ctrl+Shift+A (hoặc Cmd+Shift+A) trên máy tính khi không gõ vào ô nhập
+    // // FIX: Phím tắt dự phòng Ctrl+Alt+Shift+Y (Mac: Control+Option+Shift+Y), dùng event.code để độc lập bộ gõ/bàn phím
     window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+      if (e.code === 'KeyY' && e.ctrlKey && e.altKey && e.shiftKey && !e.metaKey) {
         const activeEl = document.activeElement;
         const isInput = activeEl && (
           activeEl.tagName === 'INPUT' ||
           activeEl.tagName === 'TEXTAREA' ||
+          activeEl.tagName === 'SELECT' ||
           activeEl.isContentEditable ||
           activeEl.getAttribute('contenteditable') === 'true'
         );

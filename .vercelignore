@@ -1,0 +1,7 @@
+scripts
+cdp_debug_profile
+cdp_test_mobile
+cdp_test_profile
+cdp_test_profile_2
+*.py
+*.bak

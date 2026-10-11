@@ -363,7 +363,8 @@ async function handleAdminLoginSubmit(e) {
     return;
   }
 
-  const usernameInput = document.getElementById('adminUsernameInput').value.trim();
+  // // FIX: Chuẩn hóa tên đăng nhập (bỏ khoảng trắng đầu/cuối, không phân biệt hoa thường); KHÔNG cắt mật khẩu
+  const usernameInput = document.getElementById('adminUsernameInput').value.trim().toLowerCase();
   const password = document.getElementById('adminPasswordInput').value;
   const submitBtn = document.getElementById('btnSubmitAdminLogin');
 
@@ -404,6 +405,8 @@ async function handleAdminLoginSubmit(e) {
       return;
     }
   } catch (err) {
+    // // FIX: Ghi mã lỗi Firebase thật ra console để dễ gỡ lỗi; giao diện vẫn chỉ hiện thông báo chung
+    console.error('[Admin] Đăng nhập thất bại:', (err && err.code) || (err && err.message) || err);
     recordClientFailedLogin();
     errBanner.innerText = "Sai thông tin đăng nhập";
     errBanner.classList.remove('hidden');
