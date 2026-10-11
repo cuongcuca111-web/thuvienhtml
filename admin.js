@@ -172,6 +172,10 @@ function ensureAdminModalsInDOM() {
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             <span>Nhật ký (Audit)</span>
           </button>
+          <button data-tab="ai" class="admin-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>AI &amp; API key</span>
+          </button>
         </nav>
 
         <!-- VÙNG NỘI DUNG CUỘN TRANG CỦA TAB HIỆN TẠI -->
@@ -429,6 +433,9 @@ function loadTabData(tabName) {
     case 'audit':
       renderAuditTab(container);
       break;
+    case 'ai':
+      renderAiTab(container);
+      break;
   }
 }
 
@@ -470,7 +477,11 @@ const PARAM_DEFS = [
   { key: 'exportNotesMd', label: 'Xuất ghi chú sang .md', desc: 'Xuất tất cả ghi chú ra định dạng Markdown', type: 'boolean' },
   { key: 'trashDays', label: 'Số ngày lưu thùng rác', desc: 'Tự động dọn dẹp sau số ngày quy định', type: 'number', min: 0, max: 365, step: 1, allowUnlimited: false },
   { key: 'statsDays', label: 'Số ngày lưu thống kê', desc: 'Phạm vi lưu trữ biểu đồ và lịch sử học tập', type: 'number', min: 1, max: 3650, step: 7, allowUnlimited: true },
-  { key: 'fullTextSearch', label: 'Tìm kiếm toàn văn', desc: 'Tìm kiếm sâu bên trong toàn bộ nội dung file', type: 'boolean' }
+  { key: 'fullTextSearch', label: 'Tìm kiếm toàn văn', desc: 'Tìm kiếm sâu bên trong toàn bộ nội dung file', type: 'boolean' },
+  { key: 'monthlyAiRequests', label: 'Lượt AI mỗi tháng', desc: 'Số lượt gọi AI tối đa hàng tháng (-1 = Vô hạn)', type: 'number', min: 0, max: 100000, step: 10, allowUnlimited: true },
+  { key: 'maxFlashcardsPerFile', label: 'Flashcard tối đa / bài', desc: 'Số lượng thẻ tối đa tự sinh cho mỗi file HTML', type: 'number', min: 1, max: 200, step: 5, allowUnlimited: true },
+  { key: 'aiScheduleEnabled', label: 'Bật Lịch thông minh (AI)', desc: 'Cho phép AI ước tính độ khó và chia lịch học', type: 'boolean' },
+  { key: 'aiFlashcardsEnabled', label: 'Bật Tự sinh Flashcard (AI)', desc: 'Cho phép AI tạo câu hỏi ôn tập theo bài', type: 'boolean' }
 ];
 
 function renderPlansTab(container) {
@@ -1445,4 +1456,383 @@ function renderAuditTab(container) {
 
   loadAudit();
   document.getElementById('auditActionFilter').onchange = loadAudit;
+}
+
+
+// =========================================================================
+// 3.6 MỤC 6: AI & API KEY (QUẢN LÝ KHÓA, MODEL, HẠN MỨC & GIÁM SÁT CHI PHÍ)
+// =========================================================================
+async function renderAiTab(container) {
+  container.innerHTML = `
+    <div class="flex items-center justify-center p-8 text-xs text-gray-500">
+      <div class="animate-spin w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full mr-2"></div>
+      Đang tải cấu hình AI và thông số nhà cung cấp...
+    </div>
+  `;
+
+  let aiSettings = {};
+  let aiUsageData = {};
+
+  try {
+    const [settingsRes, usageRes] = await Promise.all([
+      callAdminApi('/api/admin/ai/settings'),
+      callAdminApi('/api/admin/ai/usage')
+    ]);
+    aiSettings = settingsRes.settings || {};
+    aiUsageData = usageRes || {};
+  } catch (err) {
+    container.innerHTML = `<div class="p-4 rounded-xl bg-rose-50 text-rose-600 text-xs">Lỗi tải dữ liệu: ${esc(err.message)}</div>`;
+    return;
+  }
+
+  const providersConfig = aiSettings.providers || {};
+  const currentPriority = Array.isArray(aiSettings.priority) && aiSettings.priority.length > 0
+    ? aiSettings.priority
+    : ['gemini', 'openai', 'claude'];
+  const dailyCap = aiSettings.dailyRequestCap || 0;
+  const isCapped = aiUsageData.isCapped || false;
+
+  const PROVIDER_INFO = {
+    gemini: {
+      name: 'Google Gemini',
+      tagline: 'Mô hình đa phương thức thế hệ mới của Google, tốc độ cao & chi phí tối ưu.',
+      defaultFast: 'gemini-1.5-flash',
+      defaultStrong: 'gemini-1.5-pro'
+    },
+    claude: {
+      name: 'Anthropic Claude',
+      tagline: 'Dòng mô hình Claude 3.5 với năng lực đọc hiểu văn bản & ngữ nghĩa sâu.',
+      defaultFast: 'claude-3-5-haiku-20241022',
+      defaultStrong: 'claude-3-5-sonnet-20241022'
+    },
+    openai: {
+      name: 'OpenAI (GPT)',
+      tagline: 'Các mô hình GPT-4o và GPT-4o Mini chuẩn mực cho sinh dữ liệu có cấu trúc.',
+      defaultFast: 'gpt-4o-mini',
+      defaultStrong: 'gpt-4o'
+    }
+  };
+
+  container.innerHTML = `
+    <div class="space-y-6">
+      <!-- CẢNH BÁO NẾU CHẠM TRẦN CHI TIÊU HÀNG NGÀY -->
+      ${isCapped ? `
+        <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-900 text-xs text-rose-800 dark:text-rose-200 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-rose-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+              <strong>CẢNH BÁO: ĐÃ CHẠM TRẦN CHI TIÊU HÀNG NGÀY (${aiUsageData.todayRequests}/${dailyCap} lượt)!</strong>
+              <div>Hệ thống đã tự động tạm dừng các yêu cầu AI mới của người dùng để bảo vệ ngân sách. Bạn có thể tăng trần bên dưới nếu muốn tiếp tục.</div>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- TIÊU ĐỀ KHU VỰC -->
+      <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Cấu hình Khóa API &amp; Nhà cung cấp Trí tuệ Nhân tạo</h3>
+          <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Toàn bộ API key được mã hóa AES-256-GCM tại máy chủ. Client không bao giờ lưu hay đọc được key gốc.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+            Hôm nay: ${aiUsageData.todayRequests || 0} lượt
+          </span>
+        </div>
+      </div>
+
+      <!-- DANH SÁCH 3 THẺ NHÀ CUNG CẤP -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        ${['gemini', 'claude', 'openai'].map(prov => {
+          const info = PROVIDER_INFO[prov];
+          const pConf = providersConfig[prov] || {};
+          const isConfigured = Boolean(pConf.isConfigured);
+          const maskedKey = pConf.maskedKey || '';
+          const status = pConf.status || 'not_configured';
+
+          let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-500">Chưa có key</span>';
+          if (status === 'ready') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Sẵn sàng hoạt động</span>';
+          } else if (status === 'saved') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">Đã lưu key</span>';
+          } else if (status === 'error') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Key lỗi / hết hạn</span>';
+          }
+
+          const currentFastModel = (aiSettings.models && aiSettings.models[prov] && aiSettings.models[prov].fast) || info.defaultFast;
+          const currentStrongModel = (aiSettings.models && aiSettings.models[prov] && aiSettings.models[prov].strong) || info.defaultStrong;
+
+          return `
+            <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs p-5 flex flex-col justify-between space-y-4" data-provider-card="${prov}">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between gap-2 border-b border-gray-100 dark:border-gray-800 pb-3">
+                  <div>
+                    <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">${esc(info.name)}</h4>
+                    <p class="text-[11px] text-gray-500 line-clamp-1">${esc(info.tagline)}</p>
+                  </div>
+                  <div>${statusBadge}</div>
+                </div>
+
+                <!-- Ô NHẬP API KEY -->
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    API Key ${isConfigured ? `<span class="text-indigo-600 font-mono text-[11px]">(${esc(maskedKey)})</span>` : ''}
+                  </label>
+                  <div class="relative">
+                    <input type="password" id="inputKey_${prov}" autocomplete="off" placeholder="${isConfigured ? 'Nhập key mới để đè...' : 'Dán API key...'}" class="w-full px-3 py-2 pr-9 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-mono" />
+                    <button type="button" class="btn-toggle-key-eye absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" data-target="inputKey_${prov}">
+                      👁
+                    </button>
+                  </div>
+                </div>
+
+                <!-- CÁC NÚT THAO TÁC KEY -->
+                <div class="flex items-center gap-2">
+                  <button type="button" class="btn-save-key flex-1 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition" data-provider="${prov}">
+                    Lưu key
+                  </button>
+                  <button type="button" class="btn-test-key px-3 py-1.5 rounded-lg border border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 font-semibold text-xs transition ${!isConfigured ? 'opacity-50 pointer-events-none' : ''}" data-provider="${prov}">
+                    Kiểm tra
+                  </button>
+                  ${isConfigured ? `
+                    <button type="button" class="btn-delete-key px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold" data-provider="${prov}" title="Xóa key">
+                      ✕
+                    </button>
+                  ` : ''}
+                </div>
+
+                <div id="testResultBox_${prov}" class="text-[11px] hidden p-2 rounded-lg"></div>
+
+                <!-- CHỌN MODEL NHANH & MẠNH -->
+                <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-2">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-0.5">Model nhanh / rẻ (Độ khó &amp; Flashcard):</label>
+                    <input type="text" id="modelFast_${prov}" value="${esc(currentFastModel)}" class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-mono" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-0.5">Model mạnh (Phân tích nâng cao):</label>
+                    <input type="text" id="modelStrong_${prov}" value="${esc(currentStrongModel)}" class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-mono" />
+                  </div>
+                </div>
+              </div>
+
+              ${pConf.lastTested ? `
+                <div class="text-[10px] text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-2">
+                  Kiểm tra lần cuối: ${new Date(pConf.lastTested).toLocaleString('vi-VN')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- PHẦN 2: THỨ TỰ ƯU TIÊN VÀ TRẦN CHI TIÊU HÀNG NGÀY -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- CHỌN THỨ TỰ ƯU TIÊN NHÀ CUNG CẤP -->
+        <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+          <div>
+            <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Thứ tự ưu tiên nhà cung cấp &amp; Dự phòng</h4>
+            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Nếu nhà cung cấp đầu tiên bị lỗi hoặc hết hạn mức, hệ thống sẽ tự động chuyển sang nhà cung cấp tiếp theo (Failover).</p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">Thứ tự ưu tiên xử lý:</label>
+            <select id="aiPrioritySelect" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-medium">
+              <option value="gemini,openai,claude" ${currentPriority.join(',') === 'gemini,openai,claude' ? 'selected' : ''}>1. Gemini → 2. OpenAI → 3. Claude (Tối ưu chi phí nhất)</option>
+              <option value="openai,gemini,claude" ${currentPriority.join(',') === 'openai,gemini,claude' ? 'selected' : ''}>1. OpenAI → 2. Gemini → 3. Claude</option>
+              <option value="claude,gemini,openai" ${currentPriority.join(',') === 'claude,gemini,openai' ? 'selected' : ''}>1. Claude → 2. Gemini → 3. OpenAI (Chất lượng phân tích cao)</option>
+              <option value="gemini,claude,openai" ${currentPriority.join(',') === 'gemini,claude,openai' ? 'selected' : ''}>1. Gemini → 2. Claude → 3. OpenAI</option>
+            </select>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">Trần chi tiêu ngày (Số lượt request tối đa/ngày):</label>
+            <div class="flex items-center gap-2">
+              <input type="number" id="aiDailyCapInput" min="0" max="100000" step="50" value="${dailyCap}" class="w-36 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-bold font-mono" />
+              <span class="text-xs text-gray-500">(0 = không giới hạn trần)</span>
+            </div>
+            <p class="text-[11px] text-gray-400">Khi đạt tới số lượt này trong ngày, AI sẽ tự động ngưng để tránh phát sinh chi phí ngoài ý muốn.</p>
+          </div>
+
+          <button type="button" id="btnSaveAiSettings" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs">
+            Lưu thứ tự ưu tiên &amp; Cài đặt AI
+          </button>
+        </div>
+
+        <!-- BẢNG GIÁM SÁT SỬ DỤNG GẦN ĐÂY -->
+        <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Giám sát sử dụng 14 ngày qua</h4>
+            <span class="text-xs text-indigo-600 font-bold">${aiUsageData.grandRequests || 0} lượt gọi</span>
+          </div>
+
+          <div class="overflow-x-auto max-h-[220px] overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold">
+                  <th class="py-1.5 px-2">Ngày</th>
+                  <th class="py-1.5 px-2 text-center">Lượt gọi</th>
+                  <th class="py-1.5 px-2 text-right">Ước tính Tokens</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                ${(aiUsageData.dailyUsage || []).length > 0 ? (aiUsageData.dailyUsage || []).map(u => `
+                  <tr>
+                    <td class="py-2 px-2 font-mono">${u.date}</td>
+                    <td class="py-2 px-2 text-center font-bold text-indigo-600">${u.totalRequests}</td>
+                    <td class="py-2 px-2 text-right font-mono text-gray-500">${(u.totalTokens || 0).toLocaleString()}</td>
+                  </tr>
+                `).join('') : `
+                  <tr><td colspan="3" class="py-4 text-center text-gray-400">Chưa có phát sinh lượt gọi AI nào.</td></tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pt-2 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-500">
+            Hạn mức theo từng gói thành viên (Khách / Thường / Plus / Pro) có thể điều chỉnh linh hoạt tại thẻ <strong>Hạn mức các gói</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindAiTabEvents(container);
+}
+
+function bindAiTabEvents(container) {
+  // Hiện/ẩn mật khẩu cho ô đang gõ
+  container.querySelectorAll('.btn-toggle-key-eye').forEach(btn => {
+    btn.onclick = () => {
+      const input = document.getElementById(btn.dataset.target);
+      if (!input) return;
+      input.type = input.type === 'password' ? 'text' : 'password';
+    };
+  });
+
+  // Lưu key
+  container.querySelectorAll('.btn-save-key').forEach(btn => {
+    btn.onclick = async () => {
+      const prov = btn.dataset.provider;
+      const input = document.getElementById(`inputKey_${prov}`);
+      const keyVal = input ? input.value.trim() : '';
+
+      if (!keyVal) {
+        alert("Vui lòng nhập API key cần lưu.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Đang lưu...';
+      try {
+        const res = await callAdminApi('/api/admin/ai/save-key', {
+          method: 'POST',
+          body: JSON.stringify({ provider: prov, apiKey: keyVal })
+        });
+        toast(`Đã lưu API key cho ${prov.toUpperCase()} (${res.maskedKey}) thành công!`);
+        input.value = '';
+        renderAiTab(container);
+      } catch (err) {
+        alert("Lỗi khi lưu key: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Lưu key';
+      }
+    };
+  });
+
+  // Kiểm tra key
+  container.querySelectorAll('.btn-test-key').forEach(btn => {
+    btn.onclick = async () => {
+      const prov = btn.dataset.provider;
+      const box = document.getElementById(`testResultBox_${prov}`);
+      if (box) {
+        box.classList.remove('hidden');
+        box.className = "text-[11px] p-2 rounded-lg bg-gray-100 text-gray-600";
+        box.innerText = "Đang gửi yêu cầu kiểm tra tới máy chủ...";
+      }
+
+      btn.disabled = true;
+      try {
+        const res = await callAdminApi('/api/admin/ai/test', {
+          method: 'POST',
+          body: JSON.stringify({ provider: prov })
+        });
+
+        if (box) {
+          box.className = `text-[11px] p-2 rounded-lg ${res.success ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'}`;
+          box.innerText = res.message;
+        }
+        toast(res.success ? "Kết nối AI thành công!" : "Kiểm tra kết nối thất bại.");
+      } catch (err) {
+        if (box) {
+          box.className = "text-[11px] p-2 rounded-lg bg-rose-50 text-rose-800 border border-rose-200";
+          box.innerText = "Lỗi kiểm tra: " + err.message;
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    };
+  });
+
+  // Xóa key
+  container.querySelectorAll('.btn-delete-key').forEach(btn => {
+    btn.onclick = async () => {
+      const prov = btn.dataset.provider;
+      if (confirm(`Bạn có chắc chắn muốn XÓA hoàn toàn API key của ${prov.toUpperCase()}?`)) {
+        btn.disabled = true;
+        try {
+          await callAdminApi('/api/admin/ai/delete-key', {
+            method: 'POST',
+            body: JSON.stringify({ provider: prov })
+          });
+          toast(`Đã xóa API key của ${prov.toUpperCase()}!`);
+          renderAiTab(container);
+        } catch (err) {
+          alert("Lỗi xóa key: " + err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+    };
+  });
+
+  // Lưu cài đặt AI
+  const btnSaveSettings = container.querySelector('#btnSaveAiSettings');
+  if (btnSaveSettings) {
+    btnSaveSettings.onclick = async () => {
+      btnSaveSettings.disabled = true;
+      btnSaveSettings.innerText = 'Đang lưu...';
+
+      const prioStr = document.getElementById('aiPrioritySelect').value;
+      const dailyCap = parseInt(document.getElementById('aiDailyCapInput').value, 10) || 0;
+
+      const modelsPayload = {};
+      ['gemini', 'claude', 'openai'].forEach(p => {
+        const fastEl = document.getElementById(`modelFast_${p}`);
+        const strongEl = document.getElementById(`modelStrong_${p}`);
+        modelsPayload[p] = {
+          fast: fastEl ? fastEl.value.trim() : '',
+          strong: strongEl ? strongEl.value.trim() : ''
+        };
+      });
+
+      try {
+        await callAdminApi('/api/admin/ai/settings', {
+          method: 'POST',
+          body: JSON.stringify({
+            priority: prioStr.split(','),
+            dailyRequestCap: dailyCap,
+            models: modelsPayload
+          })
+        });
+        toast("Đã lưu cấu hình AI & Thứ tự ưu tiên thành công!");
+      } catch (err) {
+        alert("Lỗi lưu cấu hình: " + err.message);
+      } finally {
+        btnSaveSettings.disabled = false;
+        btnSaveSettings.innerText = 'Lưu thứ tự ưu tiên & Cài đặt AI';
+      }
+    };
+  }
 }
