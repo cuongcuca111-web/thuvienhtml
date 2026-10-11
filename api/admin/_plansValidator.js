@@ -46,7 +46,11 @@ function validatePlansConfig(rawPlans) {
       exportNotesMd: Boolean(rawTier.exportNotesMd),
       trashDays: clampInt(rawTier.trashDays, 0, 365, false),
       statsDays: clampInt(rawTier.statsDays, 1, 3650, true),
-      fullTextSearch: Boolean(rawTier.fullTextSearch)
+      fullTextSearch: Boolean(rawTier.fullTextSearch),
+      monthlyAiRequests: clampInt(rawTier.monthlyAiRequests !== undefined ? rawTier.monthlyAiRequests : (tier === 'guest' ? 3 : (tier === 'free' ? 30 : (tier === 'plus' ? 300 : 1500))), 0, 100000, true),
+      maxFlashcardsPerFile: clampInt(rawTier.maxFlashcardsPerFile !== undefined ? rawTier.maxFlashcardsPerFile : (tier === 'guest' ? 5 : (tier === 'free' ? 15 : (tier === 'plus' ? 50 : 100))), 0, 500, true),
+      aiScheduleEnabled: rawTier.aiScheduleEnabled !== undefined ? Boolean(rawTier.aiScheduleEnabled) : (tier !== 'guest'),
+      aiFlashcardsEnabled: rawTier.aiFlashcardsEnabled !== undefined ? Boolean(rawTier.aiFlashcardsEnabled) : true
     };
   }
 
@@ -58,7 +62,7 @@ function validatePlansConfig(rawPlans) {
     return a <= b;
   }
 
-  const numericKeys = ['maxLessons', 'maxSections', 'maxActiveShares'];
+  const numericKeys = ['maxLessons', 'maxSections', 'maxActiveShares', 'monthlyAiRequests', 'maxFlashcardsPerFile'];
   for (const key of numericKeys) {
     if (!isLessThanOrEqualTo(sanitized.guest[key], sanitized.free[key])) {
       errors.push(`Gói Khách không được có ${key} lớn hơn gói Thường.`);
