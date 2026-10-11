@@ -7498,46 +7498,58 @@
     body {
       touch-action: manipulation;
     }
-    /* Đóng khung văn bản: viền sắc nét, bo góc mềm, không chèn badge góc, chữ nguyên vẹn */
+    /* Đóng khung văn bản: Phần tử đánh dấu (mark) chỉ dùng để định vị, KHÔNG gắn border/outline/box-shadow lên nó */
     .text-frame {
-      box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22));
-      border-radius: 4px;
-      background-color: var(--frame-bg, rgba(217, 119, 6, 0.08));
-      box-decoration-break: clone;
-      -webkit-box-decoration-break: clone;
+      display: inline;
       padding: 0;
       margin: 0;
       line-height: inherit !important;
-      display: inline;
-      position: relative;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
       cursor: text;
-      outline: none;
-      transition: box-shadow 0.15s ease, background-color 0.15s ease;
     }
-    .text-frame:focus-visible {
-      outline: 2px solid #6366f1;
-      outline-offset: 2px;
+    /* Lớp overlay chứa các khung vẽ bao quanh toàn bộ đoạn */
+    #ann-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      overflow: visible;
+    }
+    .ann-frame {
+      position: absolute;
+      box-sizing: border-box;
+      pointer-events: none;
+      border: 2px solid var(--frame-color, #d97706);
+      border-radius: 10px;
+      background-color: var(--frame-bg, rgba(217, 119, 6, 0.05));
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
     }
     @keyframes frameFlashPulse {
       0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
       50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
-      100% { transform: scale(1); box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22)); }
+      100% { transform: scale(1); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
     }
     .frame-flash-highlight {
       animation: frameFlashPulse 1.8s ease-out 1 !important;
     }
-    html.hide-text-frames .text-frame, body.hide-text-frames .text-frame {
-      box-shadow: none !important;
-      background-color: transparent !important;
+    html.hide-text-frames #ann-layer, body.hide-text-frames #ann-layer {
+      display: none !important;
     }
   \`;
   (document.head || document.documentElement).appendChild(bridgeStyle);
 
   const PALETTE = {
-    yellow: { border: '#d97706', glow: 'rgba(217, 119, 6, 0.25)', bg: 'rgba(217, 119, 6, 0.08)', badgeBg: '#fef3c7', badgeText: '#92400e', badgeBorder: '#f59e0b' },
-    green: { border: '#059669', glow: 'rgba(5, 150, 105, 0.25)', bg: 'rgba(5, 150, 105, 0.08)', badgeBg: '#d1fae5', badgeText: '#065f46', badgeBorder: '#10b981' },
-    pink: { border: '#db2777', glow: 'rgba(219, 39, 119, 0.25)', bg: 'rgba(219, 39, 119, 0.08)', badgeBg: '#fce7f3', badgeText: '#9d174d', badgeBorder: '#ec4899' },
-    purple: { border: '#7c3aed', glow: 'rgba(124, 58, 237, 0.25)', bg: 'rgba(124, 58, 237, 0.08)', badgeBg: '#ede9fe', badgeText: '#5b21b6', badgeBorder: '#8b5cf6' }
+    yellow: { border: '#d97706', glow: 'rgba(217, 119, 6, 0.25)', bg: 'rgba(217, 119, 6, 0.05)', badgeBg: '#fef3c7', badgeText: '#92400e', badgeBorder: '#f59e0b' },
+    green: { border: '#059669', glow: 'rgba(5, 150, 105, 0.25)', bg: 'rgba(5, 150, 105, 0.05)', badgeBg: '#d1fae5', badgeText: '#065f46', badgeBorder: '#10b981' },
+    pink: { border: '#db2777', glow: 'rgba(219, 39, 119, 0.25)', bg: 'rgba(219, 39, 119, 0.05)', badgeBg: '#fce7f3', badgeText: '#9d174d', badgeBorder: '#ec4899' },
+    purple: { border: '#7c3aed', glow: 'rgba(124, 58, 237, 0.25)', bg: 'rgba(124, 58, 237, 0.05)', badgeBg: '#ede9fe', badgeText: '#5b21b6', badgeBorder: '#8b5cf6' }
   };
 
   function getPaletteColors(colorName, customHex) {
@@ -7545,7 +7557,7 @@
       return {
         border: customHex,
         glow: customHex + '40',
-        bg: customHex + '18',
+        bg: customHex + '0d',
         badgeBg: customHex + '22',
         badgeText: customHex,
         badgeBorder: customHex
@@ -7554,16 +7566,180 @@
     return PALETTE[colorName] || PALETTE.yellow;
   }
 
+  function ensureAnnLayer() {
+    let layer = document.getElementById('ann-layer');
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.id = 'ann-layer';
+      const root = document.body || document.documentElement;
+      if (root) {
+        if (window.getComputedStyle(root).position === 'static') {
+          root.style.position = 'relative';
+        }
+        root.appendChild(layer);
+      }
+    }
+    return layer;
+  }
+
+  // Khung duy nhất bao quanh toàn bộ đoạn đã chọn
+  let isUpdatingPositions = false;
+  let layoutRafId = null;
+
+  function scheduleUpdateFramePositions() {
+    if (layoutRafId) cancelAnimationFrame(layoutRafId);
+    layoutRafId = requestAnimationFrame(() => {
+      layoutRafId = null;
+      updateAllFramePositions();
+    });
+  }
+
+  function updateAllFramePositions() {
+    if (isUpdatingPositions) return;
+    isUpdatingPositions = true;
+    try {
+      const layer = ensureAnnLayer();
+      if (!layer) return;
+
+      const scale = (typeof currentScale === 'number' && currentScale > 0) ? currentScale : 1.0;
+      const scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      const layerRect = layer.getBoundingClientRect();
+      const layerOriginX = (layerRect.left + scrollX) / scale;
+      const layerOriginY = (layerRect.top + scrollY) / scale;
+
+      const frameElements = Array.from(document.querySelectorAll('.text-frame[data-frame-id]'));
+      const idMap = new Map();
+      frameElements.forEach(el => {
+        const fId = el.getAttribute('data-frame-id');
+        if (!fId) return;
+        if (!idMap.has(fId)) idMap.set(fId, []);
+        idMap.get(fId).push(el);
+      });
+
+      // BƯỚC 1: Đọc layout một lượt (Batch layout read)
+      const measurements = [];
+      idMap.forEach((elements, fId) => {
+        let minL = Infinity, minT = Infinity, maxR = -Infinity, maxB = -Infinity;
+        let count = 0;
+        elements.forEach(el => {
+          const rects = el.getClientRects();
+          if (rects && rects.length > 0) {
+            for (let i = 0; i < rects.length; i++) {
+              const r = rects[i];
+              if (r.width > 0 || r.height > 0) {
+                if (r.left < minL) minL = r.left;
+                if (r.top < minT) minT = r.top;
+                if (r.right > maxR) maxR = r.right;
+                if (r.bottom > maxB) maxB = r.bottom;
+                count++;
+              }
+            }
+          } else {
+            const r = el.getBoundingClientRect();
+            if (r.width > 0 || r.height > 0) {
+              if (r.left < minL) minL = r.left;
+              if (r.top < minT) minT = r.top;
+              if (r.right > maxR) maxR = r.right;
+              if (r.bottom > maxB) maxB = r.bottom;
+              count++;
+            }
+          }
+        });
+
+        if (count > 0 && minL !== Infinity) {
+          const first = elements[0];
+          measurements.push({
+            id: fId,
+            colorName: first.getAttribute('data-color') || 'yellow',
+            customHex: first.getAttribute('data-custom-color') || null,
+            noteText: first.getAttribute('data-note') || '',
+            rect: {
+              left: (minL + scrollX) / scale - layerOriginX,
+              top: (minT + scrollY) / scale - layerOriginY,
+              right: (maxR + scrollX) / scale - layerOriginX,
+              bottom: (maxB + scrollY) / scale - layerOriginY,
+              width: (maxR - minL) / scale,
+              height: (maxB - minT) / scale
+            }
+          });
+        }
+      });
+
+      // BƯỚC 2: Tính lồng nhau (nesting) để khung con lệch ra 3px mỗi lớp
+      for (let i = 0; i < measurements.length; i++) {
+        let depth = 0;
+        const mi = measurements[i].rect;
+        for (let j = 0; j < measurements.length; j++) {
+          if (i === j) continue;
+          const mj = measurements[j].rect;
+          if (mi.left >= mj.left - 5 && mi.top >= mj.top - 5 &&
+              mi.right <= mj.right + 5 && mi.bottom <= mj.bottom + 5 &&
+              (mj.width * mj.height) > (mi.width * mi.height)) {
+            depth++;
+          }
+        }
+        measurements[i].nestDepth = depth;
+      }
+
+      // BƯỚC 3: Ghi style một lượt (Batch style write)
+      const existingOverlays = new Map();
+      layer.querySelectorAll('.ann-frame[data-frame-id]').forEach(div => {
+        existingOverlays.set(div.getAttribute('data-frame-id'), div);
+      });
+
+      const activeIds = new Set();
+      measurements.forEach(m => {
+        activeIds.add(m.id);
+        let overlay = existingOverlays.get(m.id);
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.className = 'ann-frame';
+          overlay.setAttribute('data-frame-id', m.id);
+          layer.appendChild(overlay);
+        }
+
+        const col = getPaletteColors(m.colorName, m.customHex);
+        overlay.style.setProperty('--frame-color', col.border);
+        overlay.style.setProperty('--frame-bg', col.bg);
+
+        const pad = 4 + (m.nestDepth * 3);
+        const l = Math.max(0, m.rect.left - pad);
+        const t = Math.max(0, m.rect.top - pad);
+        const w = m.rect.width + (pad * 2);
+        const h = m.rect.height + (pad * 2);
+
+        overlay.style.left = l + 'px';
+        overlay.style.top = t + 'px';
+        overlay.style.width = w + 'px';
+        overlay.style.height = h + 'px';
+      });
+
+      // Xóa các overlay của khung không còn tồn tại
+      existingOverlays.forEach((div, fId) => {
+        if (!activeIds.has(fId)) {
+          div.remove();
+        }
+      });
+    } catch (err) {
+      console.warn('Lỗi êm trong updateAllFramePositions:', err);
+    } finally {
+      isUpdatingPositions = false;
+    }
+  }
+
   function styleFrameElement(span, badge, colorName, customHex, labelText, noteText) {
-    const col = getPaletteColors(colorName, customHex);
-    span.style.setProperty('--frame-color', col.border);
-    span.style.setProperty('--frame-glow', col.glow);
-    span.style.setProperty('--frame-bg', col.bg);
     if (noteText && noteText.trim()) {
       span.title = noteText.trim().substring(0, 120);
+      span.setAttribute('data-note', noteText.trim());
     } else {
       span.title = 'Nhấp đúp để ghi chú';
+      span.removeAttribute('data-note');
     }
+    span.setAttribute('data-color', colorName || 'yellow');
+    if (customHex) span.setAttribute('data-custom-color', customHex);
+    scheduleUpdateFramePositions();
   }
 
   function wrapRangeInternal(range, frameData) {
@@ -7580,6 +7756,7 @@
       span.setAttribute('data-frame-id', frameId);
       span.setAttribute('data-color', colorName);
       if (customHex) span.setAttribute('data-custom-color', customHex);
+      if (noteText) span.setAttribute('data-note', noteText);
       span.setAttribute('tabindex', '0');
       span.setAttribute('role', 'group');
       span.setAttribute('aria-label', 'Đoạn đã đóng khung. Nhấn Enter để mở ghi chú');
@@ -7604,6 +7781,7 @@
       styleFrameElement(span, null, colorName, customHex, labelText, noteText);
       targetNode.parentNode.insertBefore(span, targetNode);
       span.appendChild(targetNode);
+      scheduleUpdateFramePositions();
       return [span];
     }
 
@@ -7639,6 +7817,7 @@
       span.appendChild(tNode);
       created.push(span);
     }
+    scheduleUpdateFramePositions();
     return created;
   }
 
@@ -7652,13 +7831,16 @@
         parent.normalize();
       }
     });
+    const overlay = document.querySelector('#ann-layer .ann-frame[data-frame-id="' + frameId + '"]');
+    if (overlay) overlay.remove();
+    scheduleUpdateFramePositions();
   }
 
   function restoreSingleFrame(frame) {
     if (!frame || !frame.id) return;
     const textQuote = (frame.anchor?.exact || frame.text || '').trim();
     if (!textQuote) return;
-    if (document.querySelector('[data-frame-id="' + frame.id + '"]')) return;
+    if (document.querySelector('.text-frame[data-frame-id="' + frame.id + '"]')) return;
 
     const allTextNodes = [];
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
@@ -7684,6 +7866,7 @@
     framesList.forEach(f => {
       try { restoreSingleFrame(f); } catch (_) {}
     });
+    scheduleUpdateFramePositions();
   }
 
   function getNativeBg() {
@@ -7697,7 +7880,7 @@
     return '#FFFFFF';
   }
 
-  // 2. Tự co giãn chiều cao (Auto-height)
+  // 2. Tự co giãn chiều cao (Auto-height) & Đồng bộ vị trí khung
   let resizeTimer = null;
   function sendHeight() {
     if (resizeTimer) clearTimeout(resizeTimer);
@@ -7715,11 +7898,30 @@
         }, '*');
       } catch (_) {}
     }, 40);
+    scheduleUpdateFramePositions();
   }
 
-  window.addEventListener('load', sendHeight);
+  window.addEventListener('load', () => {
+    sendHeight();
+    scheduleUpdateFramePositions();
+  });
+  window.addEventListener('resize', scheduleUpdateFramePositions);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(scheduleUpdateFramePositions).catch(() => {});
+  }
   if (typeof ResizeObserver !== 'undefined' && document.body) {
-    new ResizeObserver(sendHeight).observe(document.body);
+    let lastObservedW = 0, lastObservedH = 0;
+    const bodyObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const cr = entry.contentRect;
+        if (Math.abs(cr.width - lastObservedW) > 1 || Math.abs(cr.height - lastObservedH) > 4) {
+          lastObservedW = cr.width;
+          lastObservedH = cr.height;
+          sendHeight();
+        }
+      }
+    });
+    bodyObserver.observe(document.body);
   }
 
   // 3. Link handling an toàn
@@ -8040,6 +8242,7 @@
       case 'APPLY_THEME': {
         // Giao diện ban đêm chỉ áp dụng cho khung ngoài app, không can thiệp vào trong file gốc
         sendHeight();
+        scheduleUpdateFramePositions();
         break;
       }
 
@@ -8121,8 +8324,16 @@
 
       case 'SCROLL_TO_FRAME': {
         const el = document.querySelector(\`[data-frame-id="\${msg.id}"]\`) || document.querySelector(\`[data-hl-id="\${msg.id}"]\`);
+        const overlay = document.querySelector(\`#ann-layer .ann-frame[data-frame-id="\${msg.id}"]\`);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        if (overlay) {
+          overlay.classList.remove('frame-flash-highlight');
+          void overlay.offsetWidth;
+          overlay.classList.add('frame-flash-highlight');
+          setTimeout(() => overlay.classList.remove('frame-flash-highlight'), 2200);
+        } else if (el) {
           el.classList.remove('frame-flash-highlight');
           void el.offsetWidth;
           el.classList.add('frame-flash-highlight');
@@ -21303,25 +21514,43 @@
       style.textContent = `
         body { touch-action: manipulation; }
         .text-frame {
-          box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22));
-          border-radius: 4px;
-          background-color: var(--frame-bg, rgba(217, 119, 6, 0.08));
-          box-decoration-break: clone;
-          -webkit-box-decoration-break: clone;
+          display: inline;
           padding: 0;
           margin: 0;
+          line-height: inherit !important;
+          background: transparent !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
           cursor: text;
-          outline: none;
-          transition: box-shadow 0.15s ease, background-color 0.15s ease;
         }
-        .text-frame:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
+        #ann-layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1000;
+          overflow: visible;
+        }
+        .ann-frame {
+          position: absolute;
+          box-sizing: border-box;
+          pointer-events: none;
+          border: 2px solid var(--frame-color, #d97706);
+          border-radius: 10px;
+          background-color: var(--frame-bg, rgba(217, 119, 6, 0.05));
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+          transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
         @keyframes frameFlashPulse {
           0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
           50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
-          100% { transform: scale(1); box-shadow: 0 0 0 2px var(--frame-color, #d97706), 0 0 0 4px var(--frame-glow, rgba(217, 119, 6, 0.22)); }
+          100% { transform: scale(1); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
         }
         .frame-flash-highlight { animation: frameFlashPulse 1.8s ease-out 1 !important; }
-        html.hide-text-frames .text-frame, body.hide-text-frames .text-frame { box-shadow: none !important; background-color: transparent !important; }
+        html.hide-text-frames #ann-layer, body.hide-text-frames #ann-layer { display: none !important; }
       `;
       (doc.head || doc.body).appendChild(style);
     }
@@ -21345,6 +21574,8 @@
             parent.normalize();
           }
         });
+        const overlay = doc.querySelector(`#ann-layer .ann-frame[data-frame-id="${frameId}"]`);
+        if (overlay) overlay.remove();
       } catch (err) {
         console.warn('Lỗi êm trong removeFrameFromDoc:', err);
       }
