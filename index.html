@@ -7033,8 +7033,6 @@
         }
         const adminMod = await import('./admin.js');
         adminMod.initAdminSystem({
-          auth,
-          db,
           state,
           firebaseConfig,
           effectivePlans,
@@ -12523,11 +12521,8 @@
         
         const btnAdmin = document.getElementById('btnOpenAdminPanel');
         if (btnAdmin) {
-          if (state.isAdmin) {
-            btnAdmin.classList.remove('hidden');
-          } else {
-            btnAdmin.classList.add('hidden');
-          }
+          // Luôn ẩn mục Quản trị khỏi menu tài khoản thường theo yêu cầu bảo mật
+          btnAdmin.classList.add('hidden');
         }
         if (state.isAdmin) {
           badgeType.innerText = "Quản trị viên";

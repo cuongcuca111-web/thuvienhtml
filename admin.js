@@ -7,12 +7,16 @@ function toast(msg) { if (adminContext && typeof adminContext.showToast === 'fun
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
+  initializeAuth,
   getAuth,
   signInWithEmailAndPassword, 
   signOut,
+  browserSessionPersistence,
   inMemoryPersistence,
-  setPersistence 
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 const ADMIN_LOGIN_DOMAIN = window.__ADMIN_LOGIN_DOMAIN || 'admin.thuvienhtml.app';
 
@@ -20,6 +24,7 @@ const ADMIN_LOGIN_DOMAIN = window.__ADMIN_LOGIN_DOMAIN || 'admin.thuvienhtml.app
 let adminContext = null;
 let adminApp = null;
 let adminAuth = null;
+let adminDb = null;
 let currentAdminUser = null; // Phiên quản trị viên độc lập trong bộ nhớ
 let currentAdminTab = 'plans';
 let pendingPlansChanges = null; // Bản sao đang chỉnh sửa
@@ -27,11 +32,12 @@ let originalPlansConfig = null; // Bản gốc từ server
 let plansVersion = 1;
 let adminSessionTimer = null;
 let lastAdminActivity = Date.now();
-const ADMIN_MAX_IDLE_MS = 60 * 60 * 1000; // 60 phút
+let adminLastAuthTime = Date.now();
+const ADMIN_MAX_IDLE_MS = 60 * 60 * 1000; // 60 phút tự đăng xuất nếu không hoạt động
 const ADMIN_REAUTH_MS = 15 * 60 * 1000;  // 15 phút cho thao tác nhạy cảm
 
-// Khởi tạo hoặc lấy Firebase Auth riêng biệt dành cho khu vực Quản trị
-async function getAdminAuth() {
+// Khởi tạo LƯỜI Firebase App thứ 2 ('admin-session') và Firebase Auth riêng biệt cho khu vực Quản trị
+export async function getAdminAuth() {
   if (adminAuth) return adminAuth;
   const config = (adminContext && adminContext.firebaseConfig) || window.__firebaseConfig || {
     apiKey: "AIzaSyAUBpYV3-03LxqFffabtEqIUzQ7JFn4-fo",
@@ -42,17 +48,60 @@ async function getAdminAuth() {
     appId: "1:1053872012788:web:5bc528ab7f5c5f57bf8da1"
   };
 
-  const existingApp = getApps().find(a => a.name === 'adminIsolatedApp');
-  adminApp = existingApp || initializeApp(config, 'adminIsolatedApp');
-  adminAuth = getAuth(adminApp);
+  const existingApp = getApps().find(a => a.name === 'admin-session');
+  adminApp = existingApp || initializeApp(config, 'admin-session');
+
   try {
-    if (inMemoryPersistence) {
-      await setPersistence(adminAuth, inMemoryPersistence);
-    }
+    adminAuth = initializeAuth(adminApp, {
+      persistence: [browserSessionPersistence, inMemoryPersistence]
+    });
   } catch (err) {
-    console.warn('[Admin] Không thể thiết lập inMemoryPersistence:', err);
+    // Nếu initializeAuth đã được gọi trước đó trên instance này, dùng getAuth
+    try {
+      adminAuth = getAuth(adminApp);
+    } catch (e2) {
+      console.warn('[Admin] Không thể khởi tạo adminAuth:', e2);
+    }
   }
   return adminAuth;
+}
+
+// Helper lấy Firestore riêng của adminApp (nếu cần truy cập Firestore trực tiếp)
+export function getAdminDb() {
+  if (adminDb) return adminDb;
+  if (!adminApp) {
+    const existingApp = getApps().find(a => a.name === 'admin-session');
+    if (existingApp) adminApp = existingApp;
+  }
+  if (!adminApp) return null;
+  try {
+    adminDb = getFirestore(adminApp);
+  } catch (e) {
+    console.warn('[Admin] Lỗi getFirestore(adminApp):', e);
+  }
+  return adminDb;
+}
+
+// Kiểm tra phiên còn tươi (<15 phút) cho các thao tác nhạy cảm, yêu cầu nhập lại mật khẩu nếu quá hạn
+async function ensureFreshAdminSession() {
+  const now = Date.now();
+  if (now - adminLastAuthTime <= ADMIN_REAUTH_MS) {
+    return true;
+  }
+  if (!currentAdminUser || !currentAdminUser.email) return false;
+
+  const pw = prompt("Phiên quản trị đã quá 15 phút. Vui lòng nhập lại mật khẩu quản trị để xác nhận thao tác:");
+  if (!pw) return false;
+  try {
+    const cred = EmailAuthProvider.credential(currentAdminUser.email, pw);
+    await reauthenticateWithCredential(currentAdminUser, cred);
+    adminLastAuthTime = Date.now();
+    lastAdminActivity = Date.now();
+    return true;
+  } catch (err) {
+    alert("Xác thực lại thất bại: Mật khẩu không chính xác.");
+    return false;
+  }
 }
 
 // Biến đếm đăng nhập sai phía client
@@ -160,8 +209,13 @@ function ensureAdminModalsInDOM() {
               </svg>
             </div>
             <div>
-              <h2 class="font-serif text-base sm:text-lg font-bold text-[#1C1B18] dark:text-[#E8E6E1] leading-tight">Quản trị Hệ thống</h2>
-              <div class="flex items-center gap-2 text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 id="adminHeaderTitle" class="font-serif text-base sm:text-lg font-bold text-[#1C1B18] dark:text-[#E8E6E1] leading-tight">Phiên quản trị (minhcuong111)</h2>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Admin Session</span>
+              </div>
+              <div class="flex items-center gap-2 text-[11px] text-[#78756D] dark:text-[#9AA3B2] flex-wrap">
+                <span id="adminMainUserIndicator" class="font-medium text-emerald-600 dark:text-emerald-400">Bạn vẫn đang dùng tài khoản Khách</span>
+                <span>•</span>
                 <span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Phiên: <strong id="adminSessionCountdown">60:00</strong></span>
                 <span>•</span>
                 <span id="adminCurrentVersionBadge">v1</span>
@@ -294,6 +348,24 @@ function bindGlobalAdminEvents() {
     }, { passive: true });
   });
 
+  // Đóng modal khi bấm nền mờ bên ngoài (backdrop click)
+  const panelModal = document.getElementById('adminPanelModal');
+  if (panelModal) {
+    panelModal.onclick = (e) => {
+      if (e.target === panelModal) {
+        closeAdminPanel();
+      }
+    };
+  }
+  const loginModal = document.getElementById('adminLoginModal');
+  if (loginModal) {
+    loginModal.onclick = (e) => {
+      if (e.target === loginModal) {
+        closeAdminLogin();
+      }
+    };
+  }
+
   // Đóng modal quản trị khi bấm phím Escape
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key === 'Esc') {
@@ -332,6 +404,8 @@ export function openAdminLogin() {
 }
 
 export function closeAdminLogin() {
+  const pwInput = document.getElementById('adminPasswordInput');
+  if (pwInput) pwInput.value = '';
   const modal = document.getElementById('adminLoginModal');
   if (modal) {
     modal.classList.remove('modal-active');
@@ -358,6 +432,26 @@ export function openAdminPanel() {
       clearTimeout(panel._closeTimer);
       panel._closeTimer = null;
     }
+
+    // Cập nhật thông tin Header lớp phủ
+    const adminUsername = (currentAdminUser && currentAdminUser.email) 
+      ? currentAdminUser.email.split('@')[0] 
+      : 'minhcuong111';
+    const headerTitleEl = document.getElementById('adminHeaderTitle');
+    if (headerTitleEl) {
+      headerTitleEl.innerText = `Phiên quản trị (${adminUsername})`;
+    }
+
+    const mainUserIndicator = document.getElementById('adminMainUserIndicator');
+    if (mainUserIndicator) {
+      const mainUser = adminContext && adminContext.state && adminContext.state.user;
+      let mainName = 'Khách';
+      if (mainUser && !mainUser.isAnonymous) {
+        mainName = mainUser.displayName || (mainUser.email ? mainUser.email.split('@')[0] : 'đã đăng nhập');
+      }
+      mainUserIndicator.innerText = `Bạn vẫn đang dùng tài khoản ${mainName}`;
+    }
+
     panel.classList.remove('hidden', 'modal-closing');
     void panel.offsetWidth;
     panel.classList.add('modal-active');
@@ -366,7 +460,26 @@ export function openAdminPanel() {
   }
 }
 
-export function closeAdminPanel() {
+// Xóa sạch phiên quản trị, thu hồi credentials và làm sạch bộ nhớ
+export async function endAdminSession() {
+  currentAdminUser = null;
+  if (adminSessionTimer) {
+    clearInterval(adminSessionTimer);
+    adminSessionTimer = null;
+  }
+  if (adminAuth) {
+    try {
+      await signOut(adminAuth);
+    } catch (e) {
+      console.warn("[Admin] Lỗi signOut adminAuth:", e);
+    }
+  }
+  const pwInput = document.getElementById('adminPasswordInput');
+  if (pwInput) pwInput.value = '';
+}
+
+export async function closeAdminPanel() {
+  await endAdminSession();
   const panel = document.getElementById('adminPanelModal');
   if (panel) {
     panel.classList.remove('modal-active');
@@ -425,10 +538,7 @@ async function handleAdminLoginSubmit(e) {
       clientFailedLogins = 0;
       currentAdminUser = user;
       lastAdminActivity = Date.now();
-
-      // Cập nhật nút trong menu tài khoản
-      const btnAdminInMenu = document.getElementById('btnOpenAdminPanel');
-      if (btnAdminInMenu) btnAdminInMenu.classList.remove('hidden');
+      adminLastAuthTime = Date.now();
 
       startSessionTimer();
       openAdminPanel();
@@ -438,7 +548,7 @@ async function handleAdminLoginSubmit(e) {
       if (authInstance) await signOut(authInstance);
       currentAdminUser = null;
       recordClientFailedLogin();
-      errBanner.innerText = "Không có quyền truy cập";
+      errBanner.innerText = "Sai thông tin đăng nhập";
       errBanner.classList.remove('hidden');
       return;
     }
@@ -462,19 +572,9 @@ function recordClientFailedLogin() {
 }
 
 async function handleAdminLogout() {
-  if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi khu vực Quản trị?")) {
-    currentAdminUser = null;
-    clearInterval(adminSessionTimer);
-    if (adminAuth) {
-      try {
-        await signOut(adminAuth);
-      } catch (e) {
-        console.warn("[Admin] Lỗi signOut adminAuth:", e);
-      }
-    }
+  if (confirm("Bạn có chắc chắn muốn kết thúc phiên Quản trị?")) {
+    await endAdminSession();
     closeAdminPanel();
-    const btnAdminInMenu = document.getElementById('btnOpenAdminPanel');
-    if (btnAdminInMenu) btnAdminInMenu.classList.add('hidden');
     toast("Đã kết thúc phiên quản trị");
   }
 }
@@ -549,8 +649,19 @@ function loadTabData(tabName) {
   }
 }
 
-// HELPER GỌI API ADMIN
-async function callAdminApi(path, options = {}) {
+// HELPER GỌI API ADMIN BẰNG TOKEN TỪ PHIÊN ADMINAUTH ĐỘC LẬP
+export async function adminFetch(path, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    const isSensitive = !path.includes('/test-qr') && !path.includes('/ai/test');
+    if (isSensitive) {
+      const isFresh = await ensureFreshAdminSession();
+      if (!isFresh) {
+        throw new Error('Thao tác bị hủy: Phiên quản trị cần xác thực lại mật khẩu.');
+      }
+    }
+  }
+
   const adminUser = currentAdminUser || (adminAuth && adminAuth.currentUser);
   if (!adminUser) {
     throw new Error('Chưa đăng nhập quyền quản trị hoặc phiên đã kết thúc.');
@@ -572,6 +683,7 @@ async function callAdminApi(path, options = {}) {
   }
   return data;
 }
+const callAdminApi = adminFetch;
 
 // =========================================================================
 // 3.1 MỤC 1: HẠN MỨC CÁC GÓI (PLANS LIMITS MANAGEMENT)
@@ -909,6 +1021,7 @@ function updatePlansImpact() {
 }
 
 async function savePlansChanges() {
+  if (!await ensureFreshAdminSession()) return;
   const btn = document.getElementById('btnSavePlans');
   btn.disabled = true;
   btn.innerText = 'Đang lưu...';
@@ -1241,6 +1354,7 @@ function bindUserActions(container, refreshFn) {
     btn.onclick = async () => {
       const tier = prompt("Chọn gói cấp (plus hoặc pro):", "plus");
       if (!tier || !['plus', 'pro'].includes(tier.toLowerCase())) return;
+      if (!await ensureFreshAdminSession()) return;
       const days = prompt("Số ngày sử dụng (nhập 0 để vĩnh viễn):", "30");
       if (days === null) return;
       const reason = prompt("Lý do cấp gói:", "Tặng sự kiện");
@@ -1265,6 +1379,7 @@ function bindUserActions(container, refreshFn) {
 
   container.querySelectorAll('.btn-extend-user').forEach(btn => {
     btn.onclick = async () => {
+      if (!await ensureFreshAdminSession()) return;
       try {
         await callAdminApi('/api/admin/users/grant', {
           method: 'POST',
@@ -1286,6 +1401,7 @@ function bindUserActions(container, refreshFn) {
   container.querySelectorAll('.btn-revoke-user').forEach(btn => {
     btn.onclick = async () => {
       if (confirm("Thu hồi gói của người dùng này về tài khoản Thường?")) {
+        if (!await ensureFreshAdminSession()) return;
         try {
           await callAdminApi('/api/admin/users/revoke', {
             method: 'POST',
