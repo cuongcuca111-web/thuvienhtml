@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Cấu hình hệ thống & hạn mức các gói:
+    // Mọi người dùng (kể cả Khách vãng lai) được ĐỌC công khai để hiển thị tính năng và hạn mức.
+    // TUYỆT ĐỐI CẤM GHI từ client - Mọi chỉnh sửa chỉ thực hiện qua Firebase Admin SDK trên Server.
+    match /config/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 2. Nhật ký quản trị (Audit Log):
+    // Chỉ Admin đã xác thực (có custom claim admin == true) mới được ĐỌC.
+    // TUYỆT ĐỐI CẤM GHI từ client - Server tự động ghi qua Firebase Admin SDK.
+    match /admin_audit/{document=**} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow write: if false;
+    }
+
+    // 3. Mã kích hoạt gói:
+    // Người dùng đã đăng nhập có thể đọc để kiểm tra mã. Cấm ghi trực tiếp từ client.
+    match /activation_codes/{code} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // 4. Liên kết chia sẻ bài học công khai (Public Shares):
+    // Mọi người được phép đọc công khai (để xem bài học chia sẻ).
+    // Người dùng đã đăng nhập được tạo và cập nhật link chia sẻ của mình.
+    match /artifacts/{appId}/public_shares/{shareId} {
+      allow read: if true;
+      allow create, update: if request.auth != null;
+      allow delete: if request.auth != null;
+
+      match /chunks/{chunkId} {
+        allow read: if true;
+        allow write: if request.auth != null;
+      }
+    }
+
+    // 5. Dữ liệu cá nhân của người dùng (Bài học, danh mục, ghi chú, cài đặt, kế hoạch học):
+    // Chỉ người sở hữu (request.auth.uid == userId) mới có quyền đọc và ghi dữ liệu của chính mình.
+    match /artifacts/{appId}/users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Mặc định từ chối tất cả các collection khác
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
