@@ -3624,8 +3624,8 @@
   </div>
 
   <!-- Popover & Bottom Sheet Hiển thị Kết quả AI -->
-  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-55 bg-black/30 backdrop-blur-xs transition-opacity duration-200"></div>
-  <div id="aiResultPopover" class="hidden fixed z-60 bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-200 select-none overflow-hidden
+  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-[85] bg-black/30 backdrop-blur-xs transition-opacity duration-200"></div>
+  <div id="aiResultPopover" class="hidden fixed z-[90] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-200 select-none overflow-hidden
        w-full sm:w-[440px] max-w-[calc(100vw-24px)] bottom-0 sm:bottom-auto sm:top-auto sm:left-auto">
     <!-- Thanh kéo Mobile Drag Handle -->
     <div class="sm:hidden w-12 h-1 bg-[#E7E5DF] dark:bg-[#262C36] rounded-full mx-auto my-2 shrink-0"></div>
@@ -24333,7 +24333,18 @@
         top = Math.max(16, Math.min(viewportH - popoverEstH - 16, top));
 
         let left = triggerRect.left + (triggerRect.width / 2) - (popoverW / 2);
-        left = Math.max(16, Math.min(viewportW - popoverW - 16, left));
+        
+        // Kiểm tra vị trí sidebar mục lục bên trái để không bị che đè
+        const mainSidebar = document.getElementById('mainSidebar');
+        let minLeft = 16;
+        if (mainSidebar && !mainSidebar.classList.contains('-translate-x-full')) {
+          const sRect = mainSidebar.getBoundingClientRect();
+          if (sRect.right > 0 && sRect.right < viewportW / 2) {
+            minLeft = Math.max(minLeft, sRect.right + 16);
+          }
+        }
+        
+        left = Math.max(minLeft, Math.min(viewportW - popoverW - 16, left));
 
         popover.style.top = top + 'px';
         popover.style.left = left + 'px';
@@ -24833,7 +24844,7 @@
         if (mm && !mm.classList.contains('hidden') && !e.target.closest('#aiMobileMenu, #btnAiMobileDropdownToggle')) {
           mm.classList.add('hidden');
         }
-        if (pop && !pop.classList.contains('hidden') && !e.target.closest('#aiResultPopover, #hlAiButtonsGroup, #aiTranslateLangMenu, #aiSwitchModeMenu')) {
+        if (pop && !pop.classList.contains('hidden') && !e.target.closest('#aiResultPopover, #hlAiButtonsGroup, #aiTranslateLangMenu, #aiSwitchModeMenu, #mainSidebar, #btnToggleSidebar')) {
           closeAiResultPopover();
         }
       });
