@@ -1593,7 +1593,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.2.0', { scope: './' })
+        navigator.serviceWorker.register('./sw.js?v=4.9.2', { scope: './' })
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
@@ -7650,7 +7650,7 @@
       const h = r.bottom - r.top;
       const rad = Math.min(radius, w / 2.0, h / 2.0);
       const L = r.left, R = r.right, T = r.top, B = r.bottom;
-      return `M ${(L + rad).toFixed(1)} ${T.toFixed(1)} L ${(R - rad).toFixed(1)} ${T.toFixed(1)} Q ${R.toFixed(1)} ${T.toFixed(1)} ${R.toFixed(1)} ${(T + rad).toFixed(1)} L ${R.toFixed(1)} ${(B - rad).toFixed(1)} Q ${R.toFixed(1)} ${B.toFixed(1)} ${(R - rad).toFixed(1)} ${B.toFixed(1)} L ${(L + rad).toFixed(1)} ${B.toFixed(1)} Q ${L.toFixed(1)} ${B.toFixed(1)} ${L.toFixed(1)} ${(B - rad).toFixed(1)} L ${L.toFixed(1)} ${(T + rad).toFixed(1)} Q ${L.toFixed(1)} ${T.toFixed(1)} ${(L + rad).toFixed(1)} ${T.toFixed(1)} Z`;
+      return 'M ' + (L + rad).toFixed(1) + ' ' + T.toFixed(1) + ' L ' + (R - rad).toFixed(1) + ' ' + T.toFixed(1) + ' Q ' + R.toFixed(1) + ' ' + T.toFixed(1) + ' ' + R.toFixed(1) + ' ' + (T + rad).toFixed(1) + ' L ' + R.toFixed(1) + ' ' + (B - rad).toFixed(1) + ' Q ' + R.toFixed(1) + ' ' + B.toFixed(1) + ' ' + (R - rad).toFixed(1) + ' ' + B.toFixed(1) + ' L ' + (L + rad).toFixed(1) + ' ' + B.toFixed(1) + ' Q ' + L.toFixed(1) + ' ' + B.toFixed(1) + ' ' + L.toFixed(1) + ' ' + (B - rad).toFixed(1) + ' L ' + L.toFixed(1) + ' ' + (T + rad).toFixed(1) + ' Q ' + L.toFixed(1) + ' ' + T.toFixed(1) + ' ' + (L + rad).toFixed(1) + ' ' + T.toFixed(1) + ' Z';
     }
 
     // Xây dựng danh sách đỉnh theo chiều kim đồng hồ
@@ -7748,11 +7748,11 @@
       const endX = curr.x + r * uxOut, endY = curr.y + r * uyOut;
 
       if (i === 0) {
-        cmds.push(`M ${startX.toFixed(1)} ${startY.toFixed(1)}`);
+        cmds.push('M ' + startX.toFixed(1) + ' ' + startY.toFixed(1));
       } else {
-        cmds.push(`L ${startX.toFixed(1)} ${startY.toFixed(1)}`);
+        cmds.push('L ' + startX.toFixed(1) + ' ' + startY.toFixed(1));
       }
-      cmds.push(`Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${endX.toFixed(1)} ${endY.toFixed(1)}`);
+      cmds.push('Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + endX.toFixed(1) + ' ' + endY.toFixed(1));
     }
 
     cmds.push('Z');
