@@ -1,10 +1,10 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v4.9.3)
-// FIX-1: Khắc phục lỗi tự tải lại liên tục (infinite reload loop).
+// Service Worker cho Ứng dụng Sách HTML (PWA v4.9.4)
+// FIX: Khắc phục lỗi tự tải lại liên tục & Hỗ trợ lối vào quản trị bí mật.
 // - Nguồn phiên bản duy nhất APP_VERSION đồng bộ với index.html.
 // - KHÔNG gọi skipWaiting() tự động trong install. Chỉ skipWaiting khi client gửi tin nhắn SKIP_WAITING có kiểm soát.
 // - Dùng chiến lược Mạng trước - Cache sau (fetch với cache: 'no-cache') cho HTML để luôn lấy bản mới nhất khi online.
 
-const APP_VERSION = 'v4.9.3';
+const APP_VERSION = 'v4.9.4';
 const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [

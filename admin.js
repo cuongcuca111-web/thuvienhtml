@@ -256,6 +256,21 @@ function bindGlobalAdminEvents() {
       }
     }, { passive: true });
   });
+
+  // Đóng modal quản trị khi bấm phím Escape
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      const loginModal = document.getElementById('adminLoginModal');
+      if (loginModal && !loginModal.classList.contains('hidden')) {
+        closeAdminLogin();
+        return;
+      }
+      const panelModal = document.getElementById('adminPanelModal');
+      if (panelModal && !panelModal.classList.contains('hidden')) {
+        closeAdminPanel();
+      }
+    }
+  });
 }
 
 // 4. MỞ VÀ ĐÓNG MODAL
@@ -344,10 +359,12 @@ async function handleAdminLoginSubmit(e) {
       openAdminPanel();
       toast("Đăng nhập quản trị thành công!");
     } else {
-      // Tài khoản không có claim admin -> Lập tức đăng xuất
+      // Tài khoản không có claim admin -> Lập tức đăng xuất, không để lộ bảng quản trị dù chỉ thoáng qua
       await signOut(adminContext.auth);
       recordClientFailedLogin();
-      throw new Error('Sai thông tin đăng nhập');
+      errBanner.innerText = "Không có quyền truy cập";
+      errBanner.classList.remove('hidden');
+      return;
     }
   } catch (err) {
     recordClientFailedLogin();
