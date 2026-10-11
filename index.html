@@ -2346,6 +2346,23 @@
                   </button>
                 </div>
 
+                <!-- Hàng 4: Trợ lý AI đọc bài (Giải thích, Ví dụ, Dịch) -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Trợ lý AI đọc bài</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Giải thích, ví dụ &amp; dịch trên thanh nổi</div>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input id="toggleAiFeatures" type="checkbox" class="sr-only peer" checked>
+                    <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
+                </div>
+
               </div>
             </div>
 
@@ -3329,6 +3346,143 @@
     <button id="btnHlCopy" type="button" class="touch-target p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg text-white/80 dark:text-[#1C1917]/80 hover:text-white dark:hover:text-[#1C1917] transition cursor-pointer" title="Sao chép văn bản">
       <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-copy"></use></svg>
     </button>
+
+    <!-- Nhóm Nút AI Hỗ Trợ Đọc (A: Giải thích tại chỗ) -->
+    <div id="hlAiButtonsGroup" class="hidden flex items-center gap-1 border-l border-white/20 dark:border-black/20 pl-1.5 ml-0.5">
+      <!-- Màn hình lớn (>= 640px) -->
+      <div class="hidden sm:flex items-center gap-1">
+        <button id="btnAiExplain" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg flex items-center gap-1 text-indigo-300 dark:text-indigo-600 hover:text-white dark:hover:text-black font-medium transition cursor-pointer" title="Giải thích đơn giản đoạn đã chọn">
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span class="text-[11px] whitespace-nowrap">Giải thích</span>
+        </button>
+        <button id="btnAiExample" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg flex items-center gap-1 text-indigo-300 dark:text-indigo-600 hover:text-white dark:hover:text-black font-medium transition cursor-pointer" title="Cho ví dụ thực tế">
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+          <span class="text-[11px] whitespace-nowrap">Ví dụ</span>
+        </button>
+        <div class="relative inline-flex items-center">
+          <button id="btnAiTranslate" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-l-lg flex items-center gap-1 text-indigo-300 dark:text-indigo-600 hover:text-white dark:hover:text-black font-medium transition cursor-pointer" title="Dịch đoạn đã chọn">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+            <span class="text-[11px] whitespace-nowrap">Dịch</span>
+          </button>
+          <button id="btnAiTranslateLangToggle" type="button" class="touch-target px-1 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-r-lg text-indigo-300 dark:text-indigo-600 hover:text-white dark:hover:text-black transition cursor-pointer" title="Chọn ngôn ngữ đích">
+            <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Màn hình nhỏ (< 640px): Gom thành một nút "AI ▾" -->
+      <div class="sm:hidden relative">
+        <button id="btnAiMobileDropdownToggle" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg flex items-center gap-1 text-indigo-300 dark:text-indigo-600 font-bold transition cursor-pointer" title="Tác vụ AI">
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span class="text-[11px]">AI ▾</span>
+        </button>
+        <!-- Menu xổ xuống trên mobile -->
+        <div id="aiMobileMenu" class="hidden absolute top-full right-0 mt-1.5 bg-[#1C1917] dark:bg-[#EDECE8] text-white dark:text-[#1C1917] rounded-xl shadow-2xl p-1.5 flex flex-col gap-1 z-60 border border-white/10 dark:border-black/10 min-w-[140px]">
+          <button id="btnAiMobileExplain" type="button" class="text-left px-2.5 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg text-xs flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+            <span>Giải thích</span>
+          </button>
+          <button id="btnAiMobileExample" type="button" class="text-left px-2.5 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg text-xs flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+            <span>Ví dụ</span>
+          </button>
+          <button id="btnAiMobileTranslate" type="button" class="text-left px-2.5 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg text-xs flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+            <span>Dịch</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu chọn ngôn ngữ đích cho Dịch thuật -->
+  <div id="aiTranslateLangMenu" class="hidden fixed z-65 bg-[#1C1917] dark:bg-[#EDECE8] text-white dark:text-[#1C1917] rounded-xl shadow-2xl p-1.5 flex flex-col gap-0.5 border border-white/10 dark:border-black/10 min-w-[145px] text-xs select-none">
+    <div class="text-[10px] uppercase font-bold text-white/50 dark:text-black/50 px-2 py-1 tracking-wider">Ngôn ngữ đích</div>
+    <button data-lang="Tiếng Việt" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+      <span>Tiếng Việt</span>
+      <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
+    </button>
+    <button data-lang="English" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+      <span>English</span>
+      <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
+    </button>
+    <button data-lang="Trung Quốc (中文)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+      <span>中文 (Trung)</span>
+      <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
+    </button>
+    <button data-lang="Nhật Bản (日本語)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+      <span>日本語 (Nhật)</span>
+      <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
+    </button>
+    <button data-lang="Hàn Quốc (한국어)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+      <span>한국어 (Hàn)</span>
+      <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
+    </button>
+    <button data-lang="Pháp (Français)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+      <span>Français (Pháp)</span>
+      <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
+    </button>
+  </div>
+
+  <!-- Popover & Bottom Sheet Hiển thị Kết quả AI -->
+  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-55 bg-black/30 backdrop-blur-xs transition-opacity duration-200"></div>
+  <div id="aiResultPopover" class="hidden fixed z-60 bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-200 select-none overflow-hidden
+       w-full sm:w-[440px] max-w-[calc(100vw-24px)] bottom-0 sm:bottom-auto sm:top-auto sm:left-auto">
+    <!-- Thanh kéo Mobile Drag Handle -->
+    <div class="sm:hidden w-12 h-1 bg-[#E7E5DF] dark:bg-[#262C36] rounded-full mx-auto my-2 shrink-0"></div>
+    
+    <!-- Header -->
+    <div class="px-4 py-3 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 shrink-0">
+      <div class="flex items-center gap-2 min-w-0">
+        <div id="aiHeaderIcon" class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+        </div>
+        <span id="aiHeaderTitle" class="font-serif font-bold text-sm truncate">Giải thích đơn giản</span>
+        <span id="aiCachedBadge" class="hidden text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 shrink-0">⚡ Đã lưu</span>
+      </div>
+      <button id="btnCloseAiPopover" type="button" class="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] transition cursor-pointer" aria-label="Đóng kết quả AI">
+        <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+      </button>
+    </div>
+
+    <!-- Selected text quote snippet -->
+    <div class="px-4 pt-2.5 pb-1 shrink-0">
+      <div id="aiSelectedSnippet" class="bg-[#FAF9F5] dark:bg-[#14161C] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1.5 text-xs text-[#6E6B65] dark:text-[#979DA8] italic truncate line-clamp-2">
+        "..."
+      </div>
+    </div>
+
+    <!-- Body container with scroll -->
+    <div id="aiResultBody" class="px-4 py-3 text-xs leading-relaxed max-h-[50dvh] sm:max-h-[360px] overflow-y-auto space-y-3">
+      <!-- Nội dung kết quả render tại đây -->
+    </div>
+
+    <!-- Footer Action Bar -->
+    <div class="px-4 py-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/70 dark:bg-[#14161C]/70 flex items-center justify-between gap-1.5 shrink-0 text-xs">
+      <div class="flex items-center gap-1.5">
+        <button id="btnAiCopyResult" type="button" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 font-medium flex items-center gap-1 text-[#1C1917] dark:text-[#EDECE8] transition shadow-2xs cursor-pointer">
+          <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-copy"></use></svg>
+          <span>Sao chép</span>
+        </button>
+        <button id="btnAiSaveAsNote" type="button" class="touch-target px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-1 transition shadow-2xs cursor-pointer">
+          <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-pencil"></use></svg>
+          <span>Lưu thành ghi chú</span>
+        </button>
+      </div>
+
+      <!-- Mode Switcher Menu -->
+      <div class="relative">
+        <button id="btnAiSwitchModeToggle" type="button" class="touch-target px-2 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1 font-medium transition cursor-pointer">
+          <span>Chế độ khác</span>
+          <svg class="w-3 h-3"><use href="#icon-chevron-down"></use></svg>
+        </button>
+        <div id="aiSwitchModeMenu" class="hidden absolute bottom-full right-0 mb-1.5 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-1 flex flex-col gap-0.5 z-65 min-w-[145px]">
+          <button data-switch-mode="explain" class="ai-switch-mode-btn text-left px-2.5 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer">Giải thích đơn giản</button>
+          <button data-switch-mode="example" class="ai-switch-mode-btn text-left px-2.5 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer">Cho ví dụ</button>
+          <button data-switch-mode="translate" class="ai-switch-mode-btn text-left px-2.5 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer">Dịch thuật</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- // FEATURE-2: Modal Chi tiết & Sửa Ghi Chú Khung -->
@@ -8556,18 +8710,52 @@
       }
 
       const rect = range.getBoundingClientRect();
-      let prefix = '', suffix = '';
+      let prefix = '', suffix = '', before = '', after = '', sectionTitle = '';
       try {
         const sNode = range.startContainer;
         if (sNode.nodeType === Node.TEXT_NODE) prefix = sNode.nodeValue.substring(Math.max(0, range.startOffset - 30), range.startOffset).trim();
         const eNode = range.endContainer;
         if (eNode.nodeType === Node.TEXT_NODE) suffix = eNode.nodeValue.substring(range.endOffset, Math.min(eNode.nodeValue.length, range.endOffset + 30)).trim();
+
+        // Lấy ngữ cảnh tối đa 300 ký tự trước và sau cho AI
+        const preRange = document.createRange();
+        preRange.setStart(document.body, 0);
+        preRange.setEnd(range.startContainer, range.startOffset);
+        before = preRange.toString().slice(-300).trim();
+
+        const postRange = document.createRange();
+        postRange.setStart(range.endContainer, range.endOffset);
+        postRange.setEnd(document.body, document.body.childNodes.length);
+        after = postRange.toString().slice(0, 300).trim();
+
+        // Tiêu đề mục gần nhất
+        let pNode = range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement;
+        while (pNode && pNode !== document.body) {
+          let prev = pNode.previousElementSibling;
+          while (prev) {
+            if (/^H[1-6]$/i.test(prev.tagName)) {
+              sectionTitle = prev.textContent.trim();
+              break;
+            }
+            const hElem = prev.querySelector('h1, h2, h3, h4, h5, h6');
+            if (hElem) {
+              sectionTitle = hElem.textContent.trim();
+              break;
+            }
+            prev = prev.previousElementSibling;
+          }
+          if (sectionTitle) break;
+          pNode = pNode.parentElement;
+        }
       } catch (_) {}
       window.parent.postMessage({
         type: 'TEXT_SELECTED',
         text: text,
         prefix: prefix,
         suffix: suffix,
+        before: before,
+        after: after,
+        sectionTitle: sectionTitle,
         quoteFont: quoteFont,
         rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
@@ -9393,8 +9581,14 @@
             text: msg.text,
             rect: msg.rect,
             prefix: msg.prefix || '',
-            suffix: msg.suffix || ''
+            suffix: msg.suffix || '',
+            before: msg.before || '',
+            after: msg.after || '',
+            sectionTitle: msg.sectionTitle || ''
           };
+          if (typeof updateAiButtonsVisibility === 'function') {
+            updateAiButtonsVisibility(msg.text);
+          }
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           if (hlToolbar && msg.rect) {
             const ifRect = iframe.getBoundingClientRect();
@@ -9416,6 +9610,9 @@
 
         case 'TEXT_DESELECTED': {
           currentSelectionInfoBridge = null;
+          if (typeof updateAiButtonsVisibility === 'function') {
+            updateAiButtonsVisibility('');
+          }
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           if (hlToolbar && !hlToolbar.matches(':hover')) {
             hlToolbar.classList.add('hidden');
@@ -22223,6 +22420,9 @@
                   updateToolbarEraserState(false);
                 }
               }
+              if (typeof updateAiButtonsVisibility === 'function') {
+                updateAiButtonsVisibility('');
+              }
               currentSelectionInfo = null;
               lastHintedFrameId = null;
               return;
@@ -22256,6 +22456,38 @@
               } catch (_) {}
             }
 
+            let before = '', after = '', sectionTitle = '';
+            try {
+              const preRange = doc.createRange();
+              preRange.setStart(doc.body, 0);
+              preRange.setEnd(range.startContainer, range.startOffset);
+              before = preRange.toString().slice(-300).trim();
+
+              const postRange = doc.createRange();
+              postRange.setStart(range.endContainer, range.endOffset);
+              postRange.setEnd(doc.body, doc.body.childNodes.length);
+              after = postRange.toString().slice(0, 300).trim();
+
+              let pNode = range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement;
+              while (pNode && pNode !== doc.body) {
+                let prev = pNode.previousElementSibling;
+                while (prev) {
+                  if (/^H[1-6]$/i.test(prev.tagName)) {
+                    sectionTitle = prev.textContent.trim();
+                    break;
+                  }
+                  const hElem = prev.querySelector('h1, h2, h3, h4, h5, h6');
+                  if (hElem) {
+                    sectionTitle = hElem.textContent.trim();
+                    break;
+                  }
+                  prev = prev.previousElementSibling;
+                }
+                if (sectionTitle) break;
+                pNode = pNode.parentElement;
+              }
+            } catch (_) {}
+
             const rect = range.getBoundingClientRect();
             const ifRect = iframe.getBoundingClientRect();
 
@@ -22263,8 +22495,15 @@
               text: text,
               range: range.cloneRange(),
               rect: rect,
-              quoteFont: quoteFont
+              quoteFont: quoteFont,
+              before: before,
+              after: after,
+              sectionTitle: sectionTitle
             };
+
+            if (typeof updateAiButtonsVisibility === 'function') {
+              updateAiButtonsVisibility(text);
+            }
 
             if (hlToolbar) {
               const isNearTop = (ifRect.top + rect.top) < 60;
@@ -23171,9 +23410,640 @@
       });
     }
 
+    // =========================================================================
+    // TÍNH NĂNG AI (A): GIẢI THÍCH TẠI CHỖ, VÍ DỤ & DỊCH THUẬT TRÊN THANH NỔI
+    // =========================================================================
+    let currentAiAbortController = null;
+    let lastAiRequestTime = 0;
+    let currentAiActiveMode = 'explain';
+    let currentAiTargetLang = localStorage.getItem('ai_translate_target_lang') || 'Tiếng Việt';
+    let currentAiSelectedText = '';
+    let currentAiContext = { before: '', after: '', sectionTitle: '' };
+    let currentAiTriggerRect = null;
+    let currentAiLastResult = null;
+
+    function escapeAiHtml(str) {
+      if (!str || typeof str !== 'string') return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function updateAiButtonsVisibility(text) {
+      try {
+        const group = document.getElementById('hlAiButtonsGroup');
+        if (!group) return;
+        const aiEnabled = localStorage.getItem('setting_ai_enabled') !== 'false';
+        if (!aiEnabled) {
+          group.classList.add('hidden');
+          return;
+        }
+        const clean = (text || '').trim();
+        const words = clean ? clean.split(/\s+/).filter(Boolean) : [];
+        if (words.length >= 3 && clean.length <= 1500) {
+          group.classList.remove('hidden');
+        } else {
+          group.classList.add('hidden');
+        }
+      } catch (_) {}
+    }
+    window.updateAiButtonsVisibility = updateAiButtonsVisibility;
+
+    function getEffectiveTranslateLang(text) {
+      const saved = localStorage.getItem('ai_translate_target_lang');
+      if (saved) return saved;
+      const hasVietnamese = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđĐ]/i.test(text || '');
+      return hasVietnamese ? 'English' : 'Tiếng Việt';
+    }
+
+    function showAiResultPopover(mode, triggerRect) {
+      const popover = document.getElementById('aiResultPopover');
+      const backdrop = document.getElementById('aiResultBackdrop');
+      if (!popover) return;
+
+      currentAiActiveMode = mode;
+      currentAiTriggerRect = triggerRect;
+
+      const titleEl = document.getElementById('aiHeaderTitle');
+      const iconEl = document.getElementById('aiHeaderIcon');
+      const cachedBadge = document.getElementById('aiCachedBadge');
+      if (cachedBadge) cachedBadge.classList.add('hidden');
+
+      if (titleEl) {
+        titleEl.textContent = mode === 'explain' ? 'Giải thích đơn giản' :
+                              mode === 'example' ? 'Ví dụ minh họa' :
+                              'Dịch thuật (' + currentAiTargetLang + ')';
+      }
+      if (iconEl) {
+        iconEl.innerHTML = mode === 'explain'
+          ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>'
+          : mode === 'example'
+          ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>'
+          : '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>';
+      }
+
+      const snippetEl = document.getElementById('aiSelectedSnippet');
+      if (snippetEl) {
+        snippetEl.textContent = '"' + (currentAiSelectedText.length > 120 ? currentAiSelectedText.substring(0, 120) + '...' : currentAiSelectedText) + '"';
+      }
+
+      const hlToolbar = document.getElementById('highlightFloatingToolbar');
+      if (hlToolbar) hlToolbar.classList.add('hidden');
+
+      if (window.innerWidth >= 640 && triggerRect) {
+        if (backdrop) backdrop.classList.add('hidden');
+        popover.style.removeProperty('bottom');
+        popover.style.removeProperty('transform');
+
+        const popoverW = 440;
+        const popoverEstH = 340;
+        const viewportW = window.innerWidth;
+        const viewportH = window.innerHeight;
+
+        let top = triggerRect.bottom + 10;
+        if (top + popoverEstH > viewportH - 20 && triggerRect.top > popoverEstH + 20) {
+          top = triggerRect.top - popoverEstH - 10;
+        }
+        top = Math.max(16, Math.min(viewportH - popoverEstH - 16, top));
+
+        let left = triggerRect.left + (triggerRect.width / 2) - (popoverW / 2);
+        left = Math.max(16, Math.min(viewportW - popoverW - 16, left));
+
+        popover.style.top = top + 'px';
+        popover.style.left = left + 'px';
+      } else {
+        if (backdrop) backdrop.classList.remove('hidden');
+        popover.style.removeProperty('top');
+        popover.style.removeProperty('left');
+        popover.style.bottom = '0px';
+        popover.style.left = '0px';
+        popover.style.right = '0px';
+      }
+
+      popover.classList.remove('hidden');
+    }
+
+    function closeAiResultPopover() {
+      if (currentAiAbortController) {
+        currentAiAbortController.abort();
+        currentAiAbortController = null;
+      }
+      const popover = document.getElementById('aiResultPopover');
+      const backdrop = document.getElementById('aiResultBackdrop');
+      const switchMenu = document.getElementById('aiSwitchModeMenu');
+      const langMenu = document.getElementById('aiTranslateLangMenu');
+      if (popover) popover.classList.add('hidden');
+      if (backdrop) backdrop.classList.add('hidden');
+      if (switchMenu) switchMenu.classList.add('hidden');
+      if (langMenu) langMenu.classList.add('hidden');
+    }
+    window.closeAiResultPopover = closeAiResultPopover;
+
+    function renderAiSuccessResult(data) {
+      const bodyEl = document.getElementById('aiResultBody');
+      const cachedBadge = document.getElementById('aiCachedBadge');
+      if (cachedBadge) {
+        if (data.cached) cachedBadge.classList.remove('hidden');
+        else cachedBadge.classList.add('hidden');
+      }
+
+      if (!bodyEl) return;
+      const safeText = escapeAiHtml(data.text || '');
+      const paragraphs = safeText.split(/\n\s*\n/).filter(Boolean);
+      let html = '<div class="space-y-2 text-[#1C1917] dark:text-[#EDECE8] leading-relaxed">';
+      if (paragraphs.length > 0) {
+        paragraphs.forEach(p => {
+          html += '<p>' + p.replace(/\n/g, '<br/>') + '</p>';
+        });
+      } else {
+        html += '<p>' + safeText + '</p>';
+      }
+      html += '</div>';
+
+      if (data.terms && Array.isArray(data.terms) && data.terms.length > 0) {
+        html += '<div class="mt-3 pt-2.5 border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 space-y-2">';
+        html += '<div class="text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400">Thuật ngữ cần nhớ</div>';
+        data.terms.forEach(t => {
+          html += '<div class="bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 rounded-lg p-2 text-xs">';
+          html += '<strong class="text-indigo-700 dark:text-indigo-300 font-semibold">' + escapeAiHtml(t.term) + ':</strong> ';
+          html += '<span class="text-[#6E6B65] dark:text-[#979DA8]">' + escapeAiHtml(t.meaning) + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      if (data.examples && Array.isArray(data.examples) && data.examples.length > 0) {
+        html += '<div class="mt-3 pt-2.5 border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 space-y-2">';
+        html += '<div class="text-[10px] uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">Ví dụ thực tế</div>';
+        data.examples.forEach(ex => {
+          html += '<div class="bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 rounded-lg p-2 text-xs text-[#1C1917] dark:text-[#EDECE8]">';
+          html += '<span class="font-medium">💡 ' + escapeAiHtml(ex) + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '<div class="pt-2 text-[10px] text-[#6E6B65] dark:text-[#979DA8] italic text-center select-none">';
+      html += 'Do AI tạo, có thể sai; đối chiếu với bài gốc.';
+      html += '</div>';
+
+      bodyEl.innerHTML = html;
+    }
+
+    function renderAiError(errMsg) {
+      const bodyEl = document.getElementById('aiResultBody');
+      if (!bodyEl) return;
+      bodyEl.innerHTML = `
+        <div class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 space-y-2.5">
+          <div class="flex items-center gap-2 font-medium">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Không thể hoàn thành yêu cầu</span>
+          </div>
+          <p class="text-xs opacity-90">${escapeAiHtml(errMsg)}</p>
+          <button id="btnAiRetry" type="button" class="touch-target px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs transition cursor-pointer">
+            Thử lại
+          </button>
+        </div>
+      `;
+      const retryBtn = document.getElementById('btnAiRetry');
+      if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+          requestAiExplain(currentAiActiveMode, currentAiTargetLang);
+        });
+      }
+    }
+
+    function renderGuestLimitExceeded(msg) {
+      const bodyEl = document.getElementById('aiResultBody');
+      if (!bodyEl) return;
+      bodyEl.innerHTML = `
+        <div class="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[#1C1917] dark:text-[#EDECE8] space-y-2.5">
+          <div class="flex items-center gap-2 font-bold text-indigo-700 dark:text-indigo-300">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+            <span>Đã dùng hết 3 lượt thử miễn phí</span>
+          </div>
+          <p class="text-xs text-[#6E6B65] dark:text-[#979DA8]">${escapeAiHtml(msg)}</p>
+          <button id="btnAiOpenLoginModal" type="button" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition shadow-xs text-xs cursor-pointer">
+            Đăng nhập hoặc Đăng ký tài khoản
+          </button>
+        </div>
+      `;
+      const btn = document.getElementById('btnAiOpenLoginModal');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          closeAiResultPopover();
+          const loginModal = document.getElementById('loginModal');
+          if (loginModal) loginModal.classList.remove('hidden');
+        });
+      }
+    }
+
+    function renderPlanQuotaExceeded(msg) {
+      const bodyEl = document.getElementById('aiResultBody');
+      if (!bodyEl) return;
+      bodyEl.innerHTML = `
+        <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[#1C1917] dark:text-[#EDECE8] space-y-2.5">
+          <div class="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-300">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Hết hạn mức AI tháng này</span>
+          </div>
+          <p class="text-xs text-[#6E6B65] dark:text-[#979DA8]">${escapeAiHtml(msg)}</p>
+          <button id="btnAiOpenPricingModal" type="button" class="w-full py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-medium transition shadow-xs text-xs cursor-pointer">
+            Xem các gói nâng cấp (Plus / Pro)
+          </button>
+        </div>
+      `;
+      const btn = document.getElementById('btnAiOpenPricingModal');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          closeAiResultPopover();
+          const modal = document.getElementById('plansPricingModal') || document.getElementById('pricingModal');
+          if (modal) modal.classList.remove('hidden');
+        });
+      }
+    }
+
+    async function requestAiExplain(mode, customLang) {
+      const now = Date.now();
+      if (now - lastAiRequestTime < 600) return;
+      lastAiRequestTime = now;
+
+      const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
+      const localInfo = currentSelectionInfo;
+
+      let text = '';
+      let context = { before: '', after: '', sectionTitle: '' };
+      let triggerRect = null;
+
+      if (bridgeInfo && bridgeInfo.text) {
+        text = bridgeInfo.text;
+        context = {
+          before: bridgeInfo.before || '',
+          after: bridgeInfo.after || '',
+          sectionTitle: bridgeInfo.sectionTitle || ''
+        };
+        if (bridgeInfo.rect) {
+          const ifr = document.getElementById('lessonIframe');
+          const ifrRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
+          triggerRect = {
+            top: ifrRect.top + bridgeInfo.rect.top,
+            bottom: ifrRect.top + bridgeInfo.rect.bottom,
+            left: ifrRect.left + bridgeInfo.rect.left,
+            width: bridgeInfo.rect.width || 0,
+            height: bridgeInfo.rect.height || 0
+          };
+        }
+      } else if (localInfo && localInfo.text) {
+        text = localInfo.text;
+        if (localInfo.rect) triggerRect = localInfo.rect;
+      }
+
+      if (!text || text.length < 5) {
+        showToast("Vui lòng bôi đen đoạn văn bản để giải thích", "error");
+        return;
+      }
+      const words = text.split(/\s+/).filter(Boolean);
+      if (words.length < 3) {
+        showToast("Vui lòng bôi đen tối thiểu 3 từ", "error");
+        return;
+      }
+      if (text.length > 1500) {
+        showToast("Đoạn quá dài (tối đa 1.500 ký tự), hãy chọn ngắn hơn", "error");
+        return;
+      }
+
+      currentAiSelectedText = text;
+      currentAiContext = context;
+      if (mode === 'translate') {
+        currentAiTargetLang = customLang || getEffectiveTranslateLang(text);
+        localStorage.setItem('ai_translate_target_lang', currentAiTargetLang);
+      }
+
+      showAiResultPopover(mode, triggerRect);
+
+      if (currentAiAbortController) {
+        currentAiAbortController.abort();
+      }
+      currentAiAbortController = new AbortController();
+
+      const bodyEl = document.getElementById('aiResultBody');
+      if (bodyEl) {
+        bodyEl.innerHTML = `
+          <div class="space-y-2 py-2">
+            <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded animate-pulse w-3/4"></div>
+            <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded animate-pulse w-full"></div>
+            <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded animate-pulse w-5/6"></div>
+            <div class="flex items-center justify-between pt-2">
+              <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] italic">Đang phân tích bài học...</span>
+              <button id="btnCancelAiRequest" type="button" class="text-xs text-rose-500 hover:underline cursor-pointer">Hủy</button>
+            </div>
+          </div>
+        `;
+        const cancelBtn = document.getElementById('btnCancelAiRequest');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => closeAiResultPopover());
+        }
+      }
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        let guestId = localStorage.getItem('app_guest_id');
+        if (!guestId) {
+          guestId = 'g_' + Math.random().toString(36).substring(2, 10);
+          localStorage.setItem('app_guest_id', guestId);
+        }
+        headers['x-guest-id'] = guestId;
+
+        if (typeof auth !== 'undefined' && auth && auth.currentUser) {
+          try {
+            const idToken = await auth.currentUser.getIdToken();
+            if (idToken) headers['Authorization'] = 'Bearer ' + idToken;
+          } catch (_) {}
+        }
+
+        const payload = {
+          text: text,
+          context: context,
+          mode: mode,
+          targetLang: currentAiTargetLang,
+          lessonId: state.activeLessonId || ''
+        };
+
+        const response = await fetch('/api/ai/explain', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(payload),
+          signal: currentAiAbortController.signal
+        });
+
+        const resData = await response.json();
+
+        if (!response.ok) {
+          if (resData.code === 'GUEST_LIMIT_REACHED') {
+            renderGuestLimitExceeded(resData.error);
+            return;
+          }
+          if (resData.code === 'QUOTA_EXCEEDED') {
+            renderPlanQuotaExceeded(resData.error);
+            return;
+          }
+          renderAiError(resData.error || 'Lỗi xử lý AI từ máy chủ');
+          return;
+        }
+
+        currentAiLastResult = resData;
+        renderAiSuccessResult(resData);
+
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('Lỗi gọi AI Explain:', err);
+        renderAiError(err.message || 'Không thể kết nối tới máy chủ');
+      } finally {
+        currentAiAbortController = null;
+      }
+    }
+
+    function initAiExplainListeners() {
+      const btnExplain = document.getElementById('btnAiExplain');
+      const btnExample = document.getElementById('btnAiExample');
+      const btnTranslate = document.getElementById('btnAiTranslate');
+      const btnLangToggle = document.getElementById('btnAiTranslateLangToggle');
+      const langMenu = document.getElementById('aiTranslateLangMenu');
+
+      const btnMobileToggle = document.getElementById('btnAiMobileDropdownToggle');
+      const mobileMenu = document.getElementById('aiMobileMenu');
+      const btnMobileExplain = document.getElementById('btnAiMobileExplain');
+      const btnMobileExample = document.getElementById('btnAiMobileExample');
+      const btnMobileTranslate = document.getElementById('btnAiMobileTranslate');
+
+      const btnClose = document.getElementById('btnCloseAiPopover');
+      const btnCopy = document.getElementById('btnAiCopyResult');
+      const btnSaveNote = document.getElementById('btnAiSaveAsNote');
+      const btnSwitchToggle = document.getElementById('btnAiSwitchModeToggle');
+      const switchMenu = document.getElementById('aiSwitchModeMenu');
+
+      const aiInteractiveEls = [
+        btnExplain, btnExample, btnTranslate, btnLangToggle,
+        btnMobileToggle, btnMobileExplain, btnMobileExample, btnMobileTranslate,
+        langMenu, mobileMenu
+      ];
+      aiInteractiveEls.forEach(el => {
+        if (!el) return;
+        ['mousedown', 'pointerdown', 'touchstart'].forEach(evt => {
+          el.addEventListener(evt, (e) => {
+            e.preventDefault();
+          }, { passive: false });
+        });
+      });
+
+      if (btnExplain) {
+        btnExplain.addEventListener('click', (e) => {
+          e.preventDefault();
+          requestAiExplain('explain');
+        });
+      }
+      if (btnExample) {
+        btnExample.addEventListener('click', (e) => {
+          e.preventDefault();
+          requestAiExplain('example');
+        });
+      }
+      if (btnTranslate) {
+        btnTranslate.addEventListener('click', (e) => {
+          e.preventDefault();
+          requestAiExplain('translate');
+        });
+      }
+
+      if (btnLangToggle && langMenu) {
+        btnLangToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const isHidden = langMenu.classList.contains('hidden');
+          if (isHidden) {
+            const rect = btnLangToggle.getBoundingClientRect();
+            langMenu.style.top = Math.max(10, rect.bottom + 6) + 'px';
+            langMenu.style.left = Math.max(10, Math.min(window.innerWidth - 160, rect.left - 50)) + 'px';
+            langMenu.classList.remove('hidden');
+
+            langMenu.querySelectorAll('.ai-lang-choice').forEach(choiceBtn => {
+              const l = choiceBtn.getAttribute('data-lang');
+              const check = choiceBtn.querySelector('.lang-check');
+              if (check) {
+                if (l === currentAiTargetLang) check.classList.remove('hidden');
+                else check.classList.add('hidden');
+              }
+            });
+          } else {
+            langMenu.classList.add('hidden');
+          }
+        });
+
+        langMenu.querySelectorAll('.ai-lang-choice').forEach(choiceBtn => {
+          choiceBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const l = choiceBtn.getAttribute('data-lang') || 'Tiếng Việt';
+            currentAiTargetLang = l;
+            localStorage.setItem('ai_translate_target_lang', l);
+            langMenu.classList.add('hidden');
+            requestAiExplain('translate', l);
+          });
+        });
+      }
+
+      if (btnMobileToggle && mobileMenu) {
+        btnMobileToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+      if (btnMobileExplain) {
+        btnMobileExplain.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (mobileMenu) mobileMenu.classList.add('hidden');
+          requestAiExplain('explain');
+        });
+      }
+      if (btnMobileExample) {
+        btnMobileExample.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (mobileMenu) mobileMenu.classList.add('hidden');
+          requestAiExplain('example');
+        });
+      }
+      if (btnMobileTranslate) {
+        btnMobileTranslate.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (mobileMenu) mobileMenu.classList.add('hidden');
+          requestAiExplain('translate');
+        });
+      }
+
+      if (btnClose) {
+        btnClose.addEventListener('click', () => closeAiResultPopover());
+      }
+
+      if (btnCopy) {
+        btnCopy.addEventListener('click', () => {
+          if (!currentAiLastResult || !currentAiLastResult.text) {
+            showToast("Chưa có kết quả để sao chép", "error");
+            return;
+          }
+          let copyContent = currentAiLastResult.text;
+          if (currentAiLastResult.terms && currentAiLastResult.terms.length > 0) {
+            copyContent += '\n\nThuật ngữ:\n' + currentAiLastResult.terms.map(t => '- ' + t.term + ': ' + t.meaning).join('\n');
+          }
+          if (currentAiLastResult.examples && currentAiLastResult.examples.length > 0) {
+            copyContent += '\n\nVí dụ:\n' + currentAiLastResult.examples.map(ex => '- ' + ex).join('\n');
+          }
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(copyContent).then(() => {
+              showToast("Đã sao chép kết quả AI!");
+            }).catch(() => fallbackCopyText(copyContent));
+          } else {
+            fallbackCopyText(copyContent);
+          }
+        });
+      }
+
+      if (btnSaveNote) {
+        btnSaveNote.addEventListener('click', () => {
+          if (!currentAiLastResult || !currentAiLastResult.text) {
+            showToast("Chưa có nội dung để lưu ghi chú", "error");
+            return;
+          }
+          const modeTitle = currentAiActiveMode === 'explain' ? 'Giải thích' :
+                            currentAiActiveMode === 'example' ? 'Ví dụ' : 'Dịch';
+          const noteContent = '[' + modeTitle + ']: ' + currentAiLastResult.text;
+
+          const item = applyFramingToCurrentSelection('purple', 'AI', noteContent, null);
+          if (item) {
+            showToast("Đã lưu kết quả AI vào ghi chú!");
+          }
+          closeAiResultPopover();
+        });
+      }
+
+      if (btnSwitchToggle && switchMenu) {
+        btnSwitchToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          switchMenu.classList.toggle('hidden');
+        });
+
+        switchMenu.querySelectorAll('.ai-switch-mode-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nextMode = btn.getAttribute('data-switch-mode');
+            switchMenu.classList.add('hidden');
+            if (nextMode) {
+              requestAiExplain(nextMode);
+            }
+          });
+        });
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeAiResultPopover();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        const pop = document.getElementById('aiResultPopover');
+        const lm = document.getElementById('aiTranslateLangMenu');
+        const sm = document.getElementById('aiSwitchModeMenu');
+        const mm = document.getElementById('aiMobileMenu');
+
+        if (lm && !lm.classList.contains('hidden') && !e.target.closest('#aiTranslateLangMenu, #btnAiTranslateLangToggle')) {
+          lm.classList.add('hidden');
+        }
+        if (sm && !sm.classList.contains('hidden') && !e.target.closest('#aiSwitchModeMenu, #btnAiSwitchModeToggle')) {
+          sm.classList.add('hidden');
+        }
+        if (mm && !mm.classList.contains('hidden') && !e.target.closest('#aiMobileMenu, #btnAiMobileDropdownToggle')) {
+          mm.classList.add('hidden');
+        }
+        if (pop && !pop.classList.contains('hidden') && !e.target.closest('#aiResultPopover, #hlAiButtonsGroup, #aiTranslateLangMenu, #aiSwitchModeMenu')) {
+          closeAiResultPopover();
+        }
+      });
+
+      const toggleAi = document.getElementById('toggleAiFeatures');
+      if (toggleAi) {
+        toggleAi.checked = localStorage.getItem('setting_ai_enabled') !== 'false';
+        toggleAi.addEventListener('change', (e) => {
+          const enabled = e.target.checked;
+          localStorage.setItem('setting_ai_enabled', enabled ? 'true' : 'false');
+          const bridge = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
+          const local = currentSelectionInfo;
+          const text = (bridge && bridge.text) || (local && local.text) || '';
+          updateAiButtonsVisibility(text);
+          if (!enabled) {
+            closeAiResultPopover();
+            showToast("Đã tắt Trợ lý AI đọc bài");
+          } else {
+            showToast("Đã bật Trợ lý AI đọc bài");
+          }
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAiExplainListeners);
+    } else {
+      initAiExplainListeners();
+    }
+
     // Khôi phục khung cho bài đọc (kèm Migration dọn dẹp các khung chồng nhau cũ)
     function restoreFramesForLesson(lessonId) {
       try {
+        if (typeof closeAiResultPopover === 'function') closeAiResultPopover();
         if (!lessonId) return;
         let items = (state.learningData.frames && state.learningData.frames[lessonId]) ||
                       (state.learningData.highlights && state.learningData.highlights[lessonId]) || [];
