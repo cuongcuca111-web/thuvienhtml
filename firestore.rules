@@ -10,7 +10,22 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // 2. Nhật ký quản trị (Audit Log):
+    // 2. Khóa API Bí mật (Admin Secrets - AES-256-GCM Encrypted):
+    // TUYỆT ĐỐI CẤM ĐỌC & CẤM GHI từ phía Client!
+    // Chỉ có mã nguồn chạy trên máy chủ (Firebase Admin SDK) mới có quyền truy cập.
+    match /admin_secrets/{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Giám sát Chi phí AI & Thống kê sử dụng (AI Usage):
+    // Chỉ Admin đã xác thực (custom claim admin == true) mới được ĐỌC để xem bảng chi phí.
+    // TUYỆT ĐỐI CẤM GHI từ client - Máy chủ tự động ghi nhận sau mỗi lượt gọi AI.
+    match /ai_usage/{document=**} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow write: if false;
+    }
+
+    // 4. Nhật ký quản trị (Audit Log):
     // Chỉ Admin đã xác thực (có custom claim admin == true) mới được ĐỌC.
     // TUYỆT ĐỐI CẤM GHI từ client - Server tự động ghi qua Firebase Admin SDK.
     match /admin_audit/{document=**} {
@@ -18,14 +33,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // 3. Mã kích hoạt gói:
+    // 5. Mã kích hoạt gói:
     // Người dùng đã đăng nhập có thể đọc để kiểm tra mã. Cấm ghi trực tiếp từ client.
     match /activation_codes/{code} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
-    // 4. Liên kết chia sẻ bài học công khai (Public Shares):
+    // 6. Liên kết chia sẻ bài học công khai (Public Shares):
     // Mọi người được phép đọc công khai (để xem bài học chia sẻ).
     // Người dùng đã đăng nhập được tạo và cập nhật link chia sẻ của mình.
     match /artifacts/{appId}/public_shares/{shareId} {
@@ -39,10 +54,16 @@ service cloud.firestore {
       }
     }
 
-    // 5. Dữ liệu cá nhân của người dùng (Bài học, danh mục, ghi chú, cài đặt, kế hoạch học):
+    // 7. Dữ liệu cá nhân của người dùng (Bài học, danh mục, flashcard decks, study plan):
     // Chỉ người sở hữu (request.auth.uid == userId) mới có quyền đọc và ghi dữ liệu của chính mình.
+    // Riêng mục billing/aiUsage chỉ cho phép đọc, cấm ghi từ client để bảo toàn lượt AI.
     match /artifacts/{appId}/users/{userId}/{allPaths=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId && !allPaths.matches('billing/.*');
     }
 
     // Mặc định từ chối tất cả các collection khác
