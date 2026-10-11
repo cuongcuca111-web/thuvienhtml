@@ -95,7 +95,16 @@ module.exports = async function handler(req, res) {
       };
 
       const priceKey = `${planId}${period === 'yearly' ? 'Yearly' : 'Monthly'}`;
-      const amount = parseInt(pricing[priceKey], 10);
+      let amount = parseInt(pricing[priceKey], 10);
+      if (!amount || isNaN(amount) || amount <= 0) {
+        if (period === 'yearly') {
+          const mPrice = parseInt(pricing[`${planId}Monthly`], 10) || (planId === 'pro' ? 59000 : 29000);
+          const disc = parseInt(pricing.yearlyDiscount, 10) || 20;
+          amount = Math.round(mPrice * 12 * (1 - disc / 100));
+        } else {
+          amount = planId === 'pro' ? 59000 : 29000;
+        }
+      }
       if (!amount || isNaN(amount) || amount <= 0) {
         return res.status(500).json({ error: 'Không tìm thấy bảng giá hợp lệ cho gói đã chọn' });
       }

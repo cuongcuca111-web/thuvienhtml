@@ -1106,48 +1106,109 @@ async function loadPlansHistory() {
 // 3.2 MỤC 2: GIÁ & GÓI (PRICING & LIVE PREVIEW)
 // =========================================================================
 function renderPricingTab(container) {
-  const currentPricing = (adminContext && adminContext.effectivePlans ? adminContext.effectivePlans.pricing : null) || {
-    plusMonthly: 29000,
-    proMonthly: 59000,
-    yearlyDiscount: 20
-  };
+  const currentPricing = (adminContext && adminContext.effectivePlans ? adminContext.effectivePlans.pricing : null) || {};
+  const initPlusMonthly = currentPricing.plusMonthly || 29000;
+  const initProMonthly = currentPricing.proMonthly || 59000;
+  const initDiscount = currentPricing.yearlyDiscount !== undefined ? currentPricing.yearlyDiscount : 20;
+  const initPlusYearly = currentPricing.plusYearly || Math.round(initPlusMonthly * 12 * (1 - initDiscount / 100));
+  const initProYearly = currentPricing.proYearly || Math.round(initProMonthly * 12 * (1 - initDiscount / 100));
+
+  let previewPeriod = 'monthly';
 
   container.innerHTML = `
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- CỘT FORM CHỈNH SỬA -->
-      <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- CỘT FORM CHỈNH SỬA (5 CỘT) -->
+      <div class="lg:col-span-5 bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
         <div>
           <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Cấu hình bảng giá dịch vụ</h3>
-          <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Giá hiển thị cho người dùng khi nâng cấp gói.</p>
+          <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Tùy chỉnh giá theo tháng &amp; theo năm cho các gói. Giá áp dụng ngay khi lưu.</p>
         </div>
 
-        <form id="pricingForm" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá gói PLUS (VNĐ / tháng)</label>
-            <input type="number" id="pricingPlusInput" step="1000" min="0" value="${currentPricing.plusMonthly}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-sm font-mono font-bold" />
+        <form id="pricingForm" class="space-y-4 text-xs">
+          
+          <!-- KHỐI GÓI PLUS -->
+          <div class="p-3.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-900/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-indigo-700 dark:text-indigo-400 font-serif text-sm">Gói PLUS</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 font-semibold">Khuyên dùng</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá theo tháng (₫)</label>
+                <input type="number" id="pricingPlusInput" step="1000" min="0" value="${initPlusMonthly}" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-mono font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]" />
+              </div>
+              <div>
+                <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá theo năm (₫)</label>
+                <input type="number" id="pricingPlusYearlyInput" step="1000" min="0" value="${initPlusYearly}" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-mono font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]" />
+              </div>
+            </div>
+
+            <div class="text-[11px] text-indigo-800 dark:text-indigo-300/80 flex items-center justify-between pt-0.5">
+              <span>Theo năm: <strong id="calcPlusEquiv" class="font-mono">—</strong> ₫/tháng</span>
+              <span>Tiết kiệm: <strong id="calcPlusSavings" class="font-mono text-emerald-600 dark:text-emerald-400">—</strong></span>
+            </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá gói PRO (VNĐ / tháng)</label>
-            <input type="number" id="pricingProInput" step="1000" min="0" value="${currentPricing.proMonthly}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-sm font-mono font-bold" />
+          <!-- KHỐI GÓI PRO -->
+          <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-gray-900 dark:text-gray-100 font-serif text-sm">Gói PRO</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold">Cao cấp nhất</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá theo tháng (₫)</label>
+                <input type="number" id="pricingProInput" step="1000" min="0" value="${initProMonthly}" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-mono font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]" />
+              </div>
+              <div>
+                <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá theo năm (₫)</label>
+                <input type="number" id="pricingProYearlyInput" step="1000" min="0" value="${initProYearly}" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-mono font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]" />
+              </div>
+            </div>
+
+            <div class="text-[11px] text-gray-600 dark:text-gray-400 flex items-center justify-between pt-0.5">
+              <span>Theo năm: <strong id="calcProEquiv" class="font-mono">—</strong> ₫/tháng</span>
+              <span>Tiết kiệm: <strong id="calcProSavings" class="font-mono text-emerald-600 dark:text-emerald-400">—</strong></span>
+            </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Giảm giá thanh toán năm (%)</label>
-            <input type="number" id="pricingDiscountInput" min="0" max="100" value="${currentPricing.yearlyDiscount}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-sm font-mono font-bold" />
+          <!-- CÔNG CỤ TÍNH NHANH % GIẢM GIÁ -->
+          <div class="p-3 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="font-semibold text-gray-700 dark:text-gray-300">Tỷ lệ giảm giá thanh toán năm (%)</label>
+              <input type="number" id="pricingDiscountInput" min="0" max="100" value="${initDiscount}" class="w-20 px-2 py-1 text-center rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] font-mono font-bold text-xs" />
+            </div>
+            <button type="button" id="btnAutoCalcYearly" class="w-full py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 transition flex items-center justify-center gap-1 cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Tính lại giá năm theo % giảm giá</span>
+            </button>
           </div>
 
-          <button type="submit" id="btnSavePricing" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs">
-            Lưu bảng giá
+          <button type="submit" id="btnSavePricing" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>Lưu bảng giá &amp; Áp dụng</span>
           </button>
         </form>
       </div>
 
-      <!-- CỘT XEM TRƯỚC (LIVE PREVIEW) -->
-      <div class="lg:col-span-2 space-y-3">
-        <div class="flex items-center justify-between">
-          <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Xem trước giao diện người dùng nhìn thấy</h4>
-          <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">Trực quan (Live Preview)</span>
+      <!-- CỘT XEM TRƯỚC TRỰC QUAN (7 CỘT) -->
+      <div class="lg:col-span-7 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white dark:bg-[#1A1D23] p-3 rounded-xl border border-[#E0DED7] dark:border-[#262C36]">
+          <div class="flex items-center gap-2">
+            <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Xem trước giao diện người dùng</h4>
+            <span class="text-[10px] text-emerald-600 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">Live Preview</span>
+          </div>
+
+          <!-- Segmented Toggle chu kỳ -->
+          <div class="inline-flex p-0.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-semibold">
+            <button type="button" id="btnPreviewMonthly" class="px-3 py-1 rounded-md transition font-medium cursor-pointer">
+              Theo tháng
+            </button>
+            <button type="button" id="btnPreviewYearly" class="px-3 py-1 rounded-md transition font-medium cursor-pointer">
+              Theo năm
+            </button>
+          </div>
         </div>
 
         <div id="pricingLivePreviewCards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1157,64 +1218,153 @@ function renderPricingTab(container) {
     </div>
   `;
 
+  function getNumVal(id, fallback) {
+    const el = document.getElementById(id);
+    const n = parseInt(el ? el.value : '', 10);
+    return (!isNaN(n) && n >= 0) ? n : fallback;
+  }
+
   function updatePricingPreview() {
-    const pPlus = parseInt((document.getElementById('pricingPlusInput') ? document.getElementById('pricingPlusInput').value : null), 10) || 29000;
-    const pPro = parseInt((document.getElementById('pricingProInput') ? document.getElementById('pricingProInput').value : null), 10) || 59000;
-    const disc = parseInt((document.getElementById('pricingDiscountInput') ? document.getElementById('pricingDiscountInput').value : null), 10) || 20;
+    const pPlusM = getNumVal('pricingPlusInput', 29000);
+    const pPlusY = getNumVal('pricingPlusYearlyInput', Math.round(pPlusM * 12 * 0.8));
+    const pProM = getNumVal('pricingProInput', 59000);
+    const pProY = getNumVal('pricingProYearlyInput', Math.round(pProM * 12 * 0.8));
+
+    // Tính toán phụ trợ
+    const plusEquiv = Math.round(pPlusY / 12);
+    const plusSavings = Math.max(0, (pPlusM * 12) - pPlusY);
+    const proEquiv = Math.round(pProY / 12);
+    const proSavings = Math.max(0, (pProM * 12) - pProY);
+
+    const calcPlusEquivEl = document.getElementById('calcPlusEquiv');
+    const calcPlusSavingsEl = document.getElementById('calcPlusSavings');
+    const calcProEquivEl = document.getElementById('calcProEquiv');
+    const calcProSavingsEl = document.getElementById('calcProSavings');
+
+    if (calcPlusEquivEl) calcPlusEquivEl.innerText = `${plusEquiv.toLocaleString('vi-VN')}`;
+    if (calcPlusSavingsEl) calcPlusSavingsEl.innerText = `${plusSavings.toLocaleString('vi-VN')} ₫`;
+    if (calcProEquivEl) calcProEquivEl.innerText = `${proEquiv.toLocaleString('vi-VN')}`;
+    if (calcProSavingsEl) calcProSavingsEl.innerText = `${proSavings.toLocaleString('vi-VN')} ₫`;
+
+    // Cập nhật nút chu kỳ
+    const btnM = document.getElementById('btnPreviewMonthly');
+    const btnY = document.getElementById('btnPreviewYearly');
+    if (btnM && btnY) {
+      if (previewPeriod === 'monthly') {
+        btnM.className = 'px-3 py-1 rounded-md bg-white dark:bg-[#161920] text-indigo-600 dark:text-indigo-400 shadow-2xs font-bold cursor-pointer';
+        btnY.className = 'px-3 py-1 rounded-md text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer';
+      } else {
+        btnY.className = 'px-3 py-1 rounded-md bg-white dark:bg-[#161920] text-indigo-600 dark:text-indigo-400 shadow-2xs font-bold cursor-pointer';
+        btnM.className = 'px-3 py-1 rounded-md text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer';
+      }
+    }
 
     const cardsContainer = document.getElementById('pricingLivePreviewCards');
     if (!cardsContainer) return;
 
+    const plans = (adminContext && adminContext.effectivePlans && adminContext.effectivePlans.plans) || {};
+    const plusPlans = plans.plus || {};
+    const proPlans = plans.pro || {};
+    const plusLessons = plusPlans.maxLessons || 100;
+    const plusSections = plusPlans.maxSections || 20;
+    const plusFileKB = plusPlans.maxFileKB || 1024;
+    const proLessons = proPlans.maxLessons === -1 ? 'Không giới hạn' : (proPlans.maxLessons || 'Không giới hạn');
+    const proSections = proPlans.maxSections === -1 ? 'Không giới hạn' : (proPlans.maxSections || 'Không giới hạn');
+    const proFileKB = proPlans.maxFileKB || 2048;
+
+    const isYearly = previewPeriod === 'yearly';
+
     cardsContainer.innerHTML = `
       <!-- THẺ PLUS -->
-      <div class="p-5 rounded-2xl border-2 border-indigo-500 bg-white dark:bg-[#181B20] shadow-sm flex flex-col justify-between">
+      <div class="p-5 rounded-2xl border-2 border-indigo-600 bg-white dark:bg-[#181B20] shadow-sm flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
-            <h4 class="font-serif text-base font-bold text-indigo-600">Gói PLUS</h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">Phổ biến</span>
+            <h4 class="font-serif text-base font-bold text-indigo-600 dark:text-indigo-400">Gói Plus</h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 uppercase">Khuyên dùng</span>
           </div>
-          <div class="text-2xl font-bold font-mono text-gray-900 dark:text-gray-100 mb-1">
-            ${pPlus.toLocaleString('vi-VN')}đ <span class="text-xs font-normal text-gray-500">/ tháng</span>
+          <div class="text-2xl font-bold font-serif text-[#1C1B18] dark:text-[#E8E6E1] mb-1 tabular-nums">
+            ${isYearly ? `${plusEquiv.toLocaleString('vi-VN')} ₫` : `${pPlusM.toLocaleString('vi-VN')} ₫`}
+            <span class="text-xs font-normal text-gray-500">/ tháng</span>
           </div>
-          <div class="text-xs text-emerald-600 mb-4">Gói năm: giảm ${disc}% chỉ ${(pPlus * 12 * (1 - disc/100)).toLocaleString('vi-VN')}đ/năm</div>
-          <ul class="text-xs space-y-1.5 text-gray-600 dark:text-gray-300 mb-4">
-            <li>✓ Tối đa ${(adminContext && adminContext.effectivePlans && adminContext.effectivePlans.plans && adminContext.effectivePlans.plans.plus ? adminContext.effectivePlans.plans.plus.maxLessons : null) || 100} bài học</li>
-            <li>✓ ${(adminContext && adminContext.effectivePlans && adminContext.effectivePlans.plans && adminContext.effectivePlans.plans.plus ? adminContext.effectivePlans.plans.plus.maxSections : null) || 20} danh mục lưu trữ</li>
-            <li>✓ Dung lượng ${(adminContext && adminContext.effectivePlans && adminContext.effectivePlans.plans && adminContext.effectivePlans.plans.plus ? adminContext.effectivePlans.plans.plus.maxFileKB : null) || 1024} KB/bài</li>
-            <li>✓ Link chia sẻ có mật khẩu &amp; gia hạn</li>
+          <div class="text-xs text-[#78756D] dark:text-[#9AA3B2] mb-3">
+            ${isYearly ? `Thanh toán ${pPlusY.toLocaleString('vi-VN')} ₫ mỗi năm` : 'Thanh toán linh hoạt theo từng tháng'}
+          </div>
+          <div class="border-t border-gray-100 dark:border-gray-800/80 my-3"></div>
+          <ul class="text-xs space-y-2 text-gray-600 dark:text-gray-300 mb-4">
+            <li class="flex items-center justify-between"><span>Số bài học:</span> <strong class="text-gray-900 dark:text-gray-100">${plusLessons} bài</strong></li>
+            <li class="flex items-center justify-between"><span>Số danh mục:</span> <strong class="text-gray-900 dark:text-gray-100">${plusSections} mục</strong></li>
+            <li class="flex items-center justify-between"><span>Dung lượng bài:</span> <strong class="text-gray-900 dark:text-gray-100">${plusFileKB >= 1024 ? `${plusFileKB/1024} MB` : `${plusFileKB} KB`}</strong></li>
+            <li class="flex items-center justify-between"><span>Lượt gọi AI:</span> <strong class="text-indigo-600 dark:text-indigo-400">300 lượt</strong></li>
           </ul>
         </div>
-        <button class="w-full py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs pointer-events-none">Nâng cấp Plus</button>
+        <button type="button" class="w-full py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs pointer-events-none">Chọn gói Plus</button>
       </div>
 
       <!-- THẺ PRO -->
       <div class="p-5 rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#181B20] shadow-sm flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-2">
-            <h4 class="font-serif text-base font-bold text-amber-600">Gói PRO</h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Không giới hạn</span>
+            <h4 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Gói Pro</h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 uppercase">Cao cấp</span>
           </div>
-          <div class="text-2xl font-bold font-mono text-gray-900 dark:text-gray-100 mb-1">
-            ${pPro.toLocaleString('vi-VN')}đ <span class="text-xs font-normal text-gray-500">/ tháng</span>
+          <div class="text-2xl font-bold font-serif text-[#1C1B18] dark:text-[#E8E6E1] mb-1 tabular-nums">
+            ${isYearly ? `${proEquiv.toLocaleString('vi-VN')} ₫` : `${pProM.toLocaleString('vi-VN')} ₫`}
+            <span class="text-xs font-normal text-gray-500">/ tháng</span>
           </div>
-          <div class="text-xs text-emerald-600 mb-4">Gói năm: giảm ${disc}% chỉ ${(pPro * 12 * (1 - disc/100)).toLocaleString('vi-VN')}đ/năm</div>
-          <ul class="text-xs space-y-1.5 text-gray-600 dark:text-gray-300 mb-4">
-            <li>✓ Không giới hạn bài học &amp; thư mục</li>
-            <li>✓ Tìm kiếm toàn văn thông minh</li>
-            <li>✓ Lưu trữ thùng rác &amp; thống kê 365 ngày</li>
-            <li>✓ Hỗ trợ ưu tiên cao nhất</li>
+          <div class="text-xs text-[#78756D] dark:text-[#9AA3B2] mb-3">
+            ${isYearly ? `Thanh toán ${pProY.toLocaleString('vi-VN')} ₫ mỗi năm` : 'Thanh toán linh hoạt theo từng tháng'}
+          </div>
+          <div class="border-t border-gray-100 dark:border-gray-800/80 my-3"></div>
+          <ul class="text-xs space-y-2 text-gray-600 dark:text-gray-300 mb-4">
+            <li class="flex items-center justify-between"><span>Số bài học:</span> <strong class="text-gray-900 dark:text-gray-100">${proLessons}</strong></li>
+            <li class="flex items-center justify-between"><span>Số danh mục:</span> <strong class="text-gray-900 dark:text-gray-100">${proSections}</strong></li>
+            <li class="flex items-center justify-between"><span>Dung lượng bài:</span> <strong class="text-gray-900 dark:text-gray-100">${proFileKB >= 1024 ? `${proFileKB/1024} MB` : `${proFileKB} KB`}</strong></li>
+            <li class="flex items-center justify-between"><span>Lượt gọi AI:</span> <strong class="text-indigo-600 dark:text-indigo-400">1.500 lượt</strong></li>
           </ul>
         </div>
-        <button class="w-full py-2 rounded-xl border border-gray-400 dark:border-gray-600 font-semibold text-xs pointer-events-none">Nâng cấp Pro</button>
+        <button type="button" class="w-full py-2 rounded-xl border border-gray-400 dark:border-gray-600 font-semibold text-xs pointer-events-none">Chọn gói Pro</button>
       </div>
     `;
   }
 
   updatePricingPreview();
-  ['pricingPlusInput', 'pricingProInput', 'pricingDiscountInput'].forEach(id => {
+  ['pricingPlusInput', 'pricingPlusYearlyInput', 'pricingProInput', 'pricingProYearlyInput', 'pricingDiscountInput'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.oninput = updatePricingPreview;
   });
+
+  const btnAutoCalc = document.getElementById('btnAutoCalcYearly');
+  if (btnAutoCalc) {
+    btnAutoCalc.onclick = () => {
+      const pPlusM = getNumVal('pricingPlusInput', 29000);
+      const pProM = getNumVal('pricingProInput', 59000);
+      const disc = Math.min(100, Math.max(0, getNumVal('pricingDiscountInput', 20)));
+      const newPlusY = Math.round(pPlusM * 12 * (1 - disc / 100));
+      const newProY = Math.round(pProM * 12 * (1 - disc / 100));
+      const plusYInput = document.getElementById('pricingPlusYearlyInput');
+      const proYInput = document.getElementById('pricingProYearlyInput');
+      if (plusYInput) plusYInput.value = newPlusY;
+      if (proYInput) proYInput.value = newProY;
+      updatePricingPreview();
+      toast(`Đã tính lại giá năm theo mức giảm ${disc}%!`);
+    };
+  }
+
+  const btnPreviewM = document.getElementById('btnPreviewMonthly');
+  if (btnPreviewM) {
+    btnPreviewM.onclick = () => {
+      previewPeriod = 'monthly';
+      updatePricingPreview();
+    };
+  }
+
+  const btnPreviewY = document.getElementById('btnPreviewYearly');
+  if (btnPreviewY) {
+    btnPreviewY.onclick = () => {
+      previewPeriod = 'yearly';
+      updatePricingPreview();
+    };
+  }
 
   const form = document.getElementById('pricingForm');
   if (form) {
@@ -1225,22 +1375,41 @@ function renderPricingTab(container) {
       btn.innerText = 'Đang lưu...';
 
       try {
+        const plusMonthly = getNumVal('pricingPlusInput', 29000);
+        const plusYearly = getNumVal('pricingPlusYearlyInput', Math.round(plusMonthly * 12 * 0.8));
+        const proMonthly = getNumVal('pricingProInput', 59000);
+        const proYearly = getNumVal('pricingProYearlyInput', Math.round(proMonthly * 12 * 0.8));
+        const yearlyDiscount = getNumVal('pricingDiscountInput', 20);
+
+        const newPricing = {
+          plusMonthly,
+          plusYearly,
+          proMonthly,
+          proYearly,
+          yearlyDiscount
+        };
+
         await callAdminApi('/api/admin/pricing/update', {
           method: 'POST',
-          body: JSON.stringify({
-            pricing: {
-              plusMonthly: parseInt(document.getElementById('pricingPlusInput').value, 10),
-              proMonthly: parseInt(document.getElementById('pricingProInput').value, 10),
-              yearlyDiscount: parseInt(document.getElementById('pricingDiscountInput').value, 10)
-            }
-          })
+          body: JSON.stringify({ pricing: newPricing })
         });
-        toast("Đã cập nhật bảng giá dịch vụ thành công!");
+
+        if (adminContext.effectivePlans) {
+          adminContext.effectivePlans.pricing = newPricing;
+        }
+        if (window.effectivePlans) {
+          window.effectivePlans.pricing = newPricing;
+        }
+        if (typeof updateUpgradePricingDisplay === 'function') {
+          try { updateUpgradePricingDisplay(); } catch(e){}
+        }
+
+        toast("Đã cập nhật bảng giá dịch vụ theo tháng và theo năm thành công!");
       } catch (err) {
         alert("Lỗi khi lưu bảng giá: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = 'Lưu bảng giá';
+        btn.innerText = 'Lưu bảng giá & Áp dụng';
       }
     };
   }

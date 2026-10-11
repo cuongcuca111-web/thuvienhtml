@@ -6972,7 +6972,9 @@
       },
       pricing: {
         plusMonthly: 29000,
+        plusYearly: 278000,
         proMonthly: 59000,
+        proYearly: 566000,
         yearlyDiscount: 20
       }
     };
@@ -7023,10 +7025,18 @@
       }
 
       if (override.pricing && typeof override.pricing === 'object') {
+        const pMonthly = Math.max(0, parseInt(override.pricing.plusMonthly, 10) || res.pricing.plusMonthly || 29000);
+        const prMonthly = Math.max(0, parseInt(override.pricing.proMonthly, 10) || res.pricing.proMonthly || 59000);
+        const yDiscount = Math.min(100, Math.max(0, parseInt(override.pricing.yearlyDiscount, 10) || res.pricing.yearlyDiscount || 20));
+        const pYearly = Math.max(0, parseInt(override.pricing.plusYearly, 10) || res.pricing.plusYearly || Math.round(pMonthly * 12 * (1 - yDiscount / 100)));
+        const prYearly = Math.max(0, parseInt(override.pricing.proYearly, 10) || res.pricing.proYearly || Math.round(prMonthly * 12 * (1 - yDiscount / 100)));
+
         res.pricing = {
-          plusMonthly: Math.max(0, parseInt(override.pricing.plusMonthly, 10) || res.pricing.plusMonthly),
-          proMonthly: Math.max(0, parseInt(override.pricing.proMonthly, 10) || res.pricing.proMonthly),
-          yearlyDiscount: Math.min(100, Math.max(0, parseInt(override.pricing.yearlyDiscount, 10) || res.pricing.yearlyDiscount))
+          plusMonthly: pMonthly,
+          plusYearly: pYearly,
+          proMonthly: prMonthly,
+          proYearly: prYearly,
+          yearlyDiscount: yDiscount
         };
       }
 
@@ -7256,18 +7266,26 @@
 
     function updateUpgradePricingDisplay() {
       try {
-        const pricing = (window.effectivePlans && window.effectivePlans.pricing) || {
-          plusMonthly: 59000,
-          plusYearly: 590000,
-          proMonthly: 129000,
-          proYearly: 1290000
+        const rawPricing = (window.effectivePlans && window.effectivePlans.pricing) || {};
+        const plusMonthly = parseInt(rawPricing.plusMonthly, 10) || 29000;
+        const proMonthly = parseInt(rawPricing.proMonthly, 10) || 59000;
+        const yearlyDiscount = Math.min(100, Math.max(0, parseInt(rawPricing.yearlyDiscount, 10) || 20));
+        const plusYearly = parseInt(rawPricing.plusYearly, 10) || Math.round(plusMonthly * 12 * (1 - yearlyDiscount / 100));
+        const proYearly = parseInt(rawPricing.proYearly, 10) || Math.round(proMonthly * 12 * (1 - yearlyDiscount / 100));
+
+        const pricing = {
+          plusMonthly,
+          plusYearly,
+          proMonthly,
+          proYearly,
+          yearlyDiscount
         };
 
         const isYearly = upgradeModalState.period === 'yearly';
 
         // Tính toán số tiền tiết kiệm tối đa
-        const plusSavings = (pricing.plusMonthly * 12) - pricing.plusYearly;
-        const proSavings = (pricing.proMonthly * 12) - pricing.proYearly;
+        const plusSavings = Math.max(0, (pricing.plusMonthly * 12) - pricing.plusYearly);
+        const proSavings = Math.max(0, (pricing.proMonthly * 12) - pricing.proYearly);
         const maxSavings = Math.max(0, proSavings, plusSavings);
 
         const hintEl = document.getElementById('yearlySavingsHint');
@@ -7293,11 +7311,11 @@
           const plusMonthlyEquiv = Math.round(pricing.plusYearly / 12);
           const proMonthlyEquiv = Math.round(pricing.proYearly / 12);
 
-          if (pricePlusEl) pricePlusEl.innerText = `${plusMonthlyEquiv.toLocaleString('vi-VN')} ₫`;
+          if (pricePlusEl) pricePlusEl.innerText = `${(isFinite(plusMonthlyEquiv) ? plusMonthlyEquiv : plusMonthly).toLocaleString('vi-VN')} ₫`;
           if (periodPlusEl) periodPlusEl.innerText = '/ tháng';
           if (subPlusEl) subPlusEl.innerText = `Thanh toán ${pricing.plusYearly.toLocaleString('vi-VN')} ₫ mỗi năm`;
 
-          if (priceProEl) priceProEl.innerText = `${proMonthlyEquiv.toLocaleString('vi-VN')} ₫`;
+          if (priceProEl) priceProEl.innerText = `${(isFinite(proMonthlyEquiv) ? proMonthlyEquiv : proMonthly).toLocaleString('vi-VN')} ₫`;
           if (periodProEl) periodProEl.innerText = '/ tháng';
           if (subProEl) subProEl.innerText = `Thanh toán ${pricing.proYearly.toLocaleString('vi-VN')} ₫ mỗi năm`;
         } else {

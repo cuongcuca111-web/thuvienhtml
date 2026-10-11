@@ -191,10 +191,18 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Dữ liệu bảng giá không hợp lệ' });
     }
 
+    const plusMonthly = Math.max(0, parseInt(pricing.plusMonthly, 10) || 29000);
+    const proMonthly = Math.max(0, parseInt(pricing.proMonthly, 10) || 59000);
+    const yearlyDiscount = Math.min(100, Math.max(0, parseInt(pricing.yearlyDiscount, 10) || 20));
+    const plusYearly = Math.max(0, parseInt(pricing.plusYearly, 10) || Math.round(plusMonthly * 12 * (1 - yearlyDiscount / 100)));
+    const proYearly = Math.max(0, parseInt(pricing.proYearly, 10) || Math.round(proMonthly * 12 * (1 - yearlyDiscount / 100)));
+
     const sanitizedPricing = {
-      plusMonthly: Math.max(0, parseInt(pricing.plusMonthly, 10) || 29000),
-      proMonthly: Math.max(0, parseInt(pricing.proMonthly, 10) || 59000),
-      yearlyDiscount: Math.min(100, Math.max(0, parseInt(pricing.yearlyDiscount, 10) || 20))
+      plusMonthly,
+      plusYearly,
+      proMonthly,
+      proYearly,
+      yearlyDiscount
     };
 
     try {
