@@ -155,16 +155,16 @@ QUY TẮC BẢO MẬT VÀ TOÀN VẸN (BẮT BUỘC):
 
     let userPrompt = '';
     if (mode === 'explain') {
-      userPrompt = `[YÊU CẦU: GIẢI THÍCH ĐƠN GIẢN]
-- Hãy diễn đạt lại đoạn trích <selected_text> bằng ngôn ngữ dễ hiểu, trong sáng (phù hợp với học sinh phổ thông hoặc người mới bắt đầu).
-- Độ dài: từ 3 đến 6 câu văn ngắn gọn, súc tích.
-- Có thể dùng 1 phép ẩn dụ hoặc so sánh đời thường ngắn nếu giúp làm sáng tỏ vấn đề.
-- Trích xuất tối đa 3 thuật ngữ khó/chuyên ngành (nếu có) và giải thích ngắn gọn nghĩa của từng thuật ngữ (mục terms).
+      userPrompt = `[YEU CAU: GIAI THICH TRUC TIEP, DE HIEU & NGAN GON]
+- Nguoi doc dang gap kho khan khi hieu doan trich <selected_text>.
+- Hay giai thich truc tiep, ngan gon ban chat y nghia cua doan trich (chi tu 2 den 4 cau van).
+- Dung ngon tu binh dan, de hieu, di thang vao trong tam: 'Y cua doan nay la gi?', 'Vi sao lai nhu vay?'.
+- TUYET DOI KHONG tach rieng cac thuat ngu, khong liet ke dinh nghia tung tu (muc 'terms' de mang rong []). Hay tap trung toan bo loi giai thich truc tiep vao muc 'text'.
 
 <context>
-Tiêu đề mục: ${context.sectionTitle || 'Không có'}
-Đoạn trước: ${context.before || 'Không có'}
-Đoạn sau: ${context.after || 'Không có'}
+Tieu de muc: ${context.sectionTitle || 'Khong co'}
+Doan truoc: ${context.before || 'Khong co'}
+Doan sau: ${context.after || 'Khong co'}
 </context>
 
 <selected_text>
