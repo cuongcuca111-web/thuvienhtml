@@ -261,56 +261,44 @@ module.exports = async function handler(req, res) {
       let errorMsg = '';
 
       if (provider === 'gemini') {
-        const modelsToTry = [
-          model ? model.replace(/-latest$/, '') : null,
+        const testModels = [
           'gemini-1.5-flash',
           'gemini-2.0-flash',
           'gemini-1.5-pro'
-        ].filter(Boolean);
-        const uniqueModels = [...new Set(modelsToTry)];
-        const apiVersions = ['v1beta', 'v1'];
+        ];
 
         let geminiOk = false;
         let lastErr = '';
 
-        for (const m of uniqueModels) {
-          for (const ver of apiVersions) {
-            try {
-              const url = `https://generativelanguage.googleapis.com/${ver}/models/${encodeURIComponent(m)}:generateContent?key=${encodeURIComponent(apiKey)}`;
-              const resp = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
-                  generationConfig: { maxOutputTokens: 10 }
-                })
-              });
+        for (const m of testModels) {
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const resp = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: 'Trả lời ngắn gọn: OK' }] }],
+                generationConfig: { maxOutputTokens: 10 }
+              })
+            });
 
-              if (resp.ok) {
-                const d = await resp.json();
-                testResponse = (d.candidates?.[0]?.content?.parts?.[0]?.text || 'OK').trim();
-                success = true;
-                geminiOk = true;
-                model = m;
+            if (resp.ok) {
+              const d = await resp.json();
+              testResponse = (d.candidates?.[0]?.content?.parts?.[0]?.text || 'OK').trim();
+              success = true;
+              geminiOk = true;
+              model = m;
+              break;
+            } else {
+              const d = await resp.json().catch(() => ({}));
+              lastErr = d?.error?.message || `Lỗi từ Gemini (HTTP ${resp.status})`;
+              if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
                 break;
-              } else {
-                const d = await resp.json().catch(() => ({}));
-                const apiErrMsg = d?.error?.message;
-                if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
-                  lastErr = apiErrMsg || 'Khóa API không hợp lệ hoặc chưa kích hoạt Generative Language API.';
-                } else if (resp.status === 429) {
-                  lastErr = apiErrMsg || 'Hết hạn mức yêu cầu hoặc bị giới hạn tần suất (Quota Exceeded / Rate Limit).';
-                } else if (resp.status === 404) {
-                  lastErr = apiErrMsg || `Model ${m} không khả dụng trên ${ver}.`;
-                } else {
-                  lastErr = apiErrMsg || `Lỗi từ Gemini (HTTP ${resp.status})`;
-                }
               }
-            } catch (netErr) {
-              lastErr = netErr.message;
             }
+          } catch (netErr) {
+            lastErr = netErr.message;
           }
-          if (geminiOk) break;
         }
 
         if (!geminiOk) {
