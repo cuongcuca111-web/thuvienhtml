@@ -262,12 +262,10 @@ module.exports = async function handler(req, res) {
 
       if (provider === 'gemini') {
         const modelsToTry = [
-          model,
           model ? model.replace(/-latest$/, '') : null,
           'gemini-1.5-flash',
           'gemini-2.0-flash',
-          'gemini-1.5-pro',
-          'gemini-pro'
+          'gemini-1.5-pro'
         ].filter(Boolean);
         const uniqueModels = [...new Set(modelsToTry)];
         const apiVersions = ['v1beta', 'v1'];
