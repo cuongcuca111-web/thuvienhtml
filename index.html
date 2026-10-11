@@ -6510,18 +6510,19 @@
           
           <!-- Thanh điều hướng và thời hạn đơn -->
           <div class="flex items-center justify-between pb-3 border-b border-[#EBE8E1] dark:border-[#232833] text-xs">
-            <button type="button" id="btnBackToStep1" class="text-[#78756D] hover:text-indigo-600 dark:text-[#9AA3B2] dark:hover:text-indigo-400 font-medium flex items-center gap-1.5 transition cursor-pointer">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <button type="button" id="btnBackToStep1" class="px-2.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:border-indigo-500 text-[#78756D] hover:text-indigo-600 dark:text-[#9AA3B2] dark:hover:text-indigo-400 font-medium flex items-center gap-1.5 transition cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
               <span>Đổi gói khác</span>
             </button>
 
             <!-- Thời gian còn lại và thanh tiến trình mảnh -->
-            <div class="flex items-center gap-3">
-              <div class="w-24 sm:w-32 h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div class="flex items-center gap-2.5">
+              <div class="w-20 sm:w-28 h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div id="qrProgressBar" class="h-full bg-indigo-600 transition-all duration-1000" style="width: 100%;"></div>
               </div>
-              <span class="text-[#78756D] dark:text-[#9AA3B2] font-medium tabular-nums text-xs">
-                Còn <strong id="qrCountdownText" class="font-bold text-[#1C1B18] dark:text-[#E8E6E1]">15:00</strong>
+              <span class="text-[#78756D] dark:text-[#9AA3B2] font-medium text-xs flex items-center gap-1">
+                <span>Hết hạn:</span>
+                <strong id="qrCountdownText" class="font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums">15:00</strong>
               </span>
             </div>
           </div>
@@ -6531,8 +6532,8 @@
             
             <!-- CỘT TRÁI (md:col-span-5): MÃ QR -->
             <div class="md:col-span-5 flex flex-col items-center space-y-3">
-              <div class="relative w-full max-w-[280px] p-4 bg-white rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-sm flex flex-col items-center">
-                <div id="qrWrapper" class="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-white">
+              <div class="relative w-full max-w-[270px] p-4 bg-white rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-xs flex flex-col items-center">
+                <div id="qrWrapper" class="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-white p-1">
                   <img id="qrImageElement" src="" alt="Mã QR VietQR" class="w-full h-full object-contain" />
                   
                   <!-- Lớp phủ khi mã QR hết hạn -->
@@ -6547,31 +6548,33 @@
                   </div>
                 </div>
 
-                <p class="text-[11px] text-gray-500 mt-2 font-medium">Mở ứng dụng ngân hàng để quét mã</p>
+                <p class="text-[11px] text-[#78756D] mt-2.5 font-medium text-center">Quét bằng ứng dụng ngân hàng bất kỳ</p>
               </div>
 
               <!-- Nút tải ảnh QR -->
               <div class="flex items-center gap-2">
-                <button type="button" id="btnDownloadQr" class="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-gray-400 text-[11px] font-medium text-[#78756D] dark:text-[#9AA3B2] hover:text-[#1C1B18] dark:hover:text-[#E8E6E1] transition flex items-center gap-1.5 cursor-pointer">
+                <button type="button" id="btnDownloadQr" class="px-3.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:border-indigo-500 bg-white dark:bg-[#1A1D24] text-[11px] font-medium text-[#78756D] dark:text-[#9AA3B2] hover:text-[#1C1B18] dark:hover:text-[#E8E6E1] transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                   <span>Tải ảnh QR</span>
                 </button>
               </div>
             </div>
 
-            <!-- CỘT PHẢI (md:col-span-7): BIÊN LAI THANH TOÁN -->
+            <!-- CỘT PHẢI (md:col-span-7): BIÊN LAI THANH TOÁN (CÂN ĐỐI, KHÔNG LỆCH CHỮ) -->
             <div class="md:col-span-7 flex flex-col justify-between space-y-3.5">
               
-              <!-- Khối Số tiền là tâm điểm -->
-              <div class="pb-3 border-b border-[#EBE8E1] dark:border-[#232833]">
-                <span class="text-[11px] font-medium text-[#78756D] dark:text-[#9AA3B2] uppercase tracking-wider">Số tiền cần chuyển</span>
-                <div class="flex items-baseline justify-between mt-1">
-                  <div class="font-serif text-3xl sm:text-4xl font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums" id="transferAmount">
-                    59.000 ₫
+              <!-- Khối Số tiền thanh toán (Tỷ lệ hài hòa, font 24px) -->
+              <div class="p-3.5 rounded-xl bg-white dark:bg-[#181B22] border border-[#E0DED7] dark:border-[#262C36] shadow-2xs">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="text-xs text-[#78756D] dark:text-[#9AA3B2] font-medium block">Số tiền cần chuyển</span>
+                    <div class="font-serif text-2xl font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums mt-0.5 tracking-tight" id="transferAmount">
+                      59.000 ₫
+                    </div>
                   </div>
-                  <button type="button" class="btn-copy-transfer-field touch-target w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1A1D24] text-gray-500 hover:text-indigo-600 hover:border-indigo-400 dark:hover:border-indigo-500 flex items-center justify-center transition cursor-pointer" data-raw-val="" id="btnCopyAmount" aria-label="Sao chép số tiền">
-                    <svg class="w-4 h-4 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    <svg class="w-4 h-4 icon-copied hidden text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <button type="button" class="btn-copy-transfer-field touch-target w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#20252E] text-gray-500 hover:text-indigo-600 hover:border-indigo-400 dark:hover:border-indigo-500 flex items-center justify-center transition cursor-pointer" data-raw-val="" id="btnCopyAmount" aria-label="Sao chép số tiền">
+                    <svg class="w-3.5 h-3.5 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <svg class="w-3.5 h-3.5 icon-copied hidden text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </button>
                 </div>
               </div>
@@ -6580,70 +6583,71 @@
               <dl class="space-y-2 text-xs">
                 
                 <!-- Hàng Ngân hàng -->
-                <div class="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-gray-800/60" id="rowTransferBank">
+                <div class="flex items-center justify-between py-2 border-b border-[#EBE8E1] dark:border-[#232833]" id="rowTransferBank">
                   <dt class="text-[#78756D] dark:text-[#9AA3B2] font-medium">Ngân hàng nhận</dt>
                   <dd class="flex items-center gap-2">
                     <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="transferBankName">—</span>
-                    <button type="button" class="btn-copy-transfer-field touch-target w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1A1D24] text-gray-400 hover:text-indigo-600 hover:border-indigo-400 flex items-center justify-center transition cursor-pointer" data-text-id="transferBankName" aria-label="Sao chép tên ngân hàng">
-                      <svg class="w-3.5 h-3.5 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      <svg class="w-3.5 h-3.5 icon-copied hidden text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <button type="button" class="btn-copy-transfer-field touch-target w-7 h-7 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1A1D24] text-gray-400 hover:text-indigo-600 hover:border-indigo-400 flex items-center justify-center transition cursor-pointer" data-text-id="transferBankName" aria-label="Sao chép tên ngân hàng">
+                      <svg class="w-3 h-3 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <svg class="w-3 h-3 icon-copied hidden text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </button>
                   </dd>
                 </div>
 
                 <!-- Hàng Số tài khoản -->
-                <div class="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-gray-800/60" id="rowTransferAccountNo">
+                <div class="flex items-center justify-between py-2 border-b border-[#EBE8E1] dark:border-[#232833]" id="rowTransferAccountNo">
                   <dt class="text-[#78756D] dark:text-[#9AA3B2] font-medium">Số tài khoản</dt>
                   <dd class="flex items-center gap-2">
-                    <span class="font-semibold text-base text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums tracking-wide font-sans" id="transferAccountNo">—</span>
-                    <button type="button" class="btn-copy-transfer-field touch-target w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1A1D24] text-gray-400 hover:text-indigo-600 hover:border-indigo-400 flex items-center justify-center transition cursor-pointer" data-text-id="transferAccountNo" aria-label="Sao chép số tài khoản">
-                      <svg class="w-3.5 h-3.5 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      <svg class="w-3.5 h-3.5 icon-copied hidden text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span class="font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums tracking-wide font-sans" id="transferAccountNo">—</span>
+                    <button type="button" class="btn-copy-transfer-field touch-target w-7 h-7 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1A1D24] text-gray-400 hover:text-indigo-600 hover:border-indigo-400 flex items-center justify-center transition cursor-pointer" data-text-id="transferAccountNo" aria-label="Sao chép số tài khoản">
+                      <svg class="w-3 h-3 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <svg class="w-3 h-3 icon-copied hidden text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </button>
                   </dd>
                 </div>
 
                 <!-- Hàng Chủ tài khoản -->
-                <div class="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-gray-800/60" id="rowTransferAccountName">
+                <div class="flex items-center justify-between py-2 border-b border-[#EBE8E1] dark:border-[#232833]" id="rowTransferAccountName">
                   <dt class="text-[#78756D] dark:text-[#9AA3B2] font-medium">Chủ tài khoản</dt>
                   <dd>
-                    <span class="font-semibold text-sm uppercase text-[#1C1B18] dark:text-[#E8E6E1]" id="transferAccountName">—</span>
+                    <span class="font-semibold text-xs uppercase text-[#1C1B18] dark:text-[#E8E6E1]" id="transferAccountName">—</span>
                   </dd>
                 </div>
 
-                <!-- Hàng Nội dung chuyển khoản (Được nhấn mạnh duy nhất) -->
-                <div class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800/60" id="rowTransferOrderCode">
+                <!-- Hàng Nội dung chuyển khoản (Được nhấn mạnh nhẹ nhàng, tinh tế) -->
+                <div class="p-3.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/25 border border-indigo-200/70 dark:border-indigo-800/50" id="rowTransferOrderCode">
                   <div class="flex items-center justify-between">
                     <div>
                       <div class="flex items-center gap-1.5">
                         <dt class="text-[11px] font-semibold text-indigo-900 dark:text-indigo-300">Nội dung chuyển khoản</dt>
-                        <span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-indigo-200 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-300 uppercase">Bắt buộc</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">Bắt buộc</span>
                       </div>
                       <dd class="mt-1 font-bold text-base text-indigo-950 dark:text-indigo-200 tabular-nums tracking-wider font-sans" id="transferOrderCode">
                         TVH8K9L2M4N
                       </dd>
                     </div>
-                    <button type="button" class="btn-copy-transfer-field touch-target w-9 h-9 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-2xs transition cursor-pointer" data-text-id="transferOrderCode" aria-label="Sao chép nội dung chuyển khoản">
-                      <svg class="w-4 h-4 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      <svg class="w-4 h-4 icon-copied hidden text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <button type="button" class="btn-copy-transfer-field touch-target w-8 h-8 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-2xs transition cursor-pointer" data-text-id="transferOrderCode" aria-label="Sao chép nội dung chuyển khoản">
+                      <svg class="w-3.5 h-3.5 icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <svg class="w-3.5 h-3.5 icon-copied hidden text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </button>
                   </div>
-                  <p class="text-[11px] text-indigo-700/80 dark:text-indigo-300/70 mt-1.5">
-                    Nhập chính xác nội dung trên để hệ thống tự động kích hoạt gói trong vài giây.
+                  <p class="text-[11px] text-indigo-700/80 dark:text-indigo-300/70 mt-1.5 leading-relaxed">
+                    Vui lòng giữ nguyên mã này trong lời nhắn chuyển khoản để hệ thống kích hoạt tự động trong vài giây.
                   </p>
                 </div>
               </dl>
 
               <!-- Dòng xác minh tin cậy -->
-              <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] italic pt-0.5">
-                * Khi chuyển khoản, tên người nhận hiển thị trong app ngân hàng phải là <strong class="not-italic text-[#1C1B18] dark:text-[#E8E6E1]" id="transferTrustAccountName">—</strong>.
-              </p>
+              <div class="flex items-center gap-1.5 text-[11px] text-[#78756D] dark:text-[#9AA3B2] pt-0.5">
+                <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>Tên người nhận trong app ngân hàng: <strong class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="transferTrustAccountName">—</strong></span>
+              </div>
 
             </div>
           </div>
 
           <!-- TIẾN TRÌNH TRẠNG THÁI (STEPPER NGANG) -->
-          <div class="pt-4 border-t border-[#EBE8E1] dark:border-[#232833] space-y-3.5">
+          <div class="pt-4 border-t border-[#EBE8E1] dark:border-[#232833] space-y-4">
             
             <div class="flex items-center justify-between text-xs max-w-md mx-auto" role="list">
               <!-- Bước 1 -->
@@ -6656,7 +6660,7 @@
               <!-- Bước 2 -->
               <div class="flex items-center gap-1.5 opacity-60 transition-colors" id="stepIndicator2">
                 <span class="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
-                <span class="text-gray-600 dark:text-gray-400">Chờ xác nhận</span>
+                <span class="text-gray-600 dark:text-gray-400">Kiểm tra giao dịch</span>
               </div>
               <div class="flex-1 h-px bg-gray-200 dark:bg-gray-800 mx-2 transition-colors" id="stepLine2"></div>
               
@@ -6667,17 +6671,43 @@
               </div>
             </div>
 
-            <!-- Dòng trạng thái động (thay đổi theo order.status) -->
-            <div class="text-center space-y-2.5">
+            <!-- VÙNG TƯƠNG TÁC: TRẠNG THÁI 1 - CHƯA BÁO CHUYỂN -->
+            <div id="qrActionInitial" class="text-center space-y-2.5">
               <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]" id="qrStatusWaitingText" aria-live="polite">
-                Đang chờ bạn chuyển khoản. Gói sẽ tự động kích hoạt sau khi nhận được tiền.
+                Đang chờ bạn thanh toán. Gói sẽ tự động kích hoạt ngay sau khi nhận được tiền.
               </p>
               
               <!-- Nút báo đã chuyển khoản -->
               <div>
-                <button type="button" id="btnUserConfirmTransfer" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#1E222A] transition cursor-pointer">
-                  Tôi đã chuyển khoản
+                <button type="button" id="btnUserConfirmTransfer" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition active:scale-[0.98] cursor-pointer inline-flex items-center gap-2">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Tôi đã chuyển khoản</span>
                 </button>
+              </div>
+            </div>
+
+            <!-- VÙNG TƯƠNG TÁC: TRẠNG THÁI 2 - ĐANG ĐỐI SOÁT TRỰC TIẾP (LIVE VERIFICATION CONSOLE) -->
+            <div id="qrActionVerifying" class="hidden max-w-lg mx-auto p-4 rounded-2xl bg-white dark:bg-[#181B22] border border-indigo-200/80 dark:border-indigo-900/50 shadow-xs space-y-3 text-center">
+              <div class="flex items-center justify-center gap-2.5 text-indigo-700 dark:text-indigo-400">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-600"></span>
+                </span>
+                <span class="font-semibold text-xs sm:text-sm">Đang kết nối đối soát với ngân hàng Sacombank...</span>
+              </div>
+
+              <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] leading-relaxed">
+                Hệ thống đang quét biến động số dư theo mã đơn. Tự động kiểm tra lại sau <strong id="pollingCountdownSec" class="font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums">4</strong>s.
+              </p>
+
+              <div class="flex items-center justify-center gap-2.5 pt-1">
+                <button type="button" id="btnManualCheckNow" class="px-3.5 py-1.5 rounded-lg border border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  <span>Kiểm tra ngay</span>
+                </button>
+                <a href="mailto:cuongcuca111@gmail.com?subject=Xac%20nhan%20thanh%20toan%20Thu%20vien%20HTML" class="px-3.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] text-[#78756D] dark:text-[#9AA3B2] hover:text-[#1C1B18] dark:hover:text-[#E8E6E1] text-xs font-medium transition">
+                  Cần hỗ trợ?
+                </a>
               </div>
             </div>
 
@@ -6688,11 +6718,11 @@
             <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
               <div class="flex items-center gap-1.5">
                 <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span>Thanh toán an toàn qua VietQR</span>
+                <span>Thanh toán an toàn VietQR</span>
               </div>
               <div class="flex items-center gap-1.5">
                 <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-                <span>Không tự động gia hạn</span>
+                <span>Kích hoạt tự động</span>
               </div>
             </div>
             <div>
@@ -7130,10 +7160,27 @@
       period: 'monthly', // 'monthly' hoặc 'yearly'
       selectedPlan: 'pro',
       currentOrderId: null,
+      currentOrderCode: '',
       unsubscribeOrderListener: null,
       countdownTimer: null,
-      orderExpiresTime: 0
+      orderExpiresTime: 0,
+      pollingTimer: null,
+      countdownPollingTimer: null,
+      pollingSecondsLeft: 4,
+      isPolling: false
     };
+
+    function stopOrderVerificationPolling() {
+      if (upgradeModalState.pollingTimer) {
+        clearInterval(upgradeModalState.pollingTimer);
+        upgradeModalState.pollingTimer = null;
+      }
+      if (upgradeModalState.countdownPollingTimer) {
+        clearInterval(upgradeModalState.countdownPollingTimer);
+        upgradeModalState.countdownPollingTimer = null;
+      }
+      upgradeModalState.isPolling = false;
+    }
 
     function openUpgradeModal(preSelectedPlan) {
       if (state.user && state.user.isAnonymous) {
@@ -7155,6 +7202,7 @@
       const modal = document.getElementById('upgradeModal');
       if (!modal) return;
 
+      stopOrderVerificationPolling();
       showUpgradeStep(1);
       updateUpgradePricingDisplay();
 
@@ -7168,6 +7216,7 @@
       const modal = document.getElementById('upgradeModal');
       if (!modal) return;
 
+      stopOrderVerificationPolling();
       if (upgradeModalState.unsubscribeOrderListener) {
         try { upgradeModalState.unsubscribeOrderListener(); } catch(e){}
         upgradeModalState.unsubscribeOrderListener = null;
@@ -7223,7 +7272,7 @@
           if (l1) l1.className = 'flex-1 h-px bg-gray-200 dark:bg-gray-800 mx-2 transition-colors';
           if (s2) {
             s2.className = 'flex items-center gap-1.5 opacity-60 transition-colors';
-            s2.innerHTML = '<span class="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-[10px] font-bold flex items-center justify-center shrink-0">2</span><span class="text-gray-600 dark:text-gray-400">Chờ xác nhận</span>';
+            s2.innerHTML = '<span class="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-[10px] font-bold flex items-center justify-center shrink-0">2</span><span class="text-gray-600 dark:text-gray-400">Kiểm tra giao dịch</span>';
           }
           if (l2) l2.className = 'flex-1 h-px bg-gray-200 dark:bg-gray-800 mx-2 transition-colors';
           if (s3) {
@@ -7238,7 +7287,7 @@
           if (l1) l1.className = 'flex-1 h-px bg-emerald-500 dark:bg-emerald-600 mx-2 transition-colors';
           if (s2) {
             s2.className = 'flex items-center gap-1.5 transition-colors';
-            s2.innerHTML = '<span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0">2</span><span class="font-semibold text-indigo-950 dark:text-indigo-300">Chờ xác nhận</span>';
+            s2.innerHTML = '<span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0">2</span><span class="font-semibold text-indigo-950 dark:text-indigo-300">Kiểm tra giao dịch</span>';
           }
           if (l2) l2.className = 'flex-1 h-px bg-gray-200 dark:bg-gray-800 mx-2 transition-colors';
           if (s3) {
@@ -7541,15 +7590,22 @@
         if (rowAccNo) rowAccNo.classList.toggle('hidden', !bankSnapshot.accountNo);
         if (rowAccName) rowAccName.classList.toggle('hidden', !bankSnapshot.accountName);
 
-        // Cập nhật tiêu đề hộp thoại sang bước QR
+        // Cập nhật tiêu đề hộp thoại sang bước QR tinh tế
         const titleEl = document.getElementById('upgradeModalTitle');
         const subTitleEl = document.getElementById('upgradeModalSubtitle');
         if (titleEl) {
-          titleEl.innerText = `Thanh toán gói ${planId.toUpperCase()} · ${(data.amount || 0).toLocaleString('vi-VN')} ₫`;
+          titleEl.innerText = `Thanh toán gói ${planId.toUpperCase()}`;
         }
         if (subTitleEl) {
-          subTitleEl.innerText = `Mã đơn ${data.code || ''} · Mở app ngân hàng quét mã hoặc chuyển theo thông tin bên dưới`;
+          subTitleEl.innerText = `Mã đơn: ${data.code || ''} · Mở app ngân hàng quét mã hoặc chuyển theo biên lai bên dưới`;
         }
+
+        // Đặt lại các khối tương tác về trạng thái ban đầu
+        const initialBox = document.getElementById('qrActionInitial');
+        const verifyingBox = document.getElementById('qrActionVerifying');
+        if (initialBox) initialBox.classList.remove('hidden');
+        if (verifyingBox) verifyingBox.classList.add('hidden');
+        stopOrderVerificationPolling();
 
         // Đặt lại lớp phủ hết hạn và nút báo chuyển khoản
         const expiredOverlay = document.getElementById('qrExpiredOverlay');
@@ -7558,13 +7614,13 @@
         const btnUserConfirm = document.getElementById('btnUserConfirmTransfer');
         if (btnUserConfirm) {
           btnUserConfirm.disabled = false;
-          btnUserConfirm.innerText = "Tôi đã chuyển khoản";
+          btnUserConfirm.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Tôi đã chuyển khoản</span>';
           btnUserConfirm.classList.remove('opacity-60', 'cursor-not-allowed');
         }
 
         const waitingText = document.getElementById('qrStatusWaitingText');
         if (waitingText) {
-          waitingText.innerText = "Đang chờ bạn chuyển khoản. Gói sẽ tự động kích hoạt sau khi nhận được tiền.";
+          waitingText.innerText = "Đang chờ bạn thanh toán. Gói sẽ tự động kích hoạt ngay sau khi nhận được tiền.";
         }
 
         // Tải trước ảnh QR vào bộ nhớ đệm trước khi đóng popup loading để màn hình chuyển mượt mà
@@ -7650,6 +7706,101 @@
       upgradeModalState.countdownTimer = setInterval(tick, 1000);
     }
 
+    function startOrderVerificationPolling(orderId) {
+      if (!orderId) return;
+      stopOrderVerificationPolling();
+      upgradeModalState.isPolling = true;
+
+      // Ẩn nút ban đầu, hiện khung Live Verification Console
+      const initialBox = document.getElementById('qrActionInitial');
+      const verifyingBox = document.getElementById('qrActionVerifying');
+      if (initialBox) initialBox.classList.add('hidden');
+      if (verifyingBox) verifyingBox.classList.remove('hidden');
+
+      updateUpgradeStepper(2);
+
+      // Đếm ngược 4s trực quan
+      upgradeModalState.pollingSecondsLeft = 4;
+      const countEl = document.getElementById('pollingCountdownSec');
+      if (countEl) countEl.innerText = '4';
+
+      upgradeModalState.countdownPollingTimer = setInterval(() => {
+        upgradeModalState.pollingSecondsLeft = Math.max(0, upgradeModalState.pollingSecondsLeft - 1);
+        if (countEl) countEl.innerText = String(upgradeModalState.pollingSecondsLeft);
+        if (upgradeModalState.pollingSecondsLeft <= 0) {
+          upgradeModalState.pollingSecondsLeft = 4;
+        }
+      }, 1000);
+
+      const poll = async () => {
+        if (!upgradeModalState.isPolling || !upgradeModalState.currentOrderId) return;
+        await checkOrderPaidStatus(upgradeModalState.currentOrderId, false);
+      };
+
+      // Chạy ngay lần 1 sau 1.5s
+      setTimeout(poll, 1500);
+      upgradeModalState.pollingTimer = setInterval(poll, 4000);
+    }
+
+    async function checkOrderPaidStatus(orderId, isManualClick) {
+      if (!orderId || !auth || !auth.currentUser) return false;
+      const btnManual = document.getElementById('btnManualCheckNow');
+      if (isManualClick && btnManual) {
+        btnManual.disabled = true;
+        btnManual.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang kiểm tra...</span>';
+      }
+
+      try {
+        const token = await auth.currentUser.getIdToken(false);
+        const res = await fetch(`/api/billing/order-status?orderId=${encodeURIComponent(orderId)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (res.ok && data && data.status === 'paid') {
+          stopOrderVerificationPolling();
+          if (upgradeModalState.countdownTimer) {
+            clearInterval(upgradeModalState.countdownTimer);
+            upgradeModalState.countdownTimer = null;
+          }
+          if (upgradeModalState.unsubscribeOrderListener) {
+            try { upgradeModalState.unsubscribeOrderListener(); } catch(e){}
+            upgradeModalState.unsubscribeOrderListener = null;
+          }
+
+          const successMsg = document.getElementById('upgradeSuccessMsg');
+          if (successMsg) {
+            successMsg.innerText = `Chúc mừng! Bạn đã nâng cấp thành công lên gói ${(data.planId || 'pro').toUpperCase()} (${data.period === 'yearly' ? '1 Năm' : '1 Tháng'}).`;
+          }
+          updateUpgradeStepper(3);
+          showUpgradeStep(3);
+          showToast(`Kích hoạt thành công gói ${(data.planId || 'pro').toUpperCase()}!`);
+
+          state.userTier = data.planId || 'pro';
+          try {
+            updateUserUI(state.user);
+            if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+          } catch (errUi) {
+            console.warn("[Billing] Lỗi updateUserUI sau kích hoạt:", errUi);
+          }
+          return true;
+        } else if (isManualClick) {
+          showToast("Chưa nhận được giao dịch. Nếu bạn vừa chuyển, vui lòng chờ trong ít giây để ngân hàng xử lý.");
+        }
+      } catch (err) {
+        console.warn("[Billing] Lỗi polling order-status:", err.message);
+        if (isManualClick) {
+          showToast("Không thể kết nối máy chủ kiểm tra: " + err.message);
+        }
+      } finally {
+        if (isManualClick && btnManual) {
+          btnManual.disabled = false;
+          btnManual.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> <span>Kiểm tra ngay</span>';
+        }
+      }
+      return false;
+    }
+
     function subscribeOrderRealtime(orderId) {
       if (upgradeModalState.unsubscribeOrderListener) {
         try { upgradeModalState.unsubscribeOrderListener(); } catch(e){}
@@ -7663,6 +7814,7 @@
           const order = docSnap.data();
 
           if (order.status === 'paid') {
+            stopOrderVerificationPolling();
             if (upgradeModalState.countdownTimer) {
               clearInterval(upgradeModalState.countdownTimer);
               upgradeModalState.countdownTimer = null;
@@ -7674,11 +7826,11 @@
 
             const successMsg = document.getElementById('upgradeSuccessMsg');
             if (successMsg) {
-              successMsg.innerText = `Chúc mừng! Bạn đã nâng cấp thành công lên gói ${order.planId.toUpperCase()} (${order.period === 'yearly' ? '1 Năm' : '1 Tháng'}).`;
+              successMsg.innerText = `Chúc mừng! Bạn đã nâng cấp thành công lên gói ${(order.planId || 'pro').toUpperCase()} (${order.period === 'yearly' ? '1 Năm' : '1 Tháng'}).`;
             }
             updateUpgradeStepper(3);
             showUpgradeStep(3);
-            showToast(`Kích hoạt thành công gói ${order.planId.toUpperCase()}!`);
+            showToast(`Kích hoạt thành công gói ${(order.planId || 'pro').toUpperCase()}!`);
             
             state.userTier = order.planId;
             try {
@@ -7688,15 +7840,7 @@
               console.warn("[Billing] Lỗi updateUserUI sau kích hoạt:", errUi);
             }
           } else if (order.status === 'user_confirmed') {
-            updateUpgradeStepper(2);
-            const waitingText = document.getElementById('qrStatusWaitingText');
-            if (waitingText) waitingText.innerText = "Đã nhận thông báo của bạn. Đang chờ hệ thống xác nhận giao dịch trong ít phút...";
-            const btnConfirm = document.getElementById('btnUserConfirmTransfer');
-            if (btnConfirm) {
-              btnConfirm.disabled = true;
-              btnConfirm.innerText = "Đã báo chuyển khoản";
-              btnConfirm.classList.add('opacity-60', 'cursor-not-allowed');
-            }
+            startOrderVerificationPolling(orderId);
           }
         }, (err) => {
           console.warn("[Billing] Lỗi lắng nghe đơn hàng:", err);
@@ -7713,7 +7857,7 @@
       const btn = document.getElementById('btnUserConfirmTransfer');
       if (btn) {
         btn.disabled = true;
-        btn.innerText = "Đang gửi thông báo...";
+        btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang kết nối đối soát...</span>';
       }
 
       try {
@@ -7728,27 +7872,20 @@
         });
         const json = await res.json();
         if (res.ok) {
-          showToast("Đã báo đã chuyển khoản! Hệ thống đang xử lý xác nhận.");
-          updateUpgradeStepper(2);
-          const waitingText = document.getElementById('qrStatusWaitingText');
-          if (waitingText) waitingText.innerText = "Đã ghi nhận thông báo chuyển khoản. Vui lòng giữ màn hình hoặc quay lại sau ít phút.";
-          if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Đã báo chuyển khoản";
-            btn.classList.add('opacity-60', 'cursor-not-allowed');
-          }
+          showToast("Đã gửi thông báo chuyển khoản! Đang kiểm tra đối soát...");
+          startOrderVerificationPolling(orderId);
         } else {
           showToast(json.error || "Không thể gửi xác nhận");
           if (btn) {
             btn.disabled = false;
-            btn.innerText = "Tôi đã chuyển khoản";
+            btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Tôi đã chuyển khoản</span>';
           }
         }
       } catch (err) {
         showToast("Lỗi: " + err.message);
         if (btn) {
           btn.disabled = false;
-          btn.innerText = "Tôi đã chuyển khoản";
+          btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Tôi đã chuyển khoản</span>';
         }
       }
     }
@@ -7833,6 +7970,15 @@
     const btnUserConfirmTransfer = document.getElementById('btnUserConfirmTransfer');
     if (btnUserConfirmTransfer) {
       btnUserConfirmTransfer.addEventListener('click', handleUserConfirmTransfer);
+    }
+
+    const btnManualCheckNow = document.getElementById('btnManualCheckNow');
+    if (btnManualCheckNow) {
+      btnManualCheckNow.addEventListener('click', () => {
+        if (upgradeModalState.currentOrderId) {
+          checkOrderPaidStatus(upgradeModalState.currentOrderId, true);
+        }
+      });
     }
 
     const btnFinishUpgrade = document.getElementById('btnFinishUpgrade');

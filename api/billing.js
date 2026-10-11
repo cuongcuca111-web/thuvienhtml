@@ -51,6 +51,167 @@ async function verifyUserAuth(req, res) {
 
 module.exports = async function handler(req, res) {
   const action = resolveAction(req);
+
+  // 0. WEBHOOK BIẾN ĐỘNG SỐ DƯ TỰ ĐỘNG (POST /api/billing/webhook)
+  // Nhận thông báo giao dịch từ SePay, Casso, hoặc hệ thống VietQR
+  if (action === 'webhook') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+
+    try {
+      const app = initAdmin();
+      const db = app.firestore();
+
+      // Kiểm tra API Key / Token nếu đã cấu hình trong admin_secrets/payment
+      let configuredSecret = '';
+      try {
+        const secSnap = await db.doc('admin_secrets/payment').get();
+        if (secSnap.exists && secSnap.data().webhookSecret) {
+          configuredSecret = decryptKey(secSnap.data().webhookSecret);
+        }
+      } catch (_) {}
+
+      if (configuredSecret) {
+        const authHeader = req.headers.authorization || '';
+        const secureToken = req.headers['secure-token'] || req.headers['x-api-key'] || (req.query && req.query.token) || '';
+        const tokenVal = authHeader.replace(/^Bearer\s+|^Apikey\s+/i, '').trim() || secureToken;
+        if (tokenVal !== configuredSecret) {
+          return res.status(401).json({ error: 'Webhook secret không hợp lệ' });
+        }
+      }
+
+      // Trích xuất danh sách giao dịch từ nhiều định dạng:
+      // - SePay: body là 1 object có content, transferAmount, referenceCode
+      // - Casso: body.data là mảng [ { description, amount, tid } ]
+      // - VietQR Pro: body là object có content, amount
+      const body = req.body || {};
+      let transactions = [];
+
+      if (Array.isArray(body.data)) {
+        transactions = body.data;
+      } else if (Array.isArray(body.transactions)) {
+        transactions = body.transactions;
+      } else if (typeof body === 'object' && body !== null) {
+        transactions = [body];
+      }
+
+      const results = [];
+
+      for (let i = 0; i < transactions.length; i++) {
+        const txn = transactions[i];
+        if (!txn) continue;
+        const textContent = `${txn.content || ''} ${txn.description || ''} ${txn.orderCode || ''} ${txn.code || ''} ${txn.memo || ''}`;
+        const match = textContent.match(/TVH[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}/i);
+        if (!match) continue;
+
+        const orderCode = match[0].toUpperCase();
+        const transferAmount = parseInt(txn.transferAmount || txn.amount || 0, 10);
+
+        // Tra cứu nhanh O(1) mã đơn
+        const codeDoc = await db.doc(`billing_codes/${orderCode}`).get();
+        if (!codeDoc.exists) {
+          results.push({ code: orderCode, status: 'code_not_found' });
+          continue;
+        }
+
+        const codeData = codeDoc.data();
+        const orderId = codeData.orderId;
+        const orderRef = db.collection('billing_orders').doc(orderId);
+        const orderSnap = await orderRef.get();
+        if (!orderSnap.exists) {
+          results.push({ code: orderCode, status: 'order_not_found' });
+          continue;
+        }
+
+        const order = orderSnap.data();
+        if (order.status === 'paid') {
+          results.push({ code: orderCode, status: 'already_paid' });
+          continue;
+        }
+
+        // Kiểm tra số tiền chuyển phải >= số tiền đơn hàng (cho phép chuyển dư)
+        if (transferAmount > 0 && transferAmount < order.amount) {
+          results.push({ code: orderCode, status: 'amount_insufficient', required: order.amount, received: transferAmount });
+          continue;
+        }
+
+        // TỰ ĐỘNG KÍCH HOẠT ĐƠN HÀNG VÀ TÀI KHOẢN NGƯỜI DÙNG
+        const targetUid = order.uid;
+        const planId = order.planId;
+        const period = order.period;
+        const now = Date.now();
+
+        // Tính ngày hết hạn gói:
+        const userPlanRef = db.doc(`users/${targetUid}/billing/plan`);
+        const userPlanSnap = await userPlanRef.get();
+        let currentExpires = now;
+
+        if (userPlanSnap.exists) {
+          const upData = userPlanSnap.data();
+          if (upData.tier === planId && upData.expiresAt) {
+            const expMs = new Date(upData.expiresAt).getTime();
+            if (expMs > now) currentExpires = expMs;
+          }
+        }
+
+        const addedDays = period === 'yearly' ? 365 : 30;
+        const newExpiresAt = new Date(currentExpires + addedDays * 24 * 60 * 60 * 1000).toISOString();
+
+        const batch = db.batch();
+
+        batch.update(orderRef, {
+          status: 'paid',
+          paidAt: new Date().toISOString(),
+          confirmedBy: 'webhook_auto',
+          confirmReason: `Tự động kích hoạt qua Webhook (Số tiền: ${(transferAmount || order.amount).toLocaleString('vi-VN')} ₫)`,
+          bankTransactionId: String(txn.id || txn.tid || txn.referenceCode || txn.transactionId || ''),
+          updatedAt: new Date().toISOString()
+        });
+
+        batch.set(userPlanRef, {
+          tier: planId,
+          period: period,
+          active: true,
+          activatedAt: new Date().toISOString(),
+          expiresAt: newExpiresAt,
+          updatedBy: 'webhook_auto',
+          lastOrderId: order.id
+        }, { merge: true });
+
+        await batch.commit();
+
+        // Đồng bộ Custom Claims
+        try {
+          const currentClaims = (await app.auth().getUser(targetUid)).customClaims || {};
+          await app.auth().setCustomUserClaims(targetUid, {
+            ...currentClaims,
+            tier: planId
+          });
+        } catch (claimErr) {
+          console.warn('[Webhook] Lỗi cập nhật custom claims:', claimErr.message);
+        }
+
+        results.push({
+          code: orderCode,
+          orderId,
+          uid: targetUid,
+          planId,
+          status: 'activated_success',
+          expiresAt: newExpiresAt
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Webhook processed',
+        processed: results.length,
+        results
+      });
+    } catch (err) {
+      console.error('[Webhook Billing Error]:', err);
+      return res.status(500).json({ error: 'Lỗi xử lý webhook: ' + err.message });
+    }
+  }
+
   const auth = await verifyUserAuth(req, res);
   if (!auth) return;
 
