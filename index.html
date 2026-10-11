@@ -6210,6 +6210,7 @@
         console.warn("Could not parse __firebase_config, using default", err);
       }
     }
+    window.__firebaseConfig = firebaseConfig;
 
     let app = null;
     let auth = null;
@@ -6469,6 +6470,7 @@
           auth,
           db,
           state,
+          firebaseConfig,
           effectivePlans,
           PLANS_DEFAULT,
           showToast: (msg) => typeof showToast === 'function' ? showToast(msg) : alert(msg),

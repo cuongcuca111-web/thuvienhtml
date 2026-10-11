@@ -5,15 +5,22 @@ function toast(msg) { if (adminContext && typeof adminContext.showToast === 'fun
  * Tự vẽ toàn bộ SVG Icons nét 1.8px bo tròn, bảo mật tuyệt đối không lưu credentials.
  */
 
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
+  getAuth,
   signInWithEmailAndPassword, 
-  signOut 
+  signOut,
+  inMemoryPersistence,
+  setPersistence 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 const ADMIN_LOGIN_DOMAIN = window.__ADMIN_LOGIN_DOMAIN || 'admin.thuvienhtml.app';
 
-// Trạng thái cục bộ của bảng Quản trị
+// Trạng thái cục bộ của bảng Quản trị (Cô lập hoàn toàn khỏi tài khoản độc giả chính)
 let adminContext = null;
+let adminApp = null;
+let adminAuth = null;
+let currentAdminUser = null; // Phiên quản trị viên độc lập trong bộ nhớ
 let currentAdminTab = 'plans';
 let pendingPlansChanges = null; // Bản sao đang chỉnh sửa
 let originalPlansConfig = null; // Bản gốc từ server
@@ -22,6 +29,31 @@ let adminSessionTimer = null;
 let lastAdminActivity = Date.now();
 const ADMIN_MAX_IDLE_MS = 60 * 60 * 1000; // 60 phút
 const ADMIN_REAUTH_MS = 15 * 60 * 1000;  // 15 phút cho thao tác nhạy cảm
+
+// Khởi tạo hoặc lấy Firebase Auth riêng biệt dành cho khu vực Quản trị
+async function getAdminAuth() {
+  if (adminAuth) return adminAuth;
+  const config = (adminContext && adminContext.firebaseConfig) || window.__firebaseConfig || {
+    apiKey: "AIzaSyAUBpYV3-03LxqFffabtEqIUzQ7JFn4-fo",
+    authDomain: "thuvienhtml.firebaseapp.com",
+    projectId: "thuvienhtml",
+    storageBucket: "thuvienhtml.firebasestorage.app",
+    messagingSenderId: "1053872012788",
+    appId: "1:1053872012788:web:5bc528ab7f5c5f57bf8da1"
+  };
+
+  const existingApp = getApps().find(a => a.name === 'adminIsolatedApp');
+  adminApp = existingApp || initializeApp(config, 'adminIsolatedApp');
+  adminAuth = getAuth(adminApp);
+  try {
+    if (inMemoryPersistence) {
+      await setPersistence(adminAuth, inMemoryPersistence);
+    }
+  } catch (err) {
+    console.warn('[Admin] Không thể thiết lập inMemoryPersistence:', err);
+  }
+  return adminAuth;
+}
 
 // Biến đếm đăng nhập sai phía client
 let clientFailedLogins = 0;
@@ -44,8 +76,8 @@ export function initAdminSystem(ctx) {
   ensureAdminModalsInDOM();
   bindGlobalAdminEvents();
 
-  // Kiểm tra quyền Admin của user hiện tại
-  if (ctx.state && ctx.state.isAdmin && ctx.auth && ctx.auth.currentUser) {
+  // Kiểm tra phiên Quản trị cô lập hiện tại
+  if (currentAdminUser) {
     lastAdminActivity = Date.now();
     startSessionTimer();
     openAdminPanel();
@@ -251,7 +283,7 @@ function bindGlobalAdminEvents() {
   // Ghi nhận hoạt động người dùng để duy trì phiên
   ['mousedown', 'keydown', 'touchstart'].forEach(evt => {
     window.addEventListener(evt, () => {
-      if ((adminContext && adminContext.state && adminContext.state.isAdmin)) {
+      if (currentAdminUser) {
         lastAdminActivity = Date.now();
       }
     }, { passive: true });
@@ -374,19 +406,19 @@ async function handleAdminLoginSubmit(e) {
   submitBtn.innerText = 'Đang xác thực...';
 
   try {
+    const authInstance = await getAdminAuth();
     const email = usernameInput.includes('@') ? usernameInput : `${usernameInput}@${ADMIN_LOGIN_DOMAIN}`;
-    const userCred = await signInWithEmailAndPassword(adminContext.auth, email, password);
+    const userCred = await signInWithEmailAndPassword(authInstance, email, password);
     const user = userCred.user;
 
     // Buộc lấy lại token mới nhất từ server để kiểm tra claim admin
     const idTokenResult = await user.getIdTokenResult(true);
 
     if (idTokenResult.claims && idTokenResult.claims.admin === true) {
-      // ĐĂNG NHẬP THÀNH CÔNG VỚI QUYỀN ADMIN
+      // ĐĂNG NHẬP THÀNH CÔNG VỚI QUYỀN ADMIN TRONG PHIÊN CÔ LẬP
+      // TUYỆT ĐỐI KHÔNG ghi đè tài khoản người dùng đang đọc sách (state.user/state.userId)
       clientFailedLogins = 0;
-      adminContext.state.isAdmin = true;
-      adminContext.state.user = user;
-      adminContext.state.userId = user.uid;
+      currentAdminUser = user;
       lastAdminActivity = Date.now();
 
       // Cập nhật nút trong menu tài khoản
@@ -397,8 +429,9 @@ async function handleAdminLoginSubmit(e) {
       openAdminPanel();
       toast("Đăng nhập quản trị thành công!");
     } else {
-      // Tài khoản không có claim admin -> Lập tức đăng xuất, không để lộ bảng quản trị dù chỉ thoáng qua
-      await signOut(adminContext.auth);
+      // Tài khoản không có claim admin -> Lập tức đăng xuất phiên admin cô lập
+      if (authInstance) await signOut(authInstance);
+      currentAdminUser = null;
       recordClientFailedLogin();
       errBanner.innerText = "Không có quyền truy cập";
       errBanner.classList.remove('hidden');
@@ -425,8 +458,15 @@ function recordClientFailedLogin() {
 
 async function handleAdminLogout() {
   if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi khu vực Quản trị?")) {
-    adminContext.state.isAdmin = false;
+    currentAdminUser = null;
     clearInterval(adminSessionTimer);
+    if (adminAuth) {
+      try {
+        await signOut(adminAuth);
+      } catch (e) {
+        console.warn("[Admin] Lỗi signOut adminAuth:", e);
+      }
+    }
     closeAdminPanel();
     const btnAdminInMenu = document.getElementById('btnOpenAdminPanel');
     if (btnAdminInMenu) btnAdminInMenu.classList.add('hidden');
@@ -442,8 +482,13 @@ function startSessionTimer() {
 
     if (remaining <= 0) {
       clearInterval(adminSessionTimer);
-      adminContext.state.isAdmin = false;
+      currentAdminUser = null;
+      if (adminAuth) {
+        signOut(adminAuth).catch(() => {});
+      }
       closeAdminPanel();
+      const btnAdminInMenu = document.getElementById('btnOpenAdminPanel');
+      if (btnAdminInMenu) btnAdminInMenu.classList.add('hidden');
       alert("Phiên quản trị đã hết hạn do không hoạt động trong 60 phút. Vui lòng đăng nhập lại.");
       return;
     }
@@ -498,7 +543,11 @@ function loadTabData(tabName) {
 
 // HELPER GỌI API ADMIN
 async function callAdminApi(path, options = {}) {
-  const token = await adminContext.auth.currentUser.getIdToken(false);
+  const adminUser = currentAdminUser || (adminAuth && adminAuth.currentUser);
+  if (!adminUser) {
+    throw new Error('Chưa đăng nhập quyền quản trị hoặc phiên đã kết thúc.');
+  }
+  const token = await adminUser.getIdToken(false);
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,
