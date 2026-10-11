@@ -3289,6 +3289,8 @@
           </span>
           <span id="userBadgeType" class="text-[9px] px-1.5 py-0.2 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 shrink-0">Đã đồng bộ</span>
         </div>
+        <!-- Email hiển thị của người dùng -->
+        <p id="userEmailDisplay" class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] truncate"></p>
         <!-- Dòng phụ hiển thị thời hạn sử dụng -->
         <p id="userTierExpiryText" class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] font-medium truncate">Gói Free vĩnh viễn</p>
         <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
@@ -6892,8 +6894,12 @@
             showToast(`Kích hoạt thành công gói ${order.planId.toUpperCase()}!`);
             
             state.userTier = order.planId;
-            updateUserUI(state.user);
-            if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+            try {
+              updateUserUI(state.user);
+              if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+            } catch (errUi) {
+              console.warn("[Billing] Lỗi updateUserUI sau kích hoạt:", errUi);
+            }
           } else if (order.status === 'user_confirmed') {
             const waitingText = document.getElementById('qrStatusWaitingText');
             if (waitingText) waitingText.innerText = "Đã nhận thông báo của bạn. Đang chờ xác nhận giao dịch trong ít phút...";
@@ -12377,8 +12383,12 @@
                     state.userTierExpiresAt = bData.expiresAt || null;
                   }
                 }
-                updateUserUI(user);
-                if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+                try {
+                  updateUserUI(user);
+                  if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
+                } catch (e) {
+                  console.warn("[Billing] Lỗi updateUserUI trên snapshot:", e);
+                }
               }, (err) => console.warn('[Billing] Lỗi onSnapshot users/billing/plan:', err));
             } catch (e) {}
           } else {
@@ -12388,13 +12398,28 @@
             loadLocalState();
           }
 
-          updateUserUI(user);
+          try {
+            updateUserUI(user);
+          } catch (uiErr) {
+            console.warn("[Auth] Lỗi cập nhật giao diện người dùng:", uiErr);
+          }
 
-          if (state.unsubscribeCategories) state.unsubscribeCategories();
-          if (state.unsubscribeLessons) state.unsubscribeLessons();
+          try {
+            if (state.unsubscribeCategories) state.unsubscribeCategories();
+            if (state.unsubscribeLessons) state.unsubscribeLessons();
+          } catch (_) {}
 
-          await loadUserSettings();
-          setupRealtimeListeners();
+          try {
+            await loadUserSettings();
+          } catch (loadErr) {
+            console.warn("Lỗi loadUserSettings:", loadErr);
+          }
+
+          try {
+            setupRealtimeListeners();
+          } catch (rtErr) {
+            console.warn("Lỗi setupRealtimeListeners:", rtErr);
+          }
 
           if (shareId || shareUrl) {
             await loadSharedLesson(shareId, shareUrl, shareTitle);
@@ -12431,7 +12456,11 @@
       }
       state.user = { uid: localUid, isAnonymous: true };
       state.userId = localUid;
-      updateUserUI(state.user);
+      try {
+        updateUserUI(state.user);
+      } catch (guestUiErr) {
+        console.warn("[Guest] Lỗi updateUserUI:", guestUiErr);
+      }
       loadLocalState();
       setSyncStatus(false, "Lưu cục bộ");
     }
@@ -12457,86 +12486,146 @@
       }
     }
 
+    // =========================================================================
+    // TIỆN ÍCH AN TOÀN DOM (FAULT-TOLERANT DOM UTILITIES)
+    // =========================================================================
+    const _missingDomWarnings = new Set();
+    function safeWarnMissing(id) {
+      if (!_missingDomWarnings.has(id)) {
+        _missingDomWarnings.add(id);
+        console.warn(`[DOM] Không tìm thấy phần tử #${id} trên giao diện.`);
+      }
+    }
+
+    function setText(elOrId, val) {
+      try {
+        const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+        if (!el) {
+          if (typeof elOrId === 'string') safeWarnMissing(elOrId);
+          return null;
+        }
+        el.textContent = (val === null || val === undefined) ? '' : String(val);
+        return el;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setHTML(elOrId, val) {
+      try {
+        const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+        if (!el) {
+          if (typeof elOrId === 'string') safeWarnMissing(elOrId);
+          return null;
+        }
+        el.innerHTML = (val === null || val === undefined) ? '' : String(val);
+        return el;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setAttr(elOrId, attr, val) {
+      try {
+        const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+        if (!el) {
+          if (typeof elOrId === 'string') safeWarnMissing(elOrId);
+          return null;
+        }
+        if (val === null || val === undefined) {
+          el.removeAttribute(attr);
+        } else {
+          el.setAttribute(attr, String(val));
+        }
+        return el;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function toggleClass(elOrId, className, condition) {
+      try {
+        const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+        if (!el) {
+          if (typeof elOrId === 'string') safeWarnMissing(elOrId);
+          return null;
+        }
+        if (condition) el.classList.add(className);
+        else el.classList.remove(className);
+        return el;
+      } catch (e) {
+        return null;
+      }
+    }
+
     function updateUserUI(user) {
-      const isAnonymous = user.isAnonymous;
-      const initialEl = document.getElementById('userInitial');
-      const headerLabel = document.getElementById('headerAccountLabel');
-      const nameEl = document.getElementById('userNameDisplay');
-      const emailEl = document.getElementById('userEmailDisplay');
-      const uidEl = document.getElementById('userIdDisplay');
-      const badgeType = document.getElementById('userBadgeType');
-      const guestUpgradeBlock = document.getElementById('guestUpgradeBlock');
-      const btnSwitchLabel = document.getElementById('btnSwitchAccountLabel');
-      const btnSwitchAccount = document.getElementById('btnSwitchAccount');
-      const btnLogout = document.getElementById('btnLogout');
-      const logoutDivider = document.getElementById('logoutDivider');
+      try {
+        const activeUser = user || state.user || {};
+        const isAnonymous = Boolean(activeUser.isAnonymous);
 
-      const statusDot = document.getElementById('userStatusDot');
-      const dropdownInitial = document.getElementById('userDropdownInitial');
+        // -------------------------------------------------------------
+        // KHỐI 1: TÊN NGƯỜI DÙNG, AVATAR/INITIAL, EMAIL & UID
+        // -------------------------------------------------------------
+        try {
+          if (isAnonymous) {
+            setText('userInitial', 'K');
+            setText('userDropdownInitial', 'K');
+            setText('headerAccountLabel', 'Khách');
+            setText('userNameDisplay', 'Khách (Chưa tạo tài khoản)');
+            setText('userEmailDisplay', 'Chưa liên kết email');
+            setText('userIdDisplay', `UID: ${(activeUser.uid || '').substring(0, 12)}...`);
+          } else {
+            const displayName = activeUser.displayName || activeUser.email?.split('@')[0] || "Thành viên";
+            const initialChar = (displayName[0] || "U").toUpperCase();
+            setText('userInitial', initialChar);
+            setText('userDropdownInitial', initialChar);
+            setText('headerAccountLabel', displayName);
+            setText('userNameDisplay', displayName);
 
-      if (isAnonymous) {
-        initialEl.innerText = "K";
-        if (dropdownInitial) dropdownInitial.innerText = "K";
-        headerLabel.innerText = "Khách";
-        nameEl.innerText = "Khách (Chưa tạo tài khoản)";
-        emailEl.innerText = "Chưa liên kết email";
-        uidEl.innerText = `UID: ${(user.uid || '').substring(0, 12)}...`;
-        
-        if (statusDot) {
-          statusDot.className = "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-gray-400";
+            if (activeUser.email && activeUser.email.endsWith('@thuvienhtml.local')) {
+              setText('userEmailDisplay', `@${displayName}`);
+            } else {
+              setText('userEmailDisplay', activeUser.email || "Đã xác thực");
+            }
+            setText('userIdDisplay', `UID: ${(activeUser.uid || '').substring(0, 12)}...`);
+          }
+        } catch (errK1) {
+          console.warn("[updateUserUI] Lỗi khối 1 (Profile info):", errK1);
         }
 
-        badgeType.innerText = "Chế độ Khách";
-        badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300");
-        
-        checkShowGuestBanner();
-        if (guestUpgradeBlock) guestUpgradeBlock.classList.remove('hidden');
-        if (btnSwitchAccount) btnSwitchAccount.classList.add('hidden');
-        // FIX: Không hiển thị nút "Đăng xuất" khi đang ở Chế độ Khách
-        if (btnLogout) btnLogout.classList.add('hidden');
-        if (logoutDivider) logoutDivider.classList.add('hidden');
-      } else {
-        // // FIX: Tên hiển thị lấy từ displayName hoặc tên đăng nhập (trước @)
-        const displayName = user.displayName || user.email?.split('@')[0] || "Thành viên";
-        const initialChar = (displayName[0] || "U").toUpperCase();
-        initialEl.innerText = initialChar;
-        if (dropdownInitial) dropdownInitial.innerText = initialChar;
-        headerLabel.innerText = displayName;
-        nameEl.innerText = displayName;
+        // -------------------------------------------------------------
+        // KHỐI 2: TRẠNG THÁI ĐỒNG BỘ (STATUS DOT & BADGE TYPE)
+        // -------------------------------------------------------------
+        try {
+          const statusDot = document.getElementById('userStatusDot');
+          if (statusDot) {
+            statusDot.className = isAnonymous
+              ? "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-gray-400"
+              : "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500";
+          }
 
-        if (statusDot) {
-          statusDot.className = "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500";
+          const badgeType = document.getElementById('userBadgeType');
+          if (badgeType) {
+            if (isAnonymous) {
+              badgeType.textContent = "Chế độ Khách";
+              badgeType.className = "text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300";
+            } else if (state.isAdmin) {
+              badgeType.textContent = "Quản trị viên";
+              badgeType.className = "text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300";
+            } else {
+              const isGoogle = activeUser.providerData && activeUser.providerData[0]?.providerId === 'google.com';
+              badgeType.textContent = isGoogle ? "Google" : "Đã đồng bộ";
+              badgeType.className = "text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300";
+            }
+          }
+        } catch (errK2) {
+          console.warn("[updateUserUI] Lỗi khối 2 (Sync status):", errK2);
         }
 
-        // // FIX: Không bao giờ hiển thị email ảo @thuvienhtml.local ra giao diện
-        if (user.email && user.email.endsWith('@thuvienhtml.local')) {
-          emailEl.innerText = `@${displayName}`;
-        } else {
-          emailEl.innerText = user.email || "Đã xác thực";
-        }
-        uidEl.innerText = `UID: ${(user.uid || '').substring(0, 12)}...`;
-
-        badgeType.innerText = user.providerData && user.providerData[0]?.providerId === 'google.com' ? "Google" : "Đã đồng bộ";
-        badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300");
-        
-        const btnAdmin = document.getElementById('btnOpenAdminPanel');
-        if (btnAdmin) {
-          // Luôn ẩn mục Quản trị khỏi menu tài khoản thường theo yêu cầu bảo mật
-          btnAdmin.classList.add('hidden');
-        }
-        if (state.isAdmin) {
-          badgeType.innerText = "Quản trị viên";
-          badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300");
-        } else {
-          badgeType.innerText = user.providerData && user.providerData[0]?.providerId === 'google.com' ? "Google" : "Đã đồng bộ";
-          badgeType.setAttribute('class', "text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300");
-        }
-
-        // =========================================================================
-        // HUY HIỆU TIER (FREE / PLUS / PRO), THỜI HẠN & MỤC NÂNG CẤP GÓI
-        // =========================================================================
+        // -------------------------------------------------------------
+        // KHỐI 3: HUY HIỆU TIER (FREE / PLUS / PRO) HEADER & POPOVER
+        // -------------------------------------------------------------
         const currentTier = isAnonymous ? 'guest' : (state.userTier || 'free');
-
         let tierIconHref = '#icon-tier-free';
         let tierLabelText = 'Free';
         let tierBadgeClass = 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
@@ -12559,103 +12648,140 @@
           headerTierClass = 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900';
         }
 
-        const headerTierBadge = document.getElementById('headerTierBadge');
-        const headerTierIcon = document.getElementById('headerTierIcon');
-        const headerTierText = document.getElementById('headerTierText');
-        if (headerTierBadge) {
-          headerTierBadge.className = `hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border transition shadow-2xs ${headerTierClass}`;
-          headerTierBadge.title = `Gói tài khoản: ${tierLabelText}`;
-        }
-        if (headerTierIcon) headerTierIcon.setAttribute('href', tierIconHref);
-        if (headerTierText) headerTierText.innerText = tierLabelText;
+        try {
+          const headerTierBadge = document.getElementById('headerTierBadge');
+          if (headerTierBadge) {
+            headerTierBadge.className = `hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border transition shadow-2xs ${headerTierClass}`;
+            headerTierBadge.title = `Gói tài khoản: ${tierLabelText}`;
+          }
+          setAttr('headerTierIcon', 'href', tierIconHref);
+          setText('headerTierText', tierLabelText);
 
-        const userTierBadge = document.getElementById('userTierBadge');
-        const userTierIcon = document.getElementById('userTierIcon');
-        const userTierLabel = document.getElementById('userTierLabel');
-        if (userTierBadge) {
-          userTierBadge.className = `inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border ${tierBadgeClass}`;
+          const userTierBadge = document.getElementById('userTierBadge');
+          if (userTierBadge) {
+            userTierBadge.className = `inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border ${tierBadgeClass}`;
+          }
+          setAttr('userTierIcon', 'href', tierIconHref);
+          setText('userTierLabel', tierLabelText);
+        } catch (errK3) {
+          console.warn("[updateUserUI] Lỗi khối 3 (Tier badges):", errK3);
         }
-        if (userTierIcon) userTierIcon.setAttribute('href', tierIconHref);
-        if (userTierLabel) userTierLabel.innerText = tierLabelText;
 
-        // Dòng phụ hiển thị thời hạn sử dụng
-        const userTierExpiryText = document.getElementById('userTierExpiryText');
+        // -------------------------------------------------------------
+        // KHỐI 4: THỜI HẠN SỬ DỤNG GÓI (EXPIRY LINE)
+        // -------------------------------------------------------------
         let daysLeft = Infinity;
         let isExpiringSoon = false;
-
-        if (userTierExpiryText) {
-          if (isAnonymous) {
-            userTierExpiryText.innerText = "Chế độ Khách (Lưu tạm trên máy)";
-            userTierExpiryText.className = "text-[10px] text-amber-600 dark:text-amber-400 font-medium truncate";
-          } else if (currentTier === 'free') {
-            userTierExpiryText.innerText = "Gói Free vĩnh viễn";
-            userTierExpiryText.className = "text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] font-medium truncate";
-          } else if (state.userTierExpiresAt) {
-            const expTime = new Date(state.userTierExpiresAt).getTime();
-            const now = Date.now();
-            daysLeft = Math.ceil((expTime - now) / (24 * 60 * 60 * 1000));
-            if (daysLeft <= 0) {
-              userTierExpiryText.innerText = `Gói ${tierLabelText} · Đã hết hạn`;
-              userTierExpiryText.className = "text-[10px] text-rose-600 dark:text-rose-400 font-bold truncate";
-            } else if (daysLeft <= 7) {
-              isExpiringSoon = true;
-              userTierExpiryText.innerText = `Gói ${tierLabelText} · còn ${daysLeft} ngày`;
-              userTierExpiryText.className = "text-[10px] text-amber-600 dark:text-amber-400 font-bold truncate";
+        try {
+          const userTierExpiryText = document.getElementById('userTierExpiryText');
+          if (userTierExpiryText) {
+            if (isAnonymous) {
+              userTierExpiryText.textContent = "Chế độ Khách (Lưu tạm trên máy)";
+              userTierExpiryText.className = "text-[10px] text-amber-600 dark:text-amber-400 font-medium truncate";
+            } else if (currentTier === 'free') {
+              userTierExpiryText.textContent = "Gói Free vĩnh viễn";
+              userTierExpiryText.className = "text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] font-medium truncate";
+            } else if (state.userTierExpiresAt) {
+              const expTime = new Date(state.userTierExpiresAt).getTime();
+              const now = Date.now();
+              daysLeft = Math.ceil((expTime - now) / (24 * 60 * 60 * 1000));
+              if (daysLeft <= 0) {
+                userTierExpiryText.textContent = `Gói ${tierLabelText} · Đã hết hạn`;
+                userTierExpiryText.className = "text-[10px] text-rose-600 dark:text-rose-400 font-bold truncate";
+              } else if (daysLeft <= 7) {
+                isExpiringSoon = true;
+                userTierExpiryText.textContent = `Gói ${tierLabelText} · còn ${daysLeft} ngày`;
+                userTierExpiryText.className = "text-[10px] text-amber-600 dark:text-amber-400 font-bold truncate";
+              } else {
+                userTierExpiryText.textContent = `Gói ${tierLabelText} · còn ${daysLeft} ngày`;
+                userTierExpiryText.className = "text-[10px] text-indigo-600 dark:text-indigo-400 font-medium truncate";
+              }
             } else {
-              userTierExpiryText.innerText = `Gói ${tierLabelText} · còn ${daysLeft} ngày`;
-              userTierExpiryText.className = "text-[10px] text-indigo-600 dark:text-indigo-400 font-medium truncate";
+              userTierExpiryText.textContent = `Gói ${tierLabelText} · Không giới hạn thời gian`;
+              userTierExpiryText.className = "text-[10px] text-emerald-600 dark:text-emerald-400 font-medium truncate";
             }
-          } else {
-            userTierExpiryText.innerText = `Gói ${tierLabelText} · Không giới hạn thời gian`;
-            userTierExpiryText.className = "text-[10px] text-emerald-600 dark:text-emerald-400 font-medium truncate";
           }
+        } catch (errK4) {
+          console.warn("[updateUserUI] Lỗi khối 4 (Expiry date):", errK4);
         }
 
-        // Mục Nâng cấp gói nổi bật trong menu
-        const btnOpenUpgradeModal = document.getElementById('btnOpenUpgradeModal');
-        const upgradeBtnTitle = document.getElementById('upgradeBtnTitle');
-        const upgradeBtnSubtitle = document.getElementById('upgradeBtnSubtitle');
-        const upgradeRecommendBadge = document.getElementById('upgradeRecommendBadge');
-        const upgradeExpireDot = document.getElementById('upgradeExpireDot');
+        // -------------------------------------------------------------
+        // KHỐI 5: MỤC NÂNG CẤP GÓI TRONG MENU POPOVER
+        // -------------------------------------------------------------
+        try {
+          const btnOpenUpgradeModal = document.getElementById('btnOpenUpgradeModal');
+          if (btnOpenUpgradeModal) {
+            const upgradeExpireDot = document.getElementById('upgradeExpireDot');
+            if (upgradeExpireDot) {
+              if (isExpiringSoon) upgradeExpireDot.classList.remove('hidden');
+              else upgradeExpireDot.classList.add('hidden');
+            }
 
-        if (btnOpenUpgradeModal) {
-          if (isExpiringSoon && upgradeExpireDot) {
-            upgradeExpireDot.classList.remove('hidden');
-          } else if (upgradeExpireDot) {
-            upgradeExpireDot.classList.add('hidden');
+            if (isAnonymous) {
+              setText('upgradeBtnTitle', "Đăng ký để nâng cấp");
+              setText('upgradeBtnSubtitle', "Lưu vĩnh viễn & mở khóa gói");
+              setText('upgradeRecommendBadge', "PRO");
+            } else if (currentTier === 'free') {
+              setText('upgradeBtnTitle', "Nâng cấp tài khoản");
+              setText('upgradeBtnSubtitle', "Mở khóa AI & Mở rộng lưu trữ");
+              setText('upgradeRecommendBadge', "PRO");
+            } else if (currentTier === 'plus') {
+              setText('upgradeBtnTitle', "Nâng lên Pro / Gia hạn");
+              setText('upgradeBtnSubtitle', isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Trải nghiệm AI không giới hạn");
+              setText('upgradeRecommendBadge', "PRO");
+            } else if (currentTier === 'pro') {
+              setText('upgradeBtnTitle', "Gia hạn gói Pro");
+              setText('upgradeBtnSubtitle', isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Duy trì đặc quyền học tập cao cấp");
+              setText('upgradeRecommendBadge', "GIA HẠN");
+            }
           }
+        } catch (errK5) {
+          console.warn("[updateUserUI] Lỗi khối 5 (Upgrade menu item):", errK5);
+        }
+
+        // -------------------------------------------------------------
+        // KHỐI 6: MENU TÀI KHOẢN, NÚT QUẢN TRỊ, GUEST BANNER & LOGOUT
+        // -------------------------------------------------------------
+        try {
+          const btnAdmin = document.getElementById('btnOpenAdminPanel');
+          if (btnAdmin) {
+            btnAdmin.classList.add('hidden');
+          }
+
+          const guestUpgradeBlock = document.getElementById('guestUpgradeBlock');
+          const btnSwitchAccount = document.getElementById('btnSwitchAccount');
+          const btnLogout = document.getElementById('btnLogout');
+          const logoutDivider = document.getElementById('logoutDivider');
+          const guestWarningBanner = document.getElementById('guestWarningBanner');
 
           if (isAnonymous) {
-            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Đăng ký để nâng cấp";
-            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = "Lưu vĩnh viễn & mở khóa gói";
-            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "PRO";
-          } else if (currentTier === 'free') {
-            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Nâng cấp tài khoản";
-            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = "Mở khóa AI & Mở rộng lưu trữ";
-            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "PRO";
-          } else if (currentTier === 'plus') {
-            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Nâng lên Pro / Gia hạn";
-            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Trải nghiệm AI không giới hạn";
-            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "PRO";
-          } else if (currentTier === 'pro') {
-            if (upgradeBtnTitle) upgradeBtnTitle.innerText = "Gia hạn gói Pro";
-            if (upgradeBtnSubtitle) upgradeBtnSubtitle.innerText = isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Duy trì đặc quyền học tập cao cấp";
-            if (upgradeRecommendBadge) upgradeRecommendBadge.innerText = "GIA HẠN";
+            if (typeof checkShowGuestBanner === 'function') {
+              try { checkShowGuestBanner(); } catch (_) {}
+            }
+            if (guestUpgradeBlock) guestUpgradeBlock.classList.remove('hidden');
+            if (btnSwitchAccount) btnSwitchAccount.classList.add('hidden');
+            if (btnLogout) btnLogout.classList.add('hidden');
+            if (logoutDivider) logoutDivider.classList.add('hidden');
+          } else {
+            if (guestWarningBanner) guestWarningBanner.classList.add('hidden');
+            if (guestUpgradeBlock) guestUpgradeBlock.classList.add('hidden');
+            if (btnSwitchAccount) {
+              btnSwitchAccount.classList.remove('hidden');
+              setText('btnSwitchAccountLabel', "Chuyển tài khoản khác");
+            }
+            if (btnLogout) btnLogout.classList.remove('hidden');
+            if (logoutDivider) logoutDivider.classList.remove('hidden');
           }
+        } catch (errK6) {
+          console.warn("[updateUserUI] Lỗi khối 6 (Account menu & guest blocks):", errK6);
         }
-        
-        document.getElementById('guestWarningBanner').classList.add('hidden');
-        if (guestUpgradeBlock) guestUpgradeBlock.classList.add('hidden');
-        if (btnSwitchAccount) {
-          btnSwitchAccount.classList.remove('hidden');
-          btnSwitchLabel.innerText = "Chuyển tài khoản khác";
-        }
-        // FIX: Hiển thị nút "Đăng xuất" khi đã đăng nhập
-        if (btnLogout) btnLogout.classList.remove('hidden');
-        if (logoutDivider) logoutDivider.classList.remove('hidden');
-      }
 
-      refreshIcons();
+        if (typeof refreshIcons === 'function') {
+          try { refreshIcons(); } catch (_) {}
+        }
+      } catch (globalUiErr) {
+        console.warn("[UI] Lỗi tổng thể updateUserUI (được ngăn chặn an toàn):", globalUiErr);
+      }
     }
 
     on('#btnDismissGuestBanner', 'click', () => {
