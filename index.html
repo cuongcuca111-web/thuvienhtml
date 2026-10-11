@@ -6208,89 +6208,301 @@
 
   <!-- MODAL: NÂNG CẤP GÓI DỊCH VỤ & THANH TOÁN VIETQR -->
   <div id="upgradeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
-    <div class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-xl max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]">
+    <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[920px] max-h-[94dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
-      <!-- Header Modal -->
-      <div class="flex items-center justify-between px-5 py-3.5 border-b border-[#E6E6E1] dark:border-[#262C36] shrink-0">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-            <svg class="w-4 h-4"><use href="#icon-upgrade-sparkle"></use></svg>
-          </div>
-          <div>
-            <h3 id="upgradeModalTitle" class="font-serif font-bold text-base text-[#1A1A1A] dark:text-[#ECEEF2]">Nâng cấp Gói dịch vụ</h3>
-            <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]" id="upgradeModalSubtitle">Thanh toán tự động bằng mã VietQR</p>
-          </div>
+      <!-- Header Modal: Biên tập, tối giản, không icon tím -->
+      <div class="flex items-start justify-between px-6 sm:px-8 pt-6 sm:pt-8 pb-4 shrink-0 border-b border-[#EBE8E1] dark:border-[#232833]">
+        <div>
+          <h3 id="upgradeModalTitle" class="font-serif font-bold text-2xl sm:text-[28px] text-[#1C1B18] dark:text-[#E8E6E1] tracking-tight leading-snug">
+            Chọn gói phù hợp với bạn
+          </h3>
+          <p class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] mt-1" id="upgradeModalSubtitle">
+            Thanh toán bằng chuyển khoản VietQR. Gói kích hoạt tự động sau khi nhận tiền.
+          </p>
         </div>
-        <button id="btnCloseUpgradeModal" type="button" class="touch-target p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer" aria-label="Đóng">
-          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        <button id="btnCloseUpgradeModal" type="button" class="touch-target w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 
       <!-- Nội dung Modal có thể cuộn -->
-      <div id="upgradeModalBody" class="flex-1 overflow-y-auto p-5 space-y-4">
+      <div id="upgradeModalBody" class="flex-1 overflow-y-auto px-6 sm:px-8 py-5 space-y-6">
         
         <!-- BƯỚC 1: CHỌN GÓI & CHU KỲ -->
-        <div id="upgradeStep1" class="space-y-4">
-          <!-- Chuyển đổi Tháng / Năm -->
-          <div class="flex items-center justify-center">
-            <div class="bg-gray-100 dark:bg-[#1F2228] p-1 rounded-xl flex items-center gap-1 border border-gray-200 dark:border-gray-800 text-xs font-semibold">
-              <button type="button" id="btnPeriodMonthly" class="px-4 py-1.5 rounded-lg bg-white dark:bg-[#161A20] text-indigo-600 dark:text-indigo-400 shadow-2xs transition">Thanh toán theo Tháng</button>
-              <button type="button" id="btnPeriodYearly" class="px-4 py-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition flex items-center gap-1">
-                <span>Thanh toán theo Năm</span>
-                <span class="text-[9px] px-1 rounded bg-amber-100 text-amber-800 font-bold">-17%</span>
+        <div id="upgradeStep1" class="space-y-6">
+          
+          <!-- Segmented Control Kỳ hạn -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
+            <div class="inline-flex p-1 rounded-xl bg-[#EFECE6] dark:bg-[#1E222A] border border-[#E0DED7] dark:border-[#2C323E] self-start sm:self-auto text-xs font-semibold" role="radiogroup" aria-label="Chu kỳ thanh toán">
+              <button type="button" id="btnPeriodMonthly" role="radio" aria-checked="true" class="px-4 py-1.5 rounded-lg bg-white dark:bg-[#161920] text-indigo-600 dark:text-indigo-400 shadow-2xs transition font-semibold cursor-pointer">
+                Theo tháng
               </button>
+              <button type="button" id="btnPeriodYearly" role="radio" aria-checked="false" class="px-4 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition font-medium cursor-pointer">
+                Theo năm
+              </button>
+            </div>
+            
+            <div id="yearlySavingsHint" class="text-xs text-[#78756D] dark:text-[#9AA3B2] transition">
+              <!-- JS tính toán và chèn gợi ý tiết kiệm -->
             </div>
           </div>
 
-          <!-- Lựa chọn Thẻ Gói: Plus & Pro -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <!-- Thẻ gói Plus -->
-            <div id="cardPlanPlus" class="plan-card p-4 rounded-2xl border-2 border-indigo-200 dark:border-indigo-900 bg-[#FAF9F5] dark:bg-[#1B1E24] hover:border-indigo-500 cursor-pointer transition relative flex flex-col justify-between">
+          <!-- 3 THẺ GÓI: THƯỜNG | PLUS | PRO -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch" role="radiogroup" aria-label="Gói dịch vụ">
+            
+            <!-- THẺ 1: GÓI THƯỜNG -->
+            <div id="cardPlanFree" class="plan-card p-5 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] bg-white dark:bg-[#181B22] flex flex-col justify-between transition-all duration-150">
               <div>
+                <!-- Icon lá nhỏ + Tên gói -->
                 <div class="flex items-center justify-between mb-2">
-                  <div class="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
-                    <svg class="w-4 h-4"><use href="#icon-tier-plus"></use></svg>
-                    <span>Gói Plus</span>
+                  <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-gray-100 dark:bg-[#20252E] text-gray-600 dark:text-gray-300 flex items-center justify-center">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                      </svg>
+                    </span>
+                    <h4 class="font-serif font-bold text-lg text-[#1C1B18] dark:text-[#E8E6E1]">Thường</h4>
                   </div>
-                  <span id="badgeCurrentPlus" class="hidden text-[9px] px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 font-bold">Đang dùng</span>
+                  <span id="badgeCurrentFree" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium">Đang dùng</span>
                 </div>
-                <div class="text-xl font-bold font-mono text-[#1C1B18] dark:text-[#E8E6E1] mb-1" id="priceDisplayPlus">59.000 ₫</div>
-                <p class="text-[11px] text-gray-500 mb-3">Tối ưu cho cá nhân học tập chuyên cần, tăng gấp 5 lần lưu trữ.</p>
-                <ul class="text-xs space-y-1.5 text-gray-600 dark:text-gray-300 border-t border-gray-200/60 dark:border-gray-800 pt-3">
-                  <li class="flex items-center gap-1.5">✓ <strong>100 bài học</strong> &amp; 20 danh mục</li>
-                  <li class="flex items-center gap-1.5">✓ <strong>20 lượt gọi AI</strong> mỗi ngày</li>
-                  <li class="flex items-center gap-1.5">✓ Tạo 20 link chia sẻ 7 ngày</li>
-                </ul>
+
+                <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                  Dành cho người mới bắt đầu trải nghiệm thư viện bài học.
+                </p>
+
+                <!-- Giá -->
+                <div class="py-2">
+                  <div class="font-serif text-[34px] leading-none font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums">
+                    Miễn phí
+                  </div>
+                  <div class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-1.5 h-4">
+                    Sử dụng trọn đời
+                  </div>
+                </div>
+
+                <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
+
+                <!-- Danh sách quyền lợi dạng hàng nhãn - giá trị căn hai đầu -->
+                <div class="space-y-2 text-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeLessons">20 bài</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số danh mục</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeSections">5 mục</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">512 KB</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">3 link</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Lượt gọi AI mỗi tháng</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">30 lượt</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
+                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">15 ngày</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Khóa mật khẩu link</span>
+                    <span class="text-gray-400 dark:text-gray-600">—</span>
+                  </div>
+                </div>
               </div>
-              <button type="button" class="btn-select-plan mt-4 w-full py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-semibold text-xs border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-600 hover:text-white transition" data-plan="plus">
-                Chọn gói Plus
-              </button>
+
+              <!-- Nút thẻ Thường (Disabled) -->
+              <div class="mt-6 pt-2">
+                <button type="button" disabled class="w-full py-2.5 rounded-xl border border-[#E0DED7] dark:border-[#2C323E] bg-[#F5F3EF] dark:bg-[#1E222A] text-gray-400 dark:text-gray-500 font-semibold text-xs cursor-default">
+                  Gói mặc định
+                </button>
+              </div>
             </div>
 
-            <!-- Thẻ gói Pro -->
-            <div id="cardPlanPro" class="plan-card p-4 rounded-2xl border-2 border-amber-300 dark:border-amber-700 bg-gradient-to-b from-amber-50/40 to-white dark:from-amber-950/20 dark:to-[#1B1E24] hover:border-amber-500 cursor-pointer transition relative flex flex-col justify-between shadow-xs">
-              <span class="absolute -top-2.5 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs">PHỔ BIẾN NHẤT</span>
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <div class="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-sm">
-                    <svg class="w-4 h-4"><use href="#icon-tier-pro"></use></svg>
-                    <span>Gói Pro</span>
-                  </div>
-                  <span id="badgeCurrentPro" class="hidden text-[9px] px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 font-bold">Đang dùng</span>
-                </div>
-                <div class="text-xl font-bold font-mono text-amber-800 dark:text-amber-300 mb-1" id="priceDisplayPro">129.000 ₫</div>
-                <p class="text-[11px] text-gray-500 mb-3">Trải nghiệm không giới hạn với AI phân tích ngữ nghĩa sâu.</p>
-                <ul class="text-xs space-y-1.5 text-gray-600 dark:text-gray-300 border-t border-gray-200/60 dark:border-gray-800 pt-3">
-                  <li class="flex items-center gap-1.5">✓ <strong>Không giới hạn</strong> bài học &amp; danh mục</li>
-                  <li class="flex items-center gap-1.5">✓ <strong>100 lượt gọi AI</strong> mỗi ngày</li>
-                  <li class="flex items-center gap-1.5">✓ Đính kèm ảnh &amp; xuất file offline cao cấp</li>
-                </ul>
+            <!-- THẺ 2: GÓI PLUS (KHUYÊN DÙNG) -->
+            <div id="cardPlanPlus" class="plan-card p-5 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-[#181B22] shadow-sm relative flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5">
+              <!-- Nhãn Khuyên dùng -->
+              <div class="absolute -top-3 left-5 px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-bold tracking-wider uppercase shadow-2xs">
+                Khuyên dùng
               </div>
-              <button type="button" class="btn-select-plan mt-4 w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-xs transition" data-plan="pro">
-                Nâng cấp lên Pro
-              </button>
+
+              <div>
+                <!-- Icon sao tròn + Tên gói -->
+                <div class="flex items-center justify-between mb-2 mt-1">
+                  <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                    </span>
+                    <h4 class="font-serif font-bold text-lg text-indigo-950 dark:text-indigo-300">Plus</h4>
+                  </div>
+                  <span id="badgeCurrentPlus" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold">Đang dùng</span>
+                </div>
+
+                <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                  Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.
+                </p>
+
+                <!-- Giá -->
+                <div class="py-2">
+                  <div class="flex items-baseline gap-1">
+                    <span class="font-serif text-[38px] leading-none font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums" id="priceDisplayPlus">59.000 ₫</span>
+                    <span class="text-xs text-[#78756D] dark:text-[#9AA3B2]" id="periodSuffixPlus">/ tháng</span>
+                  </div>
+                  <div class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-1.5 h-4" id="priceYearlySubPlus">
+                    <!-- JS chèn thông tin giá năm -->
+                  </div>
+                </div>
+
+                <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
+
+                <!-- Danh sách quyền lợi -->
+                <div class="space-y-2 text-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featPlusLessons">100 bài</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số danh mục</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featPlusSections">20 mục</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">1 MB</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">10 link</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Lượt gọi AI mỗi tháng</span>
+                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">300 lượt</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">60 ngày</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Khóa mật khẩu link</span>
+                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nút chọn gói Plus -->
+              <div class="mt-6 pt-2">
+                <button type="button" class="btn-select-plan w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs hover:shadow transition active:scale-[0.98] cursor-pointer" data-plan="plus" id="btnActionPlus">
+                  Chọn gói Plus
+                </button>
+              </div>
+            </div>
+
+            <!-- THẺ 3: GÓI PRO -->
+            <div id="cardPlanPro" class="plan-card p-5 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] bg-white dark:bg-[#181B22] flex flex-col justify-between transition-all duration-150 hover:border-gray-400 dark:hover:border-gray-600 hover:-translate-y-0.5">
+              <div>
+                <!-- Icon vương miện + Tên gói -->
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-gray-100 dark:bg-[#20252E] text-gray-700 dark:text-gray-300 flex items-center justify-center">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+                      </svg>
+                    </span>
+                    <h4 class="font-serif font-bold text-lg text-[#1C1B18] dark:text-[#E8E6E1]">Pro</h4>
+                  </div>
+                  <span id="badgeCurrentPro" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold">Đang dùng</span>
+                </div>
+
+                <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                  Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.
+                </p>
+
+                <!-- Giá -->
+                <div class="py-2">
+                  <div class="flex items-baseline gap-1">
+                    <span class="font-serif text-[38px] leading-none font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums" id="priceDisplayPro">129.000 ₫</span>
+                    <span class="text-xs text-[#78756D] dark:text-[#9AA3B2]" id="periodSuffixPro">/ tháng</span>
+                  </div>
+                  <div class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-1.5 h-4" id="priceYearlySubPro">
+                    <!-- JS chèn thông tin giá năm -->
+                  </div>
+                </div>
+
+                <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
+
+                <!-- Danh sách quyền lợi -->
+                <div class="space-y-2 text-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">Không giới hạn</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số danh mục</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">Không giới hạn</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">2 MB</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">Không giới hạn</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Lượt gọi AI mỗi tháng</span>
+                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">1.500 lượt</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]">365 ngày</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Khóa mật khẩu link</span>
+                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nút chọn gói Pro (Outline) -->
+              <div class="mt-6 pt-2">
+                <button type="button" class="btn-select-plan w-full py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 hover:border-indigo-600 dark:hover:border-indigo-400 text-[#1C1B18] dark:text-[#E8E6E1] hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-xs transition active:scale-[0.98] cursor-pointer" data-plan="pro" id="btnActionPro">
+                  Chọn gói Pro
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- DẢI CHÂN HỘP THOẠI (FOOTER) -->
+          <div class="pt-3 border-t border-[#EBE8E1] dark:border-[#232833] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#78756D] dark:text-[#9AA3B2]">
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span>Thanh toán an toàn qua VietQR</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                <span>Không tự động gia hạn</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                <span>Hết hạn không xóa dữ liệu</span>
+              </div>
+            </div>
+            <div>
+              <a href="mailto:cuongcuca111@gmail.com" class="text-indigo-600 dark:text-indigo-400 hover:underline">Cần hỗ trợ?</a>
             </div>
           </div>
+
         </div>
 
         <!-- BƯỚC 2: QUÉT MÃ QR THANH TOÁN VIETQR -->
@@ -6761,26 +6973,104 @@
     }
 
     function updateUpgradePricingDisplay() {
-      const pricing = (window.effectivePlans && window.effectivePlans.pricing) || {
-        plusMonthly: 59000,
-        plusYearly: 590000,
-        proMonthly: 129000,
-        proYearly: 1290000
-      };
+      try {
+        const pricing = (window.effectivePlans && window.effectivePlans.pricing) || {
+          plusMonthly: 59000,
+          plusYearly: 590000,
+          proMonthly: 129000,
+          proYearly: 1290000
+        };
 
-      const isYearly = upgradeModalState.period === 'yearly';
-      const plusPrice = isYearly ? pricing.plusYearly : pricing.plusMonthly;
-      const proPrice = isYearly ? pricing.proYearly : pricing.proMonthly;
+        const isYearly = upgradeModalState.period === 'yearly';
 
-      const pricePlusEl = document.getElementById('priceDisplayPlus');
-      const priceProEl = document.getElementById('priceDisplayPro');
-      if (pricePlusEl) pricePlusEl.innerText = `${(plusPrice || 59000).toLocaleString('vi-VN')} ₫${isYearly ? '/năm' : '/tháng'}`;
-      if (priceProEl) priceProEl.innerText = `${(proPrice || 129000).toLocaleString('vi-VN')} ₫${isYearly ? '/năm' : '/tháng'}`;
+        // Tính toán số tiền tiết kiệm tối đa
+        const plusSavings = (pricing.plusMonthly * 12) - pricing.plusYearly;
+        const proSavings = (pricing.proMonthly * 12) - pricing.proYearly;
+        const maxSavings = Math.max(0, proSavings, plusSavings);
 
-      const badgeCurrentPlus = document.getElementById('badgeCurrentPlus');
-      const badgeCurrentPro = document.getElementById('badgeCurrentPro');
-      if (badgeCurrentPlus) badgeCurrentPlus.classList.toggle('hidden', state.userTier !== 'plus');
-      if (badgeCurrentPro) badgeCurrentPro.classList.toggle('hidden', state.userTier !== 'pro');
+        const hintEl = document.getElementById('yearlySavingsHint');
+        if (hintEl) {
+          if (maxSavings > 0) {
+            hintEl.innerHTML = isYearly
+              ? `<span class="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-md text-[11px]"><svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Tiết kiệm đến ${maxSavings.toLocaleString('vi-VN')} ₫/năm</span>`
+              : `Trả theo năm tiết kiệm đến <strong class="font-semibold text-gray-700 dark:text-gray-300">${maxSavings.toLocaleString('vi-VN')} ₫</strong>`;
+          } else {
+            hintEl.textContent = '';
+          }
+        }
+
+        const pricePlusEl = document.getElementById('priceDisplayPlus');
+        const periodPlusEl = document.getElementById('periodSuffixPlus');
+        const subPlusEl = document.getElementById('priceYearlySubPlus');
+
+        const priceProEl = document.getElementById('priceDisplayPro');
+        const periodProEl = document.getElementById('periodSuffixPro');
+        const subProEl = document.getElementById('priceYearlySubPro');
+
+        if (isYearly) {
+          const plusMonthlyEquiv = Math.round(pricing.plusYearly / 12);
+          const proMonthlyEquiv = Math.round(pricing.proYearly / 12);
+
+          if (pricePlusEl) pricePlusEl.innerText = `${plusMonthlyEquiv.toLocaleString('vi-VN')} ₫`;
+          if (periodPlusEl) periodPlusEl.innerText = '/ tháng';
+          if (subPlusEl) subPlusEl.innerText = `Thanh toán ${pricing.plusYearly.toLocaleString('vi-VN')} ₫ mỗi năm`;
+
+          if (priceProEl) priceProEl.innerText = `${proMonthlyEquiv.toLocaleString('vi-VN')} ₫`;
+          if (periodProEl) periodProEl.innerText = '/ tháng';
+          if (subProEl) subProEl.innerText = `Thanh toán ${pricing.proYearly.toLocaleString('vi-VN')} ₫ mỗi năm`;
+        } else {
+          if (pricePlusEl) pricePlusEl.innerText = `${pricing.plusMonthly.toLocaleString('vi-VN')} ₫`;
+          if (periodPlusEl) periodPlusEl.innerText = '/ tháng';
+          if (subPlusEl) subPlusEl.innerText = 'Thanh toán linh hoạt theo từng tháng';
+
+          if (priceProEl) priceProEl.innerText = `${pricing.proMonthly.toLocaleString('vi-VN')} ₫`;
+          if (periodProEl) periodProEl.innerText = '/ tháng';
+          if (subProEl) subProEl.innerText = 'Thanh toán linh hoạt theo từng tháng';
+        }
+
+        // Cập nhật huy hiệu "Đang dùng"
+        const currentTier = (state && state.userTier) || 'free';
+        const badgeCurrentFree = document.getElementById('badgeCurrentFree');
+        const badgeCurrentPlus = document.getElementById('badgeCurrentPlus');
+        const badgeCurrentPro = document.getElementById('badgeCurrentPro');
+
+        if (badgeCurrentFree) badgeCurrentFree.classList.toggle('hidden', currentTier !== 'free' && currentTier !== 'guest');
+        if (badgeCurrentPlus) badgeCurrentPlus.classList.toggle('hidden', currentTier !== 'plus');
+        if (badgeCurrentPro) badgeCurrentPro.classList.toggle('hidden', currentTier !== 'pro');
+
+        // Cập nhật nhãn nút
+        const btnActionPlus = document.getElementById('btnActionPlus');
+        if (btnActionPlus) {
+          btnActionPlus.innerText = currentTier === 'plus' ? 'Gia hạn gói Plus' : 'Chọn gói Plus';
+        }
+        const btnActionPro = document.getElementById('btnActionPro');
+        if (btnActionPro) {
+          btnActionPro.innerText = currentTier === 'pro' ? 'Gia hạn gói Pro' : 'Chọn gói Pro';
+        }
+
+        // Cập nhật các con số hạn mức nếu có trong effectivePlans
+        if (window.effectivePlans && window.effectivePlans.plans) {
+          const plans = window.effectivePlans.plans;
+          const featFreeLessons = document.getElementById('featFreeLessons');
+          if (featFreeLessons && plans.free && plans.free.maxLessons) {
+            featFreeLessons.innerText = `${plans.free.maxLessons} bài`;
+          }
+          const featFreeSections = document.getElementById('featFreeSections');
+          if (featFreeSections && plans.free && plans.free.maxSections) {
+            featFreeSections.innerText = `${plans.free.maxSections} mục`;
+          }
+          const featPlusLessons = document.getElementById('featPlusLessons');
+          if (featPlusLessons && plans.plus && plans.plus.maxLessons) {
+            featPlusLessons.innerText = `${plans.plus.maxLessons} bài`;
+          }
+          const featPlusSections = document.getElementById('featPlusSections');
+          if (featPlusSections && plans.plus && plans.plus.maxSections) {
+            featPlusSections.innerText = `${plans.plus.maxSections} mục`;
+          }
+        }
+      } catch (err) {
+        console.warn('[PricingDisplay] Lỗi cập nhật giá:', err);
+      }
     }
 
     async function handleSelectPlanToOrder(planId) {
@@ -6974,19 +7264,41 @@
       btnCloseUpgradeModal.addEventListener('click', closeUpgradeModal);
     }
 
+    const upgradeModalBackdrop = document.getElementById('upgradeModal');
+    if (upgradeModalBackdrop) {
+      upgradeModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === upgradeModalBackdrop) {
+          closeUpgradeModal();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const m = document.getElementById('upgradeModal');
+        if (m && !m.classList.contains('hidden') && m.classList.contains('modal-active')) {
+          closeUpgradeModal();
+        }
+      }
+    });
+
     const btnPeriodMonthly = document.getElementById('btnPeriodMonthly');
     const btnPeriodYearly = document.getElementById('btnPeriodYearly');
     if (btnPeriodMonthly && btnPeriodYearly) {
       btnPeriodMonthly.addEventListener('click', () => {
         upgradeModalState.period = 'monthly';
-        btnPeriodMonthly.className = 'px-4 py-1.5 rounded-lg bg-white dark:bg-[#161A20] text-indigo-600 dark:text-indigo-400 shadow-2xs transition';
-        btnPeriodYearly.className = 'px-4 py-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition flex items-center gap-1';
+        btnPeriodMonthly.className = 'px-4 py-1.5 rounded-lg bg-white dark:bg-[#161920] text-indigo-600 dark:text-indigo-400 shadow-2xs transition font-semibold cursor-pointer';
+        btnPeriodYearly.className = 'px-4 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition font-medium cursor-pointer';
+        btnPeriodMonthly.setAttribute('aria-checked', 'true');
+        btnPeriodYearly.setAttribute('aria-checked', 'false');
         updateUpgradePricingDisplay();
       });
       btnPeriodYearly.addEventListener('click', () => {
         upgradeModalState.period = 'yearly';
-        btnPeriodYearly.className = 'px-4 py-1.5 rounded-lg bg-white dark:bg-[#161A20] text-indigo-600 dark:text-indigo-400 shadow-2xs transition flex items-center gap-1';
-        btnPeriodMonthly.className = 'px-4 py-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition';
+        btnPeriodYearly.className = 'px-4 py-1.5 rounded-lg bg-white dark:bg-[#161920] text-indigo-600 dark:text-indigo-400 shadow-2xs transition font-semibold cursor-pointer';
+        btnPeriodMonthly.className = 'px-4 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition font-medium cursor-pointer';
+        btnPeriodYearly.setAttribute('aria-checked', 'true');
+        btnPeriodMonthly.setAttribute('aria-checked', 'false');
         updateUpgradePricingDisplay();
       });
     }
