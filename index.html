@@ -7513,7 +7513,7 @@
       box-shadow: none !important;
       cursor: text;
     }
-    /* Lớp overlay chứa các khung vẽ bao quanh toàn bộ đoạn */
+    /* Lớp overlay chứa các khung vẽ SVG theo hình bậc thang */
     #ann-layer {
       position: absolute;
       top: 0;
@@ -7526,18 +7526,23 @@
     }
     .ann-frame {
       position: absolute;
-      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      border: 2px solid var(--frame-color, #d97706);
-      border-radius: 10px;
-      background-color: var(--frame-bg, rgba(217, 119, 6, 0.05));
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-      transition: border-color 0.15s ease, background-color 0.15s ease;
+      overflow: visible;
+    }
+    .ann-frame path {
+      pointer-events: none;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+      transition: stroke 0.15s ease, fill 0.15s ease;
     }
     @keyframes frameFlashPulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
-      50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
-      100% { transform: scale(1); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
+      0% { filter: drop-shadow(0 0 4px #6366f1) drop-shadow(0 0 12px rgba(99, 102, 241, 0.8)); }
+      50% { filter: drop-shadow(0 0 8px #6366f1) drop-shadow(0 0 20px rgba(99, 102, 241, 0.9)); }
+      100% { filter: none; }
     }
     .frame-flash-highlight {
       animation: frameFlashPulse 1.8s ease-out 1 !important;
@@ -7597,6 +7602,191 @@
     });
   }
 
+  function mergeRectsByLine(rects) {
+    if (!rects || rects.length === 0) return [];
+    const sorted = [...rects].sort((a, b) => (Math.abs(a.top - b.top) <= 2) ? (a.left - b.left) : (a.top - b.top));
+    const lines = [];
+
+    for (const r of sorted) {
+      if (r.width < 1) continue;
+      let foundLine = null;
+      for (const line of lines) {
+        const vertOverlap = Math.min(line.bottom, r.bottom) - Math.max(line.top, r.top);
+        const minH = Math.min(line.bottom - line.top, r.bottom - r.top);
+        if (Math.abs(line.top - r.top) <= 2 || Math.abs(line.bottom - r.bottom) <= 2 || vertOverlap >= minH * 0.5) {
+          foundLine = line;
+          break;
+        }
+      }
+
+      if (foundLine) {
+        foundLine.left = Math.min(foundLine.left, r.left);
+        foundLine.right = Math.max(foundLine.right, r.right);
+        foundLine.top = Math.min(foundLine.top, r.top);
+        foundLine.bottom = Math.max(foundLine.bottom, r.bottom);
+      } else {
+        lines.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
+      }
+    }
+
+    lines.sort((a, b) => a.top - b.top);
+    return lines;
+  }
+
+  function buildSteppedPath(rawLines, radius = 6, pad = 3) {
+    if (!rawLines || rawLines.length === 0) return '';
+    const lines = rawLines.map(r => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }));
+
+    // Nới top/bottom của các dòng liên tiếp để chạm nhau, tránh khe hở
+    for (let i = 0; i < lines.length - 1; i++) {
+      const mid = (lines[i].bottom + lines[i + 1].top) / 2.0;
+      lines[i].bottom = mid + 1;
+      lines[i + 1].top = mid - 1;
+    }
+
+    // Padding ngoài 3px so với chữ
+    lines[0].top -= pad;
+    lines[lines.length - 1].bottom += pad;
+    for (let i = 0; i < lines.length; i++) {
+      lines[i].left -= pad;
+      lines[i].right += pad;
+    }
+
+    // Phân tách thành các khối liên tục (components) nếu hai dòng liên tiếp không giao nhau theo chiều ngang
+    const components = [];
+    let curr = [lines[0]];
+    for (let i = 1; i < lines.length; i++) {
+      const prev = curr[curr.length - 1];
+      const c = lines[i];
+      if (Math.max(prev.left, c.left) < Math.min(prev.right, c.right)) {
+        curr.push(c);
+      } else {
+        components.push(curr);
+        curr = [c];
+      }
+    }
+    components.push(curr);
+
+    return components.map(comp => buildSingleComponentPath(comp, radius)).filter(Boolean).join(' ');
+  }
+
+  function buildSingleComponentPath(lines, radius) {
+    if (!lines || lines.length === 0) return '';
+    if (lines.length === 1) {
+      const r = lines[0];
+      const w = r.right - r.left;
+      const h = r.bottom - r.top;
+      const rad = Math.min(radius, w / 2.0, h / 2.0);
+      const L = r.left, R = r.right, T = r.top, B = r.bottom;
+      return `M ${(L + rad).toFixed(1)} ${T.toFixed(1)} L ${(R - rad).toFixed(1)} ${T.toFixed(1)} Q ${R.toFixed(1)} ${T.toFixed(1)} ${R.toFixed(1)} ${(T + rad).toFixed(1)} L ${R.toFixed(1)} ${(B - rad).toFixed(1)} Q ${R.toFixed(1)} ${B.toFixed(1)} ${(R - rad).toFixed(1)} ${B.toFixed(1)} L ${(L + rad).toFixed(1)} ${B.toFixed(1)} Q ${L.toFixed(1)} ${B.toFixed(1)} ${L.toFixed(1)} ${(B - rad).toFixed(1)} L ${L.toFixed(1)} ${(T + rad).toFixed(1)} Q ${L.toFixed(1)} ${T.toFixed(1)} ${(L + rad).toFixed(1)} ${T.toFixed(1)} Z`;
+    }
+
+    // Xây dựng danh sách đỉnh theo chiều kim đồng hồ
+    const pts = [];
+    pts.push({ x: lines[0].left, y: lines[0].top });
+    pts.push({ x: lines[0].right, y: lines[0].top });
+
+    // Cạnh phải từ trên xuống
+    for (let i = 0; i < lines.length; i++) {
+      pts.push({ x: lines[i].right, y: lines[i].bottom });
+      if (i < lines.length - 1) {
+        const nextR = lines[i + 1].right;
+        if (Math.abs(nextR - lines[i].right) > 0.5) {
+          pts.push({ x: nextR, y: lines[i].bottom });
+        }
+      }
+    }
+
+    // Cạnh đáy dòng cuối
+    pts.push({ x: lines[lines.length - 1].left, y: lines[lines.length - 1].bottom });
+
+    // Cạnh trái từ dưới lên
+    for (let i = lines.length - 1; i >= 0; i--) {
+      pts.push({ x: lines[i].left, y: lines[i].top });
+      if (i > 0) {
+        const prevL = lines[i - 1].left;
+        if (Math.abs(prevL - lines[i].left) > 0.5) {
+          pts.push({ x: prevL, y: lines[i].top });
+        }
+      }
+    }
+
+    // Lọc trùng điểm liên tiếp
+    const clean = [];
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      if (clean.length === 0) {
+        clean.push(p);
+      } else {
+        const last = clean[clean.length - 1];
+        if (Math.abs(last.x - p.x) >= 0.5 || Math.abs(last.y - p.y) >= 0.5) {
+          clean.push(p);
+        }
+      }
+    }
+    if (clean.length > 1) {
+      const first = clean[0], last = clean[clean.length - 1];
+      if (Math.abs(first.x - last.x) < 0.5 && Math.abs(first.y - last.y) < 0.5) {
+        clean.pop();
+      }
+    }
+
+    // Đơn giản hóa các điểm thẳng hàng
+    const simplified = [];
+    const n = clean.length;
+    for (let i = 0; i < n; i++) {
+      const prev = clean[(i - 1 + n) % n];
+      const curr = clean[i];
+      const next = clean[(i + 1) % n];
+      const dx1 = curr.x - prev.x, dy1 = curr.y - prev.y;
+      const dx2 = next.x - curr.x, dy2 = next.y - curr.y;
+      if ((Math.abs(dy1) < 0.5 && Math.abs(dy2) < 0.5) || (Math.abs(dx1) < 0.5 && Math.abs(dx2) < 0.5)) {
+        continue;
+      }
+      simplified.push(curr);
+    }
+
+    const m = simplified.length;
+    if (m < 3) return '';
+
+    // Bo tròn tất cả các góc bằng cung Q (Quadratic Bezier)
+    const rads = [];
+    for (let i = 0; i < m; i++) {
+      const prev = simplified[(i - 1 + m) % m];
+      const curr = simplified[i];
+      const next = simplified[(i + 1) % m];
+      const lIn = Math.hypot(curr.x - prev.x, curr.y - prev.y);
+      const lOut = Math.hypot(next.x - curr.x, next.y - curr.y);
+      rads.push(Math.min(radius, lIn / 2.0, lOut / 2.0));
+    }
+
+    const cmds = [];
+    for (let i = 0; i < m; i++) {
+      const prev = simplified[(i - 1 + m) % m];
+      const curr = simplified[i];
+      const next = simplified[(i + 1) % m];
+      const r = rads[i];
+
+      const lIn = Math.hypot(curr.x - prev.x, curr.y - prev.y);
+      const uxIn = (curr.x - prev.x) / lIn, uyIn = (curr.y - prev.y) / lIn;
+      const startX = curr.x - r * uxIn, startY = curr.y - r * uyIn;
+
+      const lOut = Math.hypot(next.x - curr.x, next.y - curr.y);
+      const uxOut = (next.x - curr.x) / lOut, uyOut = (next.y - curr.y) / lOut;
+      const endX = curr.x + r * uxOut, endY = curr.y + r * uyOut;
+
+      if (i === 0) {
+        cmds.push(`M ${startX.toFixed(1)} ${startY.toFixed(1)}`);
+      } else {
+        cmds.push(`L ${startX.toFixed(1)} ${startY.toFixed(1)}`);
+      }
+      cmds.push(`Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${endX.toFixed(1)} ${endY.toFixed(1)}`);
+    }
+
+    cmds.push('Z');
+    return cmds.join(' ');
+  }
+
   function updateAllFramePositions() {
     if (isUpdatingPositions) return;
     isUpdatingPositions = true;
@@ -7605,12 +7795,7 @@
       if (!layer) return;
 
       const scale = (typeof currentScale === 'number' && currentScale > 0) ? currentScale : 1.0;
-      const scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-
       const layerRect = layer.getBoundingClientRect();
-      const layerOriginX = (layerRect.left + scrollX) / scale;
-      const layerOriginY = (layerRect.top + scrollY) / scale;
 
       const frameElements = Array.from(document.querySelectorAll('.text-frame[data-frame-id]'));
       const idMap = new Map();
@@ -7624,105 +7809,105 @@
       // BƯỚC 1: Đọc layout một lượt (Batch layout read)
       const measurements = [];
       idMap.forEach((elements, fId) => {
-        let minL = Infinity, minT = Infinity, maxR = -Infinity, maxB = -Infinity;
-        let count = 0;
-        elements.forEach(el => {
-          const rects = el.getClientRects();
-          if (rects && rects.length > 0) {
-            for (let i = 0; i < rects.length; i++) {
-              const r = rects[i];
-              if (r.width > 0 || r.height > 0) {
-                if (r.left < minL) minL = r.left;
-                if (r.top < minT) minT = r.top;
-                if (r.right > maxR) maxR = r.right;
-                if (r.bottom > maxB) maxB = r.bottom;
-                count++;
+        try {
+          const rawRects = [];
+          elements.forEach(el => {
+            const rects = el.getClientRects();
+            if (rects && rects.length > 0) {
+              for (let i = 0; i < rects.length; i++) {
+                const r = rects[i];
+                if (r.width >= 1 && r.height >= 1) {
+                  rawRects.push({
+                    left: (r.left - layerRect.left) / scale,
+                    top: (r.top - layerRect.top) / scale,
+                    right: (r.right - layerRect.left) / scale,
+                    bottom: (r.bottom - layerRect.top) / scale,
+                    width: r.width / scale,
+                    height: r.height / scale
+                  });
+                }
               }
             }
-          } else {
-            const r = el.getBoundingClientRect();
-            if (r.width > 0 || r.height > 0) {
-              if (r.left < minL) minL = r.left;
-              if (r.top < minT) minT = r.top;
-              if (r.right > maxR) maxR = r.right;
-              if (r.bottom > maxB) maxB = r.bottom;
-              count++;
-            }
-          }
-        });
+          });
 
-        if (count > 0 && minL !== Infinity) {
+          if (rawRects.length === 0) {
+            elements.forEach(el => {
+              const r = el.getBoundingClientRect();
+              if (r.width >= 1 && r.height >= 1) {
+                rawRects.push({
+                  left: (r.left - layerRect.left) / scale,
+                  top: (r.top - layerRect.top) / scale,
+                  right: (r.right - layerRect.left) / scale,
+                  bottom: (r.bottom - layerRect.top) / scale,
+                  width: r.width / scale,
+                  height: r.height / scale
+                });
+              }
+            });
+          }
+
+          if (rawRects.length === 0) {
+            console.warn('[updateAllFramePositions] getClientRects rỗng, bỏ qua khung:', fId);
+            return;
+          }
+
+          const lines = mergeRectsByLine(rawRects);
+          if (lines.length === 0) return;
+
+          const pathD = buildSteppedPath(lines, 6, 3);
+          if (!pathD) return;
+
           const first = elements[0];
           measurements.push({
             id: fId,
             colorName: first.getAttribute('data-color') || 'yellow',
             customHex: first.getAttribute('data-custom-color') || null,
             noteText: first.getAttribute('data-note') || '',
-            rect: {
-              left: (minL + scrollX) / scale - layerOriginX,
-              top: (minT + scrollY) / scale - layerOriginY,
-              right: (maxR + scrollX) / scale - layerOriginX,
-              bottom: (maxB + scrollY) / scale - layerOriginY,
-              width: (maxR - minL) / scale,
-              height: (maxB - minT) / scale
-            }
+            pathD: pathD,
+            lines: lines
           });
+        } catch (err) {
+          console.warn('[updateAllFramePositions] Lỗi tính rects cho khung:', fId, err);
         }
       });
 
-      // BƯỚC 2: Tính lồng nhau (nesting) để khung con lệch ra 3px mỗi lớp
-      for (let i = 0; i < measurements.length; i++) {
-        let depth = 0;
-        const mi = measurements[i].rect;
-        for (let j = 0; j < measurements.length; j++) {
-          if (i === j) continue;
-          const mj = measurements[j].rect;
-          if (mi.left >= mj.left - 5 && mi.top >= mj.top - 5 &&
-              mi.right <= mj.right + 5 && mi.bottom <= mj.bottom + 5 &&
-              (mj.width * mj.height) > (mi.width * mi.height)) {
-            depth++;
-          }
-        }
-        measurements[i].nestDepth = depth;
-      }
-
-      // BƯỚC 3: Ghi style một lượt (Batch style write)
+      // BƯỚC 2: Ghi style & path một lượt (Batch DOM/SVG write)
       const existingOverlays = new Map();
-      layer.querySelectorAll('.ann-frame[data-frame-id]').forEach(div => {
-        existingOverlays.set(div.getAttribute('data-frame-id'), div);
+      layer.querySelectorAll('.ann-frame[data-frame-id]').forEach(el => {
+        existingOverlays.set(el.getAttribute('data-frame-id'), el);
       });
 
       const activeIds = new Set();
       measurements.forEach(m => {
         activeIds.add(m.id);
         let overlay = existingOverlays.get(m.id);
-        if (!overlay) {
-          overlay = document.createElement('div');
-          overlay.className = 'ann-frame';
+        if (!overlay || overlay.tagName.toLowerCase() !== 'svg') {
+          if (overlay) overlay.remove();
+          overlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          overlay.setAttribute('class', 'ann-frame');
           overlay.setAttribute('data-frame-id', m.id);
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          overlay.appendChild(path);
           layer.appendChild(overlay);
         }
 
         const col = getPaletteColors(m.colorName, m.customHex);
-        overlay.style.setProperty('--frame-color', col.border);
-        overlay.style.setProperty('--frame-bg', col.bg);
-
-        const pad = 4 + (m.nestDepth * 3);
-        const l = Math.max(0, m.rect.left - pad);
-        const t = Math.max(0, m.rect.top - pad);
-        const w = m.rect.width + (pad * 2);
-        const h = m.rect.height + (pad * 2);
-
-        overlay.style.left = l + 'px';
-        overlay.style.top = t + 'px';
-        overlay.style.width = w + 'px';
-        overlay.style.height = h + 'px';
+        const path = overlay.querySelector('path');
+        if (path) {
+          path.setAttribute('d', m.pathD);
+          path.setAttribute('fill', col.bg || 'rgba(217, 119, 6, 0.06)');
+          path.setAttribute('stroke', col.border || '#d97706');
+          path.setAttribute('stroke-width', '2');
+          path.setAttribute('stroke-linejoin', 'round');
+          path.setAttribute('vector-effect', 'non-scaling-stroke');
+        }
+        overlay._lineRects = m.lines;
       });
 
       // Xóa các overlay của khung không còn tồn tại
-      existingOverlays.forEach((div, fId) => {
+      existingOverlays.forEach((el, fId) => {
         if (!activeIds.has(fId)) {
-          div.remove();
+          el.remove();
         }
       });
     } catch (err) {
@@ -21740,18 +21925,23 @@
         }
         .ann-frame {
           position: absolute;
-          box-sizing: border-box;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
           pointer-events: none;
-          border: 2px solid var(--frame-color, #d97706);
-          border-radius: 10px;
-          background-color: var(--frame-bg, rgba(217, 119, 6, 0.05));
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-          transition: border-color 0.15s ease, background-color 0.15s ease;
+          overflow: visible;
+        }
+        .ann-frame path {
+          pointer-events: none;
+          stroke-linejoin: round;
+          vector-effect: non-scaling-stroke;
+          transition: stroke 0.15s ease, fill 0.15s ease;
         }
         @keyframes frameFlashPulse {
-          0% { transform: scale(1); box-shadow: 0 0 0 4px #6366f1, 0 0 20px rgba(99, 102, 241, 0.8); }
-          50% { transform: scale(1.02); box-shadow: 0 0 0 8px #6366f1, 0 0 30px rgba(99, 102, 241, 0.9); }
-          100% { transform: scale(1); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
+          0% { filter: drop-shadow(0 0 4px #6366f1) drop-shadow(0 0 12px rgba(99, 102, 241, 0.8)); }
+          50% { filter: drop-shadow(0 0 8px #6366f1) drop-shadow(0 0 20px rgba(99, 102, 241, 0.9)); }
+          100% { filter: none; }
         }
         .frame-flash-highlight { animation: frameFlashPulse 1.8s ease-out 1 !important; }
         html.hide-text-frames #ann-layer, body.hide-text-frames #ann-layer { display: none !important; }
