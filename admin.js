@@ -1602,20 +1602,43 @@ async function renderAiTab(container) {
     gemini: {
       name: 'Google Gemini',
       tagline: 'Mô hình đa phương thức thế hệ mới của Google, tốc độ cao & chi phí tối ưu.',
-      defaultFast: 'gemini-1.5-flash',
-      defaultStrong: 'gemini-1.5-pro'
+      defaultFast: 'gemini-2.5-flash',
+      defaultStrong: 'gemini-1.5-pro',
+      availableModels: [
+        { id: 'gemini-2.5-flash', name: 'gemini-2.5-flash (Siêu nhanh, khuyên dùng)' },
+        { id: 'gemini-1.5-flash', name: 'gemini-1.5-flash (Ổn định, phản hồi nhanh)' },
+        { id: 'gemini-1.5-flash-8b', name: 'gemini-1.5-flash-8b (Siêu nhẹ, tiết kiệm)' },
+        { id: 'gemini-2.5-pro', name: 'gemini-2.5-pro (Cực mạnh, thế hệ mới)' },
+        { id: 'gemini-1.5-pro', name: 'gemini-1.5-pro (Phân tích sâu, chi tiết)' },
+        { id: 'gemini-2.0-flash', name: 'gemini-2.0-flash (Flash 2.0)' }
+      ]
     },
     claude: {
       name: 'Anthropic Claude',
       tagline: 'Dòng mô hình Claude 3.5 với năng lực đọc hiểu văn bản & ngữ nghĩa sâu.',
       defaultFast: 'claude-3-5-haiku-20241022',
-      defaultStrong: 'claude-3-5-sonnet-20241022'
+      defaultStrong: 'claude-3-5-sonnet-20241022',
+      availableModels: [
+        { id: 'claude-3-5-haiku-20241022', name: 'claude-3-5-haiku-20241022 (Rất nhanh & rẻ)' },
+        { id: 'claude-3-5-sonnet-20241022', name: 'claude-3-5-sonnet-20241022 (Thông minh nhất)' },
+        { id: 'claude-3-opus-20240229', name: 'claude-3-opus-20240229 (Phân tích phức tạp)' },
+        { id: 'claude-3-haiku-20240307', name: 'claude-3-haiku-20240307' }
+      ]
     },
     openai: {
       name: 'OpenAI (GPT)',
       tagline: 'Các mô hình GPT-4o và GPT-4o Mini chuẩn mực cho sinh dữ liệu có cấu trúc.',
       defaultFast: 'gpt-4o-mini',
-      defaultStrong: 'gpt-4o'
+      defaultStrong: 'gpt-4o',
+      availableModels: [
+        { id: 'gpt-4o-mini', name: 'gpt-4o-mini (Nhanh & rẻ, tối ưu)' },
+        { id: 'gpt-4o', name: 'gpt-4o (Toàn diện, mạnh mẽ)' },
+        { id: 'o3-mini', name: 'o3-mini (Lý luận nhanh)' },
+        { id: 'o1-mini', name: 'o1-mini (Lý luận nhẹ)' },
+        { id: 'o1', name: 'o1 (Lý luận chuyên sâu)' },
+        { id: 'gpt-4-turbo', name: 'gpt-4-turbo' },
+        { id: 'gpt-3.5-turbo', name: 'gpt-3.5-turbo' }
+      ]
     }
   };
 
@@ -1668,6 +1691,20 @@ async function renderAiTab(container) {
           const currentFastModel = (aiSettings.models && aiSettings.models[prov] && aiSettings.models[prov].fast) || info.defaultFast;
           const currentStrongModel = (aiSettings.models && aiSettings.models[prov] && aiSettings.models[prov].strong) || info.defaultStrong;
 
+          const renderModelOptions = (modelsList, selectedValue) => {
+            let hasSelected = false;
+            let optionsHtml = (modelsList || []).map(m => {
+              const isSel = m.id === selectedValue;
+              if (isSel) hasSelected = true;
+              return `<option value="${esc(m.id)}" ${isSel ? 'selected' : ''}>${esc(m.name || m.id)}</option>`;
+            }).join('');
+
+            if (selectedValue && !hasSelected) {
+              optionsHtml = `<option value="${esc(selectedValue)}" selected>${esc(selectedValue)} (Hiện tại)</option>` + optionsHtml;
+            }
+            return optionsHtml;
+          };
+
           return `
             <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs p-5 flex flex-col justify-between space-y-4" data-provider-card="${prov}">
               <div class="space-y-3">
@@ -1709,15 +1746,23 @@ async function renderAiTab(container) {
 
                 <div id="testResultBox_${prov}" class="text-[11px] hidden p-2 rounded-lg"></div>
 
-                <!-- CHỌN MODEL NHANH & MẠNH -->
-                <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-2">
+                <!-- CHỌN MODEL NHANH & MẠNH (DẠNG DROPDOWN) -->
+                <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-2.5">
                   <div>
-                    <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-0.5">Model nhanh / rẻ (Độ khó &amp; Flashcard):</label>
-                    <input type="text" id="modelFast_${prov}" value="${esc(currentFastModel)}" class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-mono" />
+                    <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1">Model nhanh / rẻ (Độ khó &amp; Flashcard):</label>
+                    <div class="relative">
+                      <select id="modelFast_${prov}" class="model-select-dropdown w-full px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-mono font-medium text-[#1C1B18] dark:text-[#E8E6E1] focus:outline-hidden focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs">
+                        ${renderModelOptions(info.availableModels, currentFastModel)}
+                      </select>
+                    </div>
                   </div>
                   <div>
-                    <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-0.5">Model mạnh (Phân tích nâng cao):</label>
-                    <input type="text" id="modelStrong_${prov}" value="${esc(currentStrongModel)}" class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-mono" />
+                    <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1">Model mạnh (Phân tích nâng cao):</label>
+                    <div class="relative">
+                      <select id="modelStrong_${prov}" class="model-select-dropdown w-full px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-mono font-medium text-[#1C1B18] dark:text-[#E8E6E1] focus:outline-hidden focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs">
+                        ${renderModelOptions(info.availableModels, currentStrongModel)}
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1899,6 +1944,44 @@ function bindAiTabEvents(container) {
         } finally {
           btn.disabled = false;
         }
+      }
+    };
+  });
+
+  // Lắng nghe thay đổi dropdown model để tự động lưu và cập nhật
+  container.querySelectorAll('.model-select-dropdown').forEach(sel => {
+    sel.onchange = async () => {
+      const btnSaveSettings = container.querySelector('#btnSaveAiSettings');
+      if (btnSaveSettings) {
+        btnSaveSettings.classList.add('ring-2', 'ring-indigo-400');
+      }
+
+      // Tự động đồng bộ cài đặt model ngay khi người dùng chọn trong dropdown
+      const prioStr = document.getElementById('aiPrioritySelect') ? document.getElementById('aiPrioritySelect').value : 'gemini,openai,claude';
+      const dailyCap = document.getElementById('aiDailyCapInput') ? (parseInt(document.getElementById('aiDailyCapInput').value, 10) || 0) : 0;
+      const modelsPayload = {};
+      ['gemini', 'claude', 'openai'].forEach(p => {
+        const fastEl = document.getElementById(`modelFast_${p}`);
+        const strongEl = document.getElementById(`modelStrong_${p}`);
+        modelsPayload[p] = {
+          fast: fastEl ? fastEl.value.trim() : '',
+          strong: strongEl ? strongEl.value.trim() : ''
+        };
+      });
+
+      try {
+        await callAdminApi('/api/admin/ai/settings', {
+          method: 'POST',
+          body: JSON.stringify({
+            priority: prioStr.split(','),
+            dailyRequestCap: dailyCap,
+            models: modelsPayload
+          })
+        });
+        toast(`Đã chọn và cập nhật model: ${sel.value}`);
+      } catch (err) {
+        console.warn("Lỗi auto-save model:", err);
+        toast(`Đã chọn model: ${sel.value}. Hãy bấm "Lưu thứ tự ưu tiên" để áp dụng.`);
       }
     };
   });

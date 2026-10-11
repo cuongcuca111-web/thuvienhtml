@@ -6,19 +6,25 @@ const { DEFAULT_MODELS } = require('../../lib/call-ai');
 
 const FALLBACK_MODELS = {
   gemini: [
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Siêu nhanh, thế hệ mới)' },
     { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Nhanh & Rẻ - Khuyên dùng)' },
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Thế hệ mới)' },
+    { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B (Siêu nhẹ)' },
+    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Cực mạnh, thế hệ mới)' },
     { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Mạnh mẽ, phân tích sâu)' },
-    { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B (Siêu nhẹ)' }
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Thế hệ mới)' }
   ],
   claude: [
     { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku (Rất nhanh & Tiết kiệm)' },
     { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet (Thông minh & Chuẩn xác)' },
-    { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus (Tư duy phức tạp)' }
+    { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus (Tư duy phức tạp)' },
+    { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' }
   ],
   openai: [
     { id: 'gpt-4o-mini', name: 'GPT-4o Mini (Nhanh & Rẻ - Khuyên dùng)' },
     { id: 'gpt-4o', name: 'GPT-4o (Đa phương thức mạnh nhất)' },
+    { id: 'o3-mini', name: 'OpenAI o3-mini (Lý luận nhanh)' },
+    { id: 'o1-mini', name: 'OpenAI o1-mini (Lý luận nhẹ)' },
+    { id: 'o1', name: 'OpenAI o1 (Lý luận chuyên sâu)' },
     { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
     { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (Cũ)' }
   ]
