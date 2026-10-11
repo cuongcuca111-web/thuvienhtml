@@ -62,7 +62,7 @@ function ensureAdminModalsInDOM() {
   container.id = 'adminModalsContainer';
   container.innerHTML = `
     <!-- MODAL ĐĂNG NHẬP QUẢN TRỊ VIÊN -->
-    <div id="adminLoginModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden flex items-center justify-center p-4">
+    <div id="adminLoginModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
       <div class="bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl shadow-2xl w-full max-w-md p-6 overflow-hidden">
         <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36] mb-4">
           <div class="flex items-center gap-2.5">
@@ -115,7 +115,7 @@ function ensureAdminModalsInDOM() {
     </div>
 
     <!-- MODAL KHU VỰC QUẢN TRỊ CHÍNH (EDITORIAL DASHBOARD) -->
-    <div id="adminPanelModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-[85] hidden flex items-center justify-center p-0 sm:p-4">
+    <div id="adminPanelModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-[9990] hidden flex items-center justify-center p-0 sm:p-4">
       <div class="bg-[#F8F7F4] dark:bg-[#14171C] border-none sm:border border-[#E0DED7] dark:border-[#262C36] sm:rounded-2xl shadow-2xl w-full max-w-6xl h-full sm:h-[92vh] max-h-[100dvh] flex flex-col overflow-hidden">
         
         <!-- HEADER THANH ĐIỀU HƯỚNG QUẢN TRỊ -->
@@ -277,7 +277,15 @@ function bindGlobalAdminEvents() {
 export function openAdminLogin() {
   const modal = document.getElementById('adminLoginModal');
   if (modal) {
-    modal.classList.remove('hidden');
+    if (modal._closeTimer) {
+      clearTimeout(modal._closeTimer);
+      modal._closeTimer = null;
+    }
+    modal.classList.remove('hidden', 'modal-closing');
+    void modal.offsetWidth; // Force reflow
+    modal.classList.add('modal-active');
+    document.body.style.overflow = 'hidden';
+
     const input = document.getElementById('adminUsernameInput');
     if (input) {
       if (!input.value) input.value = 'minhcuong111';
@@ -288,9 +296,20 @@ export function openAdminLogin() {
 
 export function closeAdminLogin() {
   const modal = document.getElementById('adminLoginModal');
-  if (modal) modal.classList.add('hidden');
+  if (modal) {
+    modal.classList.remove('modal-active');
+    modal.classList.add('modal-closing');
+    if (modal._closeTimer) clearTimeout(modal._closeTimer);
+    modal._closeTimer = setTimeout(() => {
+      modal.classList.add('hidden');
+      modal.classList.remove('modal-closing');
+      modal._closeTimer = null;
+      const anyActive = document.querySelector('.modal-animated.modal-active');
+      if (!anyActive) document.body.style.overflow = '';
+    }, 220);
+  }
   if (window.location.hash === '#/admin') {
-    history.replaceState(null, '', window.location.pathname);
+    history.replaceState(null, '', window.location.pathname + window.location.search);
   }
 }
 
@@ -298,16 +317,34 @@ export function openAdminPanel() {
   closeAdminLogin();
   const panel = document.getElementById('adminPanelModal');
   if (panel) {
-    panel.classList.remove('hidden');
+    if (panel._closeTimer) {
+      clearTimeout(panel._closeTimer);
+      panel._closeTimer = null;
+    }
+    panel.classList.remove('hidden', 'modal-closing');
+    void panel.offsetWidth;
+    panel.classList.add('modal-active');
+    document.body.style.overflow = 'hidden';
     switchTab('plans');
   }
 }
 
 export function closeAdminPanel() {
   const panel = document.getElementById('adminPanelModal');
-  if (panel) panel.classList.add('hidden');
+  if (panel) {
+    panel.classList.remove('modal-active');
+    panel.classList.add('modal-closing');
+    if (panel._closeTimer) clearTimeout(panel._closeTimer);
+    panel._closeTimer = setTimeout(() => {
+      panel.classList.add('hidden');
+      panel.classList.remove('modal-closing');
+      panel._closeTimer = null;
+      const anyActive = document.querySelector('.modal-animated.modal-active');
+      if (!anyActive) document.body.style.overflow = '';
+    }, 220);
+  }
   if (window.location.hash === '#/admin') {
-    history.replaceState(null, '', window.location.pathname);
+    history.replaceState(null, '', window.location.pathname + window.location.search);
   }
 }
 

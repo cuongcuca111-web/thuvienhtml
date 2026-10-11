@@ -2700,8 +2700,8 @@
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
           <span id="desktopAppVersionLabel">Thư viện Sách HTML v4.9.4 • build 11/10/2026 18:15</span>
         </button>
-        <!-- // FIX: Nút ẩn con dấu thư viện kích hoạt lối vào Quản trị (Chạm giữ 700ms trên mobile hoặc Double-click trên máy tính) -->
-        <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-15 dark:opacity-10 hover:opacity-45 focus:opacity-60 focus:outline-none transition-opacity select-none cursor-default" aria-label="Thông tin phiên bản">
+        <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
+        <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 3c-4.5 0-8 3.5-8 8 0 5 4.5 9.5 8 10 3.5-.5 8-5 8-10 0-4.5-3.5-8-8-8z"/>
             <path d="M12 7v10"/>
@@ -3357,8 +3357,8 @@
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
         <span id="mobileAppVersionLabel">Thư viện Sách HTML v4.9.4 • build 11/10/2026 18:15</span>
       </button>
-      <!-- // FIX: Nút ẩn con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
-      <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-15 dark:opacity-10 hover:opacity-45 focus:opacity-60 focus:outline-none transition-opacity select-none cursor-default" aria-label="Thông tin phiên bản">
+      <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
+      <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3c-4.5 0-8 3.5-8 8 0 5 4.5 9.5 8 10 3.5-.5 8-5 8-10 0-4.5-3.5-8-8-8z"/>
           <path d="M12 7v10"/>
@@ -6488,19 +6488,26 @@
     // Kiểm tra ngay khi script nạp xong (đường dự phòng 6a)
     try { checkAdminRoute(); } catch(_) {}
 
-    // Gắn cơ chế kích hoạt Con Dấu ẩn (Chạm giữ 700ms trên mobile, Double-click trên máy tính)
+    // Gắn cơ chế kích hoạt Con Dấu ẩn (Chạm hoặc Nhấp chuột, Double-click hoặc Chạm giữ 700ms)
     function attachSecretAdminSealTrigger(btn) {
       if (!btn || btn.dataset.sealBound) return;
       btn.dataset.sealBound = 'true';
 
-      // 1. Nhấp đúp chuột trên máy tính (Double-click)
+      // 1. Nhấp chuột / Chạm thường trực tiếp mở ngay hộp thoại đăng nhập Quản trị
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openAdminModule();
+      });
+
+      // 2. Nhấp đúp chuột trên máy tính (Double-click)
       btn.addEventListener('dblclick', (e) => {
         e.preventDefault();
         e.stopPropagation();
         openAdminModule();
       });
 
-      // 2. Chạm giữ ~700ms trên thiết bị cảm ứng
+      // 3. Chạm giữ ~600ms trên thiết bị cảm ứng kèm rung phản hồi
       let touchTimer = null;
       let startX = 0;
       let startY = 0;
@@ -6517,7 +6524,7 @@
             if (navigator.vibrate) navigator.vibrate(40);
           } catch (_) {}
           openAdminModule();
-        }, 700);
+        }, 600);
       }, { passive: true });
 
       const cancelTouch = () => {
@@ -6530,7 +6537,6 @@
       btn.addEventListener('touchmove', (e) => {
         if (!touchTimer || e.touches.length !== 1) return;
         const touch = e.touches[0];
-        // Nếu di chuyển ngón tay quá 10px thì coi như cuộn trang, hủy hẹn giờ
         if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 10) {
           cancelTouch();
         }
@@ -6538,12 +6544,6 @@
 
       btn.addEventListener('touchend', cancelTouch, { passive: true });
       btn.addEventListener('touchcancel', cancelTouch, { passive: true });
-
-      // Chặn click đơn thông thường để tránh kích hoạt ngoài ý muốn
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      });
     }
 
     // Khởi tạo các nút con dấu ẩn
@@ -6575,6 +6575,8 @@
         }
       }
     });
+
+    window.openAdminModule = openAdminModule;
 
     // =========================================================================
     // HỆ THỐNG TIỆN ÍCH AN TOÀN DOM & KHỞI TẠO BỀN VỮNG (FAULT-TOLERANT)
@@ -28470,6 +28472,7 @@
       on('#btnEmptyAddLesson', 'click', openUploadModal);
       on('#btnSidebarQuickUpload', 'click', openUploadModal);
       if (typeof loadSidebarSectionState === 'function') loadSidebarSectionState();
+      if (typeof initSecretAdminSeals === 'function') initSecretAdminSeals();
     }
 
     function initReader() {
