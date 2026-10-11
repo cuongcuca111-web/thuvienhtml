@@ -7741,6 +7741,50 @@
   }, true);
 
   // 4. Theo dõi bôi đen văn bản (Selection)
+  let isPointerDown = false;
+  let lastHintedFrameId = null;
+  let lastHintedTime = 0;
+
+  document.addEventListener('mousedown', () => { isPointerDown = true; }, true);
+  document.addEventListener('mouseup', () => {
+    isPointerDown = false;
+    checkSelectionEnd();
+  }, true);
+  document.addEventListener('touchstart', () => { isPointerDown = true; }, true);
+  document.addEventListener('touchend', () => {
+    isPointerDown = false;
+    checkSelectionEnd();
+  }, true);
+
+  function checkSelectionEnd() {
+    setTimeout(() => {
+      try {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+          lastHintedFrameId = null;
+          return;
+        }
+        const text = sel.toString().trim();
+        if (text.length < 2) return;
+        const range = sel.getRangeAt(0);
+        const ancestor = range.commonAncestorContainer;
+        const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
+        const existingFrame = parentEl ? parentEl.closest('.text-frame') : null;
+        if (existingFrame) {
+          const fId = existingFrame.getAttribute('data-frame-id') || existingFrame.getAttribute('data-hl-id') || 'frame';
+          const now = Date.now();
+          if (fId !== lastHintedFrameId || (now - lastHintedTime) > 8000) {
+            lastHintedFrameId = fId;
+            lastHintedTime = now;
+            window.parent.postMessage({ type: 'TEXT_ALREADY_FRAMED', frameId: fId }, '*');
+          }
+        } else {
+          lastHintedFrameId = null;
+        }
+      } catch (_) {}
+    }, 40);
+  }
+
   document.addEventListener('selectionchange', () => {
     setTimeout(() => {
       const sel = window.getSelection();
@@ -7757,7 +7801,8 @@
       const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
       const existingFrame = parentEl ? parentEl.closest('.text-frame') : null;
       if (existingFrame) {
-        window.parent.postMessage({ type: 'TEXT_ALREADY_FRAMED' }, '*');
+        // Tuyệt đối không gửi thông báo dồn dập khi đang kéo chuột
+        window.parent.postMessage({ type: 'TEXT_DESELECTED' }, '*');
         return;
       }
 
@@ -8633,7 +8678,13 @@
         case 'TEXT_ALREADY_FRAMED': {
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           if (hlToolbar) hlToolbar.classList.add('hidden');
-          showToast("Đoạn này đã có khung • Nhấp đúp để ghi chú", "info");
+          const fId = msg.frameId || 'ann-frame';
+          const now = Date.now();
+          if (window._lastHintedAnnId !== fId || (now - (window._lastHintedAnnTime || 0)) > 8000) {
+            window._lastHintedAnnId = fId;
+            window._lastHintedAnnTime = now;
+            showToast("Đoạn này đã có khung • Nhấp đúp để ghi chú", "info", { key: 'ann-hint', duration: 2500 });
+          }
           break;
         }
 
@@ -9683,25 +9734,73 @@
     window.shootMicroConfetti = shootMicroConfetti;
     window.triggerGroupCompletedCelebration = triggerGroupCompletedCelebration;
 
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toastContainer');
-      if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = `toast-animated pointer-events-auto flex items-center gap-2 px-3.5 py-2.5 rounded-card text-xs font-medium shadow-lg transition select-none ${
-        type === 'error' ? 'bg-red-600 text-white' : 'bg-[#161A20] text-white border border-white/10 dark:bg-white dark:text-[#1A1A1A]'
-      }`;
+    const toastTimers = new Map();
 
-      const iconName = type === 'error' ? 'alert-circle' : 'check-circle-2';
-      toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
-      container.appendChild(toast);
-      refreshIcons();
+    function showToast(message, typeOrOpts = 'success', extraOpts = {}) {
+      try {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
 
-      setTimeout(() => {
-        toast.classList.remove('toast-animated');
-        toast.classList.add('toast-closing');
-        toast.addEventListener('animationend', () => toast.remove(), { once: true });
-        setTimeout(() => toast.remove(), 250);
-      }, 3500);
+        let type = 'success';
+        let options = {};
+        if (typeof typeOrOpts === 'object' && typeOrOpts !== null) {
+          options = typeOrOpts;
+        } else {
+          if (typeof typeOrOpts === 'string') type = typeOrOpts;
+          if (typeof extraOpts === 'object' && extraOpts !== null) options = extraOpts;
+        }
+
+        const key = options.key || message;
+        const duration = typeof options.duration === 'number' ? options.duration : 3000;
+
+        let toastEl = container.querySelector(`[data-toast-key="${CSS.escape(key)}"]`);
+        if (toastEl) {
+          if (toastTimers.has(key)) {
+            clearTimeout(toastTimers.get(key));
+          }
+        } else {
+          while (container.children.length >= 3) {
+            const oldest = container.firstElementChild;
+            if (oldest) {
+              const oldKey = oldest.dataset.toastKey;
+              if (oldKey && toastTimers.has(oldKey)) {
+                clearTimeout(toastTimers.get(oldKey));
+                toastTimers.delete(oldKey);
+              }
+              oldest.remove();
+            }
+          }
+
+          toastEl = document.createElement('div');
+          toastEl.dataset.toastKey = key;
+          toastEl.className = `toast-animated pointer-events-auto flex items-center gap-2 px-3.5 py-2.5 rounded-card text-xs font-medium shadow-lg transition select-none ${
+            type === 'error' ? 'bg-red-600 text-white' : 'bg-[#161A20] text-white border border-white/10 dark:bg-white dark:text-[#1A1A1A]'
+          }`;
+
+          const iconName = type === 'error' ? 'alert-circle' : 'check-circle-2';
+          toastEl.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+          container.appendChild(toastEl);
+          if (typeof refreshIcons === 'function') refreshIcons();
+        }
+
+        const timerId = setTimeout(() => {
+          try {
+            if (toastEl && toastEl.parentNode) {
+              toastEl.classList.remove('toast-animated');
+              toastEl.classList.add('toast-closing');
+              setTimeout(() => {
+                try { if (toastEl && toastEl.parentNode) toastEl.remove(); } catch (_) {}
+              }, 220);
+            }
+          } finally {
+            toastTimers.delete(key);
+          }
+        }, duration);
+
+        toastTimers.set(key, timerId);
+      } catch (e) {
+        console.warn('[toast]', e);
+      }
     }
 
     // // FIX-2/3: Thông báo Toast có nút hành động (Hoàn tác / Xem)
@@ -21284,7 +21383,22 @@
 
         injectHighlightStyles(doc);
 
-        const handleSelection = () => {
+        let isPointerDown = false;
+        let lastHintedFrameId = null;
+        let lastHintedTime = 0;
+
+        doc.addEventListener('mousedown', () => { isPointerDown = true; }, true);
+        doc.addEventListener('mouseup', () => {
+          isPointerDown = false;
+          handleSelection(true);
+        }, true);
+        doc.addEventListener('touchstart', () => { isPointerDown = true; }, true);
+        doc.addEventListener('touchend', () => {
+          isPointerDown = false;
+          handleSelection(true);
+        }, true);
+
+        const handleSelection = (isSelectionEnd = false) => {
           setTimeout(() => {
             const sel = doc.getSelection();
             if (!sel || sel.isCollapsed || !sel.toString().trim()) {
@@ -21292,6 +21406,7 @@
                 hlToolbar.classList.add('hidden');
               }
               currentSelectionInfo = null;
+              lastHintedFrameId = null;
               return;
             }
 
@@ -21300,15 +21415,26 @@
 
             const range = sel.getRangeAt(0);
 
-            // KIỂM TRA: Vùng chọn nằm trọn bên trong khung có sẵn -> Hiện toast 3s, không hiện toolbar
+            // KIỂM TRA: Vùng chọn nằm trọn bên trong khung có sẵn -> Hiện toast 2.5s khi kết thúc chọn, không hiện toolbar
             const ancestor = range.commonAncestorContainer;
             const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
             const existingFrame = parentEl ? parentEl.closest('.text-frame') : null;
             if (existingFrame) {
               if (hlToolbar) hlToolbar.classList.add('hidden');
               currentSelectionInfo = null;
-              showToast("Đoạn này đã có khung • Nhấp đúp để ghi chú", "info");
+
+              if (isSelectionEnd && !isPointerDown) {
+                const fId = existingFrame.getAttribute('data-frame-id') || existingFrame.getAttribute('data-hl-id') || 'frame';
+                const now = Date.now();
+                if (fId !== lastHintedFrameId || (now - lastHintedTime) > 8000) {
+                  lastHintedFrameId = fId;
+                  lastHintedTime = now;
+                  showToast("Đoạn này đã có khung • Nhấp đúp để ghi chú", "info", { key: 'ann-hint', duration: 2500 });
+                }
+              }
               return;
+            } else {
+              lastHintedFrameId = null;
             }
 
             let quoteFont = '';
@@ -21346,7 +21472,7 @@
 
         doc.addEventListener('selectionchange', () => {
           clearTimeout(selectionDebounceTimer);
-          selectionDebounceTimer = setTimeout(handleSelection, 80);
+          selectionDebounceTimer = setTimeout(() => handleSelection(false), 80);
         });
 
         // VIỆC 1:
