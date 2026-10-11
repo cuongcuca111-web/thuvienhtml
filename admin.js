@@ -2355,7 +2355,7 @@ async function renderBillingTab(container) {
 
     const bankTransfer = cfgRes.bankTransfer || {};
     const secrets = cfgRes.vietqrSecrets || {};
-    const orders = ordersRes.orders || [];
+    const orders = sortOrdersByPriority(ordersRes.orders || []);
     const counts = ordersRes.counts || {};
 
     // Danh sách ngân hàng VietQR chính thức
@@ -2576,12 +2576,33 @@ async function renderBillingTab(container) {
   }
 }
 
+function sortOrdersByPriority(orders) {
+  if (!Array.isArray(orders)) return [];
+  const STATUS_PRIORITY = {
+    'user_confirmed': 1, // Khách báo đã chuyển (ưu tiên số 1 - cần duyệt ngay)
+    'pending': 2,        // Chờ thanh toán
+    'paid': 3,           // Đã kích hoạt
+    'cancelled': 4,      // Đã hủy
+    'expired': 5         // Hết hạn
+  };
+
+  return orders.slice().sort((a, b) => {
+    const pA = STATUS_PRIORITY[a.status] || 99;
+    const pB = STATUS_PRIORITY[b.status] || 99;
+    if (pA !== pB) return pA - pB;
+    const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return tB - tA;
+  });
+}
+
 function renderOrdersTableRows(orders) {
-  if (!orders || orders.length === 0) {
+  const sorted = sortOrdersByPriority(orders);
+  if (!sorted || sorted.length === 0) {
     return `<tr><td colspan="7" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
   }
 
-  return orders.map(ord => {
+  return sorted.map(ord => {
     let statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600">Chờ thanh toán</span>`;
     if (ord.status === 'paid') {
       statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Đã kích hoạt</span>`;
@@ -2608,16 +2629,26 @@ function renderOrdersTableRows(orders) {
         <td class="py-3 px-3.5 text-right font-mono font-bold text-[#1C1B18] dark:text-[#E8E6E1]">${esc(amountStr)}</td>
         <td class="py-3 px-3.5 text-center">${statusBadge}</td>
         <td class="py-3 px-3.5 text-gray-500 text-[11px]">${esc(createdDate)}</td>
-        <td class="py-3 px-3.5 text-right space-x-1">
-          ${ord.status !== 'paid' ? `
-            <button type="button" class="btn-admin-confirm-order px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs transition" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}">
+        <td class="py-3 px-3.5 text-right space-x-1 whitespace-nowrap">
+          ${(ord.status === 'user_confirmed' || ord.status === 'pending') ? `
+            <button type="button" class="btn-admin-confirm-order px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Duyệt đơn ngay">
               Duyệt
             </button>
-            <button type="button" class="btn-admin-cancel-order px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 hover:text-rose-600 text-gray-600 dark:text-gray-300 font-semibold text-[11px] transition" data-id="${esc(ord.id)}">
+            <button type="button" class="btn-admin-cancel-order px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-gray-600 dark:text-gray-300 font-semibold text-[11px] transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Hủy đơn ngay">
               Hủy
             </button>
+          ` : ord.status === 'paid' ? `
+            <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Đã duyệt</span>
+            </span>
+          ` : ord.status === 'cancelled' ? `
+            <span class="inline-flex items-center gap-1 text-[11px] text-rose-500 dark:text-rose-400 font-medium">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span>Đã hủy</span>
+            </span>
           ` : `
-            <span class="text-[11px] text-emerald-600 font-semibold">Hoàn tất</span>
+            <span class="text-[11px] text-gray-400 font-medium">Hết hạn</span>
           `}
         </td>
       </tr>
@@ -2828,46 +2859,46 @@ function bindBillingTabEvents(container, orders) {
     };
   }
 
-  // Duyệt đơn hàng thủ công
+  // Duyệt đơn hàng thủ công (Bấm 1 lần là duyệt ngay, không popup confirm)
   container.querySelectorAll('.btn-admin-confirm-order').forEach(btn => {
     btn.onclick = async () => {
       const orderId = btn.dataset.id;
-      const orderCode = btn.dataset.code;
-      if (confirm(`Bạn có chắc chắn muốn XÁC NHẬN THANH TOÁN cho đơn ${orderCode}? Tài khoản khách hàng sẽ được kích hoạt gói ngay lập tức.`)) {
-        btn.disabled = true;
-        try {
-          const res = await callAdminApi('/api/admin/billing/orders-confirm', {
-            method: 'POST',
-            body: JSON.stringify({ orderId, reason: 'Duyệt thủ công từ bảng quản trị' })
-          });
-          toast(res.message || `Đã kích hoạt thành công đơn ${orderCode}!`);
-          renderBillingTab(container);
-        } catch (err) {
-          alert('Lỗi duyệt đơn: ' + err.message);
-          btn.disabled = false;
-        }
+      const orderCode = btn.dataset.code || '';
+      btn.disabled = true;
+      btn.innerText = 'Đang duyệt...';
+      try {
+        const res = await callAdminApi('/api/admin/billing/orders-confirm', {
+          method: 'POST',
+          body: JSON.stringify({ orderId, reason: 'Admin duyệt thủ công từ bảng quản trị' })
+        });
+        toast(res.message || `Đã kích hoạt thành công đơn ${orderCode}!`);
+        renderBillingTab(container);
+      } catch (err) {
+        alert('Lỗi duyệt đơn: ' + err.message);
+        btn.disabled = false;
+        btn.innerText = 'Duyệt';
       }
     };
   });
 
-  // Hủy đơn hàng
+  // Hủy đơn hàng (Bấm 1 lần là hủy ngay, không prompt, không confirm)
   container.querySelectorAll('.btn-admin-cancel-order').forEach(btn => {
     btn.onclick = async () => {
       const orderId = btn.dataset.id;
-      const reason = prompt('Nhập lý do hủy đơn:', 'Hủy bởi quản trị viên');
-      if (reason !== null) {
-        btn.disabled = true;
-        try {
-          await callAdminApi('/api/admin/billing/orders-cancel', {
-            method: 'POST',
-            body: JSON.stringify({ orderId, reason })
-          });
-          toast('Đã hủy đơn hàng');
-          renderBillingTab(container);
-        } catch (err) {
-          alert('Lỗi hủy đơn: ' + err.message);
-          btn.disabled = false;
-        }
+      const orderCode = btn.dataset.code || '';
+      btn.disabled = true;
+      btn.innerText = 'Đang hủy...';
+      try {
+        await callAdminApi('/api/admin/billing/orders-cancel', {
+          method: 'POST',
+          body: JSON.stringify({ orderId, reason: 'Hủy bởi quản trị viên' })
+        });
+        toast(`Đã hủy đơn ${orderCode}`);
+        renderBillingTab(container);
+      } catch (err) {
+        alert('Lỗi hủy đơn: ' + err.message);
+        btn.disabled = false;
+        btn.innerText = 'Hủy';
       }
     };
   });
@@ -2881,10 +2912,11 @@ function bindBillingTabEvents(container, orders) {
     const st = statusFilter ? statusFilter.value : 'all';
     try {
       const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=50`);
+      const sorted = sortOrdersByPriority(res.orders || []);
       const tbody = container.querySelector('#billingOrdersTableBody');
-      if (tbody) tbody.innerHTML = renderOrdersTableRows(res.orders || []);
+      if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted);
       // Gán lại sự kiện cho các nút mới
-      bindBillingTabEvents(container, res.orders || []);
+      bindBillingTabEvents(container, sorted);
     } catch (e) {}
   };
 

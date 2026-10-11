@@ -410,6 +410,25 @@ module.exports = async function handler(req, res) {
         });
       });
 
+      // Sắp xếp ưu tiên: Đơn chờ xử lý lên trên, đơn đã duyệt / đã hủy / hết hạn tự xuống dưới
+      const STATUS_PRIORITY = {
+        'user_confirmed': 1, // Khách báo đã chuyển (ưu tiên cao nhất)
+        'pending': 2,        // Chờ thanh toán
+        'paid': 3,           // Đã kích hoạt
+        'cancelled': 4,      // Đã hủy
+        'expired': 5         // Hết hạn
+      };
+
+      orders.sort((a, b) => {
+        const pA = STATUS_PRIORITY[a.status] || 99;
+        const pB = STATUS_PRIORITY[b.status] || 99;
+        if (pA !== pB) return pA - pB;
+        // Cùng nhóm ưu tiên thì sắp theo thời gian tạo mới nhất lên trước
+        const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return tB - tA;
+      });
+
       if (orders.length > limitNum) {
         orders = orders.slice(0, limitNum);
       }
