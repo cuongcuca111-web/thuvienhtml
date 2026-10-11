@@ -116,6 +116,33 @@ module.exports = async function handler(req, res) {
         bankConfig = plansData.bankTransfer;
       }
 
+      // Cấu hình nhận tiền khởi tạo chuẩn Sacombank (Single Source of Truth seed)
+      const DEFAULT_PAYMENT_CONFIG = {
+        mode: 'quick',
+        qrMode: 'quick',
+        bank: {
+          bin: '970403',
+          shortName: 'Sacombank',
+          name: 'Ngân hàng TMCP Sài Gòn Thương Tín'
+        },
+        bankId: '970403',
+        bankName: 'Sacombank',
+        accountNo: '100071864927',
+        accountName: 'LE BUI MINH CUONG',
+        template: 'compact',
+        expireMinutes: 15,
+        orderTimeoutMinutes: 15,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (!bankConfig || !bankConfig.accountNo || !(bankConfig.bankId || (bankConfig.bank && bankConfig.bank.bin))) {
+        bankConfig = DEFAULT_PAYMENT_CONFIG;
+        // Tự động seed lưu lại vào Firestore để các lần gọi tiếp theo và admin có thể dùng ngay
+        try {
+          db.doc('payment_config/main').set(DEFAULT_PAYMENT_CONFIG, { merge: true }).catch(() => {});
+        } catch (_) {}
+      }
+
       // Xác thực cấu hình tài khoản nhận tiền
       const rawBankId = (bankConfig && (bankConfig.bankId || (bankConfig.bank && bankConfig.bank.bin))) || '';
       const rawBankName = (bankConfig && (bankConfig.bankName || (bankConfig.bank && (bankConfig.bank.shortName || bankConfig.bank.name)))) || '';

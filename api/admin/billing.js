@@ -101,17 +101,21 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      // Nếu chưa hề cấu hình thì để trống, tuyệt đối không dùng giá trị mẫu MBBank
-      if (!bankTransfer) {
+      // Nếu chưa hề cấu hình thì nạp giá trị khởi tạo chuẩn Sacombank (theo chỉ định thực tế)
+      if (!bankTransfer || !bankTransfer.accountNo) {
         bankTransfer = {
-          bankId: '',
-          bankName: '',
-          accountNo: '',
-          accountName: '',
+          bankId: '970403',
+          bankName: 'Sacombank',
+          accountNo: '100071864927',
+          accountName: 'LE BUI MINH CUONG',
           template: 'compact',
           orderTimeoutMinutes: 15,
           qrMode: 'quick',
-          bank: null
+          bank: {
+            bin: '970403',
+            shortName: 'Sacombank',
+            name: 'Ngân hàng TMCP Sài Gòn Thương Tín'
+          }
         };
       }
 

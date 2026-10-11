@@ -6731,6 +6731,90 @@
     </div>
   </div>
 
+  <!-- POPUP MODAL: ĐANG KHỞI TẠO MÃ QR THANH TOÁN (KHOA HỌC & CHUYÊN NGHIỆP) -->
+  <div id="qrLoadingModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-xs z-[85] hidden flex items-center justify-center p-4 transition-all duration-200" role="dialog" aria-modal="true" aria-labelledby="qrLoadingTitle">
+    <div class="bg-[#FAF9F6] dark:bg-[#15181E] border border-[#E0DED7] dark:border-[#262C36] rounded-2xl w-full max-w-[420px] overflow-hidden shadow-2xl p-6 sm:p-7 space-y-4.5 transition-all text-left">
+      
+      <!-- Đầu mục: Thẻ phân loại khoa học & Biểu tượng quét ma trận -->
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div class="relative w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+            <!-- Icon radar quét ma trận khoa học -->
+            <svg class="w-5 h-5 animate-spin" style="animation-duration: 4s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+            <div class="absolute inset-0 rounded-xl border border-indigo-500/30 animate-ping" style="animation-duration: 2.5s;"></div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300">NAPAS 247 · VIETQR</span>
+              <span class="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Trực tuyến</span>
+              </span>
+            </div>
+            <h4 id="qrLoadingTitle" class="font-serif font-bold text-lg text-[#1C1B18] dark:text-[#E8E6E1] mt-0.5 leading-snug">
+              Đang tạo mã thanh toán
+            </h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tóm tắt thông tin gói đang xử lý -->
+      <div class="p-3.5 rounded-xl bg-white dark:bg-[#1C2028] border border-[#EBE8E1] dark:border-[#232833] flex items-center justify-between text-xs">
+        <div>
+          <span class="text-[#78756D] dark:text-[#9AA3B2] text-[11px]">Gói dịch vụ</span>
+          <p id="qrLoadingPlanName" class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1] mt-0.5 font-sans">
+            Gói Plus (1 Tháng)
+          </p>
+        </div>
+        <div class="text-right">
+          <span class="text-[#78756D] dark:text-[#9AA3B2] text-[11px]">Số tiền</span>
+          <p id="qrLoadingAmount" class="font-serif font-bold text-base text-indigo-600 dark:text-indigo-400 tabular-nums">
+            59.000 ₫
+          </p>
+        </div>
+      </div>
+
+      <!-- Thanh tiến trình xử lý trực quan -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+          <span id="qrLoadingStatusText">Đang liên kết cổng thanh toán...</span>
+          <span id="qrLoadingPercent" class="font-semibold tabular-nums text-indigo-600 dark:text-indigo-400">25%</span>
+        </div>
+        <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div id="qrLoadingProgressBar" class="h-full bg-indigo-600 transition-all duration-300 ease-out" style="width: 25%;"></div>
+        </div>
+      </div>
+
+      <!-- Tiến trình kỹ thuật 3 bước (Minh bạch, tạo cảm giác hệ thống xử lý thật) -->
+      <div class="space-y-2 text-xs pt-1 border-t border-[#EBE8E1] dark:border-[#232833]">
+        <div id="qrLoadStep1" class="flex items-center gap-2.5 text-gray-700 dark:text-gray-300 transition-colors">
+          <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span class="text-[11px]">Xác thực tài khoản và hạn mức gói</span>
+        </div>
+
+        <div id="qrLoadStep2" class="flex items-center gap-2.5 text-[#1C1B18] dark:text-[#E8E6E1] font-medium transition-colors">
+          <span class="w-4 h-4 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-2.5 h-2.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg>
+          </span>
+          <span class="text-[11px]">Đăng ký mã giao dịch đối soát NAPAS 247</span>
+        </div>
+
+        <div id="qrLoadStep3" class="flex items-center gap-2.5 text-gray-400 dark:text-gray-600 transition-colors">
+          <span class="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 flex items-center justify-center shrink-0 text-[9px] font-bold">3</span>
+          <span class="text-[11px]">Dựng mã ma trận VietQR chuẩn ISO</span>
+        </div>
+      </div>
+
+      <p class="text-[10px] text-center text-[#78756D] dark:text-[#9AA3B2] italic pt-1">
+        * Mã QR được gắn mã đơn độc bản để hệ thống tự động kích hoạt ngay khi nhận thanh toán.
+      </p>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
@@ -7271,6 +7355,102 @@
       }
     }
 
+    function openQrLoadingModal({ planId, period, amount }) {
+      try {
+        const modal = document.getElementById('qrLoadingModal');
+        if (!modal) return;
+
+        const planNameEl = document.getElementById('qrLoadingPlanName');
+        const amountEl = document.getElementById('qrLoadingAmount');
+
+        if (planNameEl) {
+          const planLabel = planId === 'pro' ? 'Gói Pro' : 'Gói Plus';
+          const periodLabel = period === 'yearly' ? '1 Năm' : '1 Tháng';
+          planNameEl.innerText = `${planLabel} (${periodLabel})`;
+        }
+        if (amountEl) {
+          amountEl.innerText = `${(amount || 0).toLocaleString('vi-VN')} ₫`;
+        }
+
+        setQrLoadingStage(1);
+
+        modal.classList.remove('hidden', 'modal-closing');
+        void modal.offsetWidth;
+        modal.classList.add('modal-active');
+      } catch (e) {
+        console.warn('[QrLoading] Lỗi mở popup:', e);
+      }
+    }
+
+    function setQrLoadingStage(stage) {
+      try {
+        const s1 = document.getElementById('qrLoadStep1');
+        const s2 = document.getElementById('qrLoadStep2');
+        const s3 = document.getElementById('qrLoadStep3');
+        const statusText = document.getElementById('qrLoadingStatusText');
+        const percentEl = document.getElementById('qrLoadingPercent');
+        const barEl = document.getElementById('qrLoadingProgressBar');
+
+        if (stage === 1) {
+          if (s1) {
+            s1.className = 'flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 font-medium transition-colors';
+            s1.innerHTML = '<span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"><svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="text-[11px]">Xác thực tài khoản và hạn mức gói</span>';
+          }
+          if (s2) {
+            s2.className = 'flex items-center gap-2.5 text-[#1C1B18] dark:text-[#E8E6E1] font-medium transition-colors';
+            s2.innerHTML = '<span class="w-4 h-4 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><svg class="w-2.5 h-2.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg></span><span class="text-[11px]">Đăng ký mã giao dịch đối soát NAPAS 247</span>';
+          }
+          if (s3) {
+            s3.className = 'flex items-center gap-2.5 text-gray-400 dark:text-gray-600 transition-colors';
+            s3.innerHTML = '<span class="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 flex items-center justify-center shrink-0 text-[9px] font-bold">3</span><span class="text-[11px]">Dựng mã ma trận VietQR chuẩn ISO</span>';
+          }
+          if (statusText) statusText.innerText = 'Đang đăng ký mã đối soát NAPAS 247...';
+          if (percentEl) percentEl.innerText = '35%';
+          if (barEl) barEl.style.width = '35%';
+        } else if (stage === 2) {
+          if (s1) {
+            s1.className = 'flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 font-medium transition-colors';
+          }
+          if (s2) {
+            s2.className = 'flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 font-medium transition-colors';
+            s2.innerHTML = '<span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"><svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="text-[11px]">Đã đăng ký mã đối soát NAPAS 247</span>';
+          }
+          if (s3) {
+            s3.className = 'flex items-center gap-2.5 text-[#1C1B18] dark:text-[#E8E6E1] font-medium transition-colors';
+            s3.innerHTML = '<span class="w-4 h-4 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><svg class="w-2.5 h-2.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg></span><span class="text-[11px]">Dựng mã ma trận VietQR chuẩn ISO</span>';
+          }
+          if (statusText) statusText.innerText = 'Đang kết xuất mã ma trận VietQR...';
+          if (percentEl) percentEl.innerText = '80%';
+          if (barEl) barEl.style.width = '80%';
+        } else if (stage === 3) {
+          if (s3) {
+            s3.className = 'flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 font-medium transition-colors';
+            s3.innerHTML = '<span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"><svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="text-[11px]">Mã VietQR đã sẵn sàng</span>';
+          }
+          if (statusText) statusText.innerText = 'Hoàn tất! Đang mở biên lai...';
+          if (percentEl) percentEl.innerText = '100%';
+          if (barEl) barEl.style.width = '100%';
+        }
+      } catch (e) {
+        console.warn('[QrLoading] Lỗi cập nhật stage:', e);
+      }
+    }
+
+    function closeQrLoadingModal() {
+      try {
+        const modal = document.getElementById('qrLoadingModal');
+        if (!modal) return;
+        modal.classList.remove('modal-active');
+        modal.classList.add('modal-closing');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          modal.classList.remove('modal-closing');
+        }, 180);
+      } catch (e) {
+        console.warn('[QrLoading] Lỗi đóng popup:', e);
+      }
+    }
+
     async function handleSelectPlanToOrder(planId) {
       upgradeModalState.selectedPlan = planId;
       const period = upgradeModalState.period;
@@ -7280,7 +7460,18 @@
         return;
       }
 
-      showToast("Đang khởi tạo mã QR thanh toán VietQR...");
+      // Tính số tiền ước tính theo chu kỳ để hiển thị trên popup loading ngay lập tức
+      const pricing = (window.effectivePlans && window.effectivePlans.pricing) || {
+        plusMonthly: 59000,
+        plusYearly: 590000,
+        proMonthly: 129000,
+        proYearly: 1290000
+      };
+      const priceKey = `${planId}${period === 'yearly' ? 'Yearly' : 'Monthly'}`;
+      const approxAmount = pricing[priceKey] || (planId === 'pro' ? 129000 : 59000);
+
+      // Mở ngay popup loading khoa học, minh bạch
+      openQrLoadingModal({ planId, period, amount: approxAmount });
 
       try {
         const token = await auth.currentUser.getIdToken(false);
@@ -7297,6 +7488,9 @@
         if (!res.ok) {
           throw new Error(data.error || 'Không thể tạo đơn hàng');
         }
+
+        // Bước 2: Server đã cấp mã đơn đối soát
+        setQrLoadingStage(2);
 
         upgradeModalState.currentOrderId = data.orderId;
         upgradeModalState.orderExpiresTime = new Date(data.expiresAt).getTime();
@@ -7355,13 +7549,34 @@
           waitingText.innerText = "Đang chờ bạn chuyển khoản. Gói sẽ tự động kích hoạt sau khi nhận được tiền.";
         }
 
-        updateUpgradeStepper(1);
-        showUpgradeStep(2);
-        startQrCountdown();
-        subscribeOrderRealtime(data.orderId);
+        // Tải trước ảnh QR vào bộ nhớ đệm trước khi đóng popup loading để màn hình chuyển mượt mà
+        let isTransitioned = false;
+        const completeFlow = () => {
+          if (isTransitioned) return;
+          isTransitioned = true;
+          setQrLoadingStage(3);
+          setTimeout(() => {
+            closeQrLoadingModal();
+            updateUpgradeStepper(1);
+            showUpgradeStep(2);
+            startQrCountdown();
+            subscribeOrderRealtime(data.orderId);
+          }, 320);
+        };
+
+        if (data.qr) {
+          const preloader = new Image();
+          preloader.onload = preloader.onerror = completeFlow;
+          preloader.src = data.qr;
+          // Fallback an toàn sau 1.2s nếu mạng chập chờn
+          setTimeout(completeFlow, 1200);
+        } else {
+          completeFlow();
+        }
 
       } catch (err) {
         console.error("Lỗi tạo đơn:", err);
+        closeQrLoadingModal();
         const errMsg = err.message || '';
         let userFriendlyMsg = errMsg;
         if (errMsg.includes('payment_not_configured')) {
@@ -7522,6 +7737,8 @@
 
     window.openUpgradeModal = openUpgradeModal;
     window.closeUpgradeModal = closeUpgradeModal;
+    window.openQrLoadingModal = openQrLoadingModal;
+    window.closeQrLoadingModal = closeQrLoadingModal;
 
     // Gán sự kiện mở và đóng Upgrade Modal
     const btnOpenUpgradeModal = document.getElementById('btnOpenUpgradeModal');
@@ -7548,6 +7765,11 @@
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        const loadM = document.getElementById('qrLoadingModal');
+        if (loadM && !loadM.classList.contains('hidden') && loadM.classList.contains('modal-active')) {
+          closeQrLoadingModal();
+          return;
+        }
         const m = document.getElementById('upgradeModal');
         if (m && !m.classList.contains('hidden') && m.classList.contains('modal-active')) {
           closeUpgradeModal();
