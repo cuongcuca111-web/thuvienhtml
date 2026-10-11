@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/admin/ai/:action", "destination": "/api/admin/ai?action=:action" },
+    { "source": "/api/admin/plans/:action", "destination": "/api/admin/plans?action=:action" },
+    { "source": "/api/admin/pricing/:action", "destination": "/api/admin/plans?action=pricing-:action" },
+    { "source": "/api/admin/codes/:action", "destination": "/api/admin/codes?action=:action" },
+    { "source": "/api/admin/users/:action", "destination": "/api/admin/users?action=:action" }
+  ]
+}

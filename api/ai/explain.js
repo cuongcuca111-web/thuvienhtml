@@ -1,6 +1,6 @@
 const crypto = require('crypto');
-const { admin, initAdmin, getDb, getCachedPlansConfig } = require('../admin/_auth');
-const { callAI } = require('./_callAI');
+const { admin, initAdmin, getDb, getCachedPlansConfig } = require('../../lib/admin-auth');
+const { callAI } = require('../../lib/call-ai');
 
 // Rate limiting trong bộ nhớ: tối đa 10 yêu cầu / phút / user
 const rateLimitMap = new Map(); // key -> [timestamps]

@@ -1,4 +1,4 @@
-const { verifyAdmin } = require('./_auth');
+const { verifyAdmin } = require('../../lib/admin-auth');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
