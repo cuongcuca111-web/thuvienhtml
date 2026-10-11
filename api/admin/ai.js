@@ -264,11 +264,13 @@ module.exports = async function handler(req, res) {
         const testModels = [
           'gemini-1.5-flash',
           'gemini-2.0-flash',
+          'gemini-2.5-flash',
+          'gemini-1.5-flash-8b',
           'gemini-1.5-pro'
         ];
 
         let geminiOk = false;
-        let lastErr = '';
+        let testLog = [];
 
         for (const m of testModels) {
           try {
@@ -277,7 +279,7 @@ module.exports = async function handler(req, res) {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: 'Trả lời ngắn gọn: OK' }] }],
+                contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
                 generationConfig: { maxOutputTokens: 10 }
               })
             });
@@ -291,18 +293,16 @@ module.exports = async function handler(req, res) {
               break;
             } else {
               const d = await resp.json().catch(() => ({}));
-              lastErr = (d && d.error && d.error.message) || ('Lỗi từ Gemini (HTTP ' + resp.status + ')');
-              if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
-                break;
-              }
+              const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
+              testLog.push(m + ': ' + msg);
             }
           } catch (netErr) {
-            lastErr = netErr.message;
+            testLog.push(m + ': ' + netErr.message);
           }
         }
 
         if (!geminiOk) {
-          errorMsg = lastErr || 'Không thể kết nối tới Google Gemini.';
+          errorMsg = 'Chi tiết: ' + testLog.join(' | ');
         }
       } else if (provider === 'claude') {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
