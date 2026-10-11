@@ -253,31 +253,55 @@ module.exports = async function handler(req, res) {
       const apiKey = decryptKey(secDoc.data());
       const settingsSnap = await db.doc('config/ai_settings').get();
       const settings = settingsSnap.exists ? settingsSnap.data() : {};
-      let model = (settings.models && settings.models[provider] && settings.models[provider].fast) ||
-                  (DEFAULT_MODELS[provider] && DEFAULT_MODELS[provider].fast);
+      const model = (settings.models && settings.models[provider] && settings.models[provider].fast) ||
+                    (DEFAULT_MODELS[provider] && DEFAULT_MODELS[provider].fast);
 
       let testResponse = '';
       let success = false;
       let errorMsg = '';
 
       if (provider === 'gemini') {
-        const testModels = [
+        let availableModels = [];
+        try {
+          // 1. Tự động truy vấn trực tiếp Google API xem Key này hỗ trợ những model nào
+          const listResp = await fetch(https://generativelanguage.googleapis.com/v1beta/models?key=);
+          if (listResp.ok) {
+            const listData = await listResp.json();
+            availableModels = (listData.models || [])
+              .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+              .map(m => m.name.replace(/^models\//, ''));
+          } else {
+            const errJson = await listResp.json().catch(() => ({}));
+            if (listResp.status === 400 || listResp.status === 401 || listResp.status === 403) {
+              errorMsg = errJson?.error?.message || 'API key không hợp lệ hoặc không có quyền truy cập.';
+            }
+          }
+        } catch (e) {
+          console.warn('Lỗi gọi ListModels Gemini:', e.message);
+        }
+
+        // 2. Danh sách model ưu tiên thử nghiệm
+        const candidateModels = [
+          ...availableModels,
+          model ? model.replace(/-latest$/, '') : null,
           'gemini-1.5-flash',
           'gemini-2.0-flash',
+          'gemini-2.5-flash',
           'gemini-1.5-pro'
-        ];
+        ].filter(Boolean);
 
+        const uniqueCandidates = [...new Set(candidateModels)];
         let geminiOk = false;
-        let lastErr = '';
+        let lastErr = errorMsg || '';
 
-        for (const m of testModels) {
+        for (const m of uniqueCandidates) {
           try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const url = https://generativelanguage.googleapis.com/v1beta/models/:generateContent?key=;
             const resp = await fetch(url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: 'Trả lời ngắn gọn: OK' }] }],
+                contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
                 generationConfig: { maxOutputTokens: 10 }
               })
             });
@@ -291,7 +315,7 @@ module.exports = async function handler(req, res) {
               break;
             } else {
               const d = await resp.json().catch(() => ({}));
-              lastErr = d?.error?.message || `Lỗi từ Gemini (HTTP ${resp.status})`;
+              lastErr = d?.error?.message || HTTP ;
               if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
                 break;
               }
