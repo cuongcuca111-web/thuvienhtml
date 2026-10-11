@@ -10,10 +10,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // 2. Khóa API Bí mật (Admin Secrets - AES-256-GCM Encrypted):
+    // 2. Khóa API Bí mật & Bộ nhớ đệm AI (ai_cache, admin_secrets, users_guest_usage):
     // TUYỆT ĐỐI CẤM ĐỌC & CẤM GHI từ phía Client!
     // Chỉ có mã nguồn chạy trên máy chủ (Firebase Admin SDK) mới có quyền truy cập.
     match /admin_secrets/{document=**} {
+      allow read, write: if false;
+    }
+    match /ai_cache/{document=**} {
+      allow read, write: if false;
+    }
+    match /users_guest_usage/{document=**} {
       allow read, write: if false;
     }
 
