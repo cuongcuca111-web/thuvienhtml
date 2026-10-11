@@ -501,7 +501,7 @@ module.exports = async function handler(req, res) {
   // 3. NGƯỜI DÙNG BÁO ĐÃ CHUYỂN KHOẢN (POST /api/billing/confirm-transfer)
   if (action === 'confirm-transfer') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { orderId } = req.body || {};
+    const { orderId, proofImage, proofUrl } = req.body || {};
     if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
 
     try {
@@ -513,19 +513,71 @@ module.exports = async function handler(req, res) {
       if (order.uid !== uid) return res.status(403).json({ error: 'Không có quyền truy cập đơn' });
       if (order.status === 'paid') return res.status(200).json({ success: true, status: 'paid' });
 
-      await docRef.update({
+      const updateData = {
         status: 'user_confirmed',
         userConfirmedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      });
+      };
+
+      const finalProof = proofImage || proofUrl;
+      if (finalProof && typeof finalProof === 'string') {
+        // Giới hạn an toàn tối đa 800KB để không vượt quá giới hạn tài liệu Firestore
+        if (finalProof.length < 850000) {
+          updateData.proofUrl = finalProof;
+        }
+      }
+
+      await docRef.update(updateData);
 
       return res.status(200).json({
         success: true,
         status: 'user_confirmed',
-        message: 'Đã ghi nhận thông báo chuyển khoản. Hệ thống đang tiến hành kiểm tra.'
+        message: 'Đã ghi nhận thông báo chuyển khoản kèm ảnh biên lai. Hệ thống đang tiến hành kiểm tra.'
       });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi cập nhật: ' + err.message });
+    }
+  }
+
+  // 4. LỊCH SỬ ĐƠN HÀNG CỦA NGƯỜI DÙNG (GET /api/billing?action=order-history)
+  if (action === 'order-history') {
+    if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
+    try {
+      // Chỉ dùng .where('uid', '==', uid) để KHÔNG BAO GIỜ cần composite index
+      const ordersSnap = await db.collection('billing_orders')
+        .where('uid', '==', uid)
+        .limit(50)
+        .get();
+
+      const orders = [];
+      ordersSnap.forEach(docSnap => {
+        const o = docSnap.data();
+        orders.push({
+          id: docSnap.id,
+          code: o.code || '',
+          planId: o.planId || '',
+          period: o.period || 'monthly',
+          amount: o.amount || 0,
+          currency: o.currency || 'VND',
+          status: o.status || 'pending',
+          createdAt: o.createdAt || '',
+          paidAt: o.paidAt || null,
+          userConfirmedAt: o.userConfirmedAt || null,
+          proofUrl: o.proofUrl || null
+        });
+      });
+
+      // Sắp xếp đơn mới nhất lên đầu trong bộ nhớ
+      orders.sort((a, b) => {
+        const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return tB - tA;
+      });
+
+      return res.status(200).json({ success: true, orders });
+    } catch (err) {
+      console.error('[Billing] Lỗi tải lịch sử đơn hàng:', err);
+      return res.status(500).json({ error: 'Lỗi tải lịch sử đơn hàng: ' + err.message });
     }
   }
 

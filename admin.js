@@ -2438,10 +2438,11 @@ async function renderBillingTab(container) {
               <table class="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr class="border-b border-gray-100 dark:border-gray-800 bg-[#F8F7F4]/60 dark:bg-[#14171C]/60 text-gray-500 font-semibold">
-                    <th class="py-3 px-3.5">Mã đơn</th>
+                    <th class="py-3 px-3.5">Mã đơn / Nội dung CK</th>
                     <th class="py-3 px-3.5">Người dùng</th>
                     <th class="py-3 px-3.5">Gói / Chu kỳ</th>
                     <th class="py-3 px-3.5 text-right">Số tiền</th>
+                    <th class="py-3 px-3.5 text-center">Biên lai</th>
                     <th class="py-3 px-3.5 text-center">Trạng thái</th>
                     <th class="py-3 px-3.5">Thời gian</th>
                     <th class="py-3 px-3.5 text-right">Thao tác</th>
@@ -2599,7 +2600,7 @@ function sortOrdersByPriority(orders) {
 function renderOrdersTableRows(orders) {
   const sorted = sortOrdersByPriority(orders);
   if (!sorted || sorted.length === 0) {
-    return `<tr><td colspan="7" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
+    return `<tr><td colspan="8" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
   }
 
   return sorted.map(ord => {
@@ -2620,13 +2621,32 @@ function renderOrdersTableRows(orders) {
 
     return `
       <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
-        <td class="py-3 px-3.5 font-mono font-bold text-indigo-600">${esc(ord.code)}</td>
+        <td class="py-3 px-3.5">
+          <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">${esc(ord.code)}</div>
+          <div class="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
+            <span>Nội dung CK:</span>
+            <span class="font-mono font-bold text-gray-800 dark:text-gray-200 select-all">${esc(ord.code)}</span>
+            <button type="button" class="btn-admin-copy-code p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-indigo-600 transition cursor-pointer" data-code="${esc(ord.code)}" title="Sao chép nội dung chuyển khoản">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
+        </td>
         <td class="py-3 px-3.5">
           <div class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">${esc(ord.userEmail || 'Ẩn danh')}</div>
           <div class="text-[10px] text-gray-400 font-mono">${esc((ord.uid || '').substring(0, 10))}...</div>
         </td>
         <td class="py-3 px-3.5 font-semibold text-gray-700 dark:text-gray-300">${esc(planText)}</td>
         <td class="py-3 px-3.5 text-right font-mono font-bold text-[#1C1B18] dark:text-[#E8E6E1]">${esc(amountStr)}</td>
+        <td class="py-3 px-3.5 text-center">
+          ${ord.proofUrl ? `
+            <button type="button" class="btn-admin-view-proof inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 font-semibold text-[11px] border border-indigo-200 dark:border-indigo-800 transition cursor-pointer active:scale-95 shadow-2xs" data-img="${esc(ord.proofUrl)}" data-code="${esc(ord.code)}" data-amount="${esc(amountStr)}" data-email="${esc(ord.userEmail || 'Ẩn danh')}" data-id="${esc(ord.id)}" data-status="${esc(ord.status)}" title="Bấm để xem ảnh biên lai chuyển khoản">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>Xem bill</span>
+            </button>
+          ` : `
+            <span class="text-[11px] text-gray-400 italic">Chưa có</span>
+          `}
+        </td>
         <td class="py-3 px-3.5 text-center">${statusBadge}</td>
         <td class="py-3 px-3.5 text-gray-500 text-[11px]">${esc(createdDate)}</td>
         <td class="py-3 px-3.5 text-right space-x-1 whitespace-nowrap">
@@ -2903,6 +2923,37 @@ function bindBillingTabEvents(container, orders) {
     };
   });
 
+  // Sao chép nhanh nội dung chuyển khoản
+  container.querySelectorAll('.btn-admin-copy-code').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const code = btn.dataset.code || '';
+      if (!code) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          toast(`Đã sao chép nội dung CK: ${code}`);
+        }).catch(() => {});
+      } else {
+        toast(`Nội dung CK: ${code}`);
+      }
+    };
+  });
+
+  // Xem ảnh bill chuyển khoản (Lightbox)
+  container.querySelectorAll('.btn-admin-view-proof').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const imgUrl = btn.dataset.img;
+      const code = btn.dataset.code || '';
+      const amount = btn.dataset.amount || '';
+      const email = btn.dataset.email || '';
+      const orderId = btn.dataset.id || '';
+      const status = btn.dataset.status || '';
+      if (!imgUrl) return;
+      showAdminProofLightbox({ imgUrl, code, amount, email, orderId, status, container });
+    };
+  });
+
   // Tìm kiếm & Lọc trạng thái đơn hàng
   const searchInput = container.querySelector('#billingSearchOrderInput');
   const statusFilter = container.querySelector('#billingStatusFilter');
@@ -2922,6 +2973,85 @@ function bindBillingTabEvents(container, orders) {
 
   if (searchInput) searchInput.oninput = debounce(filterHandler, 300);
   if (statusFilter) statusFilter.onchange = filterHandler;
+}
+
+function showAdminProofLightbox(opts) {
+  const { imgUrl, code, amount, email, orderId, status, container } = opts || {};
+  let modal = document.getElementById('adminProofLightboxModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'adminProofLightboxModal';
+    modal.className = 'fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs transition-opacity';
+    document.body.appendChild(modal);
+  }
+
+  const isPendingOrConfirmed = status === 'user_confirmed' || status === 'pending';
+
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-[#1A1D23] rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh]">
+      <div class="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+        <div>
+          <h4 class="font-serif font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]">Biên lai chuyển khoản của khách</h4>
+          <p class="text-[11px] text-gray-500 font-mono mt-0.5">Mã đơn: <strong class="text-indigo-600 dark:text-indigo-400 font-bold">${esc(code)}</strong> · Số tiền: <strong>${esc(amount)}</strong> · ${esc(email)}</p>
+        </div>
+        <button type="button" id="btnCloseProofLightbox" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="flex-1 p-4 bg-gray-50 dark:bg-[#14171C] overflow-auto flex items-center justify-center min-h-[300px]">
+        <img src="${esc(imgUrl)}" alt="Biên lai chuyển khoản" class="max-w-full max-h-[62vh] object-contain rounded-xl shadow-md border border-gray-200 dark:border-gray-800" />
+      </div>
+      <div class="px-5 py-3.5 bg-white dark:bg-[#1A1D23] border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs">
+        <a href="${esc(imgUrl)}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 font-semibold">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <span>Mở ảnh tab mới</span>
+        </a>
+        <div class="flex items-center gap-2">
+          ${isPendingOrConfirmed ? `
+            <button type="button" id="btnProofLightboxApprove" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-2xs transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Duyệt đơn này</span>
+            </button>
+          ` : ''}
+          <button type="button" id="btnProofLightboxClose" class="px-3.5 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold cursor-pointer">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+
+  const closeMe = () => {
+    modal.classList.add('hidden');
+  };
+  modal.querySelector('#btnCloseProofLightbox').onclick = closeMe;
+  modal.querySelector('#btnProofLightboxClose').onclick = closeMe;
+  modal.onclick = (e) => {
+    if (e.target === modal) closeMe();
+  };
+
+  const btnApprove = modal.querySelector('#btnProofLightboxApprove');
+  if (btnApprove) {
+    btnApprove.onclick = async () => {
+      btnApprove.disabled = true;
+      btnApprove.innerText = 'Đang duyệt...';
+      try {
+        await callAdminApi('/api/admin/billing/orders-confirm', {
+          method: 'POST',
+          body: JSON.stringify({ orderId, reason: 'Admin duyệt sau khi xem bill' })
+        });
+        toast(`Đã kích hoạt thành công đơn ${code}!`);
+        closeMe();
+        if (container) renderBillingTab(container);
+      } catch (err) {
+        alert('Lỗi duyệt đơn: ' + err.message);
+        btnApprove.disabled = false;
+        btnApprove.innerText = 'Duyệt đơn này';
+      }
+    };
+  }
 }
 
 function debounce(fn, ms) {

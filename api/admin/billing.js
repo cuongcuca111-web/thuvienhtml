@@ -406,7 +406,8 @@ module.exports = async function handler(req, res) {
           createdAt: data.createdAt,
           expiresAt: data.expiresAt,
           paidAt: data.paidAt || null,
-          userConfirmedAt: data.userConfirmedAt || null
+          userConfirmedAt: data.userConfirmedAt || null,
+          proofUrl: data.proofUrl || null
         });
       });
 
