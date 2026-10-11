@@ -3511,7 +3511,7 @@
   </div>
 
   <!-- // FEATURE-2: Floating Toolbar cho Đóng Khung & Ghi chú trên bài đọc (VIỆC 4) -->
-  <div id="highlightFloatingToolbar" class="hidden fixed z-50 bg-[#1C1917] dark:bg-[#EDECE8] text-white dark:text-[#1C1917] rounded-xl shadow-2xl p-1.5 flex items-center gap-1.5 text-xs transition-opacity duration-150 border border-white/10 dark:border-black/10 select-none">
+  <div id="highlightFloatingToolbar" class="hidden fixed z-50 bg-[#1C1917] dark:bg-[#EDECE8] text-white dark:text-[#1C1917] rounded-xl shadow-2xl p-1.5 flex items-center gap-1.5 text-xs transition-opacity duration-150 border border-white/10 dark:border-black/10 select-none max-w-[calc(100vw-24px)] box-border">
     <!-- Nút Đóng khung chính -->
     <button id="btnApplyFraming" type="button" class="touch-target px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-medium text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer" title="Đóng khung đoạn đã chọn">
       <svg class="w-3.5 h-3.5 shrink-0"><use href="#frame-glyph"></use></svg>
@@ -9962,10 +9962,13 @@
             ? Math.max(10, ifRect.top + rect.bottom + 8)
             : Math.max(10, ifRect.top + rect.top - 46);
           const centerHoriz = ifRect.left + rect.left + ((rect.width || 0) / 2);
-          const leftPos = Math.max(12, Math.min(window.innerWidth - 320, centerHoriz - 140));
+          hlToolbar.classList.remove('hidden');
+          const tbWidth = hlToolbar.offsetWidth || 520;
+          const padding = 12;
+          const maxLeft = Math.max(padding, window.innerWidth - tbWidth - padding);
+          const leftPos = Math.max(padding, Math.min(maxLeft, centerHoriz - (tbWidth / 2)));
           hlToolbar.style.top = `${topPos}px`;
           hlToolbar.style.left = `${leftPos}px`;
-          hlToolbar.classList.remove('hidden');
           if (typeof updateToolbarColorIndicators === 'function') {
             updateToolbarColorIndicators();
           }
