@@ -1,0 +1,12 @@
+{
+  "name": "thuvienhtml",
+  "version": "4.9.2",
+  "private": true,
+  "description": "Thư viện Sách HTML",
+  "scripts": {
+    "set-admin": "node scripts/set-admin.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
