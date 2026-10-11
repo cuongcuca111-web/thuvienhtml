@@ -3407,10 +3407,10 @@
       <span class="text-[11px] hidden sm:inline font-medium">Ghi chú</span>
     </button>
 
-    <!-- Nút Tẩy khung -->
-    <button id="btnHlEraser" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg flex items-center gap-1 text-amber-300 dark:text-amber-600 transition cursor-pointer" title="Xóa khung (Cục Tẩy)">
-      <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-eraser"></use></svg>
-      <span class="text-[11px] hidden sm:inline font-medium">Tẩy</span>
+    <!-- Nút Xóa khung / Tẩy khung -->
+    <button id="btnHlEraser" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg flex items-center gap-1 text-rose-300 dark:text-rose-400 transition cursor-pointer hidden" title="Xóa mọi khung trong vùng chọn (Delete/Backspace)">
+      <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-trash-2"></use></svg>
+      <span class="text-[11px] hidden sm:inline font-medium">Xóa khung</span>
     </button>
 
     <!-- Nút Sao chép văn bản -->
@@ -8219,6 +8219,16 @@
 
   // 5. Chuyển tiếp phím tắt & cử chỉ vuốt
   window.addEventListener('keydown', (e) => {
+    const activeEl = document.activeElement;
+    const tag = (activeEl && activeEl.tagName) ? activeEl.tagName.toUpperCase() : '';
+    if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !activeEl?.isContentEditable) {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const sel = window.getSelection();
+        if (sel && !sel.isCollapsed && sel.toString().trim()) {
+          e.preventDefault();
+        }
+      }
+    }
     window.parent.postMessage({
       type: 'FORWARD_KEY',
       key: e.key,
@@ -8976,6 +8986,9 @@
             hlToolbar.style.top = `${topPos}px`;
             hlToolbar.style.left = `${leftPos}px`;
             hlToolbar.classList.remove('hidden');
+            if (typeof updateToolbarEraserState === 'function') {
+              updateToolbarEraserState(checkSelectionIntersectsFrames());
+            }
           }
           break;
         }
@@ -8985,6 +8998,9 @@
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           if (hlToolbar && !hlToolbar.matches(':hover')) {
             hlToolbar.classList.add('hidden');
+            if (typeof updateToolbarEraserState === 'function') {
+              updateToolbarEraserState(false);
+            }
           }
           break;
         }
@@ -9080,6 +9096,16 @@
       } else if (k === 'f' && !keyEvt.ctrlKey && !keyEvt.metaKey) {
         const btnFocus = document.getElementById('btnToggleFocusMode');
         if (btnFocus) btnFocus.click();
+      } else if (k === 'Delete' || k === 'Backspace') {
+        const activeEl = document.activeElement;
+        const tag = (activeEl?.tagName || '').toUpperCase();
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !activeEl?.isContentEditable) {
+          if (typeof checkSelectionIntersectsFrames === 'function' && checkSelectionIntersectsFrames()) {
+            if (typeof eraseCurrentSelectionOrHighlight === 'function') {
+              eraseCurrentSelectionOrHighlight();
+            }
+          }
+        }
       }
     }
 
@@ -10117,11 +10143,20 @@
       }
     }
 
-    // // FIX-2/3: Thông báo Toast có nút hành động (Hoàn tác / Xem)
-    function showActionToast(message, actionLabel, actionCallback) {
+    // // FIX-2/3: Thông báo Toast có nút hành động (Hoàn tác / Xem) - Hỗ trợ key chống trùng & thời gian tùy chỉnh
+    function showActionToast(message, actionLabel, actionCallback, options = {}) {
       const container = document.getElementById('toastContainer');
       if (!container) return;
+      const key = (typeof options === 'object' && options?.key) ? options.key : (typeof options === 'string' ? options : null);
+      const duration = (typeof options === 'object' && typeof options?.duration === 'number') ? options.duration : 5000;
+
+      if (key) {
+        const existing = container.querySelector(`[data-toast-key="${key}"]`);
+        if (existing) existing.remove();
+      }
+
       const toast = document.createElement('div');
+      if (key) toast.setAttribute('data-toast-key', key);
       toast.className = 'toast-animated pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium shadow-xl border border-white/10 bg-[#161A20] text-white dark:bg-white dark:text-[#1A1A1A] dark:border-black/10 z-50 select-none';
       toast.innerHTML = `
         <div class="flex items-center gap-2 min-w-0">
@@ -10149,8 +10184,9 @@
           toast.classList.add('toast-closing');
           setTimeout(() => toast.remove(), 200);
         }
-      }, 4000);
+      }, duration);
     }
+    window.showActionToast = showActionToast;
     window.showToast = showToast;
 
 
@@ -21803,6 +21839,9 @@
             if (!sel || sel.isCollapsed || !sel.toString().trim()) {
               if (hlToolbar && !hlToolbar.matches(':hover')) {
                 hlToolbar.classList.add('hidden');
+                if (typeof updateToolbarEraserState === 'function') {
+                  updateToolbarEraserState(false);
+                }
               }
               currentSelectionInfo = null;
               lastHintedFrameId = null;
@@ -21859,6 +21898,9 @@
               hlToolbar.style.left = `${leftPos}px`;
               hlToolbar.classList.remove('hidden');
               updateToolbarColorIndicators();
+              if (typeof updateToolbarEraserState === 'function') {
+                updateToolbarEraserState(checkSelectionIntersectsFrames());
+              }
             }
           }, 30);
         };
@@ -22151,19 +22193,35 @@
 
     function applyEraserCut(existingFrames, s, e, fullText) {
       if (!Array.isArray(existingFrames) || s === undefined || e === undefined || e <= s) {
-        return existingFrames || [];
+        return { resultFrames: existingFrames || [], affectedCount: 0 };
       }
       const resultFrames = [];
+      let affectedCount = 0;
       for (const old of existingFrames) {
+        if (!old || typeof old !== 'object') continue;
+        ensureFrameOffsets(old, fullText);
         const os = old.startOffset;
         const oe = old.endOffset;
+        if (typeof os !== 'number' || typeof oe !== 'number' || oe <= os) {
+          console.warn('Bỏ qua khung dữ liệu không hợp lệ:', old);
+          continue;
+        }
+
+        // 1. Không giao: oe <= s hoặc os >= e -> giữ nguyên
         if (oe <= s || os >= e) {
           resultFrames.push(old);
           continue;
         }
+
+        // Ghi nhận khung có giao với vùng chọn
+        affectedCount++;
+
+        // 2. Nằm trọn trong vùng bôi đen: os >= s và oe <= e -> XÓA khung
         if (os >= s && oe <= e) {
           continue;
         }
+
+        // 4. Vùng bôi đen nằm giữa khung: os < s và e < oe -> TÁCH thành hai khung [os, s) và [e, oe)
         if (os < s && e < oe) {
           const p1 = fullText ? fullText.substring(os, s) : '';
           if (p1.trim().length >= 1) {
@@ -22191,33 +22249,41 @@
           }
           continue;
         }
+
+        // 3A. Giao một phần ở đuôi: os < s < oe <= e -> còn [os, s)
         if (os < s && oe <= e) {
           const p1 = fullText ? fullText.substring(os, s) : '';
           if (p1.trim().length >= 1) {
-            old.startOffset = os;
-            old.endOffset = s;
-            old.text = p1;
-            if (old.anchor) old.anchor.exact = p1;
-            old.updatedAt = Date.now();
-            resultFrames.push(old);
+            resultFrames.push({
+              ...old,
+              startOffset: os,
+              endOffset: s,
+              text: p1,
+              anchor: { exact: p1, prefix: '', suffix: '' },
+              updatedAt: Date.now()
+            });
           }
           continue;
         }
+
+        // 3B. Giao một phần ở đầu: s <= os < e < oe -> còn [e, oe)
         if (s <= os && e < oe) {
           const p2 = fullText ? fullText.substring(e, oe) : '';
           if (p2.trim().length >= 1) {
-            old.startOffset = e;
-            old.endOffset = oe;
-            old.text = p2;
-            if (old.anchor) old.anchor.exact = p2;
-            old.updatedAt = Date.now();
-            resultFrames.push(old);
+            resultFrames.push({
+              ...old,
+              startOffset: e,
+              endOffset: oe,
+              text: p2,
+              anchor: { exact: p2, prefix: '', suffix: '' },
+              updatedAt: Date.now()
+            });
           }
           continue;
         }
       }
       resultFrames.sort((a, b) => (a.startOffset || 0) - (b.startOffset || 0));
-      return resultFrames;
+      return { resultFrames, affectedCount };
     }
 
     function migrateAndCleanOverlappingFrames(frames, fullText) {
@@ -22371,41 +22437,39 @@
       return applyFramingToCurrentSelection(colorName);
     }
 
-    // Thao tác Cục Tẩy (Eraser) - tẩy phần bôi đen trong khung (cắt/tách) hoặc xóa toàn bộ khung đang chọn
-    function eraseCurrentSelectionOrHighlight() {
-      if (!state.activeLessonId) return;
-
-      const curLessonId = state.activeLessonId;
-      const curList = (state.learningData.frames && state.learningData.frames[curLessonId]) || [];
-      const backupList = JSON.parse(JSON.stringify(curList));
-
-      const iframe = document.getElementById('lessonIframe');
-      const doc = getSafeIframeDocument(iframe);
-      const root = (doc && (doc.querySelector('#article-content') || doc.body)) || null;
-      const fullText = root ? (root.textContent || '') : '';
-
-      let text = '';
-      let range = null;
-
-      if (doc) {
-        const sel = doc.getSelection();
-        if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
-          range = sel.getRangeAt(0);
-          text = sel.toString().trim();
+    function getCurrentSelectionOffsets() {
+      try {
+        if (window._lastCapturedSelectionOffsets && 
+            (Date.now() - (window._lastCapturedSelectionTime || 0)) < 1500) {
+          return window._lastCapturedSelectionOffsets;
         }
-      }
-      if (!text) {
-        const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
-        if (bridgeInfo && bridgeInfo.text) {
-          text = bridgeInfo.text;
-        } else if (currentSelectionInfo && currentSelectionInfo.text) {
-          text = currentSelectionInfo.text;
-          range = currentSelectionInfo.range || null;
-        }
-      }
 
-      // TRƯỜNG HỢP 1: Người dùng bôi đen một đoạn bên trong khung để tẩy (áp dụng cắt/tách theo [s, e))
-      if (text && text.length >= 1 && fullText) {
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        const root = (doc && (doc.querySelector('#article-content') || doc.body)) || null;
+        const fullText = root ? (root.textContent || '') : '';
+        let range = null;
+        let text = '';
+
+        if (doc) {
+          const sel = doc.getSelection();
+          if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
+            range = sel.getRangeAt(0);
+            text = sel.toString().trim();
+          }
+        }
+        if (!text) {
+          const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
+          if (bridgeInfo && bridgeInfo.text) {
+            text = bridgeInfo.text;
+          } else if (currentSelectionInfo && currentSelectionInfo.text) {
+            text = currentSelectionInfo.text;
+            range = currentSelectionInfo.range || null;
+          }
+        }
+
+        if (!text || !fullText) return null;
+
         let s = -1, e = -1;
         if (range && root) {
           const offsets = getRangeOffsets(range, root);
@@ -22420,76 +22484,167 @@
         }
 
         if (s !== -1 && e > s) {
-          curList.forEach(item => ensureFrameOffsets(item, fullText));
-          const updatedFrames = applyEraserCut(curList, s, e, fullText);
-          state.learningData.frames[curLessonId] = updatedFrames;
-          if (state.learningData.highlights) {
-            state.learningData.highlights[curLessonId] = updatedFrames;
+          return { start: s, end: e, text, fullText, root, range };
+        }
+      } catch (err) {
+        console.warn('Lỗi getCurrentSelectionOffsets:', err);
+      }
+      return null;
+    }
+
+    function checkSelectionIntersectsFrames() {
+      try {
+        if (!state.activeLessonId) return false;
+        if (activeHighlightItem && activeHighlightItem.id) return true;
+        const offsets = getCurrentSelectionOffsets();
+        if (!offsets) return false;
+        const list = (state.learningData.frames && state.learningData.frames[state.activeLessonId]) ||
+                     (state.learningData.highlights && state.learningData.highlights[state.activeLessonId]) || [];
+        if (list.length === 0) return false;
+        for (const f of list) {
+          if (!f) continue;
+          ensureFrameOffsets(f, offsets.fullText);
+          const os = f.startOffset;
+          const oe = f.endOffset;
+          if (typeof os === 'number' && typeof oe === 'number' && oe > os) {
+            if (oe > offsets.start && os < offsets.end) {
+              return true;
+            }
           }
+        }
+      } catch (err) {
+        console.warn('Lỗi checkSelectionIntersectsFrames:', err);
+      }
+      return false;
+    }
 
-          debouncedSaveLearningData(300);
+    function updateToolbarEraserState(hasIntersectingFrames) {
+      const btnEraser = document.getElementById('btnHlEraser');
+      if (!btnEraser) return;
+      if (hasIntersectingFrames) {
+        btnEraser.classList.remove('hidden');
+        btnEraser.innerHTML = `
+          <svg class="w-3.5 h-3.5 shrink-0 text-rose-300 dark:text-rose-400"><use href="#icon-trash-2"></use></svg>
+          <span class="text-[11px] hidden sm:inline font-medium text-rose-300 dark:text-rose-400">Xóa khung</span>
+        `;
+        btnEraser.title = "Xóa mọi khung trong vùng chọn (Delete/Backspace)";
+      } else {
+        btnEraser.classList.add('hidden');
+      }
+    }
 
-          postMessageToLessonIframe({
-            type: 'RESTORE_FRAMES',
-            frames: updatedFrames
-          });
+    // Thao tác Xóa khung / Cục Tẩy (Eraser) - xóa MỌI khung nằm trong vùng bôi đen hoặc xóa khung đang chạm
+    function eraseCurrentSelectionOrHighlight() {
+      try {
+        if (!state.activeLessonId) return;
 
-          if (hlToolbar) hlToolbar.classList.add('hidden');
-          currentSelectionInfo = null;
-          currentSelectionInfoBridge = null;
-          activeHighlightItem = null;
+        const curLessonId = state.activeLessonId;
+        const curList = (state.learningData.frames && state.learningData.frames[curLessonId]) ||
+                        (state.learningData.highlights && state.learningData.highlights[curLessonId]) || [];
+        const backupList = JSON.parse(JSON.stringify(curList));
 
-          showActionToast("Đã tẩy phần khung đã chọn", "Hoàn tác", () => {
-            state.learningData.frames[curLessonId] = backupList;
-            if (state.learningData.highlights) state.learningData.highlights[curLessonId] = backupList;
+        const offsets = getCurrentSelectionOffsets();
+
+        // TRƯỜNG HỢP 1: Người dùng bôi đen một đoạn có chứa khung (xóa/cắt/tách MỌI khung giao với vùng chọn)
+        if (offsets && offsets.end > offsets.start) {
+          const s = offsets.start;
+          const e = offsets.end;
+          curList.forEach(item => ensureFrameOffsets(item, offsets.fullText));
+
+          const res = applyEraserCut(curList, s, e, offsets.fullText);
+          const updatedFrames = res.resultFrames;
+          const affectedCount = res.affectedCount;
+
+          if (affectedCount > 0) {
+            state.learningData.frames[curLessonId] = updatedFrames;
+            if (state.learningData.highlights) {
+              state.learningData.highlights[curLessonId] = updatedFrames;
+            }
+
             debouncedSaveLearningData(300);
-            restoreFramesForLesson(curLessonId);
-            showToast("Đã hoàn tác khôi phục khung!");
-          });
+
+            postMessageToLessonIframe({
+              type: 'RESTORE_FRAMES',
+              frames: updatedFrames
+            });
+
+            if (typeof renderAllNotesView === 'function') {
+              renderAllNotesView();
+            }
+
+            if (hlToolbar) hlToolbar.classList.add('hidden');
+            currentSelectionInfo = null;
+            currentSelectionInfoBridge = null;
+            activeHighlightItem = null;
+            window._lastCapturedSelectionOffsets = null;
+
+            const toastMsg = affectedCount > 1 
+              ? `Đã xóa ${affectedCount} khung trong vùng chọn` 
+              : `Đã xóa 1 khung trong vùng chọn`;
+
+            showActionToast(toastMsg, "Hoàn tác", () => {
+              state.learningData.frames[curLessonId] = backupList;
+              if (state.learningData.highlights) state.learningData.highlights[curLessonId] = backupList;
+              debouncedSaveLearningData(300);
+              restoreFramesForLesson(curLessonId);
+              if (typeof renderAllNotesView === 'function') renderAllNotesView();
+              showToast("Đã hoàn tác khôi phục khung!");
+            }, { key: 'erase-frame-action', duration: 5000 });
+            return;
+          }
+        }
+
+        // TRƯỜNG HỢP 2: Bấm vào cả khung hoặc badge để tẩy toàn bộ khung đó
+        let targetFrameId = null;
+        if (activeHighlightItem && activeHighlightItem.id) {
+          targetFrameId = activeHighlightItem.id;
+        } else if (currentSelectionInfoBridge && currentSelectionInfoBridge.frameId) {
+          targetFrameId = currentSelectionInfoBridge.frameId;
+        } else if (offsets && offsets.text) {
+          const match = curList.find(f => (f.anchor?.exact || f.text || '').includes(offsets.text));
+          if (match) targetFrameId = match.id;
+        }
+
+        if (!targetFrameId) {
+          showToast("Vui lòng chọn đoạn có khung hoặc bấm vào khung để xóa", "error");
           return;
         }
-      }
 
-      // TRƯỜNG HỢP 2: Bấm vào cả khung hoặc badge để tẩy toàn bộ khung đó
-      let targetFrameId = null;
-      if (activeHighlightItem && activeHighlightItem.id) {
-        targetFrameId = activeHighlightItem.id;
-      } else if (currentSelectionInfoBridge && currentSelectionInfoBridge.frameId) {
-        targetFrameId = currentSelectionInfoBridge.frameId;
-      } else if (text) {
-        const match = curList.find(f => (f.anchor?.exact || f.text || '').includes(text));
-        if (match) targetFrameId = match.id;
-      }
+        const remainingFrames = curList.filter(h => h.id !== targetFrameId);
+        state.learningData.frames[curLessonId] = remainingFrames;
+        if (state.learningData.highlights && state.learningData.highlights[curLessonId]) {
+          state.learningData.highlights[curLessonId] = state.learningData.highlights[curLessonId].filter(h => h.id !== targetFrameId);
+        }
 
-      if (!targetFrameId) {
-        showToast("Vui lòng chọn đoạn trong khung hoặc bấm vào khung để tẩy", "error");
-        return;
-      }
+        postMessageToLessonIframe({
+          type: 'RESTORE_FRAMES',
+          frames: remainingFrames
+        });
 
-      const remainingFrames = curList.filter(h => h.id !== targetFrameId);
-      state.learningData.frames[curLessonId] = remainingFrames;
-      if (state.learningData.highlights && state.learningData.highlights[curLessonId]) {
-        state.learningData.highlights[curLessonId] = state.learningData.highlights[curLessonId].filter(h => h.id !== targetFrameId);
-      }
-
-      postMessageToLessonIframe({
-        type: 'RESTORE_FRAMES',
-        frames: remainingFrames
-      });
-
-      debouncedSaveLearningData(300);
-      if (hlToolbar) hlToolbar.classList.add('hidden');
-      currentSelectionInfo = null;
-      currentSelectionInfoBridge = null;
-      activeHighlightItem = null;
-
-      showActionToast("Đã xóa khung đánh dấu", "Hoàn tác", () => {
-        state.learningData.frames[curLessonId] = backupList;
-        if (state.learningData.highlights) state.learningData.highlights[curLessonId] = backupList;
         debouncedSaveLearningData(300);
-        restoreFramesForLesson(curLessonId);
-        showToast("Đã hoàn tác khôi phục khung!");
-      });
+
+        if (typeof renderAllNotesView === 'function') {
+          renderAllNotesView();
+        }
+
+        if (hlToolbar) hlToolbar.classList.add('hidden');
+        currentSelectionInfo = null;
+        currentSelectionInfoBridge = null;
+        activeHighlightItem = null;
+        window._lastCapturedSelectionOffsets = null;
+
+        showActionToast("Đã xóa 1 khung đánh dấu", "Hoàn tác", () => {
+          state.learningData.frames[curLessonId] = backupList;
+          if (state.learningData.highlights) state.learningData.highlights[curLessonId] = backupList;
+          debouncedSaveLearningData(300);
+          restoreFramesForLesson(curLessonId);
+          if (typeof renderAllNotesView === 'function') renderAllNotesView();
+          showToast("Đã hoàn tác khôi phục khung!");
+        }, { key: 'erase-frame-action', duration: 5000 });
+
+      } catch (err) {
+        console.warn('Lỗi trong eraseCurrentSelectionOrHighlight:', err);
+      }
     }
 
     // Gắn sự kiện các nút trên Floating Toolbar
@@ -22565,11 +22720,37 @@
       });
     }
 
-    // Nút Tẩy khung
+    // Nút Xóa khung / Tẩy khung
     const btnHlEraser = document.getElementById('btnHlEraser');
     if (btnHlEraser) {
-      btnHlEraser.addEventListener('click', eraseCurrentSelectionOrHighlight);
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+        btnHlEraser.addEventListener(evt, (e) => {
+          e.preventDefault();
+          window._lastCapturedSelectionOffsets = getCurrentSelectionOffsets();
+          window._lastCapturedSelectionTime = Date.now();
+        }, { passive: false });
+      });
+      btnHlEraser.addEventListener('click', (e) => {
+        e.preventDefault();
+        eraseCurrentSelectionOrHighlight();
+      });
     }
+
+    // Phím tắt Delete / Backspace xóa khung khi bôi đen có khung
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeEl = document.activeElement;
+        const tag = (activeEl?.tagName || '').toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || activeEl?.isContentEditable) return;
+        const detailModal = document.getElementById('highlightDetailModal');
+        if (detailModal && !detailModal.classList.contains('hidden')) return;
+
+        if (typeof checkSelectionIntersectsFrames === 'function' && checkSelectionIntersectsFrames()) {
+          e.preventDefault();
+          eraseCurrentSelectionOrHighlight();
+        }
+      }
+    });
 
     // Nút Sao chép văn bản
     function fallbackCopyText(text) {
