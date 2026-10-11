@@ -7494,24 +7494,104 @@
     });
   }
 
+  // 1. Hàm getTextRects(range) CHỈ lấy rect của chữ, bỏ qua rect của phần tử khối
+  function getTextRects(range, layerRect, scale = 1.0) {
+    if (!range) return [];
+    const textNodes = [];
+    const root = range.commonAncestorContainer || document.body;
+
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
+          if (range.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
+          return NodeFilter.FILTER_REJECT;
+        }
+      },
+      false
+    );
+
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode);
+    }
+
+    if (textNodes.length === 0) return [];
+
+    const rawRects = [];
+    for (let i = 0; i < textNodes.length; i++) {
+      const node = textNodes[i];
+      const val = node.nodeValue;
+      let start = (node === range.startContainer) ? range.startOffset : 0;
+      let end = (node === range.endContainer) ? range.endOffset : val.length;
+
+      start = Math.max(0, Math.min(start, val.length));
+      end = Math.max(0, Math.min(end, val.length));
+      if (start >= end) continue;
+
+      let subText = val.substring(start, end);
+      if (!subText.trim()) continue; // Bỏ qua nếu đoạn chỉ gồm khoảng trắng/xuống dòng
+
+      // Cắt khoảng trắng đầu/cuối vùng chọn trước khi tính (không tính khoảng trắng cuối dòng cuối)
+      while (start < end && /\s/.test(val[start])) {
+        start++;
+      }
+      while (end > start && /\s/.test(val[end - 1])) {
+        end--;
+      }
+      if (start >= end) continue;
+
+      try {
+        const sub = document.createRange();
+        sub.setStart(node, start);
+        sub.setEnd(node, end);
+        const rects = sub.getClientRects();
+        if (rects && rects.length > 0) {
+          for (let j = 0; j < rects.length; j++) {
+            const r = rects[j];
+            if (r.width >= 1 && r.height >= 1) {
+              rawRects.push({
+                left: (r.left - layerRect.left) / scale,
+                top: (r.top - layerRect.top) / scale,
+                right: (r.right - layerRect.left) / scale,
+                bottom: (r.bottom - layerRect.top) / scale,
+                width: r.width / scale,
+                height: r.height / scale
+              });
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
+    return rawRects;
+  }
+
+  // 2. Gộp rect theo dòng: cùng dòng khi |top chênh| <= 2px và giao/liền nhau theo chiều ngang
   function mergeRectsByLine(rects) {
     if (!rects || rects.length === 0) return [];
+    // Sắp xếp theo top, cùng dòng (chênh <= 2px) thì sắp xếp theo left
     const sorted = [...rects].sort((a, b) => (Math.abs(a.top - b.top) <= 2) ? (a.left - b.left) : (a.top - b.top));
     const lines = [];
 
     for (const r of sorted) {
-      if (r.width < 1) continue;
+      if (r.width < 1 || r.height < 1) continue;
       let foundLine = null;
       for (const line of lines) {
-        const vertOverlap = Math.min(line.bottom, r.bottom) - Math.max(line.top, r.top);
-        const minH = Math.min(line.bottom - line.top, r.bottom - r.top);
-        if (Math.abs(line.top - r.top) <= 2 || Math.abs(line.bottom - r.bottom) <= 2 || vertOverlap >= minH * 0.5) {
-          foundLine = line;
-          break;
+        // Cùng dòng khi |top chênh| <= 2px và giao/liền nhau theo chiều ngang
+        if (Math.abs(line.top - r.top) <= 2) {
+          const horizOverlap = Math.min(line.right, r.right) - Math.max(line.left, r.left);
+          const horizGap = Math.max(0, Math.max(line.left, r.left) - Math.min(line.right, r.right));
+          if (horizOverlap > 0 || horizGap <= 30) {
+            foundLine = line;
+            break;
+          }
         }
       }
 
       if (foundLine) {
+        // Hợp left-right CHỈ trong phạm vi các rect chữ của dòng đó, không lấy min/max của các dòng khác
         foundLine.left = Math.min(foundLine.left, r.left);
         foundLine.right = Math.max(foundLine.right, r.right);
         foundLine.top = Math.min(foundLine.top, r.top);
@@ -7704,42 +7784,16 @@
         try {
           const rawRects = [];
           elements.forEach(el => {
-            const rects = el.getClientRects();
-            if (rects && rects.length > 0) {
-              for (let i = 0; i < rects.length; i++) {
-                const r = rects[i];
-                if (r.width >= 1 && r.height >= 1) {
-                  rawRects.push({
-                    left: (r.left - layerRect.left) / scale,
-                    top: (r.top - layerRect.top) / scale,
-                    right: (r.right - layerRect.left) / scale,
-                    bottom: (r.bottom - layerRect.top) / scale,
-                    width: r.width / scale,
-                    height: r.height / scale
-                  });
-                }
-              }
+            const elRange = document.createRange();
+            elRange.selectNodeContents(el);
+            const rects = getTextRects(elRange, layerRect, scale);
+            for (let i = 0; i < rects.length; i++) {
+              rawRects.push(rects[i]);
             }
           });
 
           if (rawRects.length === 0) {
-            elements.forEach(el => {
-              const r = el.getBoundingClientRect();
-              if (r.width >= 1 && r.height >= 1) {
-                rawRects.push({
-                  left: (r.left - layerRect.left) / scale,
-                  top: (r.top - layerRect.top) / scale,
-                  right: (r.right - layerRect.left) / scale,
-                  bottom: (r.bottom - layerRect.top) / scale,
-                  width: r.width / scale,
-                  height: r.height / scale
-                });
-              }
-            });
-          }
-
-          if (rawRects.length === 0) {
-            console.warn('[updateAllFramePositions] getClientRects rỗng, bỏ qua khung:', fId);
+            console.warn('[updateAllFramePositions] getTextRects rỗng, bỏ qua khung:', fId);
             return;
           }
 
