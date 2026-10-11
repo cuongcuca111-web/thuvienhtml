@@ -38,7 +38,7 @@
 
   <script>
     // // FIX: Các hàm tiện ích dùng chung toàn cục và kiểm soát phiên bản app
-    const CURRENT_APP_VERSION = 'v4.9.0';
+    const CURRENT_APP_VERSION = 'v4.9.1';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function sanitizeHtml(value) { return escapeHtml(value); }
@@ -2171,10 +2171,10 @@
 
         <!-- Menu Hiển thị (icon sliders + Popover phong cách đồng bộ) -->
         <div class="relative shrink-0">
-          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap">
+          <button id="btnDisplaySettingsToggle" aria-label="Tùy chọn hiển thị" title="Cỡ chữ, chế độ sáng/tối, toàn màn" class="touch-target h-9 px-2.5 sm:px-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap cursor-pointer">
             <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-sliders"></use></svg>
-            <span class="hidden sm:inline whitespace-nowrap font-medium">Hiển thị</span>
-            <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0"><use href="#icon-chevron-down"></use></svg>
+            <span class="hidden sm:inline whitespace-nowrap font-medium text-[#1C1917] dark:text-[#EDECE8]">Hiển thị</span>
+            <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0 text-[#6E6B65] dark:text-[#979DA8]"><use href="#icon-chevron-down"></use></svg>
           </button>
 
           <!-- Popover Tùy Chọn Hiển Thị (Display Settings Popover) - Thiết kế Editorial 4 nhóm rõ ràng -->
@@ -2446,21 +2446,22 @@
 
           </div>
         </div>
+      </div>
 
-        <!-- Đường phân cách dọc 1px cao 24px phân tách nhóm công cụ và tài khoản -->
-        <div class="header-divider-v mx-0.5 sm:mx-1 hidden sm:block"></div>
+      <!-- Đường phân cách dọc 1px cao 22px phân tách nhóm công cụ và tài khoản -->
+      <div class="header-divider-v mx-1 sm:mx-1.5 hidden sm:block"></div>
 
-        <!-- Avatar Nút Tài Khoản - LUÔN Ở NGOÀI CÙNG BÊN PHẢI TRÊN CÙNG HÀNG, KHÔNG RỚT DÒNG -->
-        <div class="relative shrink-0">
-          <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 p-0.5 sm:px-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shrink-0" title="Tài khoản và tùy chọn">
-            <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
-              <span id="userInitial">U</span>
-              <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
-            </div>
-            <span id="headerAccountLabel" class="hidden min-[1280px]:inline-block font-medium max-w-[90px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
-            <svg class="w-3 h-3 hidden min-[1280px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-chevron-down"></use></svg>
-          </button>
-        </div>
+      <!-- Avatar Nút Tài Khoản - LUÔN Ở NGOÀI CÙNG BÊN PHẢI TRÊN CÙNG HÀNG, KHÔNG RỚT DÒNG -->
+      <div class="relative shrink-0">
+        <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 p-0.5 sm:pl-1 sm:pr-2.5 rounded-full border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shadow-2xs shrink-0 cursor-pointer" title="Tài khoản và tùy chọn">
+          <div class="relative w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
+            <span id="userInitial">U</span>
+            <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
+          </div>
+          <span id="headerAccountLabel" class="hidden min-[1180px]:inline-block font-medium max-w-[100px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
+          <svg class="w-3 h-3 hidden min-[1180px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-chevron-down"></use></svg>
+        </button>
+      </div>
 
       </div>
     </header>
@@ -2685,7 +2686,7 @@
         </button>
       </div>
       <div class="px-3 py-1 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 text-[10px] text-gray-400 dark:text-gray-500 font-mono text-center border-t border-gray-200/50 dark:border-gray-800/50 select-none">
-        Thư viện Sách HTML v4.9.0 - build 09/10/2026
+        Thư viện Sách HTML v4.9.1 - build 11/10/2026
       </div>
     </aside>
 
@@ -3241,7 +3242,7 @@
 
     <!-- // FIX: Hiển thị phiên bản build app -->
     <div class="pt-2 pb-1 px-3 text-[10px] text-center text-gray-400 dark:text-gray-500 font-mono select-none border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1">
-      Thư viện Sách HTML v4.9.0 - build 09/10/2026
+      Thư viện Sách HTML v4.9.1 - build 11/10/2026
     </div>
   </div>
 
@@ -25539,7 +25540,7 @@
       if (new URLSearchParams(window.location.search).get('debug') === '1') {
         setTimeout(selfTest, 500);
       }
-    console.log("%c Thư viện Sách HTML v4.9.0 - build 09/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v4.9.1 - build 11/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
