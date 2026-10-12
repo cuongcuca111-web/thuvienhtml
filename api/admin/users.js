@@ -18,23 +18,57 @@ module.exports = async function handler(req, res) {
 
   const { admin, db, uid: adminUid } = ctx;
 
+// Bộ nhớ đệm danh sách người dùng gần đây trên server
+let recentUsersCache = {
+  data: null,
+  cachedAt: 0,
+  ttlMs: 4 * 60 * 1000 // 4 phút
+};
+
   // 1. ACTION: RECENT / LIST (GET) - Theo dõi người dùng mới tạo tài khoản gần đây
   if (action === 'recent' || action === 'list') {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
-    const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 30));
+    const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
+    const forceRefresh = String(req.query.refresh) === '1' || String(req.query.refresh) === 'true';
+
+    // Trả về từ cache nếu còn hạn và không yêu cầu làm mới bắt buộc
+    if (!forceRefresh && recentUsersCache.data && (Date.now() - recentUsersCache.cachedAt < recentUsersCache.ttlMs)) {
+      return res.status(200).json({ success: true, users: recentUsersCache.data, cached: true, cachedAt: recentUsersCache.cachedAt });
+    }
 
     try {
-      const listResult = await admin.auth().listUsers(100);
-      let allUsers = listResult.users || [];
+      // Quét danh sách người dùng và CHỈ giữ lại các tài khoản đã đăng ký thật sự (loại bỏ khách ẩn danh)
+      let registeredUsers = [];
+      let pageToken = undefined;
+      let fetches = 0;
+
+      while (fetches < 10 && registeredUsers.length < 100) {
+        fetches++;
+        const listResult = await admin.auth().listUsers(1000, pageToken);
+        const users = listResult.users || [];
+        for (const u of users) {
+          // Tài khoản đã lập: có email HOẶC có displayName HOẶC có provider (password/google)
+          const hasEmail = Boolean(u.email);
+          const hasDisplayName = Boolean(u.displayName);
+          const hasProvider = Boolean(u.providerData && u.providerData.length > 0);
+          const isRegistered = hasEmail || hasDisplayName || hasProvider;
+
+          if (isRegistered) {
+            registeredUsers.push(u);
+          }
+        }
+        pageToken = listResult.pageToken;
+        if (!pageToken) break;
+      }
 
       // Sắp xếp người dùng mới tạo lên đầu tiên theo metadata.creationTime
-      allUsers.sort((a, b) => {
+      registeredUsers.sort((a, b) => {
         const timeA = a.metadata && a.metadata.creationTime ? new Date(a.metadata.creationTime).getTime() : 0;
         const timeB = b.metadata && b.metadata.creationTime ? new Date(b.metadata.creationTime).getTime() : 0;
         return timeB - timeA;
       });
 
-      const topRecent = allUsers.slice(0, limitNum);
+      const topRecent = registeredUsers.slice(0, limitNum);
 
       // Tra cứu thông tin gói chi tiết cho từng người dùng
       const usersData = await Promise.all(topRecent.map(async (u) => {
@@ -65,10 +99,36 @@ module.exports = async function handler(req, res) {
           } catch (_) {}
         }
 
+        // Tách và chuẩn hóa tên đăng nhập (Username) rõ ràng
+        let rawUsername = (u.displayName || '').trim();
+        const rawEmail = (u.email || '').trim();
+        let isVirtualInternalEmail = false;
+
+        if (rawEmail.endsWith('@thuvienhtml.local')) {
+          isVirtualInternalEmail = true;
+          const userPart = rawEmail.replace('@thuvienhtml.local', '').trim();
+          if (!rawUsername) rawUsername = userPart;
+        }
+
+        if (!rawUsername && rawEmail) {
+          rawUsername = rawEmail.split('@')[0];
+        }
+
+        if (!rawUsername) {
+          rawUsername = u.uid ? `user_${u.uid.substring(0, 6)}` : 'Thành viên';
+        }
+
+        const usernameClean = rawUsername.replace(/^@+/, '');
+        const formattedUsername = `@${usernameClean}`;
+
         return {
           uid: u.uid,
-          email: u.email || '',
-          displayName: u.displayName || (u.email ? u.email.split('@')[0] : 'Thành viên mới'),
+          username: usernameClean,
+          formattedUsername: formattedUsername,
+          displayName: formattedUsername,
+          email: rawEmail,
+          displayEmail: isVirtualInternalEmail ? 'Tài khoản đăng ký web' : (rawEmail || 'Chưa liên kết email'),
+          isVirtualInternalEmail,
           disabled: Boolean(u.disabled),
           createdAt: u.metadata ? u.metadata.creationTime : null,
           lastSignInTime: u.metadata ? u.metadata.lastSignInTime : null,
@@ -77,7 +137,14 @@ module.exports = async function handler(req, res) {
         };
       }));
 
-      return res.status(200).json({ success: true, users: usersData });
+      // Cập nhật bộ nhớ đệm
+      recentUsersCache = {
+        data: usersData,
+        cachedAt: Date.now(),
+        ttlMs: 4 * 60 * 1000
+      };
+
+      return res.status(200).json({ success: true, users: usersData, cached: false, cachedAt: recentUsersCache.cachedAt });
     } catch (err) {
       console.error('[Admin Users] Lỗi tải người dùng mới:', err);
       return res.status(500).json({ error: 'Không thể tải danh sách người dùng: ' + err.message });

@@ -457,6 +457,19 @@ export function openAdminPanel() {
     panel.classList.add('modal-active');
     document.body.style.overflow = 'hidden';
     switchTab('plans');
+
+    // Tự động tải trước danh sách người dùng đã đăng ký để sẵn sàng tức thì
+    try {
+      if (typeof preloadRecentUsers === 'function') preloadRecentUsers(true);
+    } catch (_) {}
+
+    // Bắt đầu chu kỳ tự động cập nhật ngầm mỗi 5 phút một lần
+    if (usersAutoRefreshTimer) clearInterval(usersAutoRefreshTimer);
+    usersAutoRefreshTimer = setInterval(() => {
+      try {
+        if (typeof preloadRecentUsers === 'function') preloadRecentUsers(true);
+      } catch (_) {}
+    }, 5 * 60 * 1000);
   }
 }
 
@@ -466,6 +479,10 @@ export async function endAdminSession() {
   if (adminSessionTimer) {
     clearInterval(adminSessionTimer);
     adminSessionTimer = null;
+  }
+  if (usersAutoRefreshTimer) {
+    clearInterval(usersAutoRefreshTimer);
+    usersAutoRefreshTimer = null;
   }
   if (adminAuth) {
     try {
@@ -1485,8 +1502,215 @@ function renderPricingTab(container) {
 }
 
 // =========================================================================
-// 3.3 MỤC 3: NGƯỜI DÙNG (USER MANAGEMENT)
+// 3.3 MỤC 3: NGƯỜI DÙNG (USER MANAGEMENT - TỐI ƯU CACHE & TỰ ĐỘNG CẬP NHẬT 5P)
 // =========================================================================
+let cachedRecentUsersList = null;
+let lastUsersFetchTimestamp = 0;
+let isFetchingRecentUsers = false;
+let usersAutoRefreshTimer = null;
+
+try {
+  const storedUsersCache = sessionStorage.getItem('thuvienhtml_cached_recent_users');
+  if (storedUsersCache) {
+    const parsed = JSON.parse(storedUsersCache);
+    if (parsed && Array.isArray(parsed.users)) {
+      cachedRecentUsersList = parsed.users;
+      lastUsersFetchTimestamp = parsed.time || 0;
+    }
+  }
+} catch (_) {}
+
+function formatUserRelativeTime(dateStr) {
+  if (!dateStr) return '—';
+  const time = new Date(dateStr).getTime();
+  const diff = Date.now() - time;
+  if (diff < 60000) return 'Vừa xong';
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} phút trước`;
+  const hours = Math.floor(diff / 60000);
+  if (hours < 24) return `${hours} giờ trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ngày trước`;
+  return new Date(dateStr).toLocaleDateString('vi-VN');
+}
+
+function updateUsersSyncTimeText() {
+  const syncEl = document.getElementById('recentUsersSyncInfo');
+  if (!syncEl) return;
+  if (!lastUsersFetchTimestamp) {
+    syncEl.textContent = 'Đang đồng bộ...';
+    return;
+  }
+  const d = new Date(lastUsersFetchTimestamp);
+  const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  syncEl.textContent = `Cập nhật: ${timeStr} · Tự động 5p/lần`;
+}
+
+async function preloadRecentUsers(isBackground = false, forceRefresh = false) {
+  if (isFetchingRecentUsers) return;
+  const now = Date.now();
+  if (isBackground && !forceRefresh && cachedRecentUsersList && (now - lastUsersFetchTimestamp < 5 * 60 * 1000)) {
+    return;
+  }
+
+  isFetchingRecentUsers = true;
+  try {
+    const url = `/api/admin/users/recent?limit=50${forceRefresh ? '&refresh=1' : ''}`;
+    const data = await callAdminApi(url);
+    if (data && Array.isArray(data.users)) {
+      cachedRecentUsersList = data.users;
+      lastUsersFetchTimestamp = Date.now();
+      try {
+        sessionStorage.setItem('thuvienhtml_cached_recent_users', JSON.stringify({
+          users: cachedRecentUsersList,
+          time: lastUsersFetchTimestamp
+        }));
+      } catch (_) {}
+
+      // Nếu đang mở tab Người dùng thì cập nhật bảng giao diện ngay
+      const tableBox = document.getElementById('recentUsersTableContainer');
+      if (tableBox && currentAdminTab === 'users') {
+        renderRecentUsersTable(tableBox, cachedRecentUsersList);
+        updateUsersSyncTimeText();
+      }
+    }
+  } catch (err) {
+    console.warn("[Admin Users] Lỗi tải dữ liệu người dùng:", err);
+  } finally {
+    isFetchingRecentUsers = false;
+  }
+}
+
+function renderRecentUsersTable(tableBox, users) {
+  if (!tableBox) return;
+  if (!users || users.length === 0) {
+    tableBox.innerHTML = '<div class="py-6 text-center text-gray-400">Chưa có tài khoản đăng ký nào.</div>';
+    return;
+  }
+
+  tableBox.innerHTML = `
+    <table class="w-full text-left border-collapse min-w-[750px]">
+      <thead>
+        <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold text-[11px]">
+          <th class="py-2.5 px-3">Tài khoản &amp; Username</th>
+          <th class="py-2.5 px-3">UID (Bấm để tra cứu)</th>
+          <th class="py-2.5 px-3">Gói đang dùng</th>
+          <th class="py-2.5 px-3">Thời gian tạo</th>
+          <th class="py-2.5 px-3 text-right">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
+        ${users.map(u => {
+          const tierBadge = u.tier === 'pro' 
+            ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">PRO</span>'
+            : (u.tier === 'plus'
+              ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">PLUS</span>'
+              : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">FREE</span>');
+          
+          const expText = u.expiresAt ? `Hạn: ${new Date(u.expiresAt).toLocaleDateString('vi-VN')}` : (u.tier === 'free' ? 'Trọn đời' : 'Vĩnh viễn');
+          const createdText = formatUserRelativeTime(u.createdAt);
+          const fullCreatedDate = u.createdAt ? new Date(u.createdAt).toLocaleString('vi-VN') : '';
+          const initialChar = ((u.username || u.displayName || 'U').replace(/^@+/, '')[0] || 'U').toUpperCase();
+
+          return `
+            <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition">
+              <td class="py-2.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs shrink-0 shadow-2xs">
+                    ${esc(initialChar)}
+                  </div>
+                  <div>
+                    <div class="font-bold text-gray-900 dark:text-gray-100 leading-tight flex items-center gap-1.5">
+                      <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold font-mono">${esc(u.formattedUsername || ('@' + u.username))}</span>
+                      ${u.isVirtualInternalEmail ? '<span class="text-[9px] px-1.5 py-0.2 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-semibold">Tài khoản Web</span>' : ''}
+                    </div>
+                    <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">${esc(u.displayEmail || u.email || 'Tài khoản đăng ký web')}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-2.5 px-3 font-mono text-[11px]">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline font-semibold btn-click-uid" data-uid="${esc(u.uid)}" title="Bấm để tra cứu gói của UID này">
+                    ${esc(u.uid)}
+                  </span>
+                  <button class="btn-copy-user-uid text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded cursor-pointer" data-uid="${esc(u.uid)}" title="Sao chép UID">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  </button>
+                </div>
+              </td>
+              <td class="py-2.5 px-3">
+                <div class="flex flex-col gap-0.5">
+                  <div>${tierBadge}</div>
+                  <span class="text-[10px] text-gray-400">${esc(expText)}</span>
+                </div>
+              </td>
+              <td class="py-2.5 px-3 text-[11px] text-gray-500" title="${esc(fullCreatedDate)}">
+                ${esc(createdText)}
+              </td>
+              <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                <button class="btn-inspect-uid px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition mr-1.5 cursor-pointer" data-uid="${esc(u.uid)}">
+                  Tra cứu gói
+                </button>
+                <button class="btn-quick-grant px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-xs transition cursor-pointer" data-uid="${esc(u.uid)}">
+                  Cấp gói
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+
+  // Gán sự kiện click UID & copy UID
+  tableBox.querySelectorAll('.btn-copy-user-uid').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(btn.dataset.uid);
+      toast("Đã sao chép UID!");
+    };
+  });
+
+  tableBox.querySelectorAll('.btn-click-uid, .btn-inspect-uid').forEach(el => {
+    el.onclick = () => {
+      const uid = el.dataset.uid;
+      const inputSearch = document.getElementById('adminUserSearchInput');
+      if (inputSearch) inputSearch.value = uid;
+      const btnSearch = document.getElementById('btnSearchUser');
+      if (btnSearch) btnSearch.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  });
+
+  tableBox.querySelectorAll('.btn-quick-grant').forEach(btn => {
+    btn.onclick = async () => {
+      const targetUid = btn.dataset.uid;
+      const tier = prompt("Chọn gói cấp (plus hoặc pro):", "plus");
+      if (!tier || !['plus', 'pro'].includes(tier.toLowerCase())) return;
+      if (!await ensureFreshAdminSession()) return;
+      const days = prompt("Số ngày sử dụng (nhập 0 để vĩnh viễn):", "30");
+      if (days === null) return;
+      const reason = prompt("Lý do cấp gói:", "Cấp từ danh sách người dùng mới");
+
+      try {
+        await callAdminApi('/api/admin/users/grant', {
+          method: 'POST',
+          body: JSON.stringify({
+            uid: targetUid,
+            tier: tier.toLowerCase(),
+            days: parseInt(days, 10),
+            reason
+          })
+        });
+        toast("Đã cấp gói thành công!");
+        preloadRecentUsers(false, true);
+      } catch (e) {
+        alert("Lỗi cấp gói: " + e.message);
+      }
+    };
+  });
+}
+
 function renderUsersTab(container) {
   container.innerHTML = `
     <div class="space-y-6">
@@ -1517,22 +1741,23 @@ function renderUsersTab(container) {
             <div class="flex items-center gap-2">
               <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Theo dõi người dùng mới tạo tài khoản</h3>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 animate-pulse">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Trực tiếp
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Đã đăng ký
               </span>
             </div>
-            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Tự động hiển thị các thành viên mới tạo tài khoản web và gói đang sử dụng.</p>
+            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Chỉ hiển thị các tài khoản đã đăng ký (loại trừ tài khoản khách). Tự động cập nhật mỗi 5 phút.</p>
           </div>
 
-          <div class="flex items-center gap-2 self-start sm:self-auto">
-            <button id="btnRefreshRecentUsers" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1.5 cursor-pointer text-gray-700 dark:text-gray-300">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <div class="flex items-center gap-2.5 self-start sm:self-auto">
+            <span id="recentUsersSyncInfo" class="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Đang đồng bộ...</span>
+            <button id="btnRefreshRecentUsers" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1.5 cursor-pointer text-gray-700 dark:text-gray-300" title="Cập nhật danh sách mới nhất ngay bây giờ">
+              <svg id="iconRefreshRecentUsers" class="w-3.5 h-3.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
               <span>Làm mới</span>
             </button>
           </div>
         </div>
 
         <div id="recentUsersTableContainer" class="overflow-x-auto text-xs text-gray-500">
-          Đang tải danh sách người dùng mới...
+          <div class="py-6 text-center text-gray-400">Đang đồng bộ danh sách tài khoản mới...</div>
         </div>
       </div>
     </div>
@@ -1541,153 +1766,36 @@ function renderUsersTab(container) {
   const btnSearch = container.querySelector('#btnSearchUser');
   const inputSearch = container.querySelector('#adminUserSearchInput');
   const btnRefreshRecent = container.querySelector('#btnRefreshRecentUsers');
+  const tableBox = container.querySelector('#recentUsersTableContainer');
 
-  function formatRelativeTime(dateStr) {
-    if (!dateStr) return '—';
-    const time = new Date(dateStr).getTime();
-    const diff = Date.now() - time;
-    if (diff < 60000) return 'Vừa xong';
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins} phút trước`;
-    const hours = Math.floor(diff / 60000);
-    if (hours < 24) return `${hours} giờ trước`;
-    const days = Math.floor(hours / 24);
-    if (days < 30) return `${days} ngày trước`;
-    return new Date(dateStr).toLocaleDateString('vi-VN');
+  // HIỂN THỊ TỨC THÌ TỪ BỘ NHỚ ĐỆM (0ms delay) NẾU ĐÃ CÓ DỮ LIỆU
+  if (cachedRecentUsersList && cachedRecentUsersList.length > 0) {
+    renderRecentUsersTable(tableBox, cachedRecentUsersList);
+    updateUsersSyncTimeText();
+    // Nếu dữ liệu đệm đã cũ quá 5 phút, cập nhật ngầm mà không làm phiền người dùng
+    if (Date.now() - lastUsersFetchTimestamp > 5 * 60 * 1000) {
+      preloadRecentUsers(true);
+    }
+  } else {
+    preloadRecentUsers(false);
   }
 
-  async function loadRecentUsers() {
-    const tableBox = container.querySelector('#recentUsersTableContainer');
-    if (!tableBox) return;
-    tableBox.innerHTML = '<div class="py-4 text-center text-gray-400">Đang đồng bộ danh sách tài khoản mới...</div>';
-
-    try {
-      const data = await callAdminApi('/api/admin/users/recent?limit=30');
-      const users = data.users || [];
-      if (users.length === 0) {
-        tableBox.innerHTML = '<div class="py-4 text-center text-gray-400">Chưa có người dùng nào được tạo.</div>';
-        return;
+  // Nút Làm mới thủ công
+  if (btnRefreshRecent) {
+    btnRefreshRecent.onclick = async () => {
+      const icon = btnRefreshRecent.querySelector('#iconRefreshRecentUsers');
+      if (icon) icon.classList.add('animate-spin');
+      btnRefreshRecent.disabled = true;
+      try {
+        await preloadRecentUsers(false, true);
+        toast("Đã cập nhật danh sách người dùng mới nhất!");
+      } catch (err) {
+        alert("Lỗi khi cập nhật danh sách người dùng: " + err.message);
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+        btnRefreshRecent.disabled = false;
       }
-
-      tableBox.innerHTML = `
-        <table class="w-full text-left border-collapse min-w-[750px]">
-          <thead>
-            <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold text-[11px]">
-              <th class="py-2.5 px-3">Người dùng</th>
-              <th class="py-2.5 px-3">UID (Bấm để tra cứu)</th>
-              <th class="py-2.5 px-3">Gói đang dùng</th>
-              <th class="py-2.5 px-3">Thời gian tạo</th>
-              <th class="py-2.5 px-3 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
-            ${users.map(u => {
-              const tierBadge = u.tier === 'pro' 
-                ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">PRO</span>'
-                : (u.tier === 'plus'
-                  ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">PLUS</span>'
-                  : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">FREE</span>');
-              
-              const expText = u.expiresAt ? `Hạn: ${new Date(u.expiresAt).toLocaleDateString('vi-VN')}` : (u.tier === 'free' ? 'Trọn đời' : 'Vĩnh viễn');
-              const createdText = formatRelativeTime(u.createdAt);
-              const fullCreatedDate = u.createdAt ? new Date(u.createdAt).toLocaleString('vi-VN') : '';
-
-              return `
-                <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition">
-                  <td class="py-2.5 px-3">
-                    <div class="flex items-center gap-2.5">
-                      <div class="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs shrink-0">
-                        ${esc((u.displayName || u.email || 'U')[0].toUpperCase())}
-                      </div>
-                      <div>
-                        <div class="font-bold text-gray-900 dark:text-gray-100 leading-tight">${esc(u.displayName || 'Thành viên')}</div>
-                        <div class="text-[11px] text-gray-400">${esc(u.email || 'Chưa liên kết email')}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="py-2.5 px-3 font-mono text-[11px]">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline font-semibold btn-click-uid" data-uid="${esc(u.uid)}" title="Bấm để tra cứu gói của UID này">
-                        ${esc(u.uid)}
-                      </span>
-                      <button class="btn-copy-user-uid text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded cursor-pointer" data-uid="${esc(u.uid)}" title="Sao chép UID">
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      </button>
-                    </div>
-                  </td>
-                  <td class="py-2.5 px-3">
-                    <div class="flex flex-col gap-0.5">
-                      <div>${tierBadge}</div>
-                      <span class="text-[10px] text-gray-400">${esc(expText)}</span>
-                    </div>
-                  </td>
-                  <td class="py-2.5 px-3 text-[11px] text-gray-500" title="${esc(fullCreatedDate)}">
-                    ${esc(createdText)}
-                  </td>
-                  <td class="py-2.5 px-3 text-right whitespace-nowrap">
-                    <button class="btn-inspect-uid px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition mr-1.5 cursor-pointer" data-uid="${esc(u.uid)}">
-                      Tra cứu gói
-                    </button>
-                    <button class="btn-quick-grant px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-xs transition cursor-pointer" data-uid="${esc(u.uid)}">
-                      Cấp gói
-                    </button>
-                  </td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
-      `;
-
-      // Gán sự kiện click UID & copy UID
-      tableBox.querySelectorAll('.btn-copy-user-uid').forEach(btn => {
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          navigator.clipboard.writeText(btn.dataset.uid);
-          toast("Đã sao chép UID!");
-        };
-      });
-
-      tableBox.querySelectorAll('.btn-click-uid, .btn-inspect-uid').forEach(el => {
-        el.onclick = () => {
-          const uid = el.dataset.uid;
-          inputSearch.value = uid;
-          doSearch();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-      });
-
-      tableBox.querySelectorAll('.btn-quick-grant').forEach(btn => {
-        btn.onclick = async () => {
-          const targetUid = btn.dataset.uid;
-          const tier = prompt("Chọn gói cấp (plus hoặc pro):", "plus");
-          if (!tier || !['plus', 'pro'].includes(tier.toLowerCase())) return;
-          if (!await ensureFreshAdminSession()) return;
-          const days = prompt("Số ngày sử dụng (nhập 0 để vĩnh viễn):", "30");
-          if (days === null) return;
-          const reason = prompt("Lý do cấp gói:", "Cấp từ danh sách người dùng mới");
-
-          try {
-            await callAdminApi('/api/admin/users/grant', {
-              method: 'POST',
-              body: JSON.stringify({
-                uid: targetUid,
-                tier: tier.toLowerCase(),
-                days: parseInt(days, 10),
-                reason
-              })
-            });
-            toast("Đã cấp gói thành công!");
-            loadRecentUsers();
-          } catch (e) {
-            alert("Lỗi cấp gói: " + e.message);
-          }
-        };
-      });
-
-    } catch (err) {
-      tableBox.innerHTML = `<div class="py-4 text-center text-rose-500">Lỗi tải danh sách người dùng mới: ${esc(err.message)}</div>`;
-    }
+    };
   }
 
   async function doSearch() {
