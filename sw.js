@@ -1,8 +1,8 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v5.2.3)
-// - Đồng bộ phiên bản APP_VERSION v5.2.3 với index.html
+// Service Worker cho Ứng dụng Sách HTML (PWA v5.2.4)
+// - Đồng bộ phiên bản APP_VERSION v5.2.4 với index.html
 // - Tự động dọn sạch cache cũ và skipWaiting để người dùng luôn nhận bản cập nhật mới nhất
 
-const APP_VERSION = 'v5.2.3';
+const APP_VERSION = 'v5.2.4';
 const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [

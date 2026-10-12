@@ -80,6 +80,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.4',
+        date: '2026-10-13T00:45:00+07:00',
+        title: 'Ưu tiên hiển thị popup Tạo mã thanh toán trước Popup Nâng cấp gói',
+        items: [
+          { type: 'fix', text: 'Thiết lập thứ tự lớp hiển thị (z-index: 10005) cho popup Đang tạo mã thanh toán VietQR, đảm bảo luôn xuất hiện nổi bật phía trước popup Nâng cấp gói' },
+          { type: 'improved', text: 'Tối ưu hóa độ sâu hiển thị cho toàn bộ các popup liên quan (Lịch sử giao dịch, Xem biên lai, Nhập mã kích hoạt)' }
+        ]
+      },
+      {
         version: 'v5.2.3',
         date: '2026-10-13T00:36:00+07:00',
         title: 'Nút Lưu kho Prompt lên hệ thống & Đồng bộ đám mây cho tất cả người dùng',
@@ -7457,7 +7466,7 @@
   </div>
 
   <!-- POPUP MODAL: ĐANG KHỞI TẠO MÃ QR THANH TOÁN (KHOA HỌC & CHUYÊN NGHIỆP) -->
-  <div id="qrLoadingModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-xs z-[85] hidden flex items-center justify-center p-4 transition-all duration-200" role="dialog" aria-modal="true" aria-labelledby="qrLoadingTitle">
+  <div id="qrLoadingModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-xs z-[10005] hidden flex items-center justify-center p-4 transition-all duration-200" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="qrLoadingTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border border-[#E0DED7] dark:border-[#262C36] rounded-2xl w-full max-w-[420px] overflow-hidden shadow-2xl p-6 sm:p-7 space-y-4.5 transition-all text-left">
       
       <!-- Đầu mục: Thẻ phân loại khoa học & Biểu tượng quét ma trận -->
@@ -7537,7 +7546,7 @@
   </div>
 
   <!-- MODAL: LỊCH SỬ MUA HÀNG & GIAO DỊCH VIETQR -->
-  <div id="billingHistoryModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[75] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="billingHistoryTitle">
+  <div id="billingHistoryModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[10005] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="billingHistoryTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[800px] max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header Modal -->
@@ -7639,7 +7648,7 @@
   </div>
 
   <!-- POPUP XEM LẠI ẢNH BIÊN LAI (LIGHTBOX CHO USER) -->
-  <div id="userProofLightboxModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+  <div id="userProofLightboxModal" class="hidden fixed inset-0 z-[10010] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs" style="z-index: 10010;">
     <div class="bg-white dark:bg-[#1A1D23] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh]">
       <div class="px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
         <h4 class="font-serif font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]">Ảnh biên lai đã gửi</h4>
@@ -7659,7 +7668,7 @@
   </div>
 
   <!-- MODAL NHẬP MÃ KÍCH HOẠT NHANH -->
-  <div id="redeemCodeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="redeemCodeTitle">
+  <div id="redeemCodeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[10005] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="redeemCodeTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[460px] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header Modal -->
@@ -8991,6 +9000,7 @@
       try {
         const modal = document.getElementById('qrLoadingModal');
         if (!modal) return;
+        modal.style.zIndex = '10005';
 
         const planNameEl = document.getElementById('qrLoadingPlanName');
         const amountEl = document.getElementById('qrLoadingAmount');
