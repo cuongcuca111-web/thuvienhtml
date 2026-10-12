@@ -6351,7 +6351,7 @@
                   <span id="badgeCurrentFree" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium">Đang dùng</span>
                 </div>
 
-                <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                <p id="planDescFree" class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
                   Dành cho người mới bắt đầu trải nghiệm thư viện bài học.
                 </p>
 
@@ -6368,7 +6368,7 @@
                 <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
 
                 <!-- Danh sách quyền lợi dạng hàng nhãn - giá trị căn hai đầu -->
-                <div class="space-y-2 text-xs">
+                <div id="planFeaturesContainerFree" class="space-y-2 text-xs">
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
                     <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeLessons">5 bài</span>
@@ -6378,24 +6378,8 @@
                     <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeSections">2 mục</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
-                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeFileSize">512 KB</span>
-                  </div>
-                  <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
                     <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeActiveShares">3 link</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Lượt gọi AI mỗi tháng</span>
-                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeAiRequests">30 lượt</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
-                    <span class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]" id="featFreeTrashDays">15 ngày</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Khóa mật khẩu link</span>
-                    <span id="featFreeSharePassword" class="text-gray-400 dark:text-gray-600 font-semibold">—</span>
                   </div>
                 </div>
               </div>
@@ -6429,7 +6413,7 @@
                   <span id="badgeCurrentPlus" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold">Đang dùng</span>
                 </div>
 
-                <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                <p id="planDescPlus" class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
                   Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.
                 </p>
 
@@ -6451,14 +6435,14 @@
                 <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
 
                 <!-- Danh sách quyền lợi -->
-                <div class="space-y-2 text-xs">
+                <div id="planFeaturesContainerPlus" class="space-y-2 text-xs">
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
                     <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featPlusLessons">20 bài</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Số danh mục</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featPlusSections">20 mục</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featPlusSections">5 mục</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
@@ -6467,10 +6451,6 @@
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
                     <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featPlusActiveShares">10 link</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Lượt gọi AI mỗi tháng</span>
-                    <span class="font-semibold text-indigo-600 dark:text-indigo-400" id="featPlusAiRequests">300 lượt</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
@@ -6509,7 +6489,7 @@
                   <span id="badgeCurrentPro" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold">Đang dùng</span>
                 </div>
 
-                <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                <p id="planDescPro" class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
                   Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.
                 </p>
 
@@ -6531,14 +6511,14 @@
                 <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
 
                 <!-- Danh sách quyền lợi -->
-                <div class="space-y-2 text-xs">
+                <div id="planFeaturesContainerPro" class="space-y-2 text-xs">
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProLessons">Không giới hạn</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProLessons">50 bài</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Số danh mục</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProSections">Không giới hạn</span>
+                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProSections">10 mục</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
@@ -6547,10 +6527,6 @@
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
                     <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProActiveShares">Không giới hạn</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Lượt gọi AI mỗi tháng</span>
-                    <span class="font-semibold text-indigo-600 dark:text-indigo-400" id="featProAiRequests">1.500 lượt</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
@@ -7310,6 +7286,9 @@
       plans: {
         guest: {
           name: 'Khách',
+          description: 'Dùng thử nhanh chóng không cần tài khoản.',
+          pinnedFeatures: ['maxLessons', 'maxSections', 'maxActiveShares'],
+          customFeatures: [],
           maxLessons: 1,
           maxSections: 1,
           maxFileKB: 256,
@@ -7329,6 +7308,9 @@
         },
         free: {
           name: 'Thường',
+          description: 'Dành cho người mới bắt đầu trải nghiệm thư viện bài học.',
+          pinnedFeatures: ['maxLessons', 'maxSections', 'maxActiveShares'],
+          customFeatures: [],
           maxLessons: 5,
           maxSections: 2,
           maxFileKB: 512,
@@ -7348,6 +7330,9 @@
         },
         plus: {
           name: 'Plus',
+          description: 'Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.',
+          pinnedFeatures: ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword'],
+          customFeatures: [],
           maxLessons: 20,
           maxSections: 5,
           maxFileKB: 1024,
@@ -7367,6 +7352,9 @@
         },
         pro: {
           name: 'Pro',
+          description: 'Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.',
+          pinnedFeatures: ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword', 'customColor', 'exportNotesMd', 'fullTextSearch'],
+          customFeatures: [],
           maxLessons: 50,
           maxSections: 10,
           maxFileKB: 2048,
@@ -7428,8 +7416,12 @@
                 res.plans[t][k] = Boolean(rawVal);
               } else if (Array.isArray(defVal)) {
                 if (Array.isArray(rawVal)) {
-                  const cleaned = rawVal.map(x => parseInt(x, 10)).filter(x => !isNaN(x) && x > 0).sort((a,b)=>a-b);
-                  if (cleaned.length > 0) res.plans[t][k] = Array.from(new Set(cleaned));
+                  if (k === 'shareDays') {
+                    const cleaned = rawVal.map(x => parseInt(x, 10)).filter(x => !isNaN(x) && x > 0).sort((a,b)=>a-b);
+                    if (cleaned.length > 0) res.plans[t][k] = Array.from(new Set(cleaned));
+                  } else {
+                    res.plans[t][k] = rawVal.filter(x => typeof x === 'string');
+                  }
                 }
               } else if (typeof defVal === 'string') {
                 res.plans[t][k] = String(rawVal);
@@ -7954,41 +7946,87 @@
         const planPlus = rawPlansObj.plus || {};
         const planPro = rawPlansObj.pro || {};
 
-        const updateFeatureEl = (id, text) => {
-          const el = document.getElementById(id);
-          if (el && text !== undefined && text !== null) el.textContent = text;
+        const FEATURE_META = {
+          maxLessons: { label: 'Số bài học', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} bài` },
+          maxSections: { label: 'Số danh mục', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} mục` },
+          maxFileKB: { label: 'Dung lượng mỗi bài', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : (v >= 1024 ? `${v / 1024} MB` : `${v} KB`) },
+          maxActiveShares: { label: 'Link chia sẻ đang chạy', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} link` },
+          shareDays: { label: 'Thời hạn link', format: v => Array.isArray(v) ? `Tối đa ${Math.max(...v)} ngày` : `${v} ngày` },
+          canExtendShare: { label: 'Gia hạn link chia sẻ', type: 'bool' },
+          sharePassword: { label: 'Khóa mật khẩu link', type: 'bool' },
+          customColor: { label: 'Tùy biến màu khung & note', type: 'bool' },
+          exportNotesMd: { label: 'Xuất ghi chú Markdown', type: 'bool' },
+          trashDays: { label: 'Thùng rác lưu trữ', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} ngày` },
+          statsDays: { label: 'Lưu trữ thống kê', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} ngày` },
+          fullTextSearch: { label: 'Tìm kiếm toàn văn', type: 'bool' },
+          monthlyAiRequests: { label: 'Lượt AI mỗi tháng', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${Number(v).toLocaleString('vi-VN')} lượt` },
+          maxFlashcardsPerFile: { label: 'Flashcard tối đa / bài', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} thẻ` },
+          aiScheduleEnabled: { label: 'Lịch học thông minh AI', type: 'bool' },
+          aiFlashcardsEnabled: { label: 'Tự sinh Flashcard AI', type: 'bool' }
         };
-        const updateBoolEl = (id, val) => {
-          const el = document.getElementById(id);
-          if (el) el.innerHTML = renderPasswordCheck(Boolean(val));
+
+        const DEFAULT_PINS = {
+          free: ['maxLessons', 'maxSections', 'maxActiveShares'],
+          plus: ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword'],
+          pro: ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword', 'monthlyAiRequests', 'fullTextSearch']
         };
 
-        // Gói Thường (Free)
-        if (planFree.maxLessons !== undefined) updateFeatureEl('featFreeLessons', formatLimit('maxLessons', planFree.maxLessons));
-        if (planFree.maxSections !== undefined) updateFeatureEl('featFreeSections', formatLimit('maxSections', planFree.maxSections));
-        if (planFree.maxFileKB !== undefined) updateFeatureEl('featFreeFileSize', formatLimit('maxFileKB', planFree.maxFileKB));
-        if (planFree.maxActiveShares !== undefined) updateFeatureEl('featFreeActiveShares', formatLimit('maxActiveShares', planFree.maxActiveShares));
-        if (planFree.monthlyAiRequests !== undefined) updateFeatureEl('featFreeAiRequests', formatLimit('monthlyAiRequests', planFree.monthlyAiRequests));
-        if (planFree.trashDays !== undefined) updateFeatureEl('featFreeTrashDays', formatLimit('trashDays', planFree.trashDays));
-        if (planFree.sharePassword !== undefined) updateBoolEl('featFreeSharePassword', planFree.sharePassword);
+        const renderPlanCardFeatures = (containerId, descId, planObj, tierKey) => {
+          const descEl = document.getElementById(descId);
+          if (descEl) {
+            const defaultDesc = tierKey === 'free' ? 'Dành cho người mới bắt đầu trải nghiệm thư viện bài học.' :
+                                (tierKey === 'plus' ? 'Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.' : 'Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.');
+            descEl.textContent = planObj.description || defaultDesc;
+          }
 
-        // Gói Plus
-        if (planPlus.maxLessons !== undefined) updateFeatureEl('featPlusLessons', formatLimit('maxLessons', planPlus.maxLessons));
-        if (planPlus.maxSections !== undefined) updateFeatureEl('featPlusSections', formatLimit('maxSections', planPlus.maxSections));
-        if (planPlus.maxFileKB !== undefined) updateFeatureEl('featPlusFileSize', formatLimit('maxFileKB', planPlus.maxFileKB));
-        if (planPlus.maxActiveShares !== undefined) updateFeatureEl('featPlusActiveShares', formatLimit('maxActiveShares', planPlus.maxActiveShares));
-        if (planPlus.monthlyAiRequests !== undefined) updateFeatureEl('featPlusAiRequests', formatLimit('monthlyAiRequests', planPlus.monthlyAiRequests));
-        if (planPlus.trashDays !== undefined) updateFeatureEl('featPlusTrashDays', formatLimit('trashDays', planPlus.trashDays));
-        if (planPlus.sharePassword !== undefined) updateBoolEl('featPlusSharePassword', planPlus.sharePassword);
+          const containerEl = document.getElementById(containerId);
+          if (!containerEl) return;
 
-        // Gói Pro
-        if (planPro.maxLessons !== undefined) updateFeatureEl('featProLessons', formatLimit('maxLessons', planPro.maxLessons));
-        if (planPro.maxSections !== undefined) updateFeatureEl('featProSections', formatLimit('maxSections', planPro.maxSections));
-        if (planPro.maxFileKB !== undefined) updateFeatureEl('featProFileSize', formatLimit('maxFileKB', planPro.maxFileKB));
-        if (planPro.maxActiveShares !== undefined) updateFeatureEl('featProActiveShares', formatLimit('maxActiveShares', planPro.maxActiveShares));
-        if (planPro.monthlyAiRequests !== undefined) updateFeatureEl('featProAiRequests', formatLimit('monthlyAiRequests', planPro.monthlyAiRequests));
-        if (planPro.trashDays !== undefined) updateFeatureEl('featProTrashDays', formatLimit('trashDays', planPro.trashDays));
-        if (planPro.sharePassword !== undefined) updateBoolEl('featProSharePassword', planPro.sharePassword);
+          const pins = (Array.isArray(planObj.pinnedFeatures) && planObj.pinnedFeatures.length > 0)
+            ? planObj.pinnedFeatures
+            : (DEFAULT_PINS[tierKey] || []);
+
+          let rows = [];
+          pins.forEach(key => {
+            const meta = FEATURE_META[key];
+            if (!meta) return;
+            const val = planObj[key];
+            if (val === undefined) return;
+
+            let valHtml = '';
+            if (meta.type === 'bool') {
+              valHtml = `<span class="inline-flex items-center justify-center">${renderPasswordCheck(Boolean(val))}</span>`;
+            } else {
+              const formatted = meta.format ? meta.format(val) : String(val);
+              valHtml = `<span class="${tierKey === 'free' ? 'font-medium' : 'font-semibold'} text-[#1C1B18] dark:text-[#E8E6E1]">${escapeHtml(formatted)}</span>`;
+            }
+
+            rows.push(`
+              <div class="flex items-center justify-between">
+                <span class="text-[#78756D] dark:text-[#9AA3B2]">${escapeHtml(meta.label)}</span>
+                ${valHtml}
+              </div>
+            `);
+          });
+
+          // Thêm các dòng tính năng tùy chỉnh thêm
+          const customPins = Array.isArray(planObj.customFeatures) ? planObj.customFeatures : [];
+          customPins.forEach(line => {
+            if (!line || !line.trim()) return;
+            rows.push(`
+              <div class="flex items-start gap-1.5 pt-0.5">
+                <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span class="text-xs text-[#1C1B18] dark:text-[#E8E6E1] leading-tight font-medium">${escapeHtml(line.trim())}</span>
+              </div>
+            `);
+          });
+
+          containerEl.innerHTML = rows.join('');
+        };
+
+        renderPlanCardFeatures('planFeaturesContainerFree', 'planDescFree', planFree, 'free');
+        renderPlanCardFeatures('planFeaturesContainerPlus', 'planDescPlus', planPlus, 'plus');
+        renderPlanCardFeatures('planFeaturesContainerPro', 'planDescPro', planPro, 'pro');
 
       } catch (err) {
         console.warn('[PricingDisplay] Lỗi cập nhật giá & hạn mức:', err);

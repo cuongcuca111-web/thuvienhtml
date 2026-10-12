@@ -729,6 +729,31 @@ const PARAM_DEFS = [
 
 let isPlansInitializedFromServer = false;
 
+function renderShortParamValue(param, val) {
+  if (param.type === 'boolean') {
+    return val ? '✓ Bật' : '✗ Tắt';
+  }
+  if (param.type === 'chips') {
+    return Array.isArray(val) ? `${Math.max(...val, 0)}d` : `${val}d`;
+  }
+  if (val === -1 || val === null || val === 'unlimited') return '∞';
+  if (param.key === 'maxFileKB') return val >= 1024 ? `${val / 1024}MB` : `${val}KB`;
+  return String(val ?? 0);
+}
+
+const DEFAULT_PINNED_MAP = {
+  guest: ['maxLessons', 'maxSections', 'maxActiveShares'],
+  free: ['maxLessons', 'maxSections', 'maxActiveShares'],
+  plus: ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword'],
+  pro: ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword', 'monthlyAiRequests', 'fullTextSearch']
+};
+const DEFAULT_DESC_MAP = {
+  guest: 'Dành cho khách vãng lai trải nghiệm nhanh.',
+  free: 'Dành cho người mới bắt đầu trải nghiệm thư viện bài học.',
+  plus: 'Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.',
+  pro: 'Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.'
+};
+
 async function renderPlansTab(container) {
   // Lần đầu mở tab: tự động tải cấu hình thực tế từ Firestore về để đảm bảo dữ liệu mới nhất
   if (!isPlansInitializedFromServer) {
@@ -754,6 +779,19 @@ async function renderPlansTab(container) {
   if (!pendingPlansChanges) {
     pendingPlansChanges = JSON.parse(JSON.stringify(originalPlansConfig));
   }
+
+  TIERS.forEach(t => {
+    if (originalPlansConfig[t]) {
+      if (!Array.isArray(originalPlansConfig[t].pinnedFeatures)) originalPlansConfig[t].pinnedFeatures = [...(DEFAULT_PINNED_MAP[t] || [])];
+      if (originalPlansConfig[t].description === undefined) originalPlansConfig[t].description = DEFAULT_DESC_MAP[t] || '';
+      if (!Array.isArray(originalPlansConfig[t].customFeatures)) originalPlansConfig[t].customFeatures = [];
+    }
+    if (pendingPlansChanges[t]) {
+      if (!Array.isArray(pendingPlansChanges[t].pinnedFeatures)) pendingPlansChanges[t].pinnedFeatures = [...(DEFAULT_PINNED_MAP[t] || [])];
+      if (pendingPlansChanges[t].description === undefined) pendingPlansChanges[t].description = DEFAULT_DESC_MAP[t] || '';
+      if (!Array.isArray(pendingPlansChanges[t].customFeatures)) pendingPlansChanges[t].customFeatures = [];
+    }
+  });
 
   const verBadge = document.getElementById('adminCurrentVersionBadge');
   if (verBadge) verBadge.innerText = `Cấu hình: v${plansVersion}`;
@@ -814,6 +852,97 @@ async function renderPlansTab(container) {
           `).join('')}
         </tbody>
       </table>
+    </div>
+
+    <!-- MỤC TÙY CHỈNH GHIM TÍNH NĂNG NỔI BẬT & MÔ TẢ HIỂN THỊ TRÊN THẺ GÓI -->
+    <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold">📌</span>
+          <h4 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Tùy chỉnh Ghim tính năng nổi bật &amp; Mô tả hiển thị trên thẻ gói</h4>
+        </div>
+        <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] mt-1">
+          Tùy chọn thông số hoặc quyền lợi nào sẽ xuất hiện trên từng thẻ gói ở màn hình Chọn gói của người dùng. Bạn có thể ghim ít tính năng cho gói Thường, ghim nhiều hơn cho gói Pro, và thêm các dòng quyền lợi riêng biệt.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+        ${['free', 'plus', 'pro'].map(tier => {
+          const tierPlan = (pendingPlansChanges && pendingPlansChanges[tier]) || {};
+          const currentDesc = tierPlan.description !== undefined ? tierPlan.description : (
+            tier === 'free' ? 'Dành cho người mới bắt đầu trải nghiệm thư viện bài học.' :
+            (tier === 'plus' ? 'Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.' : 'Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.')
+          );
+          const currentPins = Array.isArray(tierPlan.pinnedFeatures) && tierPlan.pinnedFeatures.length > 0 ? tierPlan.pinnedFeatures : (
+            tier === 'free' ? ['maxLessons', 'maxSections', 'maxActiveShares'] :
+            (tier === 'plus' ? ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword'] :
+            ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword', 'monthlyAiRequests', 'fullTextSearch'])
+          );
+          const customLines = Array.isArray(tierPlan.customFeatures) ? tierPlan.customFeatures.join('\n') : '';
+
+          const tierTheme = tier === 'free' ? 'border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-[#161920]' :
+                            (tier === 'plus' ? 'border-indigo-300 dark:border-indigo-800 bg-indigo-50/20 dark:bg-indigo-950/20' :
+                            'border-amber-300 dark:border-amber-800 bg-amber-50/20 dark:bg-amber-950/20');
+          const tierBadgeColor = tier === 'free' ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' :
+                                 (tier === 'plus' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' :
+                                 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-300');
+
+          return `
+            <div class="p-4 rounded-xl border ${tierTheme} flex flex-col gap-3.5">
+              <div class="flex items-center justify-between">
+                <span class="font-serif font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1] flex items-center gap-1.5">
+                  Gói ${TIER_NAMES[tier]}
+                </span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${tierBadgeColor}" id="pinnedCountBadge_${tier}">
+                  ${currentPins.length} tính năng ghim
+                </span>
+              </div>
+
+              <!-- Mô tả gói -->
+              <div>
+                <label class="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                  Mô tả ngắn thẻ gói:
+                </label>
+                <textarea rows="2" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] text-[#1C1B18] dark:text-[#E8E6E1] focus:ring-1 focus:ring-indigo-500 plan-desc-input" data-tier="${tier}" placeholder="Nhập câu mô tả ngắn...">${esc(currentDesc)}</textarea>
+              </div>
+
+              <!-- Chọn tính năng ghim từ 16 thông số -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="text-[11px] font-semibold text-gray-700 dark:text-gray-300">
+                    Chọn thông số ghim lên thẻ:
+                  </label>
+                  <span class="text-[10px] text-gray-400">Tích để hiện</span>
+                </div>
+                <div class="max-h-56 overflow-y-auto space-y-1 pr-1 border border-gray-200 dark:border-gray-800 rounded-lg p-2 bg-white dark:bg-[#1A1D23]">
+                  ${PARAM_DEFS.map(p => {
+                    const isPinned = currentPins.includes(p.key);
+                    return `
+                      <label class="flex items-center justify-between p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-[11px]">
+                        <span class="flex items-center gap-1.5 text-gray-800 dark:text-gray-200">
+                          <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 plan-pin-cb" data-tier="${tier}" data-key="${p.key}" ${isPinned ? 'checked' : ''}>
+                          <span>${esc(p.label)}</span>
+                        </span>
+                        <span class="text-[10px] font-mono text-gray-400">
+                          ${renderShortParamValue(p, tierPlan[p.key])}
+                        </span>
+                      </label>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              <!-- Thêm các dòng tùy chỉnh bổ sung -->
+              <div>
+                <label class="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                  Thêm dòng quyền lợi riêng (mỗi dòng 1 gạch đầu dòng):
+                </label>
+                <textarea rows="2" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] text-[#1C1B18] dark:text-[#E8E6E1] focus:ring-1 focus:ring-indigo-500 plan-custom-features-input" data-tier="${tier}" placeholder="Ví dụ:&#10;Hỗ trợ kỹ thuật 24/7&#10;Huy hiệu VIP">${esc(customLines)}</textarea>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
     </div>
 
     <!-- MỤC LỊCH SỬ THAY ĐỔI 10 BẢN GẦN NHẤT -->
@@ -950,6 +1079,55 @@ function bindPlansTableEvents(container) {
     };
   });
 
+  // Lắng nghe thay đổi mô tả gói
+  container.querySelectorAll('.plan-desc-input').forEach(textarea => {
+    const handleDescChange = (e) => {
+      const { tier } = e.target.dataset;
+      if (!pendingPlansChanges[tier]) pendingPlansChanges[tier] = {};
+      pendingPlansChanges[tier].description = e.target.value.trim();
+      updatePlansImpact();
+    };
+    textarea.oninput = handleDescChange;
+    textarea.onchange = handleDescChange;
+  });
+
+  // Lắng nghe thay đổi checkbox ghim tính năng
+  container.querySelectorAll('.plan-pin-cb').forEach(cb => {
+    cb.onchange = (e) => {
+      const { tier, key } = e.target.dataset;
+      if (!pendingPlansChanges[tier]) pendingPlansChanges[tier] = {};
+      let pins = pendingPlansChanges[tier].pinnedFeatures;
+      if (!Array.isArray(pins)) {
+        pins = tier === 'free' ? ['maxLessons', 'maxSections', 'maxActiveShares'] :
+               (tier === 'plus' ? ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword'] :
+               ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword', 'monthlyAiRequests', 'fullTextSearch']);
+      }
+      pins = [...pins];
+      if (e.target.checked) {
+        if (!pins.includes(key)) pins.push(key);
+      } else {
+        pins = pins.filter(k => k !== key);
+      }
+      pendingPlansChanges[tier].pinnedFeatures = pins;
+      const countBadge = document.getElementById(`pinnedCountBadge_${tier}`);
+      if (countBadge) countBadge.innerText = `${pins.length} tính năng ghim`;
+      updatePlansImpact();
+    };
+  });
+
+  // Lắng nghe thay đổi dòng tính năng tùy chỉnh thêm
+  container.querySelectorAll('.plan-custom-features-input').forEach(textarea => {
+    const handleCustomChange = (e) => {
+      const { tier } = e.target.dataset;
+      if (!pendingPlansChanges[tier]) pendingPlansChanges[tier] = {};
+      const lines = e.target.value.split('\n').map(s => s.trim()).filter(Boolean);
+      pendingPlansChanges[tier].customFeatures = lines;
+      updatePlansImpact();
+    };
+    textarea.oninput = handleCustomChange;
+    textarea.onchange = handleCustomChange;
+  });
+
   // Đặt lại cột
   container.querySelectorAll('.btn-reset-col').forEach(btn => {
     btn.onclick = () => {
@@ -1017,6 +1195,25 @@ function updatePlansImpact() {
         const formatVal = (v) => (v === -1 || v === null ? 'Vô hạn' : JSON.stringify(v));
         diffs.push(`<strong>${TIER_NAMES[tier]}</strong>: ${def.label} (${formatVal(oldV)} → <span class="text-indigo-600 font-bold">${formatVal(newV)}</span>)`);
       }
+    }
+
+    // So sánh mô tả, ghim tính năng và dòng tùy chỉnh
+    const oldDesc = (originalPlansConfig && originalPlansConfig[tier] ? originalPlansConfig[tier].description : '') || '';
+    const newDesc = (pendingPlansChanges && pendingPlansChanges[tier] ? pendingPlansChanges[tier].description : '') || '';
+    if (oldDesc !== newDesc) {
+      diffs.push(`<strong>${TIER_NAMES[tier]}</strong>: Cập nhật mô tả thẻ gói`);
+    }
+
+    const oldPins = JSON.stringify((originalPlansConfig && originalPlansConfig[tier] ? originalPlansConfig[tier].pinnedFeatures : null) || []);
+    const newPins = JSON.stringify((pendingPlansChanges && pendingPlansChanges[tier] ? pendingPlansChanges[tier].pinnedFeatures : null) || []);
+    if (oldPins !== newPins) {
+      diffs.push(`<strong>${TIER_NAMES[tier]}</strong>: Thay đổi danh sách tính năng ghim`);
+    }
+
+    const oldCustom = JSON.stringify((originalPlansConfig && originalPlansConfig[tier] ? originalPlansConfig[tier].customFeatures : null) || []);
+    const newCustom = JSON.stringify((pendingPlansChanges && pendingPlansChanges[tier] ? pendingPlansChanges[tier].customFeatures : null) || []);
+    if (oldCustom !== newCustom) {
+      diffs.push(`<strong>${TIER_NAMES[tier]}</strong>: Thay đổi dòng quyền lợi tùy chỉnh`);
     }
   }
 
@@ -1090,6 +1287,32 @@ async function savePlansChanges() {
     container.querySelectorAll('.plan-bool-input').forEach(cb => {
       const { tier, key } = cb.dataset;
       pendingPlansChanges[tier][key] = cb.checked;
+    });
+
+    container.querySelectorAll('.plan-desc-input').forEach(textarea => {
+      const { tier } = textarea.dataset;
+      if (pendingPlansChanges[tier]) {
+        pendingPlansChanges[tier].description = textarea.value.trim();
+      }
+    });
+
+    container.querySelectorAll('.plan-custom-features-input').forEach(textarea => {
+      const { tier } = textarea.dataset;
+      if (pendingPlansChanges[tier]) {
+        pendingPlansChanges[tier].customFeatures = textarea.value.split('\n').map(s => s.trim()).filter(Boolean);
+      }
+    });
+
+    const tierPinsMap = {};
+    container.querySelectorAll('.plan-pin-cb').forEach(cb => {
+      const { tier, key } = cb.dataset;
+      if (!tierPinsMap[tier]) tierPinsMap[tier] = [];
+      if (cb.checked) tierPinsMap[tier].push(key);
+    });
+    Object.keys(tierPinsMap).forEach(t => {
+      if (pendingPlansChanges[t]) {
+        pendingPlansChanges[t].pinnedFeatures = tierPinsMap[t];
+      }
     });
   }
 
@@ -1380,6 +1603,42 @@ function renderPricingTab(container) {
 
     const isYearly = previewPeriod === 'yearly';
 
+    function renderPreviewTierList(tierObj, defaultPins) {
+      const pins = (Array.isArray(tierObj.pinnedFeatures) && tierObj.pinnedFeatures.length > 0)
+        ? tierObj.pinnedFeatures
+        : defaultPins;
+      let items = [];
+      pins.forEach(k => {
+        const pDef = PARAM_DEFS.find(p => p.key === k);
+        if (!pDef) return;
+        const v = tierObj[k];
+        let valStr = '';
+        if (pDef.type === 'boolean') {
+          valStr = v ? '✓ Bật' : '—';
+        } else if (v === -1 || v === null || v === 'unlimited') {
+          valStr = 'Không giới hạn';
+        } else if (k === 'maxFileKB') {
+          valStr = v >= 1024 ? `${v/1024} MB` : `${v} KB`;
+        } else if (k === 'monthlyAiRequests') {
+          valStr = `${v.toLocaleString('vi-VN')} lượt`;
+        } else {
+          valStr = `${v}`;
+        }
+        items.push(`<li class="flex items-center justify-between"><span>${esc(pDef.label)}:</span> <strong class="text-gray-900 dark:text-gray-100">${esc(valStr)}</strong></li>`);
+      });
+      if (Array.isArray(tierObj.customFeatures)) {
+        tierObj.customFeatures.forEach(c => {
+          if (c && c.trim()) {
+            items.push(`<li class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium"><span>✓</span> <span>${esc(c.trim())}</span></li>`);
+          }
+        });
+      }
+      return items.join('');
+    }
+
+    const defaultPinsPlus = ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword'];
+    const defaultPinsPro = ['maxLessons', 'maxSections', 'maxFileKB', 'maxActiveShares', 'trashDays', 'sharePassword', 'monthlyAiRequests', 'fullTextSearch'];
+
     cardsContainer.innerHTML = `
       <!-- THẺ PLUS -->
       <div class="p-5 rounded-2xl border-2 border-indigo-600 bg-white dark:bg-[#181B20] shadow-sm flex flex-col justify-between">
@@ -1388,6 +1647,9 @@ function renderPricingTab(container) {
             <h4 class="font-serif text-base font-bold text-indigo-600 dark:text-indigo-400">Gói Plus</h4>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 uppercase">Khuyên dùng</span>
           </div>
+          <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[30px] mb-2 leading-relaxed">
+            ${esc(plusPlans.description || 'Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.')}
+          </p>
           <div class="text-2xl font-bold font-serif text-[#1C1B18] dark:text-[#E8E6E1] mb-1 tabular-nums">
             ${isYearly ? `${plusEquiv.toLocaleString('vi-VN')} ₫` : `${pPlusM.toLocaleString('vi-VN')} ₫`}
             <span class="text-xs font-normal text-gray-500">/ tháng</span>
@@ -1397,10 +1659,7 @@ function renderPricingTab(container) {
           </div>
           <div class="border-t border-gray-100 dark:border-gray-800/80 my-3"></div>
           <ul class="text-xs space-y-2 text-gray-600 dark:text-gray-300 mb-4">
-            <li class="flex items-center justify-between"><span>Số bài học:</span> <strong class="text-gray-900 dark:text-gray-100">${plusLessons} bài</strong></li>
-            <li class="flex items-center justify-between"><span>Số danh mục:</span> <strong class="text-gray-900 dark:text-gray-100">${plusSections} mục</strong></li>
-            <li class="flex items-center justify-between"><span>Dung lượng bài:</span> <strong class="text-gray-900 dark:text-gray-100">${plusFileKB >= 1024 ? `${plusFileKB/1024} MB` : `${plusFileKB} KB`}</strong></li>
-            <li class="flex items-center justify-between"><span>Lượt gọi AI:</span> <strong class="text-indigo-600 dark:text-indigo-400">300 lượt</strong></li>
+            ${renderPreviewTierList(plusPlans, defaultPinsPlus)}
           </ul>
         </div>
         <button type="button" class="w-full py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs pointer-events-none">Chọn gói Plus</button>
@@ -1413,6 +1672,9 @@ function renderPricingTab(container) {
             <h4 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Gói Pro</h4>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 uppercase">Cao cấp</span>
           </div>
+          <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[30px] mb-2 leading-relaxed">
+            ${esc(proPlans.description || 'Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.')}
+          </p>
           <div class="text-2xl font-bold font-serif text-[#1C1B18] dark:text-[#E8E6E1] mb-1 tabular-nums">
             ${isYearly ? `${proEquiv.toLocaleString('vi-VN')} ₫` : `${pProM.toLocaleString('vi-VN')} ₫`}
             <span class="text-xs font-normal text-gray-500">/ tháng</span>
@@ -1422,10 +1684,7 @@ function renderPricingTab(container) {
           </div>
           <div class="border-t border-gray-100 dark:border-gray-800/80 my-3"></div>
           <ul class="text-xs space-y-2 text-gray-600 dark:text-gray-300 mb-4">
-            <li class="flex items-center justify-between"><span>Số bài học:</span> <strong class="text-gray-900 dark:text-gray-100">${proLessons}</strong></li>
-            <li class="flex items-center justify-between"><span>Số danh mục:</span> <strong class="text-gray-900 dark:text-gray-100">${proSections}</strong></li>
-            <li class="flex items-center justify-between"><span>Dung lượng bài:</span> <strong class="text-gray-900 dark:text-gray-100">${proFileKB >= 1024 ? `${proFileKB/1024} MB` : `${proFileKB} KB`}</strong></li>
-            <li class="flex items-center justify-between"><span>Lượt gọi AI:</span> <strong class="text-indigo-600 dark:text-indigo-400">1.500 lượt</strong></li>
+            ${renderPreviewTierList(proPlans, defaultPinsPro)}
           </ul>
         </div>
         <button type="button" class="w-full py-2 rounded-xl border border-gray-400 dark:border-gray-600 font-semibold text-xs pointer-events-none">Chọn gói Pro</button>
