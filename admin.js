@@ -1012,14 +1012,15 @@ function updatePlansImpact() {
 
   if (pendingPlansChanges && pendingPlansChanges.guest && pendingPlansChanges.free && pendingPlansChanges.plus && pendingPlansChanges.pro) {
     ['maxLessons', 'maxSections', 'maxActiveShares'].forEach(key => {
+      const keyName = key === 'maxLessons' ? 'Số bài học tối đa' : (key === 'maxSections' ? 'Số mục folder' : 'Số link chia sẻ đang chạy');
       if (!compareLimits(pendingPlansChanges.guest[key], pendingPlansChanges.free[key])) {
-        warnings.push(`Cảnh báo: Gói Khách có ${key} lớn hơn gói Thường!`);
+        warnings.push(`Cảnh báo: Gói Khách có ${keyName} lớn hơn gói Thường!`);
       }
       if (!compareLimits(pendingPlansChanges.free[key], pendingPlansChanges.plus[key])) {
-        warnings.push(`Cảnh báo: Gói Thường có ${key} lớn hơn gói Plus!`);
+        warnings.push(`Cảnh báo: Gói Thường có ${keyName} lớn hơn gói Plus!`);
       }
       if (!compareLimits(pendingPlansChanges.plus[key], pendingPlansChanges.pro[key])) {
-        warnings.push(`Cảnh báo: Gói Plus có ${key} lớn hơn gói Pro!`);
+        warnings.push(`Cảnh báo: Gói Plus có ${keyName} lớn hơn gói Pro!`);
       }
     });
   }
