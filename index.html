@@ -3344,7 +3344,7 @@
     </button>
 
     <!-- Mục Nhập mã kích hoạt nhanh -->
-    <button id="btnOpenRedeemCodeModal" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition cursor-pointer">
+    <button id="btnOpenRedeemCodeModal" onclick="openRedeemCodeModal()" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition cursor-pointer">
       <svg class="w-4 h-4 text-amber-500 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
       </svg>
@@ -6247,8 +6247,12 @@
           <h3 id="upgradeModalTitle" class="font-serif font-bold text-2xl sm:text-[28px] text-[#1C1B18] dark:text-[#E8E6E1] tracking-tight leading-snug">
             Chọn gói phù hợp với bạn
           </h3>
-          <p class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] mt-1" id="upgradeModalSubtitle">
-            Thanh toán bằng chuyển khoản VietQR. Gói kích hoạt tự động sau khi nhận tiền.
+          <p class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] mt-1 flex flex-wrap items-center gap-1.5" id="upgradeModalSubtitle">
+            <span>Thanh toán bằng chuyển khoản VietQR. Gói kích hoạt tự động sau khi nhận tiền.</span>
+            <button type="button" onclick="closeUpgradeModal(); openRedeemCodeModal();" class="text-amber-600 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+              <span>Có mã kích hoạt?</span>
+            </button>
           </p>
         </div>
         <button id="btnCloseUpgradeModal" type="button" class="touch-target w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng">
@@ -7036,7 +7040,7 @@
   </div>
 
   <!-- MODAL NHẬP MÃ KÍCH HOẠT NHANH -->
-  <div id="redeemCodeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[75] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="redeemCodeTitle">
+  <div id="redeemCodeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="redeemCodeTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[460px] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header Modal -->
@@ -8686,6 +8690,9 @@
     // QUẢN LÝ NHẬP MÃ KÍCH HOẠT NHANH (REDEEM CODE)
     // =========================================================================
     function openRedeemCodeModal() {
+      try {
+        if (typeof closeUserMenu === 'function') closeUserMenu(true);
+      } catch (_) {}
       const modal = document.getElementById('redeemCodeModal');
       if (!modal) return;
       const input = document.getElementById('redeemCodeInput');
@@ -8695,7 +8702,10 @@
         alertBox.className = 'hidden';
         alertBox.innerHTML = '';
       }
-      modal.classList.remove('hidden');
+      modal.classList.remove('hidden', 'modal-closing');
+      void modal.offsetWidth;
+      modal.classList.add('modal-active');
+      document.body.style.overflow = 'hidden';
       setTimeout(() => {
         if (input) input.focus();
       }, 100);
@@ -8703,7 +8713,14 @@
 
     function closeRedeemCodeModal() {
       const modal = document.getElementById('redeemCodeModal');
-      if (modal) modal.classList.add('hidden');
+      if (!modal) return;
+      modal.classList.remove('modal-active');
+      modal.classList.add('modal-closing');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('modal-closing');
+      }, 180);
+      document.body.style.overflow = '';
     }
 
     window.openRedeemCodeModal = openRedeemCodeModal;
@@ -8712,7 +8729,6 @@
     const btnOpenRedeemCodeModal = document.getElementById('btnOpenRedeemCodeModal');
     if (btnOpenRedeemCodeModal) {
       btnOpenRedeemCodeModal.addEventListener('click', () => {
-        closeUserMenu();
         openRedeemCodeModal();
       });
     }
@@ -8736,6 +8752,14 @@
       });
     }
 
+    // Tự động định dạng mã khi người dùng nhập (In hoa, đổi khoảng trắng thành gạch nối)
+    const redeemCodeInputEl = document.getElementById('redeemCodeInput');
+    if (redeemCodeInputEl) {
+      redeemCodeInputEl.addEventListener('input', (e) => {
+        e.target.value = (e.target.value || '').toUpperCase().replace(/\s+/g, '-');
+      });
+    }
+
     const redeemCodeForm = document.getElementById('redeemCodeForm');
     if (redeemCodeForm) {
       redeemCodeForm.addEventListener('submit', async (e) => {
@@ -8754,7 +8778,7 @@
           return;
         }
 
-        const rawCode = (input?.value || '').trim().toUpperCase();
+        const rawCode = (input?.value || '').trim().toUpperCase().replace(/\s+/g, '-');
         if (!rawCode) {
           if (alertBox) {
             alertBox.className = 'p-3 rounded-xl text-xs bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-rose-700 dark:text-rose-300';
@@ -8784,21 +8808,29 @@
             throw new Error(data.error || 'Kích hoạt mã thất bại');
           }
 
-          // Cập nhật trạng thái người dùng
+          // Cập nhật trạng thái người dùng tức thì
           state.userTier = data.tier || 'plus';
+          state.userTierExpiresAt = data.expiresAt || null;
           try {
             await auth.currentUser.getIdToken(true); // Làm mới token để nhận custom claims mới
           } catch (_) {}
 
           try {
-            updateUserUI(state.user);
+            updateUserUI(auth.currentUser);
             if (typeof renderAllPlansSection === 'function') renderAllPlansSection();
           } catch (_) {}
 
           if (alertBox) {
-            alertBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-emerald-800 dark:text-emerald-300 font-semibold';
-            alertBox.innerText = data.message || `Kích hoạt thành công gói ${data.tier.toUpperCase()}!`;
+            alertBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-emerald-800 dark:text-emerald-300 font-semibold flex items-center gap-2';
+            alertBox.innerHTML = `
+              <span class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 font-bold text-xs">✓</span>
+              <span>${data.message || `Kích hoạt thành công gói ${(data.tier || '').toUpperCase()}!`}</span>
+            `;
           }
+
+          try {
+            shootMicroConfetti(submitBtn || modal);
+          } catch (_) {}
 
           showToast(`Kích hoạt thành công gói ${(data.tier || '').toUpperCase()}!`);
 
@@ -8808,8 +8840,11 @@
 
         } catch (err) {
           if (alertBox) {
-            alertBox.className = 'p-3 rounded-xl text-xs bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-rose-700 dark:text-rose-300';
-            alertBox.innerText = err.message || 'Lỗi khi kích hoạt mã';
+            alertBox.className = 'p-3 rounded-xl text-xs bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-rose-700 dark:text-rose-300 flex items-center gap-2';
+            alertBox.innerHTML = `
+              <span class="w-5 h-5 rounded-full bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300 flex items-center justify-center shrink-0 font-bold text-xs">!</span>
+              <span>${err.message || 'Lỗi khi kích hoạt mã'}</span>
+            `;
           }
         } finally {
           if (submitBtn) submitBtn.disabled = false;

@@ -615,14 +615,26 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Vui lòng cung cấp mã kích hoạt' });
     }
 
-    const cleanCode = code.trim().toUpperCase();
+    const cleanCode = code.trim().toUpperCase().replace(/\s+/g, '-');
     if (!cleanCode) {
       return res.status(400).json({ error: 'Mã kích hoạt không hợp lệ' });
     }
 
     try {
-      const codeRef = db.doc(`activation_codes/${cleanCode}`);
-      const codeSnap = await codeRef.get();
+      let codeRef = db.doc(`activation_codes/${cleanCode}`);
+      let codeSnap = await codeRef.get();
+
+      // Nếu không tìm thấy bằng ID trực tiếp, thử tìm theo trường 'code'
+      if (!codeSnap.exists) {
+        const qSnap = await db.collection('activation_codes')
+          .where('code', '==', cleanCode)
+          .limit(1)
+          .get();
+        if (!qSnap.empty) {
+          codeSnap = qSnap.docs[0];
+          codeRef = codeSnap.ref;
+        }
+      }
 
       if (!codeSnap.exists) {
         return res.status(404).json({ error: 'Mã kích hoạt không chính xác hoặc không tồn tại trên hệ thống.' });
@@ -631,11 +643,15 @@ module.exports = async function handler(req, res) {
       const codeData = codeSnap.data();
 
       if (codeData.isDisabled) {
-        return res.status(400).json({ error: 'Mã kích hoạt này đã bị vô hiệu hóa.' });
+        return res.status(400).json({ error: 'Mã kích hoạt này đã bị vô hiệu hóa bởi quản trị viên.' });
       }
 
       if (codeData.isUsed) {
         return res.status(400).json({ error: 'Mã kích hoạt này đã được sử dụng trước đó.' });
+      }
+
+      if (codeData.expiresAt && new Date(codeData.expiresAt) < new Date()) {
+        return res.status(400).json({ error: 'Mã kích hoạt này đã hết hạn sử dụng.' });
       }
 
       const tier = (codeData.tier || 'plus').toLowerCase();
@@ -680,7 +696,7 @@ module.exports = async function handler(req, res) {
         usedAt: new Date().toISOString()
       });
 
-      // 2. Nâng cấp gói cho người dùng trong Firestore
+      // 2. Nâng cấp gói cho người dùng trong Firestore: users/{uid}/billing/plan
       batch.set(userPlanRef, {
         tier,
         period: days >= 365 ? 'yearly' : 'monthly',
@@ -691,14 +707,32 @@ module.exports = async function handler(req, res) {
         activationCode: cleanCode
       }, { merge: true });
 
+      // 3. Đồng bộ cấu hình người dùng tại artifacts/thuvienhtml/users/{uid}/settings/config
+      const userSettingsRef = db.doc(`artifacts/thuvienhtml/users/${uid}/settings/config`);
+      batch.set(userSettingsRef, {
+        tier,
+        tierExpiresAt: newExpiresAt,
+        tierGrantedBy: 'redeem_code',
+        tierGrantedAt: new Date().toISOString(),
+        activationCode: cleanCode
+      }, { merge: true });
+
+      // 4. Đồng bộ root document users/{uid}
+      batch.set(db.doc(`users/${uid}`), {
+        tier,
+        tierExpiresAt: newExpiresAt,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+
       await batch.commit();
 
-      // 3. Đồng bộ Firebase Auth Custom Claims (tier)
+      // 5. Đồng bộ Firebase Auth Custom Claims (tier & tierExpiresAt)
       try {
         const currentClaims = (await adminApp.auth().getUser(uid)).customClaims || {};
         await adminApp.auth().setCustomUserClaims(uid, {
           ...currentClaims,
-          tier: tier
+          tier: tier,
+          tierExpiresAt: newExpiresAt
         });
       } catch (claimErr) {
         console.warn('[Redeem Code] Lỗi cập nhật custom claims:', claimErr.message);
