@@ -27221,6 +27221,7 @@
       const chosenLabel = (labelText || '').trim().substring(0, 12);
       const chosenNote = (noteText || '').trim();
 
+      const frameId = 'frame_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
       const newFrame = {
         id: frameId,
         lessonId: state.activeLessonId,
