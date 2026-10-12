@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.1.9',
+        date: '2026-10-12T21:26:00+07:00',
+        title: 'Đồng bộ tức thì dữ liệu hiện tại cho tab Thanh toán VietQR',
+        items: [
+          { type: 'fix', text: 'Khắc phục hoàn toàn lỗi hiển thị dữ liệu đơn hàng cũ khi vào tab VietQR; luôn nạp và hiển thị trạng thái đơn hàng hiện tại mới nhất' },
+          { type: 'improved', text: 'Tối ưu API danh sách ngân hàng Napas VietQR phản hồi tức thì 0ms, loại bỏ độ trễ mạng bên thứ ba' },
+          { type: 'feature', text: 'Bổ sung nút Làm mới nhanh danh sách đơn hàng ngay trên thanh công cụ quản lý đơn' }
+        ]
+      },
+      {
         version: 'v5.1.8',
         date: '2026-10-12T21:12:00+07:00',
         title: 'Sửa lỗi cú pháp bảng Quản trị Admin',

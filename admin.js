@@ -36,8 +36,7 @@ let adminLastAuthTime = Date.now();
 const ADMIN_MAX_IDLE_MS = 60 * 60 * 1000; // 60 phút tự đăng xuất nếu không hoạt động
 const ADMIN_REAUTH_MS = 15 * 60 * 1000;  // 15 phút cho thao tác nhạy cảm
 
-// BỘ NHỚ ĐỆM TỐC HÀNH TRONG PHIÊN (IN-MEMORY SWR CACHE CHO CÁC TAB ADMIN)
-let adminBillingCache = null;  // { cfgRes, ordersRes, banksRes, timestamp }
+// BỘ NHỚ ĐỆM TỐC HÀNH TRONG PHIÊN (IN-MEMORY CACHE CHO CÁC TAB ADMIN)
 let adminCodesCache = null;    // { [filter]: codes }
 let adminBanksCache = null;    // Danh sách ngân hàng VietQR lưu đệm trong phiên
 
@@ -334,7 +333,6 @@ function bindGlobalAdminEvents() {
   const btnRefresh = document.getElementById('btnAdminRefresh');
   if (btnRefresh) {
     btnRefresh.onclick = () => {
-      adminBillingCache = null;
       adminCodesCache = null;
       loadTabData(currentAdminTab);
       toast("Đã làm mới dữ liệu");
@@ -3104,58 +3102,12 @@ function normalizeAccountName(name) {
     .trim();
 }
 
-function syncBillingDataBackground(container) {
-  const banksPromise = adminBanksCache ? Promise.resolve({ banks: adminBanksCache }) : callAdminApi('/api/admin/billing/banks').catch(() => ({ banks: [] }));
-  Promise.all([
-    callAdminApi('/api/admin/billing/config').catch(() => (adminBillingCache ? adminBillingCache.cfgRes : {})),
-    callAdminApi('/api/admin/billing/orders?status=all&limit=100').catch(() => (adminBillingCache ? adminBillingCache.ordersRes : {})),
-    banksPromise
-  ]).then(([freshCfg, freshOrders, freshBanks]) => {
-    if (freshBanks && Array.isArray(freshBanks.banks) && freshBanks.banks.length > 0) {
-      adminBanksCache = freshBanks.banks;
-    }
-    adminBillingCache = { cfgRes: freshCfg, ordersRes: freshOrders, banksRes: { banks: adminBanksCache || [] }, timestamp: Date.now() };
-
-    // Cập nhật âm thầm vào bảng đơn hàng nếu đang đứng ở tab VietQR
-    if (currentAdminTab === 'billing' && container) {
-      const searchInput = container.querySelector('#billingSearchOrderInput');
-      const statusFilter = container.querySelector('#billingStatusFilter');
-      const s = searchInput ? searchInput.value.trim() : '';
-      const st = statusFilter ? statusFilter.value : 'all';
-
-      if (!s && st === 'all') {
-        const sorted = sortOrdersByPriority(freshOrders.orders || []);
-        const tbody = container.querySelector('#billingOrdersTableBody');
-        if (tbody) {
-          tbody.innerHTML = renderOrdersTableRows(sorted);
-          if (typeof container._bindOrderRowEvents === 'function') {
-            container._bindOrderRowEvents();
-          }
-        }
-        const counts = freshOrders.counts || {};
-        const uCount = counts.userConfirmed || 0;
-        const btnOrdersEl = container.querySelector('#btnSubTabOrders');
-        if (btnOrdersEl) {
-          btnOrdersEl.innerHTML = `<span>Đơn hàng (${sorted.length})</span>${uCount > 0 ? `<span class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px]">${uCount}</span>` : ''}`;
-        }
-      }
-    }
-  }).catch(() => {});
-}
-
 async function renderBillingTab(container) {
-  // 1. Kiểm tra cache trong phiên: Nếu có sẵn, hiển thị NGAY LẬP TỨC 0ms!
-  if (adminBillingCache) {
-    buildBillingTabDOM(container, adminBillingCache);
-    syncBillingDataBackground(container);
-    return;
-  }
-
-  // 2. Lần đầu vào tab: Hiển thị spinner ngắn gọn và nạp dữ liệu
+  // Luôn nạp dữ liệu đơn hàng và thanh toán hiện tại từ server (không dùng cache cũ gây lệch trạng thái)
   container.innerHTML = `
     <div class="flex items-center justify-center py-16 text-gray-400 text-xs gap-2">
-      <svg class="w-5 h-5 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
-      <span>Đang nạp dữ liệu thanh toán VietQR &amp; Đơn hàng...</span>
+      <svg class="w-5 h-5 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
+      <span>Đang nạp dữ liệu thanh toán VietQR &amp; Đơn hàng hiện tại...</span>
     </div>
   `;
 
@@ -3171,8 +3123,7 @@ async function renderBillingTab(container) {
       adminBanksCache = banksRes.banks;
     }
 
-    adminBillingCache = { cfgRes, ordersRes, banksRes: { banks: adminBanksCache || [] }, timestamp: Date.now() };
-    buildBillingTabDOM(container, adminBillingCache);
+    buildBillingTabDOM(container, { cfgRes, ordersRes, banksRes: { banks: adminBanksCache || [] } });
   } catch (err) {
     container.innerHTML = `<div class="p-6 text-rose-500 text-xs">Lỗi nạp dữ liệu thanh toán: ${esc(err.message)}</div>`;
   }
@@ -3256,6 +3207,10 @@ function buildBillingTabDOM(container, cachedData) {
                 <option value="expired">Hết hạn</option>
                 <option value="cancelled">Đã hủy</option>
               </select>
+              <button type="button" id="btnBillingRefreshOrders" title="Tải lại đơn hàng mới nhất" class="px-2.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition flex items-center gap-1 font-semibold shrink-0 cursor-pointer">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>Làm mới</span>
+              </button>
             </div>
             <div class="text-xs text-gray-500">
               Có <strong>${userConfirmedCount}</strong> đơn khách báo đã chuyển cần duyệt.
@@ -3782,7 +3737,6 @@ function bindBillingTabEvents(container, initialOrders) {
           body: JSON.stringify(payload)
         });
         toast('Đã lưu cấu hình tài khoản nhận tiền VietQR thành công!');
-        adminBillingCache = null;
         renderBillingTab(container);
       } catch (err) {
         alert('Lỗi lưu cấu hình: ' + err.message);
@@ -3918,9 +3872,6 @@ function bindBillingTabEvents(container, initialOrders) {
     const st = statusFilter ? statusFilter.value : 'all';
     try {
       const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=100`);
-      if (adminBillingCache && st === 'all' && !s) {
-        adminBillingCache.ordersRes = res;
-      }
       const sorted = sortOrdersByPriority(res.orders || []);
       const tbody = container.querySelector('#billingOrdersTableBody');
       if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted);
@@ -4028,6 +3979,19 @@ function bindBillingTabEvents(container, initialOrders) {
   // Tìm kiếm & Lọc trạng thái đơn hàng
   if (searchInput) searchInput.oninput = debounce(reloadOrdersList, 300);
   if (statusFilter) statusFilter.onchange = reloadOrdersList;
+
+  // Nút làm mới danh sách đơn hàng
+  const btnBillingRefreshOrders = container.querySelector('#btnBillingRefreshOrders');
+  if (btnBillingRefreshOrders) {
+    btnBillingRefreshOrders.onclick = async () => {
+      btnBillingRefreshOrders.disabled = true;
+      btnBillingRefreshOrders.classList.add('opacity-50');
+      toast('Đang làm mới danh sách đơn hàng...');
+      await reloadOrdersList();
+      btnBillingRefreshOrders.disabled = false;
+      btnBillingRefreshOrders.classList.remove('opacity-50');
+    };
+  }
 
   // Gán sự kiện hàng ban đầu
   container._bindOrderRowEvents = bindOrderRowEvents;
