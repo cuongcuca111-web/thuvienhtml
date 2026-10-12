@@ -4282,12 +4282,6 @@
           </div>
         </div>
 
-        <!-- // FIX: Dòng gợi ý bảo toàn mật khẩu và sao lưu dữ liệu (.json) -->
-        <div id="authPasswordNotice" class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2] flex items-start gap-1.5 p-2.5 rounded-lg bg-[#FAF9F5] dark:bg-[#0F1115] border border-[#E6E6E1] dark:border-[#262C36] leading-relaxed">
-          <svg class="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" aria-hidden="true"><use href="#icon-info"></use></svg>
-          <span><strong>Gợi ý:</strong> Hãy ghi nhớ mật khẩu và thường xuyên dùng tính năng <em>Xuất sao lưu (.json)</em> để an toàn dữ liệu.</span>
-        </div>
-
         <button 
           id="btnSubmitAuth" 
           type="submit" 
@@ -12719,6 +12713,19 @@
       } catch (_) {}
     }
 
+    // Xóa toàn bộ nội dung bài học khỏi IndexedDB (khi đăng xuất hoặc làm mới chế độ Khách)
+    async function clearAllLessonContentsFromIDB() {
+      try {
+        const idb = await openAppDatabase();
+        await new Promise((resolve) => {
+          const tx = idb.transaction(IDB_STORE_LESSONS, 'readwrite');
+          tx.objectStore(IDB_STORE_LESSONS).clear();
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => resolve();
+        });
+      } catch (_) {}
+    }
+
     // Chuyển Uint8Array sang Base64 an toàn cho chuỗi nhị phân lớn
     function uint8ArrayToBase64(u8) {
       let binary = '';
@@ -14076,6 +14083,18 @@
     function saveCategoryExpandedState() { return saveSidebarSectionState(); }
     function pruneCategoryExpandedState() { return pruneSidebarSectionState(); }
 
+    // Dọn dẹp an toàn cho Chế độ Khách: nếu không có tài khoản xác thực, xóa sạch dữ liệu cũ còn sót lại để thư viện quay về ban đầu (0 mục, 0 bài)
+    if (localStorage.getItem('has_authenticated_account') !== 'true' && !localStorage.getItem('guest_mode_clean_v1')) {
+      localStorage.removeItem('local_cats');
+      localStorage.removeItem('local_lessons');
+      localStorage.removeItem('local_trash');
+      localStorage.removeItem('tombstones');
+      localStorage.removeItem('local_study_plans');
+      localStorage.removeItem('reading_history');
+      localStorage.removeItem('user_tags');
+      localStorage.setItem('guest_mode_clean_v1', 'true');
+    }
+
     // Đọc trạng thái đồng bộ ngay khi nạp script
     loadSidebarSectionState();
 
@@ -14122,6 +14141,9 @@
         if (state.lessons.length > 0 && !state.activeLessonId) {
           state.activeLessonId = state.lessons[0].id;
           state.activeCategoryId = state.lessons[0].categoryId;
+        } else if (state.lessons.length === 0) {
+          state.activeLessonId = null;
+          state.activeCategoryId = null;
         }
 
         renderCategoriesAndLessons();
@@ -14223,6 +14245,7 @@
 
           if (!user.isAnonymous) {
             localStorage.setItem('has_authenticated_account', 'true');
+            localStorage.removeItem('guest_mode_clean_v1');
             // // FIX: Không lưu email ảo vào LocalStorage
             if (user.email && !user.email.endsWith('@thuvienhtml.local')) {
               localStorage.setItem('last_auth_user_email', user.email);
@@ -14264,6 +14287,7 @@
           } else {
             state.isAdmin = false;
             state.userTier = 'guest';
+            state.useLocalFallback = true;
             // FIX: Khi là khách, nạp ngay dữ liệu LocalStorage vào trước để không bị mất khi F5
             loadLocalState();
           }
@@ -14705,7 +14729,6 @@
     const usernameHelperText = document.getElementById('usernameHelperText');
     const authPasswordGroup = document.getElementById('authPasswordGroup');
     const authConfirmPasswordGroup = document.getElementById('authConfirmPasswordGroup');
-    const authPasswordNotice = document.getElementById('authPasswordNotice');
     const btnSubmitAuthText = document.getElementById('btnSubmitAuthText');
     const authSpinner = document.getElementById('authSpinner');
     const authErrorMessage = document.getElementById('authErrorMessage');
@@ -14801,7 +14824,6 @@
         authPasswordGroup.classList.remove('hidden');
         authConfirmPasswordGroup.classList.add('hidden');
         if (btnForgotPass) btnForgotPass.classList.add('hidden');
-        if (authPasswordNotice) authPasswordNotice.classList.remove('hidden');
         btnSubmitAuthText.innerText = "Đăng nhập ngay";
       } else if (mode === 'register') {
         tabBtnRegister.className = "py-2 font-medium rounded transition bg-white dark:bg-[#161A20] text-[#1A1A1A] dark:text-[#ECEEF2] shadow-sm";
@@ -14814,7 +14836,6 @@
         authPasswordGroup.classList.remove('hidden');
         authConfirmPasswordGroup.classList.remove('hidden');
         if (btnForgotPass) btnForgotPass.classList.add('hidden');
-        if (authPasswordNotice) authPasswordNotice.classList.remove('hidden');
         btnSubmitAuthText.innerText = "Đăng ký tài khoản";
       } else if (mode === 'forgot') {
         tabBtnLogin.className = "py-2 font-medium rounded text-[#6B6B66]";
@@ -14826,7 +14847,6 @@
         if (usernameHelperText) usernameHelperText.classList.add('hidden');
         authPasswordGroup.classList.add('hidden');
         authConfirmPasswordGroup.classList.add('hidden');
-        if (authPasswordNotice) authPasswordNotice.classList.add('hidden');
         btnSubmitAuthText.innerText = "Gửi email khôi phục";
       }
       refreshIcons();
@@ -15001,6 +15021,7 @@
 
           const cred = await signInWithEmailAndPassword(auth, loginEmail, password);
           localStorage.setItem('has_authenticated_account', 'true');
+          localStorage.removeItem('guest_mode_clean_v1');
 
           if (guestLessons.length > 0 && cred.user) {
             await syncGuestDataToAccount(cred.user.uid, guestCats, guestLessons);
@@ -15041,6 +15062,7 @@
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
         localStorage.setItem('has_authenticated_account', 'true');
+        localStorage.removeItem('guest_mode_clean_v1');
         showToast('Đăng nhập bằng Google thành công!');
         hideModalAnimated(authModal);
       } catch (err) {
@@ -15049,8 +15071,69 @@
       }
     });
 
+    // // FIX: Xóa sạch dữ liệu tài khoản khi đăng xuất hoặc chuyển sang chế độ Khách, đưa thư viện về ban đầu (0 mục, 0 bài)
+    function clearGuestLibraryState() {
+      // 1. Reset trạng thái bộ nhớ về trạng thái trắng ban đầu (0 mục, 0 bài)
+      state.categories = [];
+      state.lessons = [];
+      state.activeLessonId = null;
+      state.activeCategoryId = null;
+      state.trash = [];
+      state.tags = typeof getInitialTags === 'function' ? getInitialTags() : [];
+      state.studyPlans = [];
+      if (state.selectedLessonIds) state.selectedLessonIds.clear();
+      state.activeMenuLessonId = null;
+      state.activeMenuCatId = null;
+      state.isSharedMode = false;
+      state.sharedLessonData = null;
+      state.userTier = 'guest';
+      state.isAdmin = false;
+      state.useLocalFallback = true;
+
+      // 2. Hủy các bộ lắng nghe Firestore của tài khoản cũ nếu có
+      if (state.unsubscribeCategories) {
+        try { state.unsubscribeCategories(); } catch (_) {}
+        state.unsubscribeCategories = null;
+      }
+      if (state.unsubscribeLessons) {
+        try { state.unsubscribeLessons(); } catch (_) {}
+        state.unsubscribeLessons = null;
+      }
+      if (state.unsubscribeBillingPlan) {
+        try { state.unsubscribeBillingPlan(); } catch (_) {}
+        state.unsubscribeBillingPlan = null;
+      }
+
+      // 3. Xóa dữ liệu thư viện trong LocalStorage để chế độ Khách trở về hoàn toàn trống như ban đầu
+      localStorage.removeItem('local_cats');
+      localStorage.removeItem('local_lessons');
+      localStorage.removeItem('local_trash');
+      localStorage.removeItem('tombstones');
+      localStorage.removeItem('local_study_plans');
+      localStorage.removeItem('reading_history');
+      localStorage.removeItem('user_tags');
+      localStorage.removeItem('sidebar_expanded_sections');
+      localStorage.removeItem('local_cat_expanded');
+      localStorage.removeItem('local_guest_uid');
+      localStorage.setItem('guest_mode_clean_v1', 'true');
+
+      // 4. Dọn sạch bộ nhớ đệm nội dung bài học trong IndexedDB
+      if (typeof clearAllLessonContentsFromIDB === 'function') {
+        clearAllLessonContentsFromIDB().catch(() => {});
+      }
+
+      // 5. Cập nhật lại giao diện thư viện về trạng thái ban đầu (0 mục, 0 bài)
+      try { renderCategoriesAndLessons(); } catch (_) {}
+      try { renderActiveLesson(); } catch (_) {}
+      try { updateTrashUIBadge(); } catch (_) {}
+      try { if (typeof renderSidebarPlans === 'function') renderSidebarPlans(); } catch (_) {}
+      try { if (typeof renderStudyPlanWidget === 'function') renderStudyPlanWidget(); } catch (_) {}
+    }
+    window.clearGuestLibraryState = clearGuestLibraryState;
+
     on('#btnGuestAuth', 'click', async () => {
       setAuthError(null);
+      clearGuestLibraryState();
       localStorage.removeItem('has_authenticated_account');
       localStorage.removeItem('last_auth_user_email');
       localStorage.removeItem('last_auth_user_name');
@@ -15071,6 +15154,7 @@
       closeUserMenu();
       askConfirmDelete('Bạn có chắc chắn muốn đăng xuất không?', async () => {
         try {
+          clearGuestLibraryState();
           localStorage.removeItem('has_authenticated_account');
           localStorage.removeItem('last_auth_user_email');
           localStorage.removeItem('last_auth_user_name');
