@@ -41,6 +41,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v4.9.8',
+        date: '2026-10-12T16:35:00+07:00',
+        title: 'Phân quyền chọn màu khung theo gói & gợi ý nâng cấp thông minh',
+        items: [
+          { type: 'improved', text: 'Khóa chọn màu khung cho gói Thường & Khách (mặc định cam), hiển thị popover gợi ý nâng cấp khi bấm màu khác' },
+          { type: 'improved', text: 'Mở rộng cấu hình chọn màu khung động trên trang Quản trị và đồng bộ tức thì' }
+        ]
+      },
+      {
         version: 'v4.9.7',
         date: '2026-10-12T16:10:00+07:00',
         title: 'Nâng cấp nhận diện gói Pro & Xóa nhãn VIP',
@@ -1821,6 +1830,45 @@
         transition: none !important;
       }
       .pro-shimmer-active .pro-shimmer-sweep::after {
+        animation: none !important;
+      }
+    }
+
+    /* ============================================================
+       POPOVER GỢI Ý NÂNG CẤP CHỌN MÀU KHUNG (EDITORIAL / COMPACT)
+       ============================================================ */
+    .frame-color-popover-editorial {
+      animation: popoverFadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: top center;
+    }
+    @keyframes popoverFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Hiệu ứng rung nhẹ chấm cam (200ms) khi người dùng bấm sau khi bấm Để sau */
+    @keyframes shakeDotCam {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-3px); }
+      40% { transform: translateX(3px); }
+      60% { transform: translateX(-2px); }
+      80% { transform: translateX(2px); }
+    }
+    .shake-dot-active {
+      animation: shakeDotCam 200ms ease-in-out !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .frame-color-popover-editorial {
+        animation: none !important;
+      }
+      .shake-dot-active {
         animation: none !important;
       }
     }
@@ -7437,6 +7485,7 @@
           shareDays: [1, 7],
           canExtendShare: false,
           sharePassword: false,
+          frameColors: false,
           customColor: false,
           exportNotesMd: false,
           trashDays: 3,
@@ -7459,6 +7508,7 @@
           shareDays: [1, 7, 30],
           canExtendShare: true,
           sharePassword: false,
+          frameColors: false,
           customColor: false,
           exportNotesMd: true,
           trashDays: 15,
@@ -7481,6 +7531,7 @@
           shareDays: [1, 7, 30, 90],
           canExtendShare: true,
           sharePassword: true,
+          frameColors: true,
           customColor: true,
           exportNotesMd: true,
           trashDays: 60,
@@ -7503,6 +7554,7 @@
           shareDays: [1, 7, 30, 90],
           canExtendShare: true,
           sharePassword: true,
+          frameColors: true,
           customColor: true,
           exportNotesMd: true,
           trashDays: 365,
@@ -7605,6 +7657,10 @@
       const u = user || state.user;
       if (!u || u.isAnonymous) return 'guest';
       if (state.userTier) return state.userTier;
+      try {
+        const cached = localStorage.getItem('thuvienhtml_cached_user_tier');
+        if (cached) return cached;
+      } catch (_) {}
       return 'free';
     }
 
@@ -7733,6 +7789,7 @@
             if (typeof window.updateUpgradePricingDisplay === 'function') {
               try { window.updateUpgradePricingDisplay(); } catch(e){}
             }
+            try { window.dispatchEvent(new CustomEvent('plans_updated')); } catch(e){}
           }
         }, (err) => {
           console.warn("[PlansConfig] Lỗi onSnapshot config/plans, tiếp tục dùng cache:", err.message);
@@ -8122,6 +8179,7 @@
           shareDays: { label: 'Thời hạn link', format: v => Array.isArray(v) ? `Tối đa ${Math.max(...v)} ngày` : `${v} ngày` },
           canExtendShare: { label: 'Gia hạn link chia sẻ', type: 'bool' },
           sharePassword: { label: 'Khóa mật khẩu link', type: 'bool' },
+          frameColors: { label: 'Chọn màu khung', type: 'bool' },
           customColor: { label: 'Tùy biến màu khung & note', type: 'bool' },
           exportNotesMd: { label: 'Xuất ghi chú Markdown', type: 'bool' },
           trashDays: { label: 'Thùng rác lưu trữ', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} ngày` },
@@ -8210,6 +8268,12 @@
 
     // Lắng nghe sự kiện cập nhật hạn mức và bảng giá từ Admin & Storage
     window.addEventListener('plans_updated', () => {
+      if (typeof hideFrameColorUpgrade === 'function') {
+        try { hideFrameColorUpgrade(); } catch (_) {}
+      }
+      if (typeof updateToolbarColorIndicators === 'function') {
+        try { updateToolbarColorIndicators(); } catch (_) {}
+      }
       if (typeof updateUpgradePricingDisplay === 'function') {
         updateUpgradePricingDisplay(false);
       }
@@ -8237,6 +8301,7 @@
             if (typeof updateCustomColorBadges === 'function') {
               updateCustomColorBadges();
             }
+            try { window.dispatchEvent(new CustomEvent('plans_updated')); } catch(_) {}
           }
         } catch(err) {}
       }
@@ -15247,6 +15312,15 @@
           console.warn("[updateUserUI] Lỗi khối 6 (Account menu & guest blocks):", errK6);
         }
 
+        if (state && state.userTier) {
+          try { localStorage.setItem('thuvienhtml_cached_user_tier', state.userTier); } catch (_) {}
+        }
+        if (typeof hideFrameColorUpgrade === 'function') {
+          try { hideFrameColorUpgrade(); } catch (_) {}
+        }
+        if (typeof updateToolbarColorIndicators === 'function') {
+          try { updateToolbarColorIndicators(); } catch (_) {}
+        }
         if (typeof refreshIcons === 'function') {
           try { refreshIcons(); } catch (_) {}
         }
@@ -19875,13 +19949,282 @@
         }
       }
 
-      // Nếu đang ở Free nhưng đang lưu màu custom thì hoàn nguyên về màu mặc định
+      // Nếu đang ở Free nhưng đang lưu màu custom hoặc màu khác cam thì hoàn nguyên về màu mặc định
       if (!isPlusOrPro && typeof activeFramingColor !== 'undefined' && activeFramingColor === 'custom') {
         activeFramingColor = 'yellow';
         try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
       }
     }
     window.updateCustomColorBadges = updateCustomColorBadges;
+
+    // ============================================================
+    // BỘ ĐIỀU PHỐI QUYỀN CHỌN MÀU KHUNG (FRAME COLORS GATEKEEPER)
+    // ============================================================
+    function canUseFrameColors() {
+      try {
+        if (state && state.isAdmin) return true;
+        if (typeof can === 'function') {
+          return Boolean(can('frameColors'));
+        }
+        const currentTier = (state && state.userTier) || 'free';
+        return currentTier === 'plus' || currentTier === 'pro';
+      } catch (e) {
+        return false;
+      }
+    }
+    window.canUseFrameColors = canUseFrameColors;
+
+    let lastFrameColorDismissTime = 0;
+    let frameColorAutoCloseTimer = null;
+    let frameColorOutsideClickListener = null;
+    let frameColorEscKeyListener = null;
+
+    function hideFrameColorUpgrade() {
+      try {
+        if (frameColorAutoCloseTimer) {
+          clearTimeout(frameColorAutoCloseTimer);
+          frameColorAutoCloseTimer = null;
+        }
+        if (frameColorOutsideClickListener) {
+          document.removeEventListener('pointerdown', frameColorOutsideClickListener, true);
+          frameColorOutsideClickListener = null;
+        }
+        if (frameColorEscKeyListener) {
+          document.removeEventListener('keydown', frameColorEscKeyListener, true);
+          frameColorEscKeyListener = null;
+        }
+        const popover = document.getElementById('frameColorUpgradePopover');
+        if (popover) {
+          popover.remove();
+        }
+      } catch (err) {
+        console.warn('[FrameColorUpgrade] Lỗi khi đóng popover:', err);
+      }
+    }
+    window.hideFrameColorUpgrade = hideFrameColorUpgrade;
+
+    function showFrameColorUpgrade(anchorEl) {
+      try {
+        // Tự động đóng popover cũ nếu đang mở để chỉ giữ 1 popover duy nhất
+        hideFrameColorUpgrade();
+
+        const isRecentDismissed = (Date.now() - lastFrameColorDismissTime) < 60000;
+
+        // Kích hoạt hiệu ứng rung nhẹ chấm cam 200ms
+        const camDots = document.querySelectorAll('.hl-color-btn[data-color="yellow"], .mobile-hl-color-btn[data-color="yellow"] span');
+        camDots.forEach(dot => {
+          dot.classList.remove('shake-dot-active');
+          void dot.offsetWidth; // force reflow
+          dot.classList.add('shake-dot-active');
+          setTimeout(() => dot.classList.remove('shake-dot-active'), 250);
+        });
+
+        const isAnonymous = Boolean(state && state.user && state.user.isAnonymous);
+        const actionBtnText = isAnonymous ? 'Đăng ký / Đăng nhập' : 'Xem các gói';
+
+        // Tạo phần tử Popover mới
+        const popover = document.createElement('div');
+        popover.id = 'frameColorUpgradePopover';
+        popover.className = 'frame-color-popover-editorial fixed z-[90] rounded-2xl bg-[#FAF9F6] dark:bg-[#15181E] text-[#1C1B18] dark:text-[#E8E6E1] p-3.5 shadow-2xl border border-[#E0DED7] dark:border-[#2C323E] select-none';
+        popover.setAttribute('role', 'dialog');
+        popover.setAttribute('aria-modal', 'false');
+        popover.setAttribute('aria-label', 'Gợi ý nâng cấp chọn màu khung');
+
+        if (isRecentDismissed) {
+          // Giao diện rút gọn khi vừa bấm "Để sau" trong vòng 60s
+          popover.style.width = '280px';
+          popover.innerHTML = `
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 shrink-0"></span>
+                <span class="text-xs font-semibold truncate text-[#1C1B18] dark:text-[#E8E6E1]">Đổi màu từ gói Plus</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" id="btnUpgradeFrameColorAction" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-[11px] transition shadow-2xs cursor-pointer">
+                  ${actionBtnText}
+                </button>
+                <button type="button" id="btnDismissFrameColorUpgrade" class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 text-[#78756D] dark:text-[#9AA3B2] text-xs cursor-pointer" aria-label="Đóng">
+                  ✕
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          // Giao diện đầy đủ phong cách Editorial
+          popover.style.width = '320px';
+          popover.innerHTML = `
+            <div class="flex items-start gap-2.5">
+              <div class="relative w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-200/60 dark:border-indigo-800/60 mt-0.5">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+                  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+                  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+                  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/>
+                </svg>
+                <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-xs" title="Khóa">
+                  <svg class="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h5 class="font-serif font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1] leading-snug">
+                  Chọn màu khung từ gói Plus
+                </h5>
+                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] leading-relaxed mt-0.5">
+                  Gói Thường dùng khung màu cam mặc định. Nâng cấp để chọn màu khung tùy ý.
+                </p>
+
+                <!-- Dải xem trước 4 chấm màu -->
+                <div class="flex items-center gap-1.5 my-2">
+                  <span class="w-3.5 h-3.5 rounded-full ring-2 ring-indigo-500/80 ring-offset-1 bg-[#d97706]" title="Cam (mặc định)"></span>
+                  <span class="w-3.5 h-3.5 rounded-full bg-[#059669] opacity-80" title="Xanh lá"></span>
+                  <span class="w-3.5 h-3.5 rounded-full bg-[#db2777] opacity-80" title="Hồng"></span>
+                  <span class="w-3.5 h-3.5 rounded-full bg-[#7c3aed] opacity-80" title="Tím"></span>
+                  <span class="w-3.5 h-3.5 rounded-full opacity-80 border border-black/10 dark:border-white/10" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);" title="Màu tùy ý"></span>
+                </div>
+
+                <!-- Hai nút tương tác -->
+                <div class="flex items-center gap-2 pt-1">
+                  <button type="button" id="btnUpgradeFrameColorAction" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-[11px] transition shadow-xs cursor-pointer">
+                    ${actionBtnText}
+                  </button>
+                  <button type="button" id="btnDismissFrameColorUpgrade" class="px-2.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:bg-black/5 dark:hover:bg-white/5 text-[#78756D] dark:text-[#9AA3B2] text-[11px] font-medium transition cursor-pointer">
+                    Để sau
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        document.body.appendChild(popover);
+
+        // Tính toán vị trí hiển thị neo sát anchorEl hoặc thanh công cụ
+        const anchor = anchorEl || document.getElementById('highlightFloatingToolbar') || document.getElementById('mobileSelectionActionBar');
+        if (anchor && anchor.getBoundingClientRect) {
+          const rect = anchor.getBoundingClientRect();
+          const popWidth = isRecentDismissed ? 280 : 320;
+          const popHeight = isRecentDismissed ? 56 : 140;
+
+          // Kiểm tra xem có đang ở mobile bottom action bar không
+          const isMobileBottom = rect.top > (window.innerHeight - 120);
+
+          let left = rect.left + (rect.width / 2) - (popWidth / 2);
+          left = Math.max(12, Math.min(left, window.innerWidth - popWidth - 12));
+
+          let top = 0;
+          if (isMobileBottom) {
+            top = Math.max(12, rect.top - popHeight - 8);
+          } else {
+            // Mặc định hiển thị bên dưới anchor; nếu sát đáy thì bật lên trên
+            if (rect.bottom + popHeight + 12 < window.innerHeight) {
+              top = rect.bottom + 8;
+            } else {
+              top = Math.max(12, rect.top - popHeight - 8);
+            }
+          }
+
+          popover.style.left = `${Math.round(left)}px`;
+          popover.style.top = `${Math.round(top)}px`;
+        } else {
+          // Vị trí mặc định ở giữa trên cùng bài viết
+          popover.style.left = '50%';
+          popover.style.transform = 'translateX(-50%)';
+          popover.style.top = '70px';
+        }
+
+        // Gắn sự kiện nút bấm trong popover
+        const btnAction = popover.querySelector('#btnUpgradeFrameColorAction');
+        if (btnAction) {
+          btnAction.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            hideFrameColorUpgrade();
+            if (isAnonymous) {
+              const authModal = document.getElementById('authModal');
+              if (authModal) {
+                authModal.classList.remove('hidden');
+                authModal.classList.add('modal-active');
+              }
+            } else {
+              if (typeof openUpgradeModal === 'function') {
+                openUpgradeModal('plus');
+              }
+            }
+          });
+        }
+
+        const btnDismiss = popover.querySelector('#btnDismissFrameColorUpgrade');
+        if (btnDismiss) {
+          btnDismiss.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            lastFrameColorDismissTime = Date.now();
+            hideFrameColorUpgrade();
+          });
+        }
+
+        // Tự động đóng sau 8 giây không tương tác
+        frameColorAutoCloseTimer = setTimeout(() => {
+          hideFrameColorUpgrade();
+        }, 8000);
+
+        // Đóng khi nhấn phím Esc
+        frameColorEscKeyListener = (e) => {
+          if (e.key === 'Escape') {
+            hideFrameColorUpgrade();
+          }
+        };
+        document.addEventListener('keydown', frameColorEscKeyListener, true);
+
+        // Đóng khi bấm ra ngoài popover
+        frameColorOutsideClickListener = (e) => {
+          if (!popover.contains(e.target) && (!anchor || !anchor.contains(e.target))) {
+            hideFrameColorUpgrade();
+          }
+        };
+        setTimeout(() => {
+          if (frameColorOutsideClickListener) {
+            document.addEventListener('pointerdown', frameColorOutsideClickListener, true);
+          }
+        }, 80);
+
+      } catch (err) {
+        console.warn('[FrameColorUpgrade] Lỗi hiển thị popover gợi ý nâng cấp:', err);
+      }
+    }
+    window.showFrameColorUpgrade = showFrameColorUpgrade;
+
+    // HÀM CỔNG DUY NHẤT KIỂM DUYỆT ĐỔI MÀU KHUNG
+    function requestFrameColor(color, anchorEl) {
+      try {
+        // Màu cam mặc định ('yellow') luôn luôn được phép cho mọi gói
+        if (color === 'yellow' || color === '#d97706') {
+          return true;
+        }
+
+        // Màu tùy ý (custom): yêu cầu quyền customColor hoặc frameColors
+        if (color === 'custom') {
+          const allowedCustom = (typeof canUseCustomColor === 'function' && canUseCustomColor()) || canUseFrameColors();
+          if (allowedCustom) return true;
+          showFrameColorUpgrade(anchorEl || document.getElementById('wrapCustomColorBtn'));
+          return false;
+        }
+
+        // Các màu khác cam (green, pink, purple)
+        if (canUseFrameColors()) {
+          return true;
+        }
+
+        // Bị chặn: hiện gợi ý nâng cấp
+        showFrameColorUpgrade(anchorEl || document.querySelector(`.hl-color-btn[data-color="${color}"]`));
+        return false;
+      } catch (err) {
+        console.warn('[requestFrameColor] Lỗi:', err);
+        return false;
+      }
+    }
+    window.requestFrameColor = requestFrameColor;
 
     function openSearchCommandPalette(initialQuery = '') {
       if (!canUseFullTextSearch()) {
@@ -27377,16 +27720,19 @@
       }
 
       let chosenColor = colorName || activeFramingColor || 'yellow';
+      const hasFrameColorsPermission = typeof canUseFrameColors === 'function' ? canUseFrameColors() : true;
+      if (!hasFrameColorsPermission && chosenColor !== 'yellow') {
+        chosenColor = 'yellow';
+        activeFramingColor = 'yellow';
+        try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
+      }
+
       const isCustom = (chosenColor === 'custom' || Boolean(customColor));
-      const isCustomAllowed = typeof canUseCustomColor === 'function' ? canUseCustomColor() :
-        ((state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || (typeof can === 'function' && can('customColor')));
+      const isCustomAllowed = typeof canUseCustomColor === 'function' ? canUseCustomColor() : hasFrameColorsPermission;
 
       if (isCustom && !isCustomAllowed) {
-        if (typeof showToast === 'function') {
-          showToast("Tính năng tùy chỉnh màu khung chỉ dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
-        }
-        if (typeof openUpgradeModal === 'function') {
-          openUpgradeModal('plus');
+        if (typeof showFrameColorUpgrade === 'function') {
+          showFrameColorUpgrade(document.getElementById('wrapCustomColorBtn'));
         }
         chosenColor = 'yellow';
         activeFramingColor = 'yellow';
@@ -27395,7 +27741,7 @@
           updateToolbarColorIndicators();
         }
       }
-      const chosenCustomColor = (chosenColor === 'custom' ? (customColor || activeCustomColor) : null);
+      const chosenCustomColor = (chosenColor === 'custom' && isCustomAllowed ? (customColor || activeCustomColor) : null);
       const chosenLabel = (labelText || '').trim().substring(0, 12);
       const chosenNote = (noteText || '').trim();
 
@@ -27698,9 +28044,25 @@
     }
 
     // 4 nút màu có sẵn trên Toolbar
-    document.querySelectorAll('.hl-color-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+    document.querySelectorAll('#highlightFloatingToolbar .hl-color-btn').forEach(btn => {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evtName => {
+        btn.addEventListener(evtName, (e) => {
+          const color = btn.getAttribute('data-color') || 'yellow';
+          if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+          }
+        }, { passive: false });
+      });
+
+      btn.addEventListener('click', (e) => {
         const color = btn.getAttribute('data-color') || 'yellow';
+        if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         activeFramingColor = color;
         localStorage.setItem('last_framing_color', color);
         updateToolbarColorIndicators();
@@ -27724,21 +28086,13 @@
     const customFrameColorInput = document.getElementById('customFrameColorInput');
 
     function checkCustomColorPermission(e) {
-      const allowed = typeof canUseCustomColor === 'function' ? canUseCustomColor() :
-        ((state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || (typeof can === 'function' && can('customColor')));
-      if (!allowed) {
+      if (typeof requestFrameColor === 'function' && !requestFrameColor('custom', wrapCustomColorBtn)) {
         if (e) {
           e.preventDefault();
           e.stopPropagation();
           if (typeof e.stopImmediatePropagation === 'function') {
             e.stopImmediatePropagation();
           }
-        }
-        if (typeof showToast === 'function') {
-          showToast("Tính năng tùy chỉnh màu khung chỉ dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
-        }
-        if (typeof openUpgradeModal === 'function') {
-          openUpgradeModal('plus');
         }
         return false;
       }
@@ -27750,7 +28104,7 @@
       ['pointerdown', 'mousedown', 'touchstart', 'click'].forEach(evtName => {
         el.addEventListener(evtName, (e) => {
           if (!checkCustomColorPermission(e)) {
-            // Đã ngăn chặn và hiện popup nâng cấp trong checkCustomColorPermission
+            // Đã ngăn chặn và hiện popup nâng cấp trong requestFrameColor
           }
         }, true);
       });
@@ -27873,9 +28227,24 @@
     // // FIX-2: GẮN SỰ KIỆN CÁC NÚT TRÊN THANH CÔNG CỤ BÔI ĐEN DI ĐỘNG (mobileSelectionActionBar)
     // 4 nút màu trên mobile
     document.querySelectorAll('.mobile-hl-color-btn').forEach(btn => {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evtName => {
+        btn.addEventListener(evtName, (e) => {
+          const color = btn.getAttribute('data-color') || 'yellow';
+          if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+          }
+        }, { passive: false });
+      });
+
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const color = btn.getAttribute('data-color') || 'yellow';
+        if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
+          e.stopPropagation();
+          return;
+        }
         activeFramingColor = color;
         localStorage.setItem('last_framing_color', color);
         updateToolbarColorIndicators();
@@ -28932,9 +29301,16 @@
 
     // Sự kiện chọn màu trực tiếp (Yellow, Green, Pink, Purple)
     document.querySelectorAll('.hl-color-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
         if (!activeHighlightItem) return;
         const color = btn.getAttribute('data-color') || 'yellow';
+        if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          return;
+        }
         activeHighlightItem.color = color;
         updateNoteModalColorUI(color);
         persistCurrentFrameData();

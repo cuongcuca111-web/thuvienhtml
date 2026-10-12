@@ -4,7 +4,7 @@
 // - KHÔNG gọi skipWaiting() tự động trong install. Chỉ skipWaiting khi client gửi tin nhắn SKIP_WAITING có kiểm soát.
 // - Dùng chiến lược Mạng trước - Cache sau (fetch với cache: 'no-cache') cho HTML để luôn lấy bản mới nhất khi online.
 
-const APP_VERSION = 'v4.9.7';
+const APP_VERSION = 'v4.9.8';
 const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [

@@ -716,6 +716,7 @@ const PARAM_DEFS = [
   { key: 'shareDays', label: 'Thời hạn link được chọn', desc: 'Các mức ngày cho phép khi tạo link chia sẻ', type: 'chips', options: [1, 7, 30, 90] },
   { key: 'canExtendShare', label: 'Cho phép gia hạn link', desc: 'Gia hạn thêm ngày cho link sắp hết hạn', type: 'boolean' },
   { key: 'sharePassword', label: 'Mật khẩu bảo vệ link', desc: 'Khóa link chia sẻ bằng mật khẩu riêng', type: 'boolean' },
+  { key: 'frameColors', label: 'Chọn màu khung', desc: 'Cho phép chọn các màu viền khung khác ngoài màu cam (Xanh, Hồng, Tím)', type: 'boolean' },
   { key: 'customColor', label: 'Tùy biến màu khung & note', desc: 'Chọn màu khung và đánh dấu theo ý muốn', type: 'boolean' },
   { key: 'exportNotesMd', label: 'Xuất ghi chú sang .md', desc: 'Xuất tất cả ghi chú ra định dạng Markdown', type: 'boolean' },
   { key: 'trashDays', label: 'Số ngày lưu thùng rác', desc: 'Tự động dọn dẹp sau số ngày quy định', type: 'number', min: 0, max: 365, step: 1, allowUnlimited: false },
