@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.3',
+        date: '2026-10-13T00:36:00+07:00',
+        title: 'Nút Lưu kho Prompt lên hệ thống & Đồng bộ đám mây cho tất cả người dùng',
+        items: [
+          { type: 'feature', text: 'Bổ sung nút "Lưu kho Prompt lên hệ thống" màu xanh nổi bật trong mục Quản trị Thư viện Prompt, giúp Admin lưu toàn bộ các câu lệnh AI lên máy chủ đám mây' },
+          { type: 'feature', text: 'Tự động đồng bộ thời gian thực qua Firestore & Cloud API: Mọi độc giả và người dùng khi vào tính năng Thư viện AI sẽ thấy ngay lập tức tất cả Prompt do Admin cập nhật' },
+          { type: 'improved', text: 'Hỗ trợ tự động đồng bộ lên máy chủ ngay khi Admin thêm/sửa prompt trong popup hoặc thao tác đổi gói/ảnh đại diện' }
+        ]
+      },
+      {
         version: 'v5.2.2',
         date: '2026-10-12T22:46:00+07:00',
         title: 'Nâng cấp mô tả Prompt: Hỗ trợ xuống dòng danh sách tính năng & Nút Xem thêm',
@@ -34381,6 +34391,7 @@ Nhiệm vụ phân tích toàn diện:
     let currentPromptSearchTerm = '';
     let currentPromptCategory = 'all';
     let currentPromptTierFilter = 'all';
+    let unsubscribePromptsListener = null;
 
     function getPromptLibraryData() {
       if (promptLibraryCache !== null && Array.isArray(promptLibraryCache)) {
@@ -34390,7 +34401,7 @@ Nhiệm vụ phân tích toàn diện:
         const stored = localStorage.getItem('antigravity_prompt_library');
         if (stored !== null) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
+          if (Array.isArray(parsed) && parsed.length > 0) {
             promptLibraryCache = parsed;
             return promptLibraryCache;
           }
@@ -34402,6 +34413,59 @@ Nhiệm vụ phân tích toàn diện:
       savePromptLibraryData(promptLibraryCache);
       return promptLibraryCache;
     }
+
+    // Lắng nghe dữ liệu Prompt thời gian thực từ Firestore (giúp tất cả người dùng thấy ngay prompt Admin lưu)
+    function initPromptLibraryFirestoreSync() {
+      try {
+        if (db && typeof onSnapshot === 'function' && typeof doc === 'function') {
+          if (unsubscribePromptsListener) unsubscribePromptsListener();
+          const promptsDocRef = doc(db, 'config', 'prompts');
+          unsubscribePromptsListener = onSnapshot(promptsDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const remoteData = docSnap.data();
+              if (remoteData && Array.isArray(remoteData.items) && remoteData.items.length > 0) {
+                promptLibraryCache = remoteData.items;
+                try {
+                  localStorage.setItem('antigravity_prompt_library', JSON.stringify(remoteData.items));
+                } catch (_) {}
+                window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: remoteData.items }));
+              }
+            }
+          }, (err) => {
+            console.warn("[PromptLibrary] Lỗi onSnapshot config/prompts, dùng fallback API:", err.message);
+            fetchPromptsFromApiFallback();
+          });
+        } else {
+          fetchPromptsFromApiFallback();
+        }
+      } catch (err) {
+        console.warn("[PromptLibrary] Không thể khởi tạo Firestore sync, dùng fallback API:", err.message);
+        fetchPromptsFromApiFallback();
+      }
+    }
+    window.initPromptLibraryFirestoreSync = initPromptLibraryFirestoreSync;
+
+    // Nạp dự phòng từ API công khai /api/prompts
+    async function fetchPromptsFromApiFallback() {
+      try {
+        const res = await fetch('/api/prompts');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && Array.isArray(data.items) && data.items.length > 0) {
+            promptLibraryCache = data.items;
+            try {
+              localStorage.setItem('antigravity_prompt_library', JSON.stringify(data.items));
+            } catch (_) {}
+            window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: data.items }));
+            return data.items;
+          }
+        }
+      } catch (e) {
+        // Fallback im lặng về cache hiện tại
+      }
+      return null;
+    }
+    window.fetchPromptsFromApiFallback = fetchPromptsFromApiFallback;
 
     function isPromptAdminAuthorized() {
       if (state && state.isAdmin) return true;
@@ -35010,8 +35074,21 @@ Nhiệm vụ phân tích toàn diện:
             hideModalAnimated('adminPromptEditorModal');
           }
 
-          if (typeof showToast === 'function') {
-            showToast('Đã lưu prompt thành công!', 'success');
+          // Tự động đồng bộ lên máy chủ nếu hàm savePromptsToCloud khả dụng
+          if (typeof window.savePromptsToCloud === 'function') {
+            window.savePromptsToCloud(allPrompts, false).then(() => {
+              if (typeof showToast === 'function') {
+                showToast('Đã lưu và đồng bộ prompt lên máy chủ thành công! Tất cả người dùng sẽ thấy ngay.', 'success');
+              }
+            }).catch(() => {
+              if (typeof showToast === 'function') {
+                showToast('Đã lưu tạm trên máy. Hãy bấm nút "Lưu kho Prompt lên hệ thống" trên thanh công cụ để cập nhật cho mọi người!', 'warning');
+              }
+            });
+          } else {
+            if (typeof showToast === 'function') {
+              showToast('Đã lưu prompt thành công! Bạn có thể bấm nút "Lưu kho Prompt lên hệ thống" trong mục Quản trị để đồng bộ cho mọi người.', 'success');
+            }
           }
         });
       }
@@ -35190,6 +35267,9 @@ Nhiệm vụ phân tích toàn diện:
 
       // Khởi tạo render sẵn sàng các thẻ prompt
       renderPromptLibrary();
+
+      // Khởi tạo đồng bộ Firestore thời gian thực & API Cloud
+      initPromptLibraryFirestoreSync();
     }
 
     if (document.readyState === 'loading') {
@@ -35205,6 +35285,10 @@ Nhiệm vụ phân tích toàn diện:
         showModalAnimated('promptLibraryModal');
       }
       renderPromptLibrary();
+      // Làm mới dữ liệu ngầm từ Cloud API để luôn đảm bảo đồng bộ mới nhất
+      if (typeof fetchPromptsFromApiFallback === 'function') {
+        fetchPromptsFromApiFallback();
+      }
     };
 
     console.log("%c Thư viện Sách HTML v5.1.2 - build 12/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");

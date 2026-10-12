@@ -4237,6 +4237,79 @@ function getAdminPromptLibrary() {
   return window.DEFAULT_PROMPT_LIBRARY || [];
 }
 
+let _hasLoadedPromptsFromCloud = false;
+
+async function savePromptsToCloud(promptsToSave = null, silent = false) {
+  const btn = document.querySelector('#btnAdminSavePromptsToCloud');
+  const btnText = document.querySelector('#btnAdminSavePromptsText');
+  const originalText = 'Lưu kho Prompt lên hệ thống';
+  
+  const prompts = Array.isArray(promptsToSave) ? promptsToSave : getAdminPromptLibrary();
+
+  if (btn) btn.disabled = true;
+  if (btnText) btnText.textContent = 'Đang lưu lên hệ thống...';
+
+  try {
+    const res = await callAdminApi('/api/admin/prompts/save', {
+      method: 'POST',
+      body: JSON.stringify({ prompts })
+    });
+
+    if (typeof window.savePromptLibraryData === 'function') {
+      window.savePromptLibraryData(prompts);
+    }
+
+    if (btnText) btnText.textContent = 'Đã lưu thành công ✓';
+    if (btn) {
+      btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+      btn.classList.add('bg-emerald-700');
+    }
+
+    if (!silent) {
+      toast(`✅ Đã lưu ${res.count || prompts.length} prompt lên hệ thống! Mọi người dùng vào thư viện AI sẽ thấy ngay.`);
+    }
+
+    setTimeout(() => {
+      if (btnText) btnText.textContent = originalText;
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('bg-emerald-700');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+      }
+    }, 2500);
+
+    return res;
+  } catch (err) {
+    if (btnText) btnText.textContent = 'Lỗi lưu hệ thống!';
+    if (btn) btn.disabled = false;
+    toast(`Lỗi khi lưu prompt lên hệ thống: ${err.message}`, 'error');
+    setTimeout(() => {
+      if (btnText) btnText.textContent = originalText;
+    }, 3000);
+    throw err;
+  }
+}
+window.savePromptsToCloud = savePromptsToCloud;
+
+async function loadPromptsFromCloud(container = null) {
+  if (_hasLoadedPromptsFromCloud) return;
+  try {
+    const res = await callAdminApi('/api/admin/prompts/get');
+    if (res && res.success && Array.isArray(res.items) && res.items.length > 0) {
+      _hasLoadedPromptsFromCloud = true;
+      if (typeof window.savePromptLibraryData === 'function') {
+        window.savePromptLibraryData(res.items);
+      }
+      if (container && currentAdminTab === 'prompts') {
+        renderPromptsTab(container);
+      }
+    }
+  } catch (err) {
+    console.warn('[Admin] Lỗi nạp prompts từ cloud:', err.message);
+  }
+}
+window.loadPromptsFromCloud = loadPromptsFromCloud;
+
 function saveAdminPromptLibrary(items) {
   const safeItems = Array.isArray(items) ? items : [];
   if (typeof window.savePromptLibraryData === 'function') {
@@ -4314,6 +4387,11 @@ export function renderPromptsTab(container) {
 
         <!-- Cụm nút hành động chính -->
         <div class="flex items-center gap-2 flex-wrap shrink-0">
+          <button id="btnAdminSavePromptsToCloud" type="button" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs hover:shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer" title="Lưu toàn bộ danh sách Prompt lên máy chủ đám mây để tất cả người dùng vào thư viện AI đều thấy ngay">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span id="btnAdminSavePromptsText">Lưu kho Prompt lên hệ thống</span>
+          </button>
+
           <button id="btnAdminTabAddPrompt" type="button" class="px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shadow-xs hover:shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
             <span>Tải lên Prompt mới</span>
@@ -4629,6 +4707,21 @@ function bindPromptsTabEvents(container) {
       adminPromptFilter.category = 'all';
       renderPromptsTab(container);
     };
+  }
+
+  // 4b. Nút Lưu kho Prompt lên hệ thống đám mây
+  const btnSaveCloud = container.querySelector('#btnAdminSavePromptsToCloud');
+  if (btnSaveCloud) {
+    btnSaveCloud.onclick = async () => {
+      try {
+        await savePromptsToCloud();
+      } catch (e) {}
+    };
+  }
+
+  // Tự động nạp bản mới nhất từ Cloud nếu phiên chưa nạp
+  if (!_hasLoadedPromptsFromCloud) {
+    loadPromptsFromCloud(container);
   }
 
   // 5. Nút Tải lên Prompt mới
