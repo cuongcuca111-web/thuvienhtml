@@ -80,6 +80,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.2',
+        date: '2026-10-12T22:46:00+07:00',
+        title: 'Nâng cấp mô tả Prompt: Hỗ trợ xuống dòng danh sách tính năng & Nút Xem thêm',
+        items: [
+          { type: 'feature', text: 'Chuyển đổi ô nhập mô tả Prompt trong Quản trị sang dạng văn bản đa dòng (textarea), hỗ trợ nhấn Enter xuống dòng để liệt kê danh sách tính năng' },
+          { type: 'feature', text: 'Bổ sung nút Xem thêm / Thu gọn tại khung chi tiết Prompt giúp giao diện gọn gàng, người dùng dễ dàng mở rộng để đọc toàn bộ tính năng và mô tả' }
+        ]
+      },
+      {
         version: 'v5.2.1',
         date: '2026-10-12T21:42:00+07:00',
         title: 'Tự động dọn dẹp ảnh biên lai 7 ngày & Quản lý xóa giao dịch cũ',
@@ -7844,7 +7853,13 @@
 
         <div>
           <h3 id="promptDetailModalTitle" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1B18] dark:text-[#E8E6E1] leading-tight"></h3>
-          <p id="promptDetailDescription" class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] mt-1.5 leading-relaxed"></p>
+          <div class="mt-1.5">
+            <p id="promptDetailDescription" class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] leading-relaxed whitespace-pre-line line-clamp-2 transition-all"></p>
+            <button id="btnPromptDescToggle" type="button" class="hidden mt-1 text-xs font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 inline-flex items-center gap-1 cursor-pointer select-none">
+              <span id="btnPromptDescToggleText">Xem thêm</span>
+              <svg id="btnPromptDescToggleIcon" class="w-3.5 h-3.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
         </div>
 
         <!-- Khung hiển thị toàn văn câu lệnh Prompt -->
@@ -8014,12 +8029,13 @@
           </div>
         </div>
 
-        <!-- 5. Mô tả ngắn -->
+        <!-- 5. Mô tả ngắn / chi tiết công dụng (hỗ trợ xuống dòng) -->
         <div>
-          <label class="block text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1">
-            Mô tả ngắn gọn công dụng (1-2 câu)
+          <label class="block text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] mb-1 flex items-center justify-between">
+            <span>Mô tả công dụng (Hỗ trợ xuống dòng)</span>
+            <span class="text-[10px] text-stone-400 font-normal">Nhấn Enter để liệt kê các tính năng</span>
           </label>
-          <input type="text" id="adminPromptDescInput" placeholder="Vd: Chắt lọc 5 luận điểm chính và checklist hành động thực tế..." class="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-[#1A1E26] border border-[#E0DED7] dark:border-[#2C3240] text-xs text-[#1C1B18] dark:text-[#EDECE8] focus:outline-none focus:border-violet-600 shadow-2xs" />
+          <textarea id="adminPromptDescInput" rows="3" placeholder="Vd: Chắt lọc 5 luận điểm chính và checklist hành động thực tế...&#10;- Tính năng 1: ...&#10;- Tính năng 2: ..." class="w-full p-3 rounded-xl bg-white dark:bg-[#1A1E26] border border-[#E0DED7] dark:border-[#2C3240] text-xs text-[#1C1B18] dark:text-[#EDECE8] focus:outline-none focus:border-violet-600 shadow-2xs leading-relaxed resize-y"></textarea>
         </div>
 
         <!-- 6. Nội dung câu lệnh Prompt chi tiết -->
@@ -34715,9 +34731,44 @@ Nhiệm vụ phân tích toàn diện:
       const catBadge = document.getElementById('promptDetailCategoryBadge');
       const tierHeader = document.getElementById('promptDetailTierHeader');
       const btnCopy = document.getElementById('btnCopyPromptDetail');
+      const btnToggleDesc = document.getElementById('btnPromptDescToggle');
+      const btnToggleDescText = document.getElementById('btnPromptDescToggleText');
+      const btnToggleDescIcon = document.getElementById('btnPromptDescToggleIcon');
 
       if (titleEl) titleEl.textContent = prompt.title || '';
-      if (descEl) descEl.textContent = prompt.description || '';
+
+      const rawDesc = (prompt.description || '').trim();
+      if (descEl) {
+        descEl.textContent = rawDesc;
+      }
+
+      if (btnToggleDesc) {
+        const hasNewlines = rawDesc.includes('\n');
+        const isLongText = rawDesc.length > 90;
+        if (hasNewlines || isLongText) {
+          if (descEl) descEl.classList.add('line-clamp-2');
+          btnToggleDesc.classList.remove('hidden');
+          if (btnToggleDescText) btnToggleDescText.textContent = 'Xem thêm';
+          if (btnToggleDescIcon) btnToggleDescIcon.classList.remove('rotate-180');
+
+          btnToggleDesc.onclick = () => {
+            const isClamped = descEl && descEl.classList.contains('line-clamp-2');
+            if (isClamped) {
+              descEl.classList.remove('line-clamp-2');
+              if (btnToggleDescText) btnToggleDescText.textContent = 'Thu gọn';
+              if (btnToggleDescIcon) btnToggleDescIcon.classList.add('rotate-180');
+            } else {
+              descEl.classList.add('line-clamp-2');
+              if (btnToggleDescText) btnToggleDescText.textContent = 'Xem thêm';
+              if (btnToggleDescIcon) btnToggleDescIcon.classList.remove('rotate-180');
+            }
+          };
+        } else {
+          btnToggleDesc.classList.add('hidden');
+          if (descEl) descEl.classList.remove('line-clamp-2');
+        }
+      }
+
       if (textEl) textEl.textContent = prompt.promptText || '';
       if (imgEl) {
         imgEl.onerror = () => { imgEl.onerror = null; imgEl.src = window.PROMPT_FALLBACK_SVG; };
