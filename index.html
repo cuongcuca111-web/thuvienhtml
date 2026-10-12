@@ -14433,6 +14433,19 @@
           console.warn("Lỗi gọi loadLocalStudyPlans trong loadLocalState:", e);
         }
 
+        if (localStorage.getItem('guest_mode_clean_v1') === 'true' || !localStorage.getItem('has_authenticated_account')) {
+          try {
+            const rawSl = localStorage.getItem('local_shared_links');
+            if (rawSl) {
+              const p = JSON.parse(rawSl);
+              if (Array.isArray(p) && p.some(l => l && l.authorId && !l.authorId.startsWith('guest_'))) {
+                localStorage.removeItem('local_shared_links');
+                state.sharedLinks = [];
+              }
+            }
+          } catch (_) {}
+        }
+
         if (state.lessons.length > 0 && !state.activeLessonId) {
           state.activeLessonId = state.lessons[0].id;
           state.activeCategoryId = state.lessons[0].categoryId;
@@ -14605,6 +14618,14 @@
           }
 
           try {
+            if (typeof loadSharedLinks === 'function') {
+              await loadSharedLinks();
+            }
+          } catch (slErr) {
+            console.warn("Lỗi loadSharedLinks trong auth:", slErr);
+          }
+
+          try {
             setupRealtimeListeners();
           } catch (rtErr) {
             console.warn("Lỗi setupRealtimeListeners:", rtErr);
@@ -14614,6 +14635,9 @@
             await loadSharedLesson(shareId, shareUrl, shareTitle);
           }
         } else {
+          if (typeof clearGuestLibraryState === 'function') {
+            clearGuestLibraryState();
+          }
           localStorage.removeItem('last_auth_user_email');
           localStorage.removeItem('last_auth_user_name');
           localStorage.removeItem('has_authenticated_account');
@@ -15388,9 +15412,9 @@
       }
     });
 
-    // // FIX: Xóa sạch dữ liệu tài khoản khi đăng xuất hoặc chuyển sang chế độ Khách, đưa thư viện về ban đầu (0 mục, 0 bài)
+    // // FIX: Xóa sạch dữ liệu tài khoản khi đăng xuất hoặc chuyển sang chế độ Khách, đưa thư viện về ban đầu (0 mục, 0 bài, 0 link chia sẻ)
     function clearGuestLibraryState() {
-      // 1. Reset trạng thái bộ nhớ về trạng thái trắng ban đầu (0 mục, 0 bài)
+      // 1. Reset trạng thái bộ nhớ về trạng thái trắng ban đầu (0 mục, 0 bài, 0 link chia sẻ)
       state.categories = [];
       state.lessons = [];
       state.activeLessonId = null;
@@ -15398,6 +15422,8 @@
       state.trash = [];
       state.tags = typeof getInitialTags === 'function' ? getInitialTags() : [];
       state.studyPlans = [];
+      state.sharedLinks = [];
+      state.recentLessons = [];
       if (state.selectedLessonIds) state.selectedLessonIds.clear();
       state.activeMenuLessonId = null;
       state.activeMenuCatId = null;
@@ -15406,6 +15432,8 @@
       state.userTier = 'guest';
       state.isAdmin = false;
       state.useLocalFallback = true;
+      state.userId = null;
+      state.user = null;
 
       // 2. Hủy các bộ lắng nghe Firestore của tài khoản cũ nếu có
       if (state.unsubscribeCategories) {
@@ -15426,25 +15454,49 @@
       localStorage.removeItem('local_lessons');
       localStorage.removeItem('local_trash');
       localStorage.removeItem('tombstones');
+      localStorage.removeItem('local_tombstones');
       localStorage.removeItem('local_study_plans');
+      localStorage.removeItem('study_plans');
+      localStorage.removeItem('studyPlans');
       localStorage.removeItem('reading_history');
       localStorage.removeItem('user_tags');
+      localStorage.removeItem('local_tags');
       localStorage.removeItem('sidebar_expanded_sections');
       localStorage.removeItem('local_cat_expanded');
+      localStorage.removeItem('ui_category_expanded');
       localStorage.removeItem('local_guest_uid');
+      localStorage.removeItem('local_shared_links');
+      localStorage.removeItem('local_learning_data');
+      localStorage.removeItem('local_recent_lessons');
+      localStorage.removeItem('pending_sync_queue');
+      localStorage.removeItem('last_sync_success_time');
       localStorage.setItem('guest_mode_clean_v1', 'true');
+
+      // Dọn sạch các bản ghi local_share_ lẻ
+      try {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('local_share_')) {
+            keysToRemove.push(k);
+          }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+      } catch (_) {}
 
       // 4. Dọn sạch bộ nhớ đệm nội dung bài học trong IndexedDB
       if (typeof clearAllLessonContentsFromIDB === 'function') {
         clearAllLessonContentsFromIDB().catch(() => {});
       }
 
-      // 5. Cập nhật lại giao diện thư viện về trạng thái ban đầu (0 mục, 0 bài)
+      // 5. Cập nhật lại giao diện thư viện về trạng thái ban đầu (0 mục, 0 bài, 0 link chia sẻ)
       try { renderCategoriesAndLessons(); } catch (_) {}
       try { renderActiveLesson(); } catch (_) {}
       try { updateTrashUIBadge(); } catch (_) {}
       try { if (typeof renderSidebarPlans === 'function') renderSidebarPlans(); } catch (_) {}
       try { if (typeof renderStudyPlanWidget === 'function') renderStudyPlanWidget(); } catch (_) {}
+      try { if (typeof renderSharedLinksList === 'function') renderSharedLinksList(); } catch (_) {}
+      try { if (typeof updateSharedLinksQuotaUI === 'function') updateSharedLinksQuotaUI(0); } catch (_) {}
     }
     window.clearGuestLibraryState = clearGuestLibraryState;
 
@@ -31205,13 +31257,47 @@
 
     // // FIX-1 & FIX-2: Tải và đồng bộ danh sách link chia sẻ (cả local và cloud)
     async function loadSharedLinks() {
+      const isGuestMode = !state.userId || state.useLocalFallback || state.userTier === 'guest';
+      const hasAuth = localStorage.getItem('has_authenticated_account') === 'true';
+      const isGuestClean = localStorage.getItem('guest_mode_clean_v1') === 'true';
+
+      // 1. Nếu đang ở Chế độ Khách (hoặc vừa đăng xuất sạch sẽ), đảm bảo không bao giờ nạp link của tài khoản cũ
+      if (isGuestMode && (!hasAuth || isGuestClean)) {
+        try {
+          const saved = localStorage.getItem('local_shared_links');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            // Nếu có flag xóa sạch hoặc các link trong local chứa link của tài khoản đã đăng nhập, xóa ngay
+            if (isGuestClean || (Array.isArray(parsed) && parsed.some(l => l && l.authorId && !l.authorId.startsWith('guest_')))) {
+              localStorage.removeItem('local_shared_links');
+              state.sharedLinks = [];
+              if (typeof updateSharedLinksQuotaUI === 'function') updateSharedLinksQuotaUI(0);
+              return;
+            }
+            state.sharedLinks = Array.isArray(parsed) ? parsed : [];
+          } else {
+            state.sharedLinks = [];
+          }
+        } catch (_) {
+          state.sharedLinks = [];
+        }
+        if (typeof updateSharedLinksQuotaUI === 'function') {
+          updateSharedLinksQuotaUI(typeof getActiveSharedLinksCount === 'function' ? getActiveSharedLinksCount() : 0);
+        }
+        return;
+      }
+
+      // 2. Với tài khoản đã đăng nhập
       try {
         const saved = localStorage.getItem('local_shared_links');
         if (saved) {
           state.sharedLinks = JSON.parse(saved) || [];
+        } else {
+          state.sharedLinks = [];
         }
       } catch (e) {
         console.warn("Lỗi loadSharedLinks local:", e);
+        state.sharedLinks = [];
       }
 
       if (state.userId && !state.useLocalFallback && db) {
@@ -31220,27 +31306,32 @@
           const snap = await getDoc(ref);
           if (snap.exists() && snap.data().data) {
             const cloudLinks = JSON.parse(snap.data().data) || [];
-            const linkMap = new Map();
-            (cloudLinks || []).forEach(l => { if (l && l.id) linkMap.set(l.id, l); });
-            (state.sharedLinks || []).forEach(l => { if (l && l.id && !linkMap.has(l.id)) linkMap.set(l.id, l); });
-            state.sharedLinks = Array.from(linkMap.values());
+            state.sharedLinks = Array.isArray(cloudLinks) ? cloudLinks : [];
             localStorage.setItem('local_shared_links', JSON.stringify(state.sharedLinks));
           }
         } catch (e) {
           console.warn("Lỗi loadSharedLinks cloud:", e);
         }
       }
+
+      if (typeof updateSharedLinksQuotaUI === 'function') {
+        updateSharedLinksQuotaUI(typeof getActiveSharedLinksCount === 'function' ? getActiveSharedLinksCount() : 0);
+      }
     }
 
     function saveSharedLinks() {
       try {
-        localStorage.setItem('local_shared_links', JSON.stringify(state.sharedLinks));
+        if (state.sharedLinks && state.sharedLinks.length > 0) {
+          localStorage.setItem('local_shared_links', JSON.stringify(state.sharedLinks));
+        } else {
+          localStorage.removeItem('local_shared_links');
+        }
       } catch (_) {}
 
       if (state.userId && !state.useLocalFallback && db) {
         try {
           const ref = doc(db, 'artifacts', appId, 'users', state.userId, 'shared_links_meta', 'data');
-          setDoc(ref, { data: JSON.stringify(state.sharedLinks) }, { merge: true }).catch(() => {});
+          setDoc(ref, { data: JSON.stringify(state.sharedLinks || []) }, { merge: true }).catch(() => {});
         } catch (_) {}
       }
     }
@@ -31522,6 +31613,17 @@
       closeUserMenu();
       const readerMenu = document.getElementById('readerMoreMenuDropdown');
       if (readerMenu) readerMenu.classList.add('hidden');
+
+      // Tự động kiểm tra và làm sạch nếu ở Chế độ Khách mà còn lưu link của tài khoản cũ
+      const isGuest = !state.userId || state.useLocalFallback || state.userTier === 'guest';
+      const hasAuth = localStorage.getItem('has_authenticated_account') === 'true';
+      const isGuestClean = localStorage.getItem('guest_mode_clean_v1') === 'true';
+      if (isGuest && (!hasAuth || isGuestClean)) {
+        if (isGuestClean || !state.sharedLinks || (Array.isArray(state.sharedLinks) && state.sharedLinks.some(l => l && l.authorId && !l.authorId.startsWith('guest_')))) {
+          state.sharedLinks = [];
+          localStorage.removeItem('local_shared_links');
+        }
+      }
 
       renderSharedLinksList();
       showModalAnimated(modal);
