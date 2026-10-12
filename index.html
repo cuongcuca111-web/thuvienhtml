@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.1.7',
+        date: '2026-10-12T21:05:00+07:00',
+        title: 'Tối ưu tốc độ mở tab Thanh toán VietQR & Mã kích hoạt (SWR 0ms)',
+        items: [
+          { type: 'improved', text: 'Ứng dụng cơ chế bộ nhớ đệm SWR (Stale-While-Revalidate): mở tab Thanh toán VietQR & Mã kích hoạt tức thì 0ms không phải chờ spinner' },
+          { type: 'improved', text: 'Tách biệt tiến trình dọn dẹp mã quá hạn sang chế độ chạy ngầm bất đồng bộ, phản hồi danh sách mã siêu tốc' },
+          { type: 'improved', text: 'Nhúng sẵn danh mục ngân hàng VietQR dự phòng kèm timeout bảo vệ 1.2s, tối ưu giới hạn truy vấn đơn hàng' }
+        ]
+      },
+      {
         version: 'v5.1.6',
         date: '2026-10-12T20:45:00+07:00',
         title: 'Tắt ngay Thư viện Prompt & Nâng z-index tuyệt đối cho Popup Nâng cấp gói',

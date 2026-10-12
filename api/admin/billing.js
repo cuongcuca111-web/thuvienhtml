@@ -42,12 +42,19 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ success: true, banks: _cachedBanks, cached: true });
       }
 
-      const response = await fetch('https://api.vietqr.io/v2/banks');
-      if (!response.ok) {
-        throw new Error(`VietQR API trả về mã lỗi HTTP ${response.status}`);
-      }
-      const data = await response.json();
-      if (data && Array.isArray(data.data)) {
+      // Đặt timeout 1.2 giây để không bao giờ làm treo luồng quản trị nếu VietQR API phản hồi chậm
+      let data = null;
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 1200);
+        const response = await fetch('https://api.vietqr.io/v2/banks', { signal: controller.signal });
+        clearTimeout(timer);
+        if (response && response.ok) {
+          data = await response.json();
+        }
+      } catch (_) {}
+
+      if (data && Array.isArray(data.data) && data.data.length > 0) {
         const banks = data.data.map(b => ({
           id: b.id,
           name: b.name,
@@ -59,16 +66,36 @@ module.exports = async function handler(req, res) {
         _cachedBanks = banks;
         _cachedBanksExpires = now + 24 * 60 * 60 * 1000; // Lưu cache 24h
         return res.status(200).json({ success: true, banks, cached: false });
-      } else {
-        throw new Error('Dữ liệu ngân hàng từ VietQR không đúng định dạng');
       }
+
+      // Fallback danh sách ngân hàng thông dụng siêu tốc nếu API ngoài chậm hoặc timeout
+      const fallbackBanks = [
+        { bin: '970403', code: 'STB', shortName: 'Sacombank', name: 'Ngân hàng TMCP Sài Gòn Thương Tín' },
+        { bin: '970422', code: 'MB', shortName: 'MBBank', name: 'Ngân hàng TMCP Quân Đội' },
+        { bin: '970436', code: 'VCB', shortName: 'Vietcombank', name: 'Ngân hàng TMCP Ngoại Thương Việt Nam' },
+        { bin: '970415', code: 'CTG', shortName: 'VietinBank', name: 'Ngân hàng TMCP Công Thương Việt Nam' },
+        { bin: '970418', code: 'BIDV', shortName: 'BIDV', name: 'Ngân hàng TMCP Đầu Tư và Phát Triển Việt Nam' },
+        { bin: '970407', code: 'TCB', shortName: 'Techcombank', name: 'Ngân hàng TMCP Kỹ Thương Việt Nam' },
+        { bin: '970416', code: 'ACB', shortName: 'ACB', name: 'Ngân hàng TMCP Á Châu' },
+        { bin: '970432', code: 'VPB', shortName: 'VPBank', name: 'Ngân hàng TMCP Việt Nam Thịnh Vượng' },
+        { bin: '970423', code: 'TPB', shortName: 'TPBank', name: 'Ngân hàng TMCP Tiên Phong' },
+        { bin: '970441', code: 'VIB', shortName: 'VIB', name: 'Ngân hàng TMCP Quốc tế Việt Nam' },
+        { bin: '970437', code: 'HDB', shortName: 'HDBank', name: 'Ngân hàng TMCP Phát triển TP.HCM' },
+        { bin: '970448', code: 'OCB', shortName: 'OCB', name: 'Ngân hàng TMCP Phương Đông' },
+        { bin: '970443', code: 'SHB', shortName: 'SHB', name: 'Ngân hàng TMCP Sài Gòn - Hà Nội' },
+        { bin: '970426', code: 'MSB', shortName: 'MSB', name: 'Ngân hàng TMCP Hàng Hải Việt Nam' },
+        { bin: '970406', code: 'VBA', shortName: 'Agribank', name: 'Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam' }
+      ];
+
+      _cachedBanks = fallbackBanks;
+      _cachedBanksExpires = now + 6 * 60 * 60 * 1000;
+      return res.status(200).json({ success: true, banks: fallbackBanks, fallback: true });
     } catch (err) {
       console.warn('[Admin Billing] Lỗi tải danh sách ngân hàng VietQR:', err.message);
-      // Nếu có cache cũ thì dùng tạm
       if (_cachedBanks) {
         return res.status(200).json({ success: true, banks: _cachedBanks, cached: true, fallback: true });
       }
-      return res.status(500).json({ error: 'Không thể tải danh sách ngân hàng từ VietQR: ' + err.message });
+      return res.status(200).json({ success: true, banks: [], fallback: true });
     }
   }
 
@@ -340,11 +367,11 @@ module.exports = async function handler(req, res) {
   if (action === 'orders' && req.method === 'GET') {
     const statusFilter = String(req.query.status || 'all').toLowerCase();
     const search = String(req.query.search || '').trim().toLowerCase();
-    const limitNum = Math.min(500, Math.max(10, parseInt(req.query.limit, 10) || 250));
+    const limitNum = Math.min(200, Math.max(10, parseInt(req.query.limit, 10) || 100));
 
     try {
-      // Luôn lấy đủ số lượng đơn (tối đa 500 đơn gần nhất) để sắp xếp đơn chờ lên trên
-      const fetchLimit = 500;
+      // Lấy tối đa 150 đơn gần nhất để truy vấn siêu tốc và sắp xếp đơn chờ lên trên
+      const fetchLimit = 150;
       let snap;
       try {
         if (statusFilter !== 'all') {
@@ -367,7 +394,7 @@ module.exports = async function handler(req, res) {
           console.warn('[Admin Billing Orders] Chưa có composite index status+createdAt, tự động chuyển sang lọc trong bộ nhớ:', queryErr.message);
           snap = await db.collection('billing_orders')
             .orderBy('createdAt', 'desc')
-            .limit(500)
+            .limit(150)
             .get();
         } else {
           throw queryErr;

@@ -39,34 +39,36 @@ module.exports = async function handler(req, res) {
     const limitNum = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 100));
 
     try {
-      // 1. Tự động dọn dẹp và xóa các mã đã vô hiệu hóa quá 7 ngày
+      // 1. Tự động dọn dẹp các mã vô hiệu hóa quá 7 ngày ở chế độ ngầm (Background Task, không chặn response)
       const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
       const nowMs = Date.now();
-      let autoDeletedCount = 0;
+      (async () => {
+        try {
+          const disabledSnap = await db.collection('activation_codes')
+            .where('isDisabled', '==', true)
+            .limit(50)
+            .get();
 
-      try {
-        const disabledSnap = await db.collection('activation_codes')
-          .where('isDisabled', '==', true)
-          .get();
-
-        if (!disabledSnap.empty) {
-          const deleteBatch = db.batch();
-          disabledSnap.forEach(dDoc => {
-            const dData = dDoc.data();
-            const dTime = dData.disabledAt || dData.updatedAt || dData.createdAt;
-            if (dTime && (nowMs - new Date(dTime).getTime() >= SEVEN_DAYS_MS)) {
-              deleteBatch.delete(dDoc.ref);
-              autoDeletedCount++;
+          if (!disabledSnap.empty) {
+            const deleteBatch = db.batch();
+            let count = 0;
+            disabledSnap.forEach(dDoc => {
+              const dData = dDoc.data();
+              const dTime = dData.disabledAt || dData.updatedAt || dData.createdAt;
+              if (dTime && (nowMs - new Date(dTime).getTime() >= SEVEN_DAYS_MS)) {
+                deleteBatch.delete(dDoc.ref);
+                count++;
+              }
+            });
+            if (count > 0) {
+              await deleteBatch.commit();
+              console.log(`[Admin Codes] Đã tự động dọn dẹp ${count} mã vô hiệu hóa quá 7 ngày`);
             }
-          });
-          if (autoDeletedCount > 0) {
-            await deleteBatch.commit();
-            console.log(`[Admin Codes] Đã tự động dọn dẹp ${autoDeletedCount} mã vô hiệu hóa quá 7 ngày`);
           }
+        } catch (cleanErr) {
+          // Không chặn luồng chính
         }
-      } catch (cleanErr) {
-        console.warn('[Admin Codes] Lỗi tự động dọn dẹp mã vô hiệu:', cleanErr.message);
-      }
+      })();
 
       // 2. Lấy danh sách mã kích hoạt
       const snap = await db.collection('activation_codes')

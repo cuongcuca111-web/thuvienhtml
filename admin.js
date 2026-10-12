@@ -36,6 +36,11 @@ let adminLastAuthTime = Date.now();
 const ADMIN_MAX_IDLE_MS = 60 * 60 * 1000; // 60 phút tự đăng xuất nếu không hoạt động
 const ADMIN_REAUTH_MS = 15 * 60 * 1000;  // 15 phút cho thao tác nhạy cảm
 
+// BỘ NHỚ ĐỆM TỐC HÀNH TRONG PHIÊN (IN-MEMORY SWR CACHE CHO CÁC TAB ADMIN)
+let adminBillingCache = null;  // { cfgRes, ordersRes, banksRes, timestamp }
+let adminCodesCache = null;    // { [filter]: codes }
+let adminBanksCache = null;    // Danh sách ngân hàng VietQR lưu đệm trong phiên
+
 // Khởi tạo LƯỜI Firebase App thứ 2 ('admin-session') và Firebase Auth riêng biệt cho khu vực Quản trị
 export async function getAdminAuth() {
   if (adminAuth) return adminAuth;
@@ -329,6 +334,8 @@ function bindGlobalAdminEvents() {
   const btnRefresh = document.getElementById('btnAdminRefresh');
   if (btnRefresh) {
     btnRefresh.onclick = () => {
+      adminBillingCache = null;
+      adminCodesCache = null;
       loadTabData(currentAdminTab);
       toast("Đã làm mới dữ liệu");
     };
@@ -2332,128 +2339,161 @@ function renderCodesTab(container) {
 
   let currentLoadedCodes = [];
 
-  async function loadCodes() {
+  function sortCodesList(codes) {
+    return codes.sort((a, b) => {
+      const getPriority = (item) => {
+        if (item.isDisabled) return 2; // Vô hiệu -> xuống dưới
+        if (item.isUsed) return 1;     // Đã dùng -> ở giữa
+        return 0;                      // Chưa dùng -> lên đầu
+      };
+      const pA = getPriority(a);
+      const pB = getPriority(b);
+      if (pA !== pB) return pA - pB;
+
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    });
+  }
+
+  function renderCodesTableHtml(codes) {
+    if (!codes || codes.length === 0) {
+      return 'Chưa có mã kích hoạt nào theo điều kiện lọc này.';
+    }
+    return `
+      <table class="w-full text-left border-collapse min-w-[750px]">
+        <thead>
+          <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold">
+            <th class="py-2 px-3">Mã kích hoạt</th>
+            <th class="py-2 px-3">Gói</th>
+            <th class="py-2 px-3">Thời hạn</th>
+            <th class="py-2 px-3">Trạng thái</th>
+            <th class="py-2 px-3">Người kích hoạt</th>
+            <th class="py-2 px-3">Ghi chú</th>
+            <th class="py-2 px-3 text-right">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
+          ${codes.map(c => `
+            <tr>
+              <td class="py-2.5 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 select-all">${esc(c.code)}</td>
+              <td class="py-2.5 px-3 uppercase font-bold">${esc(c.tier)}</td>
+              <td class="py-2.5 px-3">${c.days} ngày</td>
+              <td class="py-2.5 px-3">
+                ${c.isDisabled ? '<span class="text-rose-500">Đã vô hiệu</span>' : (c.isUsed ? '<span class="text-gray-400">Đã dùng</span>' : '<span class="text-emerald-600 font-bold">Chưa dùng</span>')}
+              </td>
+              <td class="py-2.5 px-3">
+                ${c.isUsed ? `
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-gray-900 dark:text-gray-100">${esc(c.usedByUserName || c.usedByUserEmail || 'Người dùng')}</span>
+                    <span class="text-[10px] text-gray-400 font-mono">${esc(c.usedByUserEmail || c.usedBy || '')}</span>
+                    ${c.usedAt ? `<span class="text-[9px] text-gray-400">${new Date(c.usedAt).toLocaleString('vi-VN')}</span>` : ''}
+                  </div>
+                ` : '<span class="text-gray-400">—</span>'}
+              </td>
+              <td class="py-2.5 px-3 text-gray-400">${esc(c.note || '—')}</td>
+              <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                ${(!c.isUsed && !c.isDisabled) ? `
+                  <button class="btn-disable-code text-amber-600 hover:underline mr-2.5 text-xs font-semibold cursor-pointer" data-code="${c.code}">Vô hiệu</button>
+                ` : ''}
+                <button class="btn-delete-code text-rose-600 hover:underline text-xs font-semibold cursor-pointer" data-code="${c.code}">Xóa</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function bindCodeActions(tableBox) {
+    tableBox.querySelectorAll('.btn-disable-code').forEach(btn => {
+      btn.onclick = async () => {
+        if (confirm(`Vô hiệu hóa mã ${btn.dataset.code}?`)) {
+          try {
+            await callAdminApi('/api/admin/codes/disable', {
+              method: 'POST',
+              body: JSON.stringify({ code: btn.dataset.code, reason: 'Admin vô hiệu hóa' })
+            });
+            toast("Đã vô hiệu hóa mã!");
+            adminCodesCache = null;
+            loadCodes(true);
+          } catch (e) {
+            alert("Lỗi: " + e.message);
+          }
+        }
+      };
+    });
+
+    tableBox.querySelectorAll('.btn-delete-code').forEach(btn => {
+      btn.onclick = async () => {
+        const codeToDelete = btn.dataset.code;
+        btn.disabled = true;
+        btn.innerText = 'Đang xóa...';
+        try {
+          await callAdminApi('/api/admin/codes/delete', {
+            method: 'POST',
+            body: JSON.stringify({ code: codeToDelete })
+          });
+          toast(`Đã xóa mã kích hoạt ${codeToDelete}`);
+          adminCodesCache = null;
+          loadCodes(true);
+        } catch (e) {
+          alert("Lỗi xóa mã: " + e.message);
+          btn.disabled = false;
+          btn.innerText = 'Xóa';
+        }
+      };
+    });
+  }
+
+  async function loadCodes(forceRefresh = false) {
     const tableBox = document.getElementById('codesTableContainer');
     if (!tableBox) return;
     const filter = (document.getElementById('codeFilterStatus') ? document.getElementById('codeFilterStatus').value : null) || 'all';
-    tableBox.innerHTML = 'Đang tải...';
+
+    // 1. Kiểm tra cache trong phiên: Hiển thị tức thì 0ms
+    if (!forceRefresh && adminCodesCache && adminCodesCache[filter]) {
+      currentLoadedCodes = adminCodesCache[filter];
+      tableBox.innerHTML = renderCodesTableHtml(currentLoadedCodes);
+      bindCodeActions(tableBox);
+
+      // Cập nhật ngầm (Background Revalidation)
+      callAdminApi(`/api/admin/codes/list?status=${filter}`).then(data => {
+        const fresh = sortCodesList(data.codes || []);
+        if (!adminCodesCache) adminCodesCache = {};
+        adminCodesCache[filter] = fresh;
+        if (JSON.stringify(fresh) !== JSON.stringify(currentLoadedCodes)) {
+          currentLoadedCodes = fresh;
+          tableBox.innerHTML = renderCodesTableHtml(currentLoadedCodes);
+          bindCodeActions(tableBox);
+        }
+      }).catch(() => {});
+      return;
+    }
+
+    // 2. Nếu chưa có cache hoặc người dùng yêu cầu forceRefresh:
+    tableBox.innerHTML = `
+      <div class="py-5 text-gray-400 flex items-center gap-2 text-xs">
+        <svg class="w-4 h-4 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
+        <span>Đang nạp danh sách mã kích hoạt...</span>
+      </div>
+    `;
 
     try {
       const data = await callAdminApi(`/api/admin/codes/list?status=${filter}`);
-      currentLoadedCodes = data.codes || [];
+      currentLoadedCodes = sortCodesList(data.codes || []);
+      if (!adminCodesCache) adminCodesCache = {};
+      adminCodesCache[filter] = currentLoadedCodes;
 
-      // SẮP XẾP ƯU TIÊN: Chưa dùng lên đầu, Đã dùng ở giữa, Đã vô hiệu xuống dưới cùng
-      currentLoadedCodes.sort((a, b) => {
-        const getPriority = (item) => {
-          if (item.isDisabled) return 2; // Vô hiệu -> xuống dưới
-          if (item.isUsed) return 1;     // Đã dùng -> ở giữa
-          return 0;                      // Chưa dùng -> lên đầu
-        };
-        const pA = getPriority(a);
-        const pB = getPriority(b);
-        if (pA !== pB) return pA - pB;
-
-        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return timeB - timeA;
-      });
-
-      if (data.autoDeletedCount && data.autoDeletedCount > 0) {
-        toast(`Đã tự động xóa ${data.autoDeletedCount} mã vô hiệu quá 7 ngày`);
-      }
-
-      if (currentLoadedCodes.length === 0) {
-        tableBox.innerHTML = 'Chưa có mã kích hoạt nào theo điều kiện lọc này.';
-        return;
-      }
-
-      tableBox.innerHTML = `
-        <table class="w-full text-left border-collapse min-w-[750px]">
-          <thead>
-            <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold">
-              <th class="py-2 px-3">Mã kích hoạt</th>
-              <th class="py-2 px-3">Gói</th>
-              <th class="py-2 px-3">Thời hạn</th>
-              <th class="py-2 px-3">Trạng thái</th>
-              <th class="py-2 px-3">Người kích hoạt</th>
-              <th class="py-2 px-3">Ghi chú</th>
-              <th class="py-2 px-3 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
-            ${currentLoadedCodes.map(c => `
-              <tr>
-                <td class="py-2.5 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 select-all">${esc(c.code)}</td>
-                <td class="py-2.5 px-3 uppercase font-bold">${esc(c.tier)}</td>
-                <td class="py-2.5 px-3">${c.days} ngày</td>
-                <td class="py-2.5 px-3">
-                  ${c.isDisabled ? '<span class="text-rose-500">Đã vô hiệu</span>' : (c.isUsed ? '<span class="text-gray-400">Đã dùng</span>' : '<span class="text-emerald-600 font-bold">Chưa dùng</span>')}
-                </td>
-                <td class="py-2.5 px-3">
-                  ${c.isUsed ? `
-                    <div class="flex flex-col">
-                      <span class="font-semibold text-gray-900 dark:text-gray-100">${esc(c.usedByUserName || c.usedByUserEmail || 'Người dùng')}</span>
-                      <span class="text-[10px] text-gray-400 font-mono">${esc(c.usedByUserEmail || c.usedBy || '')}</span>
-                      ${c.usedAt ? `<span class="text-[9px] text-gray-400">${new Date(c.usedAt).toLocaleString('vi-VN')}</span>` : ''}
-                    </div>
-                  ` : '<span class="text-gray-400">—</span>'}
-                </td>
-                <td class="py-2.5 px-3 text-gray-400">${esc(c.note || '—')}</td>
-                <td class="py-2.5 px-3 text-right whitespace-nowrap">
-                  ${(!c.isUsed && !c.isDisabled) ? `
-                    <button class="btn-disable-code text-amber-600 hover:underline mr-2.5 text-xs font-semibold cursor-pointer" data-code="${c.code}">Vô hiệu</button>
-                  ` : ''}
-                  <button class="btn-delete-code text-rose-600 hover:underline text-xs font-semibold cursor-pointer" data-code="${c.code}">Xóa</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
-
-      tableBox.querySelectorAll('.btn-disable-code').forEach(btn => {
-        btn.onclick = async () => {
-          if (confirm(`Vô hiệu hóa mã ${btn.dataset.code}?`)) {
-            try {
-              await callAdminApi('/api/admin/codes/disable', {
-                method: 'POST',
-                body: JSON.stringify({ code: btn.dataset.code, reason: 'Admin vô hiệu hóa' })
-              });
-              toast("Đã vô hiệu hóa mã!");
-              loadCodes();
-            } catch (e) {
-              alert("Lỗi: " + e.message);
-            }
-          }
-        };
-      });
-
-      tableBox.querySelectorAll('.btn-delete-code').forEach(btn => {
-        btn.onclick = async () => {
-          const codeToDelete = btn.dataset.code;
-          btn.disabled = true;
-          btn.innerText = 'Đang xóa...';
-          try {
-            await callAdminApi('/api/admin/codes/delete', {
-              method: 'POST',
-              body: JSON.stringify({ code: codeToDelete })
-            });
-            toast(`Đã xóa mã kích hoạt ${codeToDelete}`);
-            loadCodes();
-          } catch (e) {
-            alert("Lỗi xóa mã: " + e.message);
-            btn.disabled = false;
-            btn.innerText = 'Xóa';
-          }
-        };
-      });
+      tableBox.innerHTML = renderCodesTableHtml(currentLoadedCodes);
+      bindCodeActions(tableBox);
     } catch (err) {
       tableBox.innerHTML = `<span class="text-rose-500">Lỗi: ${esc(err.message)}</span>`;
     }
   }
 
   loadCodes();
-  document.getElementById('codeFilterStatus').onchange = loadCodes;
+  document.getElementById('codeFilterStatus').onchange = () => loadCodes();
 
   // Submit tạo mã
   const form = document.getElementById('createCodesForm');
@@ -2475,7 +2515,8 @@ function renderCodesTab(container) {
           })
         });
         toast("Đã tạo thành công lô mã kích hoạt!");
-        loadCodes();
+        adminCodesCache = null;
+        loadCodes(true);
       } catch (err) {
         alert("Lỗi tạo mã: " + err.message);
       } finally {
@@ -3063,25 +3104,88 @@ function normalizeAccountName(name) {
     .trim();
 }
 
+function syncBillingDataBackground(container) {
+  const banksPromise = adminBanksCache ? Promise.resolve({ banks: adminBanksCache }) : callAdminApi('/api/admin/billing/banks').catch(() => ({ banks: [] }));
+  Promise.all([
+    callAdminApi('/api/admin/billing/config').catch(() => (adminBillingCache ? adminBillingCache.cfgRes : {})),
+    callAdminApi('/api/admin/billing/orders?status=all&limit=100').catch(() => (adminBillingCache ? adminBillingCache.ordersRes : {})),
+    banksPromise
+  ]).then(([freshCfg, freshOrders, freshBanks]) => {
+    if (freshBanks && Array.isArray(freshBanks.banks) && freshBanks.banks.length > 0) {
+      adminBanksCache = freshBanks.banks;
+    }
+    adminBillingCache = { cfgRes: freshCfg, ordersRes: freshOrders, banksRes: { banks: adminBanksCache || [] }, timestamp: Date.now() };
+
+    // Cập nhật âm thầm vào bảng đơn hàng nếu đang đứng ở tab VietQR
+    if (currentAdminTab === 'billing' && container) {
+      const searchInput = container.querySelector('#billingSearchOrderInput');
+      const statusFilter = container.querySelector('#billingStatusFilter');
+      const s = searchInput ? searchInput.value.trim() : '';
+      const st = statusFilter ? statusFilter.value : 'all';
+
+      if (!s && st === 'all') {
+        const sorted = sortOrdersByPriority(freshOrders.orders || []);
+        const tbody = container.querySelector('#billingOrdersTableBody');
+        if (tbody) {
+          tbody.innerHTML = renderOrdersTableRows(sorted);
+          if (typeof container._bindOrderRowEvents === 'function') {
+            container._bindOrderRowEvents();
+          }
+        }
+        const counts = freshOrders.counts || {};
+        const uCount = counts.userConfirmed || 0;
+        const btnOrdersEl = container.querySelector('#btnSubTabOrders');
+        if (btnOrdersEl) {
+          btnOrdersEl.innerHTML = `<span>Đơn hàng (${sorted.length})</span>${uCount > 0 ? `<span class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px]">${uCount}</span>` : ''}`;
+        }
+      }
+    }
+  }).catch(() => {});
+}
+
 async function renderBillingTab(container) {
+  // 1. Kiểm tra cache trong phiên: Nếu có sẵn, hiển thị NGAY LẬP TỨC 0ms!
+  if (adminBillingCache) {
+    buildBillingTabDOM(container, adminBillingCache);
+    syncBillingDataBackground(container);
+    return;
+  }
+
+  // 2. Lần đầu vào tab: Hiển thị spinner ngắn gọn và nạp dữ liệu
   container.innerHTML = `
     <div class="flex items-center justify-center py-16 text-gray-400 text-xs gap-2">
       <svg class="w-5 h-5 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
-      <span>Đang tải dữ liệu thanh toán VietQR & Đơn hàng...</span>
+      <span>Đang nạp dữ liệu thanh toán VietQR &amp; Đơn hàng...</span>
     </div>
   `;
 
   try {
+    const banksPromise = adminBanksCache ? Promise.resolve({ banks: adminBanksCache }) : callAdminApi('/api/admin/billing/banks').catch(() => ({ banks: [] }));
     const [cfgRes, ordersRes, banksRes] = await Promise.all([
       callAdminApi('/api/admin/billing/config').catch(() => ({ bankTransfer: {}, vietqrSecrets: {} })),
-      callAdminApi('/api/admin/billing/orders?status=all&limit=250').catch(() => ({ orders: [], counts: {} })),
-      callAdminApi('/api/admin/billing/banks').catch(() => ({ banks: [] }))
+      callAdminApi('/api/admin/billing/orders?status=all&limit=100').catch(() => ({ orders: [], counts: {} })),
+      banksPromise
     ]);
 
-    const bankTransfer = cfgRes.bankTransfer || {};
-    const secrets = cfgRes.vietqrSecrets || {};
-    const orders = sortOrdersByPriority(ordersRes.orders || []);
-    const counts = ordersRes.counts || {};
+    if (banksRes && Array.isArray(banksRes.banks) && banksRes.banks.length > 0) {
+      adminBanksCache = banksRes.banks;
+    }
+
+    adminBillingCache = { cfgRes, ordersRes, banksRes: { banks: adminBanksCache || [] }, timestamp: Date.now() };
+    buildBillingTabDOM(container, adminBillingCache);
+  } catch (err) {
+    container.innerHTML = `<div class="p-6 text-rose-500 text-xs">Lỗi nạp dữ liệu thanh toán: ${esc(err.message)}</div>`;
+  }
+}
+
+function buildBillingTabDOM(container, cachedData) {
+  const cfgRes = (cachedData && cachedData.cfgRes) || {};
+  const ordersRes = (cachedData && cachedData.ordersRes) || {};
+  const banksRes = (cachedData && cachedData.banksRes) || {};
+  const bankTransfer = cfgRes.bankTransfer || {};
+  const secrets = cfgRes.vietqrSecrets || {};
+  const orders = sortOrdersByPriority(ordersRes.orders || []);
+  const counts = ordersRes.counts || {};
 
     // Danh sách ngân hàng VietQR chính thức
     let banksList = (banksRes && Array.isArray(banksRes.banks) && banksRes.banks.length > 0) ? banksRes.banks : [
@@ -3685,6 +3789,7 @@ function bindBillingTabEvents(container, initialOrders) {
           body: JSON.stringify(payload)
         });
         toast('Đã lưu cấu hình tài khoản nhận tiền VietQR thành công!');
+        adminBillingCache = null;
         renderBillingTab(container);
       } catch (err) {
         alert('Lỗi lưu cấu hình: ' + err.message);
@@ -3819,7 +3924,10 @@ function bindBillingTabEvents(container, initialOrders) {
     const s = searchInput ? searchInput.value.trim() : '';
     const st = statusFilter ? statusFilter.value : 'all';
     try {
-      const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=250`);
+      const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=100`);
+      if (adminBillingCache && st === 'all' && !s) {
+        adminBillingCache.ordersRes = res;
+      }
       const sorted = sortOrdersByPriority(res.orders || []);
       const tbody = container.querySelector('#billingOrdersTableBody');
       if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted);
@@ -3929,6 +4037,7 @@ function bindBillingTabEvents(container, initialOrders) {
   if (statusFilter) statusFilter.onchange = reloadOrdersList;
 
   // Gán sự kiện hàng ban đầu
+  container._bindOrderRowEvents = bindOrderRowEvents;
   bindOrderRowEvents();
   updateBulkBar();
 }
