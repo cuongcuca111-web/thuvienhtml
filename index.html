@@ -2200,6 +2200,10 @@
           <div class="flex items-center min-w-0 gap-2.5">
             <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors"><use href="#s-search"></use></svg>
             <span class="text-xs sm:text-sm text-[#6E6B65]/80 dark:text-[#979DA8]/80 font-normal truncate">Tìm kiếm bài học, câu hỏi ôn tập...</span>
+            <span id="badgePlusSearchHeader" class="hidden px-1.5 py-0.5 rounded-full text-[8.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs items-center gap-0.5 border border-indigo-200/60 dark:border-indigo-700/60 uppercase shrink-0">
+              <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+              <span>PLUS</span>
+            </span>
           </div>
           <span id="headerSearchKeycap" class="text-[10px] font-medium font-mono text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36] bg-black/5 dark:bg-white/5 shrink-0 ml-2">Ctrl K</span>
         </button>
@@ -5383,8 +5387,12 @@
     <!-- 2. Hàng phạm vi (Scope Pills: Thư viện | Bài này) & Bộ đếm kết quả (Sticky Bar) -->
     <div class="px-3 sm:px-4 py-2 border-b border-[#E7E5DF]/70 dark:border-[#272C38]/70 flex items-center justify-between bg-[var(--search-bg)] shrink-0">
       <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
-        <button type="button" id="paletteScopeLibrary" class="palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer" data-scope="library">
-          Thư viện
+        <button type="button" id="paletteScopeLibrary" class="palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer flex items-center gap-1.5" data-scope="library">
+          <span>Thư viện</span>
+          <span id="badgePlusSearchScope" class="hidden px-1.5 py-0.5 rounded-full text-[8.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs items-center gap-0.5 border border-indigo-200/60 dark:border-indigo-700/60 uppercase">
+            <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+            <span>PLUS</span>
+          </span>
         </button>
         <button type="button" id="paletteScopeCurrent" class="palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer" data-scope="current">
           Bài này
@@ -7322,7 +7330,7 @@
           exportNotesMd: true,
           trashDays: 15,
           statsDays: 30,
-          fullTextSearch: true,
+          fullTextSearch: false,
           monthlyAiRequests: 30,
           maxFlashcardsPerFile: 15,
           aiScheduleEnabled: true,
@@ -7918,6 +7926,9 @@
       if (typeof updateUpgradePricingDisplay === 'function') {
         updateUpgradePricingDisplay(false);
       }
+      if (typeof updateFullTextSearchBadges === 'function') {
+        updateFullTextSearchBadges();
+      }
     });
     window.addEventListener('storage', (e) => {
       if (e.key === 'thuvienhtml_plans_config') {
@@ -7929,6 +7940,9 @@
             window.PLANS = effectivePlans;
             if (typeof updateUpgradePricingDisplay === 'function') {
               updateUpgradePricingDisplay(false);
+            }
+            if (typeof updateFullTextSearchBadges === 'function') {
+              updateFullTextSearchBadges();
             }
           }
         } catch(err) {}
@@ -14915,6 +14929,9 @@
         if (typeof refreshIcons === 'function') {
           try { refreshIcons(); } catch (_) {}
         }
+        if (typeof updateFullTextSearchBadges === 'function') {
+          try { updateFullTextSearchBadges(); } catch (_) {}
+        }
       } catch (globalUiErr) {
         console.warn("[UI] Lỗi tổng thể updateUserUI (được ngăn chặn an toàn):", globalUiErr);
       }
@@ -19411,6 +19428,40 @@
     }
     window.clearRecentSearches = clearRecentSearches;
 
+    // Cập nhật huy hiệu "PLUS" cho tính năng tìm kiếm toàn văn bản:
+    // Hiện mác Plus khi ở chế độ Free/Khách, xóa mác Plus khi ở chế độ Plus hoặc Pro
+    function updateFullTextSearchBadges() {
+      const currentTier = (state && state.userTier) || 'free';
+      const isAdmin = Boolean(state && state.isAdmin);
+      const isPlusOrPro = (currentTier === 'plus' || currentTier === 'pro' || isAdmin);
+
+      // Thêm mác Plus khi đang ở chế độ Free, xóa mác Plus khi đang ở chế độ Plus hoặc Pro
+      const showPlusBadge = !isPlusOrPro;
+
+      const badgeScope = document.getElementById('badgePlusSearchScope');
+      if (badgeScope) {
+        if (showPlusBadge) {
+          badgeScope.classList.remove('hidden');
+          badgeScope.classList.add('inline-flex');
+        } else {
+          badgeScope.classList.add('hidden');
+          badgeScope.classList.remove('inline-flex');
+        }
+      }
+
+      const badgeHeader = document.getElementById('badgePlusSearchHeader');
+      if (badgeHeader) {
+        if (showPlusBadge) {
+          badgeHeader.classList.remove('hidden');
+          badgeHeader.classList.add('inline-flex');
+        } else {
+          badgeHeader.classList.add('hidden');
+          badgeHeader.classList.remove('inline-flex');
+        }
+      }
+    }
+    window.updateFullTextSearchBadges = updateFullTextSearchBadges;
+
     function openSearchCommandPalette(initialQuery = '') {
       // Đóng mobile sidebar drawer nếu đang mở
       const mainSidebar = document.getElementById('mainSidebar');
@@ -19441,6 +19492,12 @@
         }, 40);
       }
 
+      const isPlusOrPro = (state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || can('fullTextSearch');
+      if (!isPlusOrPro && state.activeLessonId) {
+        searchScope = 'current';
+      }
+
+      updateFullTextSearchBadges();
       updatePaletteScopeButtons();
 
       if (q.trim()) {
@@ -19471,12 +19528,13 @@
     function updatePaletteScopeButtons() {
       if (!paletteScopeLibrary || !paletteScopeCurrent) return;
       if (searchScope === 'library') {
-        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer";
+        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer flex items-center gap-1.5";
         paletteScopeCurrent.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer";
       } else {
         paletteScopeCurrent.className = "palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer";
-        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer";
+        paletteScopeLibrary.className = "palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer flex items-center gap-1.5";
       }
+      updateFullTextSearchBadges();
     }
 
     function renderPaletteEmptyPrompt() {
@@ -19566,6 +19624,16 @@
 
     if (paletteScopeLibrary) {
       paletteScopeLibrary.addEventListener('click', () => {
+        const isPlusOrPro = (state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || can('fullTextSearch');
+        if (!isPlusOrPro) {
+          if (typeof showToast === 'function') {
+            showToast("Tìm kiếm toàn văn bản trong thư viện dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
+          }
+          if (typeof openUpgradeModal === 'function') {
+            openUpgradeModal('plus');
+          }
+          return;
+        }
         searchScope = 'library';
         updatePaletteScopeButtons();
         if (paletteSearchInput && paletteSearchInput.value.trim()) {
@@ -19871,6 +19939,41 @@
         `;
         bindScopeButtons(dropdownEl);
         dropdownEl.classList.remove('hidden');
+        return;
+      }
+
+      // Kiểm tra quyền tìm kiếm toàn văn bản: chỉ Plus và Pro mới có thể dùng được Thư viện
+      const isPlusOrPro = (state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || can('fullTextSearch');
+      if (searchScope === 'library' && !isPlusOrPro) {
+        dropdownEl.innerHTML = `
+          <div class="py-10 px-4 text-center select-none">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs">
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white mb-2 uppercase tracking-wider shadow-2xs">
+              <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+              <span>Đặc quyền gói Plus &amp; Pro</span>
+            </div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Tìm kiếm toàn văn bản trong thư viện</h3>
+            <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm mx-auto leading-relaxed mb-4">
+              Tính năng quét toàn bộ nội dung của tất cả bài học trong thư viện chỉ dành riêng cho tài khoản Plus trở lên.
+            </p>
+            <div class="flex items-center justify-center gap-2">
+              <button type="button" onclick="openUpgradeModal('plus')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs hover:shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+                <span>Nâng cấp gói Plus</span>
+              </button>
+              ${state.activeLessonId ? `
+                <button type="button" onclick="document.getElementById('paletteScopeCurrent')?.click()" class="px-3.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs transition cursor-pointer">
+                  Tìm trong bài hiện tại
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        if (paletteSearchCountBadge) paletteSearchCountBadge.innerText = '';
+        dropdownEl.classList.remove('hidden');
+        searchActiveIndex = -1;
         return;
       }
 
@@ -31979,6 +32082,10 @@
 
       safeRun('initWhatsNewAndChangelog', () => {
         if (typeof initWhatsNewAndChangelog === 'function') initWhatsNewAndChangelog();
+      });
+
+      safeRun('updateFullTextSearchBadges', () => {
+        if (typeof updateFullTextSearchBadges === 'function') updateFullTextSearchBadges();
       });
 
       try { autoCleanupDuplicateData(); } catch (_) {}
