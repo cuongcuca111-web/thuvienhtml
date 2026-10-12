@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.1.3',
+        date: '2026-10-12T18:45:00+07:00',
+        title: 'Thêm tab Tùy chỉnh Thư Viện Prompt trong Phiên Quản trị Admin',
+        items: [
+          { type: 'new', text: 'Bổ sung tab "Thư viện Prompt" vào Bảng điều khiển Quản trị (Admin Panel) với giao diện trực quan, đồng bộ tức thì' },
+          { type: 'improved', text: 'Tùy biến đầy đủ 4 chiều không gian: Tải lên prompt mới, biên tập nội dung, cấu hình gói mở khóa (Thường / Plus / Pro) và đổi ảnh đại diện' },
+          { type: 'improved', text: 'Tích hợp bộ đổi gói nhanh 1-click trên thẻ prompt, hộp thoại đổi ảnh đại diện trực quan kèm presets và hỗ trợ sao lưu / nhập JSON' }
+        ]
+      },
+      {
         version: 'v5.1.2',
         date: '2026-10-12T18:30:00+07:00',
         title: 'Nâng cấp nút Thư Viện Prompt AI tinh tế & Chuyển lên Header chính',
@@ -7790,7 +7800,7 @@
   <!-- ========================================================================= -->
   <!-- MODAL: ADMIN TẢI LÊN & CHỈNH SỬA PROMPT (ADMIN PROMPT EDITOR) -->
   <!-- ========================================================================= -->
-  <div id="adminPromptEditorModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="adminPromptEditorTitle">
+  <div id="adminPromptEditorModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[9995] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="adminPromptEditorTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[22px] sm:rounded-[22px] w-full max-w-2xl max-h-[94dvh] sm:max-h-[90dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header -->
@@ -34267,18 +34277,40 @@ Nhiệm vụ phân tích toàn diện:
       return promptLibraryCache;
     }
 
+    function isPromptAdminAuthorized() {
+      if (state && state.isAdmin) return true;
+      if (typeof window !== 'undefined') {
+        if (window.isAdminSessionActive || window.currentAdminUser) return true;
+        const adminPanel = document.getElementById('adminPanelModal');
+        if (adminPanel && !adminPanel.classList.contains('hidden')) return true;
+      }
+      return false;
+    }
+    window.isPromptAdminAuthorized = isPromptAdminAuthorized;
+
     function savePromptLibraryData(items) {
       try {
         promptLibraryCache = items;
         localStorage.setItem('antigravity_prompt_library', JSON.stringify(items));
+        window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: items }));
       } catch (e) {
         console.warn('[PromptLibrary] Lỗi lưu dữ liệu vào localStorage:', e);
       }
     }
+    window.savePromptLibraryData = savePromptLibraryData;
+    window.getPromptLibraryData = getPromptLibraryData;
+    window.DEFAULT_PROMPT_LIBRARY = DEFAULT_PROMPT_LIBRARY;
+
+    window.addEventListener('prompt-library-updated', () => {
+      promptLibraryCache = null;
+      if (typeof renderPromptLibrary === 'function') {
+        try { renderPromptLibrary(); } catch (_) {}
+      }
+    });
 
     function canUserAccessPrompt(prompt) {
       try {
-        if (state && state.isAdmin) return true;
+        if (isPromptAdminAuthorized()) return true;
         const reqTier = (prompt && prompt.requiredTier ? prompt.requiredTier : 'free').toLowerCase();
         if (reqTier === 'free' || reqTier === 'guest') return true;
         const userTier = (state && state.userTier ? state.userTier : 'free').toLowerCase();
@@ -34574,7 +34606,7 @@ Nhiệm vụ phân tích toàn diện:
     window.openPromptDetail = openPromptDetail;
 
     function openAdminPromptEditor(promptId = null) {
-      if (!state || !state.isAdmin) {
+      if (!isPromptAdminAuthorized()) {
         if (typeof showToast === 'function') {
           showToast('Chỉ Quản trị viên (Admin) mới có quyền truy cập chức năng này!', 'error');
         }
@@ -34627,7 +34659,7 @@ Nhiệm vụ phân tích toàn diện:
     window.openAdminPromptEditor = openAdminPromptEditor;
 
     function deletePrompt(promptId) {
-      if (!state || !state.isAdmin) return;
+      if (!isPromptAdminAuthorized()) return;
       if (!confirm('Bạn có chắc chắn muốn xóa prompt này khỏi thư viện?')) return;
 
       const allPrompts = getPromptLibraryData();
@@ -34718,7 +34750,7 @@ Nhiệm vụ phân tích toàn diện:
       if (adminForm) {
         adminForm.addEventListener('submit', (e) => {
           e.preventDefault();
-          if (!state || !state.isAdmin) {
+          if (!isPromptAdminAuthorized()) {
             if (typeof showToast === 'function') {
               showToast('Chỉ Quản trị viên mới có quyền lưu prompt!', 'error');
             }
