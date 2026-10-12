@@ -3183,6 +3183,10 @@ function buildBillingTabDOM(container, cachedData) {
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                 <span>Làm mới</span>
               </button>
+              <button type="button" id="btnBillingCleanup" title="Dọn dẹp ảnh bill quá 7 ngày để giải phóng dung lượng web" class="px-2.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 transition flex items-center gap-1 font-semibold shrink-0 cursor-pointer">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Dọn dẹp bộ nhớ</span>
+              </button>
             </div>
             <div class="text-xs text-gray-500">
               Có <strong>${userConfirmedCount}</strong> đơn khách báo đã chuyển cần duyệt.
@@ -3202,9 +3206,13 @@ function buildBillingTabDOM(container, cachedData) {
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 <span>Xác nhận hàng loạt</span>
               </button>
-              <button type="button" id="btnBulkCancelOrders" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-2xs transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+              <button type="button" id="btnBulkCancelOrders" class="px-3.5 py-1.5 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-semibold text-xs shadow-2xs transition flex items-center gap-1.5 cursor-pointer active:scale-95">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 <span>Hủy hàng loạt</span>
+              </button>
+              <button type="button" id="btnBulkDeleteOrders" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-2xs transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Xóa các đơn đã chọn</span>
               </button>
               <button type="button" id="btnDeselectAllOrders" class="px-2.5 py-1.5 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium text-xs transition cursor-pointer">
                 Bỏ chọn
@@ -3224,7 +3232,7 @@ function buildBillingTabDOM(container, cachedData) {
                     <th class="py-3 px-3.5">Người dùng</th>
                     <th class="py-3 px-3.5">Gói / Chu kỳ</th>
                     <th class="py-3 px-3.5 text-right">Số tiền</th>
-                    <th class="py-3 px-3.5 text-center">Biên lai</th>
+                    <th class="py-3 px-3.5 text-center" title="Ảnh biên lai được tự động xóa sau 7 ngày để giải phóng dung lượng web">Biên lai (7 ngày)</th>
                     <th class="py-3 px-3.5 text-center">Trạng thái</th>
                     <th class="py-3 px-3.5">Thời gian</th>
                     <th class="py-3 px-3.5 text-right">Thao tác</th>
@@ -3416,6 +3424,8 @@ function renderSingleOrderRow(ord) {
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
             <span>Xem bill</span>
           </button>
+        ` : ord.proofPurged ? `
+          <span class="text-[10px] text-amber-600 dark:text-amber-400 font-medium bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-900/40" title="Ảnh biên lai đã được tự động dọn dẹp sau 7 ngày để giải phóng dung lượng web">Đã dọn (&gt;7 ngày)</span>
         ` : `
           <span class="text-[11px] text-gray-400 italic">Chưa có</span>
         `}
@@ -3431,17 +3441,26 @@ function renderSingleOrderRow(ord) {
             Hủy
           </button>
         ` : ord.status === 'paid' ? `
-          <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+          <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1.5">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             <span>Đã duyệt</span>
           </span>
+          <button type="button" class="btn-admin-delete-order p-1 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer inline-flex items-center" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Xóa vĩnh viễn giao dịch này">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         ` : ord.status === 'cancelled' ? `
-          <span class="inline-flex items-center gap-1 text-[11px] text-rose-500 dark:text-rose-400 font-medium">
+          <span class="inline-flex items-center gap-1 text-[11px] text-rose-500 dark:text-rose-400 font-medium mr-1.5">
             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             <span>Đã hủy</span>
           </span>
+          <button type="button" class="btn-admin-delete-order p-1 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer inline-flex items-center" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Xóa vĩnh viễn giao dịch này">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         ` : `
-          <span class="text-[11px] text-gray-400 font-medium">Hết hạn</span>
+          <span class="text-[11px] text-gray-400 font-medium mr-1.5">Hết hạn</span>
+          <button type="button" class="btn-admin-delete-order p-1 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer inline-flex items-center" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Xóa vĩnh viễn giao dịch này">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         `}
       </td>
     </tr>
@@ -3836,6 +3855,29 @@ function bindBillingTabEvents(container, initialOrders) {
         });
       };
     });
+
+    // Xóa vĩnh viễn giao dịch / đơn hàng thủ công
+    container.querySelectorAll('.btn-admin-delete-order').forEach(btn => {
+      btn.onclick = async () => {
+        const orderId = btn.dataset.id;
+        const orderCode = btn.dataset.code || '';
+        if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn giao dịch ${orderCode}? Thao tác này sẽ giải phóng dung lượng và không thể hoàn tác.`)) {
+          return;
+        }
+        btn.disabled = true;
+        try {
+          const res = await callAdminApi('/api/admin/billing/orders-delete', {
+            method: 'POST',
+            body: JSON.stringify({ orderId, reason: 'Quản trị viên xóa thủ công' })
+          });
+          toast(res.message || `Đã xóa vĩnh viễn giao dịch ${orderCode}!`);
+          await reloadOrdersList();
+        } catch (err) {
+          alert('Lỗi xóa giao dịch: ' + err.message);
+          btn.disabled = false;
+        }
+      };
+    });
   }
 
   // Tải lại danh sách đơn hàng in-place, bảo toàn ô tìm kiếm & sắp xếp lại đơn
@@ -3948,6 +3990,37 @@ function bindBillingTabEvents(container, initialOrders) {
     };
   }
 
+  // Nút xóa hàng loạt
+  const btnBulkDelete = container.querySelector('#btnBulkDeleteOrders');
+  if (btnBulkDelete) {
+    btnBulkDelete.onclick = async () => {
+      const checkedBoxes = Array.from(container.querySelectorAll('.order-select-checkbox:checked'));
+      const orderIds = checkedBoxes.map(cb => cb.dataset.id).filter(Boolean);
+      if (orderIds.length === 0) return;
+
+      if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn ${orderIds.length} giao dịch đã chọn? Thao tác này sẽ giải phóng dung lượng và không thể hoàn tác.`)) {
+        return;
+      }
+
+      btnBulkDelete.disabled = true;
+      btnBulkDelete.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang xóa...</span>';
+
+      try {
+        const res = await callAdminApi('/api/admin/billing/orders-delete', {
+          method: 'POST',
+          body: JSON.stringify({ orderIds, reason: 'Admin xóa hàng loạt' })
+        });
+        toast(res.message || `Đã xóa thành công ${orderIds.length} giao dịch!`);
+        await reloadOrdersList();
+      } catch (err) {
+        alert('Lỗi xóa hàng loạt: ' + err.message);
+      } finally {
+        btnBulkDelete.disabled = false;
+        btnBulkDelete.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> <span>Xóa các đơn đã chọn</span>';
+      }
+    };
+  }
+
   // Tìm kiếm & Lọc trạng thái đơn hàng
   if (searchInput) searchInput.oninput = debounce(reloadOrdersList, 300);
   if (statusFilter) statusFilter.onchange = reloadOrdersList;
@@ -3962,6 +4035,38 @@ function bindBillingTabEvents(container, initialOrders) {
       await reloadOrdersList();
       btnBillingRefreshOrders.disabled = false;
       btnBillingRefreshOrders.classList.remove('opacity-50');
+    };
+  }
+
+  // Nút dọn dẹp bộ nhớ (Xóa ảnh bill quá 7 ngày & các đơn cũ)
+  const btnBillingCleanup = container.querySelector('#btnBillingCleanup');
+  if (btnBillingCleanup) {
+    btnBillingCleanup.onclick = async () => {
+      const choice = confirm(
+        "DỌN DẸP BỘ NHỚ WEB & GIAO DỊCH CŨ:\n\n" +
+        "• Hệ thống sẽ tự động quét và xóa sạch tất cả ảnh biên lai đã lưu quá 7 ngày để giải phóng dung lượng bộ nhớ web.\n" +
+        "• Đơn hàng và lịch sử thanh toán vẫn được bảo lưu.\n\n" +
+        "Bạn có muốn thực hiện dọn dẹp ngay không?"
+      );
+      if (!choice) return;
+
+      btnBillingCleanup.disabled = true;
+      btnBillingCleanup.classList.add('opacity-50');
+      toast('Đang quét và dọn dẹp ảnh bill quá 7 ngày...');
+
+      try {
+        const res = await callAdminApi('/api/admin/billing/cleanup', {
+          method: 'POST',
+          body: JSON.stringify({ mode: 'bills_7d' })
+        });
+        toast(res.message || 'Đã dọn dẹp thành công bộ nhớ web!');
+        await reloadOrdersList();
+      } catch (err) {
+        alert('Lỗi dọn dẹp: ' + err.message);
+      } finally {
+        btnBillingCleanup.disabled = false;
+        btnBillingCleanup.classList.remove('opacity-50');
+      }
     };
   }
 
@@ -4005,6 +4110,10 @@ function showAdminProofLightbox(opts) {
           <span>Mở ảnh tab mới</span>
         </a>
         <div class="flex items-center gap-2">
+          <button type="button" id="btnProofLightboxDeleteImg" class="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 font-semibold text-xs transition active:scale-95 cursor-pointer flex items-center gap-1.5" title="Xóa ảnh biên lai này để giải phóng bộ nhớ web">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Xóa ảnh bill</span>
+          </button>
           ${isPendingOrConfirmed ? `
             <button type="button" id="btnProofLightboxApprove" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-2xs transition active:scale-95 cursor-pointer flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -4035,6 +4144,32 @@ function showAdminProofLightbox(opts) {
   modal.onclick = (e) => {
     if (e.target === modal) closeMe();
   };
+
+  const btnDeleteImg = modal.querySelector('#btnProofLightboxDeleteImg');
+  if (btnDeleteImg) {
+    btnDeleteImg.onclick = async () => {
+      if (!confirm(`Bạn có chắc muốn xóa ảnh biên lai của đơn ${code} để giải phóng bộ nhớ? Đơn hàng vẫn được lưu lại.`)) return;
+      btnDeleteImg.disabled = true;
+      btnDeleteImg.innerText = 'Đang xóa...';
+      try {
+        await callAdminApi('/api/admin/billing/delete-proof', {
+          method: 'POST',
+          body: JSON.stringify({ orderId })
+        });
+        toast('Đã xóa ảnh biên lai thành công để giải phóng dung lượng web!');
+        closeMe();
+        if (typeof onApproved === 'function') {
+          await onApproved();
+        } else if (container) {
+          renderBillingTab(container);
+        }
+      } catch (err) {
+        alert('Lỗi xóa ảnh: ' + err.message);
+        btnDeleteImg.disabled = false;
+        btnDeleteImg.innerText = 'Xóa ảnh bill';
+      }
+    };
+  }
 
   const btnApprove = modal.querySelector('#btnProofLightboxApprove');
   if (btnApprove) {

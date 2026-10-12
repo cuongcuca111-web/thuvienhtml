@@ -372,11 +372,27 @@ module.exports = async function handler(req, res) {
       let orders = [];
       let pendingCount = 0;
       let userConfirmedCount = 0;
+      const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+      const nowMs = Date.now();
+      const expiredBillRefs = [];
 
       snap.forEach(docSnap => {
         const data = docSnap.data();
         if (data.status === 'user_confirmed') userConfirmedCount++;
         if (data.status === 'pending') pendingCount++;
+
+        // Tự động kiểm tra ảnh bill đã quá 7 ngày chưa
+        let effectiveProofUrl = data.proofUrl || null;
+        let isProofPurged = Boolean(data.proofPurged);
+
+        if (effectiveProofUrl) {
+          const proofTime = data.userConfirmedAt || data.paidAt || data.createdAt;
+          if (proofTime && (nowMs - new Date(proofTime).getTime() >= SEVEN_DAYS_MS)) {
+            expiredBillRefs.push(docSnap.ref);
+            effectiveProofUrl = null;
+            isProofPurged = true;
+          }
+        }
 
         // Lọc trạng thái trong bộ nhớ nếu chạy chế độ fallback
         if (statusFilter !== 'all' && data.status !== statusFilter) return;
@@ -401,9 +417,28 @@ module.exports = async function handler(req, res) {
           expiresAt: data.expiresAt,
           paidAt: data.paidAt || null,
           userConfirmedAt: data.userConfirmedAt || null,
-          proofUrl: data.proofUrl || null
+          proofUrl: effectiveProofUrl,
+          proofPurged: isProofPurged
         });
       });
+
+      // Tự động dọn dẹp giải phóng bộ nhớ Firestore ở chế độ ngầm (Background Task)
+      if (expiredBillRefs.length > 0) {
+        (async () => {
+          try {
+            const cleanBatch = db.batch();
+            expiredBillRefs.forEach(ref => {
+              cleanBatch.update(ref, {
+                proofUrl: null,
+                proofPurged: true,
+                proofPurgedAt: new Date().toISOString()
+              });
+            });
+            await cleanBatch.commit();
+            console.log(`[Admin Billing] Đã tự động dọn dẹp ${expiredBillRefs.length} ảnh bill quá 7 ngày`);
+          } catch (_) {}
+        })();
+      }
 
       // Sắp xếp ưu tiên: Đơn chờ xử lý lên trên, đơn đã duyệt / đã hủy / hết hạn tự xuống dưới
       const STATUS_PRIORITY = {
@@ -608,6 +643,151 @@ module.exports = async function handler(req, res) {
       });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi hủy đơn: ' + err.message });
+    }
+  }
+
+  // 7. XÓA GIAO DỊCH / ĐƠN HÀNG THỦ CÔNG (ĐƠN LẺ HOẶC HÀNG LOẠT) (POST /api/admin/billing/orders-delete)
+  if (action === 'orders-delete' && req.method === 'POST') {
+    const { orderId, orderIds, reason } = req.body || {};
+    const ids = Array.isArray(orderIds) && orderIds.length > 0
+      ? orderIds.filter(Boolean)
+      : (orderId ? [orderId] : []);
+
+    if (ids.length === 0) {
+      return res.status(400).json({ error: 'Thiếu orderId hoặc danh sách orderIds' });
+    }
+
+    try {
+      const batch = db.batch();
+      let successCount = 0;
+
+      for (const id of ids) {
+        try {
+          const orderRef = db.collection('billing_orders').doc(id);
+          batch.delete(orderRef);
+          successCount++;
+        } catch (_) {}
+      }
+
+      if (successCount > 0) {
+        await batch.commit();
+      }
+
+      await recordAuditLog(db, {
+        uid,
+        action: ids.length > 1 ? 'DELETE_ORDERS_BATCH' : 'DELETE_ORDER_ADMIN',
+        details: `Đã xóa vĩnh viễn ${successCount}/${ids.length} giao dịch. Lý do: ${reason || 'Quản trị viên xóa thủ công'}`
+      });
+
+      return res.status(200).json({
+        success: true,
+        count: successCount,
+        message: ids.length > 1 ? `Đã xóa thành công ${successCount} giao dịch!` : 'Đã xóa giao dịch thành công'
+      });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi xóa giao dịch: ' + err.message });
+    }
+  }
+
+  // 8. XÓA THỦ CÔNG ẢNH BILL CỦA 1 ĐƠN (POST /api/admin/billing/delete-proof)
+  if (action === 'delete-proof' && req.method === 'POST') {
+    const { orderId } = req.body || {};
+    if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
+
+    try {
+      const orderRef = db.collection('billing_orders').doc(orderId);
+      const snap = await orderRef.get();
+      if (!snap.exists) {
+        return res.status(404).json({ error: 'Không tìm thấy đơn hàng' });
+      }
+
+      await orderRef.update({
+        proofUrl: null,
+        proofPurged: true,
+        proofPurgedBy: uid,
+        proofPurgedAt: new Date().toISOString()
+      });
+
+      await recordAuditLog(db, {
+        uid,
+        action: 'DELETE_ORDER_PROOF',
+        details: `Xóa ảnh biên lai của đơn hàng ${orderId}`
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Đã xóa ảnh biên lai thành công để giải phóng bộ nhớ'
+      });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi xóa ảnh bill: ' + err.message });
+    }
+  }
+
+  // 9. DỌN DẸP GIAO DỊCH CŨ VÀ ẢNH BILL HÀNG LOẠT (POST /api/admin/billing/cleanup)
+  if (action === 'cleanup' && req.method === 'POST') {
+    const { mode } = req.body || {}; // 'bills_7d' | 'cancelled_7d' | 'all_old_30d'
+    const nowMs = Date.now();
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+    try {
+      const snap = await db.collection('billing_orders').limit(200).get();
+      const batch = db.batch();
+      let purgedBills = 0;
+      let deletedOrders = 0;
+
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        const baseTime = d.createdAt ? new Date(d.createdAt).getTime() : 0;
+        const ageMs = nowMs - baseTime;
+
+        if (mode === 'bills_7d' || !mode) {
+          if (d.proofUrl) {
+            const proofTime = d.userConfirmedAt || d.paidAt || d.createdAt;
+            if (proofTime && (nowMs - new Date(proofTime).getTime() >= SEVEN_DAYS_MS)) {
+              batch.update(docSnap.ref, {
+                proofUrl: null,
+                proofPurged: true,
+                proofPurgedAt: new Date().toISOString()
+              });
+              purgedBills++;
+            }
+          }
+        }
+
+        if (mode === 'cancelled_7d') {
+          if (['cancelled', 'expired'].includes(d.status) && ageMs >= SEVEN_DAYS_MS) {
+            batch.delete(docSnap.ref);
+            deletedOrders++;
+          }
+        }
+
+        if (mode === 'all_old_30d') {
+          if (['paid', 'cancelled', 'expired'].includes(d.status) && ageMs >= THIRTY_DAYS_MS) {
+            batch.delete(docSnap.ref);
+            deletedOrders++;
+          }
+        }
+      });
+
+      if (purgedBills > 0 || deletedOrders > 0) {
+        await batch.commit();
+      }
+
+      await recordAuditLog(db, {
+        uid,
+        action: 'CLEANUP_BILLING_DATA',
+        details: `Dọn dẹp hệ thống (${mode || 'bills_7d'}): Đã xóa ${purgedBills} ảnh bill, xóa ${deletedOrders} giao dịch cũ`
+      });
+
+      return res.status(200).json({
+        success: true,
+        purgedBills,
+        deletedOrders,
+        message: `Đã dọn dẹp thành công! Giải phóng ${purgedBills} ảnh biên lai cũ và xóa ${deletedOrders} giao dịch cũ.`
+      });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi dọn dẹp: ' + err.message });
     }
   }
 
