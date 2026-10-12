@@ -20187,229 +20187,24 @@
 
     function hideFrameColorUpgrade() {
       try {
-        if (frameColorAutoCloseTimer) {
-          clearTimeout(frameColorAutoCloseTimer);
-          frameColorAutoCloseTimer = null;
-        }
-        if (frameColorOutsideClickListener) {
-          document.removeEventListener('pointerdown', frameColorOutsideClickListener, true);
-          frameColorOutsideClickListener = null;
-        }
-        if (frameColorEscKeyListener) {
-          document.removeEventListener('keydown', frameColorEscKeyListener, true);
-          frameColorEscKeyListener = null;
-        }
         const popover = document.getElementById('frameColorUpgradePopover');
         if (popover) {
           popover.remove();
         }
       } catch (err) {
-        console.warn('[FrameColorUpgrade] Lỗi khi đóng popover:', err);
+        console.warn('[FrameColorUpgrade] Lỗi khi dọn dẹp popover:', err);
       }
     }
     window.hideFrameColorUpgrade = hideFrameColorUpgrade;
 
-    function showFrameColorUpgrade(anchorEl) {
-      try {
-        const now = Date.now();
-        // Chống lặp popup: bỏ qua nếu vừa mới hiển thị trong vòng 300ms
-        if (now - lastFrameColorShowTime < 300) {
-          return;
-        }
-        lastFrameColorShowTime = now;
-
-        // Tự động đóng popover cũ nếu đang mở để chỉ giữ 1 popover duy nhất
-        hideFrameColorUpgrade();
-
-        const isRecentDismissed = (now - lastFrameColorDismissTime) < 60000;
-
-        // Kích hoạt hiệu ứng rung nhẹ chấm cam 200ms
-        const camDots = document.querySelectorAll('.hl-color-btn[data-color="yellow"], .mobile-hl-color-btn[data-color="yellow"] span');
-        camDots.forEach(dot => {
-          dot.classList.remove('shake-dot-active');
-          void dot.offsetWidth; // force reflow
-          dot.classList.add('shake-dot-active');
-          setTimeout(() => dot.classList.remove('shake-dot-active'), 250);
-        });
-
-        const isAnonymous = Boolean(state && state.user && state.user.isAnonymous);
-        const actionBtnText = isAnonymous ? 'Đăng ký / Đăng nhập' : 'Xem các gói';
-
-        // Tạo phần tử Popover mới
-        const popover = document.createElement('div');
-        popover.id = 'frameColorUpgradePopover';
-        popover.className = 'frame-color-popover-editorial fixed z-[90] rounded-2xl bg-[#FAF9F6] dark:bg-[#15181E] text-[#1C1B18] dark:text-[#E8E6E1] p-3.5 shadow-2xl border border-[#E0DED7] dark:border-[#2C323E] select-none';
-        popover.setAttribute('role', 'dialog');
-        popover.setAttribute('aria-modal', 'false');
-        popover.setAttribute('aria-label', 'Gợi ý nâng cấp chọn màu khung');
-
-        if (isRecentDismissed) {
-          // Giao diện rút gọn khi vừa bấm "Để sau" trong vòng 60s
-          popover.style.width = '280px';
-          popover.innerHTML = `
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5 min-w-0">
-                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 shrink-0"></span>
-                <span class="text-xs font-semibold truncate text-[#1C1B18] dark:text-[#E8E6E1]">Đổi màu từ gói Plus</span>
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" id="btnUpgradeFrameColorAction" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-[11px] transition shadow-2xs cursor-pointer">
-                  ${actionBtnText}
-                </button>
-                <button type="button" id="btnDismissFrameColorUpgrade" class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 text-[#78756D] dark:text-[#9AA3B2] text-xs cursor-pointer" aria-label="Đóng">
-                  ✕
-                </button>
-              </div>
-            </div>
-          `;
-        } else {
-          // Giao diện đầy đủ phong cách Editorial
-          popover.style.width = '320px';
-          popover.innerHTML = `
-            <div class="flex items-start gap-2.5">
-              <div class="relative w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-200/60 dark:border-indigo-800/60 mt-0.5">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-                  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-                  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-                  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/>
-                </svg>
-                <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-xs" title="Khóa">
-                  <svg class="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h5 class="font-serif font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1] leading-snug">
-                  Chọn màu khung từ gói Plus
-                </h5>
-                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] leading-relaxed mt-0.5">
-                  Gói Thường dùng khung màu cam mặc định. Nâng cấp để chọn màu khung tùy ý.
-                </p>
-
-                <!-- Dải xem trước 4 chấm màu -->
-                <div class="flex items-center gap-1.5 my-2">
-                  <span class="w-3.5 h-3.5 rounded-full ring-2 ring-indigo-500/80 ring-offset-1 bg-[#d97706]" title="Cam (mặc định)"></span>
-                  <span class="w-3.5 h-3.5 rounded-full bg-[#059669] opacity-80" title="Xanh lá"></span>
-                  <span class="w-3.5 h-3.5 rounded-full bg-[#db2777] opacity-80" title="Hồng"></span>
-                  <span class="w-3.5 h-3.5 rounded-full bg-[#7c3aed] opacity-80" title="Tím"></span>
-                  <span class="w-3.5 h-3.5 rounded-full opacity-80 border border-black/10 dark:border-white/10" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);" title="Màu tùy ý"></span>
-                </div>
-
-                <!-- Hai nút tương tác -->
-                <div class="flex items-center gap-2 pt-1">
-                  <button type="button" id="btnUpgradeFrameColorAction" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-[11px] transition shadow-xs cursor-pointer">
-                    ${actionBtnText}
-                  </button>
-                  <button type="button" id="btnDismissFrameColorUpgrade" class="px-2.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:bg-black/5 dark:hover:bg-white/5 text-[#78756D] dark:text-[#9AA3B2] text-[11px] font-medium transition cursor-pointer">
-                    Để sau
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-
-        document.body.appendChild(popover);
-
-        // Tính toán vị trí hiển thị neo sát anchorEl hoặc thanh công cụ
-        const anchor = anchorEl || document.getElementById('highlightFloatingToolbar') || document.getElementById('mobileSelectionActionBar');
-        if (anchor && anchor.getBoundingClientRect) {
-          const rect = anchor.getBoundingClientRect();
-          const popWidth = isRecentDismissed ? 280 : 320;
-          const popHeight = isRecentDismissed ? 56 : 140;
-
-          // Kiểm tra xem có đang ở mobile bottom action bar không
-          const isMobileBottom = rect.top > (window.innerHeight - 120);
-
-          let left = rect.left + (rect.width / 2) - (popWidth / 2);
-          left = Math.max(12, Math.min(left, window.innerWidth - popWidth - 12));
-
-          let top = 0;
-          if (isMobileBottom) {
-            top = Math.max(12, rect.top - popHeight - 8);
-          } else {
-            // Mặc định hiển thị bên dưới anchor; nếu sát đáy thì bật lên trên
-            if (rect.bottom + popHeight + 12 < window.innerHeight) {
-              top = rect.bottom + 8;
-            } else {
-              top = Math.max(12, rect.top - popHeight - 8);
-            }
-          }
-
-          popover.style.left = `${Math.round(left)}px`;
-          popover.style.top = `${Math.round(top)}px`;
-        } else {
-          // Vị trí mặc định ở giữa trên cùng bài viết
-          popover.style.left = '50%';
-          popover.style.transform = 'translateX(-50%)';
-          popover.style.top = '70px';
-        }
-
-        // Gắn sự kiện nút bấm trong popover
-        const btnAction = popover.querySelector('#btnUpgradeFrameColorAction');
-        if (btnAction) {
-          btnAction.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            hideFrameColorUpgrade();
-            if (isAnonymous) {
-              const authModal = document.getElementById('authModal');
-              if (authModal) {
-                authModal.classList.remove('hidden');
-                authModal.classList.add('modal-active');
-              }
-            } else {
-              if (typeof openUpgradeModal === 'function') {
-                openUpgradeModal('plus');
-              }
-            }
-          });
-        }
-
-        const btnDismiss = popover.querySelector('#btnDismissFrameColorUpgrade');
-        if (btnDismiss) {
-          btnDismiss.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            lastFrameColorDismissTime = Date.now();
-            hideFrameColorUpgrade();
-          });
-        }
-
-        // Tự động đóng sau 8 giây không tương tác
-        frameColorAutoCloseTimer = setTimeout(() => {
-          hideFrameColorUpgrade();
-        }, 8000);
-
-        // Đóng khi nhấn phím Esc
-        frameColorEscKeyListener = (e) => {
-          if (e.key === 'Escape') {
-            hideFrameColorUpgrade();
-          }
-        };
-        document.addEventListener('keydown', frameColorEscKeyListener, true);
-
-        // Đóng khi bấm ra ngoài popover
-        frameColorOutsideClickListener = (e) => {
-          if (!popover.contains(e.target) && (!anchor || !anchor.contains(e.target))) {
-            hideFrameColorUpgrade();
-          }
-        };
-        setTimeout(() => {
-          if (frameColorOutsideClickListener) {
-            document.addEventListener('pointerdown', frameColorOutsideClickListener, true);
-          }
-        }, 80);
-
-      } catch (err) {
-        console.warn('[FrameColorUpgrade] Lỗi hiển thị popover gợi ý nâng cấp:', err);
-      }
+    // XÓA HOÀN TOÀN POPUP Ở ẢNH 2 THEO YÊU CẦU
+    function showFrameColorUpgrade() {
+      hideFrameColorUpgrade();
     }
     window.showFrameColorUpgrade = showFrameColorUpgrade;
 
-    // HÀM CỔNG DUY NHẤT KIỂM DUYỆT ĐỔI MÀU KHUNG (CHỈ GỌI TỪ SỰ KIỆN CLICK LÊN CHẤM MÀU)
-    function requestFrameColor(color, anchorEl) {
+    // HÀM CỔNG KIỂM DUYỆT ĐỔI MÀU KHUNG (KHÔNG BAO GIỜ HIỆN POPUP Ở ẢNH 2)
+    function requestFrameColor(color) {
       try {
         const normColor = normalizeFrameColor(color);
 
@@ -20423,7 +20218,6 @@
           const allowedCustom = (typeof canUseCustomColor === 'function' && canUseCustomColor()) || canUseFrameColors();
           if (allowedCustom) return true;
 
-          // Nếu gói Thường/Khách không có quyền, đặt lại activeFramingColor về mặc định
           if (typeof activeFramingColor !== 'undefined') {
             activeFramingColor = DEFAULT_FRAME_COLOR;
             try { localStorage.setItem('last_framing_color', DEFAULT_FRAME_COLOR); } catch (_) {}
@@ -20431,8 +20225,10 @@
               updateToolbarColorIndicators();
             }
           }
-
-          showFrameColorUpgrade(anchorEl || document.getElementById('wrapCustomColorBtn'));
+          hideFrameColorUpgrade();
+          if (typeof showToast === 'function') {
+            showToast('Tính năng chọn màu khung tùy ý dành cho gói Plus trở lên', 'warning');
+          }
           return false;
         }
 
@@ -20442,7 +20238,7 @@
         }
 
         // Bị khóa (gói Thường/Khách bấm chấm màu khác cam):
-        // 1. Luôn hoàn nguyên state activeFramingColor về cam mặc định để không dính sang lần Đóng khung sau
+        // Hoàn nguyên state về màu cam mặc định và không bao giờ bật popup
         if (typeof activeFramingColor !== 'undefined') {
           activeFramingColor = DEFAULT_FRAME_COLOR;
           try { localStorage.setItem('last_framing_color', DEFAULT_FRAME_COLOR); } catch (_) {}
@@ -20450,10 +20246,10 @@
             updateToolbarColorIndicators();
           }
         }
-
-        // 2. Hiện gợi ý nâng cấp (chỉ 1 popup duy nhất)
-        const targetBtn = anchorEl || document.querySelector(`.hl-color-btn[data-color="${normColor}"]`) || document.querySelector(`.mobile-hl-color-btn[data-color="${normColor}"]`);
-        showFrameColorUpgrade(targetBtn);
+        hideFrameColorUpgrade();
+        if (typeof showToast === 'function') {
+          showToast('Tính năng chọn màu khung dành cho gói Plus trở lên', 'warning');
+        }
         return false;
       } catch (err) {
         console.warn('[requestFrameColor] Lỗi:', err);

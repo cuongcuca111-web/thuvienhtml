@@ -1,10 +1,8 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v4.9.6)
-// FIX: Khắc phục lỗi tự tải lại liên tục & Hỗ trợ lối vào quản trị bí mật.
-// - Nguồn phiên bản duy nhất APP_VERSION đồng bộ với index.html.
-// - KHÔNG gọi skipWaiting() tự động trong install. Chỉ skipWaiting khi client gửi tin nhắn SKIP_WAITING có kiểm soát.
-// - Dùng chiến lược Mạng trước - Cache sau (fetch với cache: 'no-cache') cho HTML để luôn lấy bản mới nhất khi online.
+// Service Worker cho Ứng dụng Sách HTML (PWA v4.9.9)
+// - Đồng bộ phiên bản APP_VERSION v4.9.9 với index.html
+// - Tự động dọn sạch cache cũ và skipWaiting để người dùng luôn nhận bản cập nhật mới nhất
 
-const APP_VERSION = 'v4.9.8';
+const APP_VERSION = 'v4.9.9';
 const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [
@@ -13,9 +11,9 @@ const PRECACHE_ASSETS = [
   './manifest.json'
 ];
 
-// 1. Cài đặt Service Worker (Precache tài nguyên ban đầu)
-// // FIX-1: Tuyệt đối không gọi self.skipWaiting() tại đây. Worker mới phải ở trạng thái waiting cho đến khi người dùng xác nhận.
+// 1. Cài đặt Service Worker (Precache tài nguyên ban đầu & skipWaiting ngay lập tức)
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
