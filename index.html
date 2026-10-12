@@ -3421,17 +3421,6 @@
       <span id="snapshotCountBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">0 bản</span>
     </button>
 
-    <!-- Xuất & Nhập sao lưu (.json) -->
-    <button id="btnExportData" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
-      <svg class="w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-download"></use></svg>
-      <span>Xuất sao lưu (.json)</span>
-    </button>
-    <label class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
-      <svg class="w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2]" aria-hidden="true"><use href="#icon-upload"></use></svg>
-      <span>Nhập sao lưu (.json)</span>
-      <input type="file" id="importBackupInput" accept=".json" class="hidden" />
-    </label>
-
     <!-- Nút đổi tài khoản (chỉ hiện khi đã đăng nhập) -->
     <button id="btnSwitchAccount" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
       <svg class="w-4 h-4 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-log-in"></use></svg>
@@ -22768,15 +22757,7 @@
       btnCloseReminderBanner.addEventListener('click', () => hideJsonExportReminder(24));
     }
     const btnQuickExportFromReminder = document.getElementById('btnQuickExportFromReminder');
-    if (btnQuickExportFromReminder) {
-      btnQuickExportFromReminder.addEventListener('click', () => {
-        const btnExport = document.getElementById('btnExportData');
-        if (btnExport) btnExport.click();
-        hideJsonExportReminder(7 * 24);
-      });
-    }
-
-    on('#btnExportData', 'click', () => {
+    function exportDataToJson() {
       const exportObject = {
         exportedAt: new Date().toISOString(),
         userId: state.userId,
@@ -22802,8 +22783,18 @@
       a.click();
       URL.revokeObjectURL(url);
       showToast("Đã xuất bản sao lưu thành công");
-      closeUserMenu();
-    });
+      if (typeof closeUserMenu === 'function') closeUserMenu();
+    }
+    window.exportDataToJson = exportDataToJson;
+
+    if (btnQuickExportFromReminder) {
+      btnQuickExportFromReminder.addEventListener('click', () => {
+        exportDataToJson();
+        hideJsonExportReminder(7 * 24);
+      });
+    }
+
+    on('#btnExportData', 'click', exportDataToJson);
 
     on('#importBackupInput', 'change', async (e) => {
       const file = e.target.files[0];
