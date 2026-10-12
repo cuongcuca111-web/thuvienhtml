@@ -162,5 +162,39 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // 4. ACTION: DELETE (POST / DELETE) - Xóa vĩnh viễn mã kích hoạt
+  if (action === 'delete') {
+    if (req.method !== 'POST' && req.method !== 'DELETE') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { code } = req.body || req.query || {};
+    if (!code) {
+      return res.status(400).json({ error: 'Thiếu mã kích hoạt' });
+    }
+
+    try {
+      const cleanCode = String(code).trim().toUpperCase();
+      const codeRef = db.doc(`activation_codes/${cleanCode}`);
+      const snap = await codeRef.get();
+
+      if (!snap.exists) {
+        return res.status(404).json({ error: 'Mã kích hoạt không tồn tại hoặc đã bị xóa' });
+      }
+
+      const oldData = snap.data();
+      await codeRef.delete();
+
+      await recordAuditLog(db, {
+        uid,
+        action: 'code_delete',
+        oldVal: oldData,
+        details: `Xóa vĩnh viễn mã kích hoạt ${cleanCode}`
+      });
+
+      return res.status(200).json({ success: true, code: cleanCode, message: 'Đã xóa mã kích hoạt' });
+    } catch (err) {
+      console.error('Lỗi khi xóa mã:', err);
+      return res.status(500).json({ error: 'Không thể xóa mã: ' + err.message });
+    }
+  }
+
   return res.status(404).json({ error: `Không tìm thấy hành động codes: ${action}` });
 };

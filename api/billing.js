@@ -607,5 +607,115 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // 5. KÍCH HOẠT MÃ (POST /api/billing/redeem-code hoặc ?action=redeem-code)
+  if (action === 'redeem-code') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { code } = req.body || {};
+    if (!code || typeof code !== 'string') {
+      return res.status(400).json({ error: 'Vui lòng cung cấp mã kích hoạt' });
+    }
+
+    const cleanCode = code.trim().toUpperCase();
+    if (!cleanCode) {
+      return res.status(400).json({ error: 'Mã kích hoạt không hợp lệ' });
+    }
+
+    try {
+      const codeRef = db.doc(`activation_codes/${cleanCode}`);
+      const codeSnap = await codeRef.get();
+
+      if (!codeSnap.exists) {
+        return res.status(404).json({ error: 'Mã kích hoạt không chính xác hoặc không tồn tại trên hệ thống.' });
+      }
+
+      const codeData = codeSnap.data();
+
+      if (codeData.isDisabled) {
+        return res.status(400).json({ error: 'Mã kích hoạt này đã bị vô hiệu hóa.' });
+      }
+
+      if (codeData.isUsed) {
+        return res.status(400).json({ error: 'Mã kích hoạt này đã được sử dụng trước đó.' });
+      }
+
+      const tier = (codeData.tier || 'plus').toLowerCase();
+      if (!['plus', 'pro'].includes(tier)) {
+        return res.status(400).json({ error: 'Gói dịch vụ gắn liền với mã không hợp lệ.' });
+      }
+
+      const days = Math.max(1, parseInt(codeData.days, 10) || 30);
+      const nowMs = Date.now();
+      let currentExpires = nowMs;
+
+      // Đọc gói hiện tại của người dùng để tính cộng dồn ngày nếu đang cùng gói
+      const userPlanRef = db.doc(`users/${uid}/billing/plan`);
+      const userPlanSnap = await userPlanRef.get();
+      if (userPlanSnap.exists) {
+        const up = userPlanSnap.data();
+        if (up.tier === tier && up.expiresAt) {
+          const expMs = new Date(up.expiresAt).getTime();
+          if (expMs > nowMs) currentExpires = expMs;
+        }
+      }
+
+      const newExpiresAt = new Date(currentExpires + days * 24 * 60 * 60 * 1000).toISOString();
+
+      // Lấy tên hiển thị của người dùng để lưu vào thông tin mã
+      let userName = '';
+      try {
+        const userRecord = await adminApp.auth().getUser(uid);
+        userName = userRecord.displayName || (userRecord.email ? userRecord.email.split('@')[0] : 'Người dùng');
+      } catch (_) {
+        userName = email ? email.split('@')[0] : 'Người dùng';
+      }
+
+      const batch = db.batch();
+
+      // 1. Cập nhật mã kích hoạt: đánh dấu đã dùng, lưu UID, email, tên người dùng và thời điểm
+      batch.update(codeRef, {
+        isUsed: true,
+        usedBy: uid,
+        usedByUserEmail: email || '',
+        usedByUserName: userName || '',
+        usedAt: new Date().toISOString()
+      });
+
+      // 2. Nâng cấp gói cho người dùng trong Firestore
+      batch.set(userPlanRef, {
+        tier,
+        period: days >= 365 ? 'yearly' : 'monthly',
+        active: true,
+        activatedAt: new Date().toISOString(),
+        expiresAt: newExpiresAt,
+        updatedBy: 'redeem_code',
+        activationCode: cleanCode
+      }, { merge: true });
+
+      await batch.commit();
+
+      // 3. Đồng bộ Firebase Auth Custom Claims (tier)
+      try {
+        const currentClaims = (await adminApp.auth().getUser(uid)).customClaims || {};
+        await adminApp.auth().setCustomUserClaims(uid, {
+          ...currentClaims,
+          tier: tier
+        });
+      } catch (claimErr) {
+        console.warn('[Redeem Code] Lỗi cập nhật custom claims:', claimErr.message);
+      }
+
+      return res.status(200).json({
+        success: true,
+        tier,
+        days,
+        expiresAt: newExpiresAt,
+        message: `Chúc mừng bạn! Đã kích hoạt thành công gói ${tier.toUpperCase()} (${days} ngày).`
+      });
+    } catch (err) {
+      console.error('[Billing] Lỗi kích hoạt mã:', err);
+      return res.status(500).json({ error: 'Lỗi hệ thống khi kích hoạt mã: ' + err.message });
+    }
+  }
+
   return res.status(400).json({ error: 'Hành động không hợp lệ' });
 };

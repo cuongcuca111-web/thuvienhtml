@@ -1677,13 +1677,14 @@ function renderCodesTab(container) {
       }
 
       tableBox.innerHTML = `
-        <table class="w-full text-left border-collapse min-w-[650px]">
+        <table class="w-full text-left border-collapse min-w-[750px]">
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold">
               <th class="py-2 px-3">Mã kích hoạt</th>
               <th class="py-2 px-3">Gói</th>
               <th class="py-2 px-3">Thời hạn</th>
               <th class="py-2 px-3">Trạng thái</th>
+              <th class="py-2 px-3">Người kích hoạt</th>
               <th class="py-2 px-3">Ghi chú</th>
               <th class="py-2 px-3 text-right">Thao tác</th>
             </tr>
@@ -1697,11 +1698,21 @@ function renderCodesTab(container) {
                 <td class="py-2.5 px-3">
                   ${c.isDisabled ? '<span class="text-rose-500">Đã vô hiệu</span>' : (c.isUsed ? '<span class="text-gray-400">Đã dùng</span>' : '<span class="text-emerald-600 font-bold">Chưa dùng</span>')}
                 </td>
+                <td class="py-2.5 px-3">
+                  ${c.isUsed ? `
+                    <div class="flex flex-col">
+                      <span class="font-semibold text-gray-900 dark:text-gray-100">${esc(c.usedByUserName || c.usedByUserEmail || 'Người dùng')}</span>
+                      <span class="text-[10px] text-gray-400 font-mono">${esc(c.usedByUserEmail || c.usedBy || '')}</span>
+                      ${c.usedAt ? `<span class="text-[9px] text-gray-400">${new Date(c.usedAt).toLocaleString('vi-VN')}</span>` : ''}
+                    </div>
+                  ` : '<span class="text-gray-400">—</span>'}
+                </td>
                 <td class="py-2.5 px-3 text-gray-400">${esc(c.note || '—')}</td>
-                <td class="py-2.5 px-3 text-right">
+                <td class="py-2.5 px-3 text-right whitespace-nowrap">
                   ${(!c.isUsed && !c.isDisabled) ? `
-                    <button class="btn-disable-code text-rose-600 hover:underline" data-code="${c.code}">Vô hiệu</button>
-                  ` : '—'}
+                    <button class="btn-disable-code text-amber-600 hover:underline mr-2.5 text-xs font-semibold cursor-pointer" data-code="${c.code}">Vô hiệu</button>
+                  ` : ''}
+                  <button class="btn-delete-code text-rose-600 hover:underline text-xs font-semibold cursor-pointer" data-code="${c.code}">Xóa</button>
                 </td>
               </tr>
             `).join('')}
@@ -1722,6 +1733,26 @@ function renderCodesTab(container) {
             } catch (e) {
               alert("Lỗi: " + e.message);
             }
+          }
+        };
+      });
+
+      tableBox.querySelectorAll('.btn-delete-code').forEach(btn => {
+        btn.onclick = async () => {
+          const codeToDelete = btn.dataset.code;
+          btn.disabled = true;
+          btn.innerText = 'Đang xóa...';
+          try {
+            await callAdminApi('/api/admin/codes/delete', {
+              method: 'POST',
+              body: JSON.stringify({ code: codeToDelete })
+            });
+            toast(`Đã xóa mã kích hoạt ${codeToDelete}`);
+            loadCodes();
+          } catch (e) {
+            alert("Lỗi xóa mã: " + e.message);
+            btn.disabled = false;
+            btn.innerText = 'Xóa';
           }
         };
       });
@@ -1769,14 +1800,17 @@ function renderCodesTab(container) {
       alert("Không có dữ liệu mã để xuất.");
       return;
     }
-    const headers = ["Ma_Kich_Hoat", "Goi", "So_Ngay", "Trang_Thai", "Ghi_Chu", "Ngay_Tao"];
+    const headers = ["Ma_Kich_Hoat", "Goi", "So_Ngay", "Trang_Thai", "Nguoi_Kich_Hoat", "Email", "Ghi_Chu", "Ngay_Tao", "Ngay_Kich_Hoat"];
     const rows = currentLoadedCodes.map(c => [
       c.code,
       c.tier,
       c.days,
       c.isDisabled ? 'Disabled' : (c.isUsed ? 'Used' : 'Available'),
+      `"${(c.usedByUserName || '').replace(/"/g, '""')}"`,
+      `"${(c.usedByUserEmail || c.usedBy || '').replace(/"/g, '""')}"`,
       `"${(c.note || '').replace(/"/g, '""')}"`,
-      c.createdAt || ''
+      c.createdAt || '',
+      c.usedAt || ''
     ]);
     const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
