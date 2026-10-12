@@ -80,6 +80,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.0',
+        date: '2026-10-12T21:31:00+07:00',
+        title: 'Khắc phục triệt để lỗi nạp danh sách Mã kích hoạt trong Quản trị',
+        items: [
+          { type: 'fix', text: 'Sửa lỗi ReferenceError tại API quản trị mã kích hoạt (api/admin/codes.js), khôi phục khả năng tải và hiển thị toàn bộ danh sách mã' },
+          { type: 'improved', text: 'Tối ưu hóa nạp dữ liệu mã kích hoạt trực tiếp từ cơ sở dữ liệu với tốc độ tức thì và cơ chế truy vấn an toàn (query fallback)' }
+        ]
+      },
+      {
         version: 'v5.1.9',
         date: '2026-10-12T21:26:00+07:00',
         title: 'Đồng bộ tức thì dữ liệu hiện tại cho tab Thanh toán VietQR',

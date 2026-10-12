@@ -37,7 +37,6 @@ const ADMIN_MAX_IDLE_MS = 60 * 60 * 1000; // 60 phút tự đăng xuất nếu k
 const ADMIN_REAUTH_MS = 15 * 60 * 1000;  // 15 phút cho thao tác nhạy cảm
 
 // BỘ NHỚ ĐỆM TỐC HÀNH TRONG PHIÊN (IN-MEMORY CACHE CHO CÁC TAB ADMIN)
-let adminCodesCache = null;    // { [filter]: codes }
 let adminBanksCache = null;    // Danh sách ngân hàng VietQR lưu đệm trong phiên
 
 // Khởi tạo LƯỜI Firebase App thứ 2 ('admin-session') và Firebase Auth riêng biệt cho khu vực Quản trị
@@ -333,7 +332,6 @@ function bindGlobalAdminEvents() {
   const btnRefresh = document.getElementById('btnAdminRefresh');
   if (btnRefresh) {
     btnRefresh.onclick = () => {
-      adminCodesCache = null;
       loadTabData(currentAdminTab);
       toast("Đã làm mới dữ liệu");
     };
@@ -2413,8 +2411,7 @@ function renderCodesTab(container) {
               body: JSON.stringify({ code: btn.dataset.code, reason: 'Admin vô hiệu hóa' })
             });
             toast("Đã vô hiệu hóa mã!");
-            adminCodesCache = null;
-            loadCodes(true);
+            loadCodes();
           } catch (e) {
             alert("Lỗi: " + e.message);
           }
@@ -2433,8 +2430,7 @@ function renderCodesTab(container) {
             body: JSON.stringify({ code: codeToDelete })
           });
           toast(`Đã xóa mã kích hoạt ${codeToDelete}`);
-          adminCodesCache = null;
-          loadCodes(true);
+          loadCodes();
         } catch (e) {
           alert("Lỗi xóa mã: " + e.message);
           btn.disabled = false;
@@ -2444,35 +2440,14 @@ function renderCodesTab(container) {
     });
   }
 
-  async function loadCodes(forceRefresh = false) {
+  async function loadCodes() {
     const tableBox = document.getElementById('codesTableContainer');
     if (!tableBox) return;
     const filter = (document.getElementById('codeFilterStatus') ? document.getElementById('codeFilterStatus').value : null) || 'all';
 
-    // 1. Kiểm tra cache trong phiên: Hiển thị tức thì 0ms
-    if (!forceRefresh && adminCodesCache && adminCodesCache[filter]) {
-      currentLoadedCodes = adminCodesCache[filter];
-      tableBox.innerHTML = renderCodesTableHtml(currentLoadedCodes);
-      bindCodeActions(tableBox);
-
-      // Cập nhật ngầm (Background Revalidation)
-      callAdminApi(`/api/admin/codes/list?status=${filter}`).then(data => {
-        const fresh = sortCodesList(data.codes || []);
-        if (!adminCodesCache) adminCodesCache = {};
-        adminCodesCache[filter] = fresh;
-        if (JSON.stringify(fresh) !== JSON.stringify(currentLoadedCodes)) {
-          currentLoadedCodes = fresh;
-          tableBox.innerHTML = renderCodesTableHtml(currentLoadedCodes);
-          bindCodeActions(tableBox);
-        }
-      }).catch(() => {});
-      return;
-    }
-
-    // 2. Nếu chưa có cache hoặc người dùng yêu cầu forceRefresh:
     tableBox.innerHTML = `
       <div class="py-5 text-gray-400 flex items-center gap-2 text-xs">
-        <svg class="w-4 h-4 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
+        <svg class="w-5 h-5 animate-spin text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-linecap="round"/></svg>
         <span>Đang nạp danh sách mã kích hoạt...</span>
       </div>
     `;
@@ -2480,8 +2455,6 @@ function renderCodesTab(container) {
     try {
       const data = await callAdminApi(`/api/admin/codes/list?status=${filter}`);
       currentLoadedCodes = sortCodesList(data.codes || []);
-      if (!adminCodesCache) adminCodesCache = {};
-      adminCodesCache[filter] = currentLoadedCodes;
 
       tableBox.innerHTML = renderCodesTableHtml(currentLoadedCodes);
       bindCodeActions(tableBox);
@@ -2513,8 +2486,7 @@ function renderCodesTab(container) {
           })
         });
         toast("Đã tạo thành công lô mã kích hoạt!");
-        adminCodesCache = null;
-        loadCodes(true);
+        loadCodes();
       } catch (err) {
         alert("Lỗi tạo mã: " + err.message);
       } finally {

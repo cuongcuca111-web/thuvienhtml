@@ -71,10 +71,17 @@ module.exports = async function handler(req, res) {
       })();
 
       // 2. Lấy danh sách mã kích hoạt
-      const snap = await db.collection('activation_codes')
-        .orderBy('createdAt', 'desc')
-        .limit(limitNum)
-        .get();
+      let snap;
+      try {
+        snap = await db.collection('activation_codes')
+          .orderBy('createdAt', 'desc')
+          .limit(limitNum)
+          .get();
+      } catch (orderErr) {
+        snap = await db.collection('activation_codes')
+          .limit(limitNum)
+          .get();
+      }
 
       let codes = [];
       snap.forEach(doc => {
@@ -108,10 +115,10 @@ module.exports = async function handler(req, res) {
         return timeB - timeA;
       });
 
-      return res.status(200).json({ success: true, codes, autoDeletedCount });
+      return res.status(200).json({ success: true, codes });
     } catch (err) {
       console.error('Lỗi khi lấy danh sách mã:', err);
-      return res.status(500).json({ error: 'Không thể tải danh sách mã kích hoạt.' });
+      return res.status(500).json({ error: 'Không thể tải danh sách mã kích hoạt: ' + err.message });
     }
   }
 
