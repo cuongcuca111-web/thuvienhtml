@@ -3265,7 +3265,7 @@
   </div>
 <!-- MODAL / BOTTOM SHEET MENU TÀI KHOẢN (FIX: Tách khỏi header để không bị backdrop-blur tạo containing block làm cắt menu trên iOS) -->
   <div id="userDropdownBackdrop" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity"></div>
-  <div id="userDropdown" class="hidden fixed bottom-0 sm:bottom-auto sm:top-14 right-0 sm:right-4 left-0 sm:left-auto z-[65] w-full sm:w-[280px] max-h-[85dvh] overflow-y-auto overscroll-contain bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-[14px] shadow-2xl p-3.5 text-xs pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-3.5" style="-webkit-overflow-scrolling: touch;">
+  <div id="userDropdown" class="hidden fixed bottom-0 sm:bottom-auto sm:top-14 right-0 sm:right-4 left-0 sm:left-auto z-[65] w-full sm:w-[310px] max-h-[85dvh] overflow-y-auto overscroll-contain bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-[14px] shadow-2xl p-3.5 text-xs pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:pb-3.5" style="-webkit-overflow-scrolling: touch;">
     <!-- Handle bar & Header cho Bottom sheet trên mobile -->
     <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E6E6E1] dark:border-[#262C36] sm:hidden">
       <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto"></div>
@@ -3280,37 +3280,48 @@
         <span id="userDropdownInitial">U</span>
       </div>
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-1.5 mb-0.5">
+        <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
           <span class="font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-xs" id="userNameDisplay">Người dùng</span>
           <!-- Huy hiệu Tier không bao giờ bị cắt -->
-          <span id="userTierBadge" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border">
+          <span id="userTierBadge" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border whitespace-nowrap">
             <svg class="w-3 h-3 shrink-0"><use id="userTierIcon" href="#icon-tier-free"></use></svg>
             <span id="userTierLabel">Free</span>
           </span>
-          <span id="userBadgeType" class="text-[9px] px-1.5 py-0.2 rounded font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 shrink-0">Đã đồng bộ</span>
+          <span id="userBadgeType" class="text-[9px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 shrink-0 whitespace-nowrap">Đã đồng bộ</span>
         </div>
         <!-- Email hiển thị của người dùng -->
         <p id="userEmailDisplay" class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] truncate"></p>
         <!-- Dòng phụ hiển thị thời hạn sử dụng -->
-        <p id="userTierExpiryText" class="text-[10px] text-[#6B6B66] dark:text-[#9AA3B2] font-medium truncate">Gói Free vĩnh viễn</p>
-        <p class="text-[9px] text-[#6B6B66]/80 dark:text-[#9AA3B2]/70 font-mono mt-0.5" id="userIdDisplay">UID: ...</p>
+        <p id="userTierExpiryText" class="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold truncate">Gói Free vĩnh viễn</p>
+        <!-- Khối UID rõ ràng, bấm vào là sao chép vào bộ nhớ tạm -->
+        <div class="mt-1">
+          <button type="button" id="btnCopyUserId" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-gray-100 hover:bg-indigo-50 dark:bg-gray-800/80 dark:hover:bg-indigo-950/60 border border-gray-200/80 dark:border-gray-700/80 hover:border-indigo-300 dark:hover:border-indigo-700 text-[#4B5563] dark:text-[#9CA3AF] hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition text-[10px] font-mono group active:scale-95 shadow-2xs text-left" title="Bấm vào để sao chép UID vào bộ nhớ tạm">
+            <span class="text-gray-400 dark:text-gray-500 font-sans text-[9px] font-medium shrink-0">UID:</span>
+            <span id="userIdDisplay" class="font-bold tracking-tight max-w-[130px] truncate select-all">...</span>
+            <svg class="w-3 h-3 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="userIdCopiedToast" class="hidden text-emerald-600 dark:text-emerald-400 font-sans font-bold text-[9px] whitespace-nowrap">Đã chép!</span>
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- MỤC NÂNG CẤP GÓI NỔI BẬT (Ngay trên mục Hồ sơ & Thống kê) -->
     <button id="btnOpenUpgradeModal" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100/70 dark:from-indigo-950/40 dark:to-indigo-900/40 hover:from-indigo-100 hover:to-indigo-200/70 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/60 border border-indigo-200/80 dark:border-indigo-800/60 text-indigo-950 dark:text-indigo-200 mb-2 transition shadow-xs cursor-pointer group">
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2.5 min-w-0 pr-2">
         <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
           <svg class="w-4 h-4"><use href="#icon-upgrade-sparkle"></use></svg>
         </div>
-        <div class="text-left">
-          <div class="font-bold text-xs leading-tight" id="upgradeBtnTitle">Nâng cấp tài khoản</div>
-          <div class="text-[10px] text-indigo-700/80 dark:text-indigo-300/80" id="upgradeBtnSubtitle">Mở khóa AI &amp; Hạn mức cao</div>
+        <div class="text-left min-w-0">
+          <div class="font-bold text-xs leading-tight truncate" id="upgradeBtnTitle">Nâng cấp tài khoản</div>
+          <div class="text-[10px] text-indigo-700/80 dark:text-indigo-300/80 truncate mt-0.5" id="upgradeBtnSubtitle">Mở khóa AI &amp; Hạn mức cao</div>
         </div>
       </div>
-      <div class="flex items-center gap-1.5">
-        <span id="upgradeExpireDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse hidden"></span>
-        <span id="upgradeRecommendBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs">PRO</span>
+      <div class="flex items-center gap-1.5 shrink-0 ml-1">
+        <span id="upgradeExpireDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse hidden shrink-0"></span>
+        <span id="upgradeRecommendBadge" class="inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 group-hover:bg-indigo-700 text-white text-[11px] font-bold tracking-normal shadow-xs whitespace-nowrap shrink-0 transition-colors">
+          <span id="upgradeRecommendBadgeText">Gia hạn</span>
+          <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </span>
       </div>
     </button>
 
@@ -14346,13 +14357,24 @@
         // KHỐI 1: TÊN NGƯỜI DÙNG, AVATAR/INITIAL, EMAIL & UID
         // -------------------------------------------------------------
         try {
+          const rawUid = activeUser.uid || '';
+          window.__currentUserId = rawUid;
+          const btnCopyUid = document.getElementById('btnCopyUserId');
+          if (btnCopyUid) {
+            btnCopyUid.dataset.uid = rawUid;
+          }
+          const uidDisplay = document.getElementById('userIdDisplay');
+          if (uidDisplay) {
+            uidDisplay.textContent = rawUid || '...';
+            uidDisplay.title = rawUid ? `UID: ${rawUid} (Bấm để sao chép)` : '';
+          }
+
           if (isAnonymous) {
             setText('userInitial', 'K');
             setText('userDropdownInitial', 'K');
             setText('headerAccountLabel', 'Khách');
             setText('userNameDisplay', 'Khách (Chưa tạo tài khoản)');
             setText('userEmailDisplay', 'Chưa liên kết email');
-            setText('userIdDisplay', `UID: ${(activeUser.uid || '').substring(0, 12)}...`);
           } else {
             const displayName = activeUser.displayName || activeUser.email?.split('@')[0] || "Thành viên";
             const initialChar = (displayName[0] || "U").toUpperCase();
@@ -14366,7 +14388,6 @@
             } else {
               setText('userEmailDisplay', activeUser.email || "Đã xác thực");
             }
-            setText('userIdDisplay', `UID: ${(activeUser.uid || '').substring(0, 12)}...`);
           }
         } catch (errK1) {
           console.warn("[updateUserUI] Lỗi khối 1 (Profile info):", errK1);
@@ -14496,22 +14517,34 @@
               else upgradeExpireDot.classList.add('hidden');
             }
 
+            const setBadgeText = (txt) => {
+              const textSpan = document.getElementById('upgradeRecommendBadgeText');
+              if (textSpan) {
+                textSpan.textContent = txt;
+              } else {
+                const badgeEl = document.getElementById('upgradeRecommendBadge');
+                if (badgeEl) {
+                  badgeEl.innerHTML = `<span>${txt}</span><svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+                }
+              }
+            };
+
             if (isAnonymous) {
               setText('upgradeBtnTitle', "Đăng ký để nâng cấp");
               setText('upgradeBtnSubtitle', "Lưu vĩnh viễn & mở khóa gói");
-              setText('upgradeRecommendBadge', "PRO");
+              setBadgeText("Đăng ký");
             } else if (currentTier === 'free') {
               setText('upgradeBtnTitle', "Nâng cấp tài khoản");
               setText('upgradeBtnSubtitle', "Mở khóa AI & Mở rộng lưu trữ");
-              setText('upgradeRecommendBadge', "PRO");
+              setBadgeText("Lên Pro");
             } else if (currentTier === 'plus') {
               setText('upgradeBtnTitle', "Nâng lên Pro / Gia hạn");
               setText('upgradeBtnSubtitle', isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Trải nghiệm AI không giới hạn");
-              setText('upgradeRecommendBadge', "PRO");
+              setBadgeText("Gia hạn");
             } else if (currentTier === 'pro') {
               setText('upgradeBtnTitle', "Gia hạn gói Pro");
               setText('upgradeBtnSubtitle', isExpiringSoon ? `Sắp hết hạn (còn ${daysLeft} ngày)` : "Duy trì đặc quyền học tập cao cấp");
-              setText('upgradeRecommendBadge', "GIA HẠN");
+              setBadgeText("Gia hạn");
             }
           }
         } catch (errK5) {
@@ -22459,6 +22492,34 @@
         if (dPopover && !dPopover.classList.contains('hidden')) dPopover.classList.add('hidden');
       }
     });
+
+    const btnCopyUserId = document.getElementById('btnCopyUserId');
+    if (btnCopyUserId) {
+      btnCopyUserId.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rawUid = btnCopyUserId.dataset.uid || window.__currentUserId || (window.auth && window.auth.currentUser && window.auth.currentUser.uid) || (state && state.user && state.user.uid) || '';
+        if (!rawUid) return;
+
+        const copySuccess = () => {
+          const toastEl = document.getElementById('userIdCopiedToast');
+          if (toastEl) {
+            toastEl.classList.remove('hidden');
+            setTimeout(() => { toastEl.classList.add('hidden'); }, 2000);
+          }
+          if (typeof showToast === 'function') {
+            showToast(`Đã sao chép UID: ${rawUid}`);
+          }
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(rawUid).then(copySuccess).catch(() => {
+            prompt("UID của bạn (nhấn Ctrl+C để sao chép):", rawUid);
+          });
+        } else {
+          prompt("UID của bạn (nhấn Ctrl+C để sao chép):", rawUid);
+        }
+      });
+    }
 
     const btnUserProfile = document.getElementById('btnUserProfile');
     if (btnUserProfile) {
