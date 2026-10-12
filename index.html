@@ -4373,7 +4373,10 @@
             </svg>
           </div>
           <div class="min-w-0">
-            <h3 id="uploadModalTitle" class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-tight truncate">Thêm bài học vào thư viện</h3>
+            <div class="flex items-center gap-2">
+              <h3 id="uploadModalTitle" class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-tight truncate">Thêm bài học vào thư viện</h3>
+              <span id="uploadQuotaBadge" class="hidden text-[10px] font-semibold px-2 py-0.5 rounded-full items-center border"></span>
+            </div>
             <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5 truncate">Hỗ trợ HTML, Markdown và văn bản thô.</p>
           </div>
         </div>
@@ -7307,8 +7310,8 @@
       plans: {
         guest: {
           name: 'Khách',
-          maxLessons: 5,
-          maxSections: 2,
+          maxLessons: 1,
+          maxSections: 1,
           maxFileKB: 256,
           maxActiveShares: 1,
           shareDays: [1, 7],
@@ -7326,8 +7329,8 @@
         },
         free: {
           name: 'Thường',
-          maxLessons: 20,
-          maxSections: 5,
+          maxLessons: 5,
+          maxSections: 2,
           maxFileKB: 512,
           maxActiveShares: 3,
           shareDays: [1, 7, 30],
@@ -7345,8 +7348,8 @@
         },
         plus: {
           name: 'Plus',
-          maxLessons: 100,
-          maxSections: 20,
+          maxLessons: 20,
+          maxSections: 5,
           maxFileKB: 1024,
           maxActiveShares: 10,
           shareDays: [1, 7, 30, 90],
@@ -7364,8 +7367,8 @@
         },
         pro: {
           name: 'Pro',
-          maxLessons: -1,
-          maxSections: -1,
+          maxLessons: 50,
+          maxSections: 10,
           maxFileKB: 2048,
           maxActiveShares: -1,
           shareDays: [1, 7, 30, 90],
@@ -7478,21 +7481,85 @@
     }
 
     function limit(key, user) {
+      if (state && state.isAdmin) return Infinity;
       const p = getPlan(user);
-      const val = p[key];
+      const val = p ? p[key] : undefined;
       if (val === -1 || val === null || val === undefined) return Infinity;
       return val;
     }
 
     function can(feature, user) {
+      if (state && state.isAdmin) return true;
       const p = getPlan(user);
-      return Boolean(p[feature]);
+      return Boolean(p && p[feature]);
     }
 
     function canAdd(type, currentCount, user) {
+      if (state && state.isAdmin) return true;
       const limitKey = (type === 'lesson' ? 'maxLessons' : (type === 'section' ? 'maxSections' : 'maxActiveShares'));
       const max = limit(limitKey, user);
-      return currentCount < max;
+      if (max === Infinity) return true;
+      const count = (typeof currentCount === 'number') ? currentCount :
+        (type === 'lesson' ? (state.lessons?.length || 0) : (type === 'section' ? (state.categories?.length || 0) : 0));
+      return count < max;
+    }
+
+    // Kiểm tra và thực thi giới hạn số file bài học / thư mục tải lên theo gói
+    function checkAndEnforceLimit(type, additionalCount = 1, user) {
+      if (state && state.isAdmin) return true;
+
+      const tier = getUserTier(user);
+      const isGuest = (tier === 'guest');
+      const isPlus = (tier === 'plus');
+      const tierName = isGuest ? 'Khách' : (isPlus ? 'Plus' : (tier === 'pro' ? 'Pro' : 'Thường'));
+
+      if (type === 'lesson') {
+        const current = (state.lessons || []).length;
+        const max = limit('maxLessons', user);
+        if (max !== Infinity && (current + additionalCount > max)) {
+          if (isGuest) {
+            if (typeof showToast === 'function') {
+              showToast(`Tài khoản Khách đã đạt giới hạn ${max} bài học. Vui lòng tạo tài khoản để tiếp tục lưu trữ!`, 'warning');
+            }
+            if (typeof openAuthModal === 'function') {
+              openAuthModal('register');
+            }
+          } else {
+            const nextTier = (tier === 'plus') ? 'pro' : 'plus';
+            if (typeof showToast === 'function') {
+              showToast(`Bạn đã đạt giới hạn ${max} bài học của gói ${tierName}. Vui lòng nâng cấp gói để mở khóa thêm!`, 'warning');
+            }
+            if (typeof openUpgradeModal === 'function') {
+              openUpgradeModal(nextTier);
+            }
+          }
+          return false;
+        }
+      } else if (type === 'section') {
+        const current = (state.categories || []).length;
+        const max = limit('maxSections', user);
+        if (max !== Infinity && (current + additionalCount > max)) {
+          if (isGuest) {
+            if (typeof showToast === 'function') {
+              showToast(`Tài khoản Khách đã đạt giới hạn ${max} thư mục. Vui lòng tạo tài khoản để tạo thêm thư mục!`, 'warning');
+            }
+            if (typeof openAuthModal === 'function') {
+              openAuthModal('register');
+            }
+          } else {
+            const nextTier = (tier === 'plus') ? 'pro' : 'plus';
+            if (typeof showToast === 'function') {
+              showToast(`Bạn đã đạt giới hạn ${max} thư mục của gói ${tierName}. Vui lòng nâng cấp gói để tạo thêm!`, 'warning');
+            }
+            if (typeof openUpgradeModal === 'function') {
+              openUpgradeModal(nextTier);
+            }
+          }
+          return false;
+        }
+      }
+
+      return true;
     }
 
     window.getUserTier = getUserTier;
@@ -7500,6 +7567,7 @@
     window.limit = limit;
     window.can = can;
     window.canAdd = canAdd;
+    window.checkAndEnforceLimit = checkAndEnforceLimit;
 
     let unsubscribePlansListener = null;
     async function initPlansConfig() {
@@ -16932,7 +17000,23 @@
     async function restoreTrashItem(trashId) {
       const idx = (state.trash || []).findIndex(t => t.id === trashId);
       if (idx === -1) return;
-      const trashItem = state.trash.splice(idx, 1)[0];
+      const trashItem = state.trash[idx];
+
+      if (trashItem.type === 'lesson' && trashItem.item) {
+        if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', 1)) {
+          return;
+        }
+      } else if (trashItem.type === 'category' && trashItem.item) {
+        if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) {
+          return;
+        }
+        const relCount = Array.isArray(trashItem.relatedLessons) ? trashItem.relatedLessons.length : 0;
+        if (relCount > 0 && typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', relCount)) {
+          return;
+        }
+      }
+
+      state.trash.splice(idx, 1);
 
       if (trashItem.type === 'lesson' && trashItem.item) {
         const lesson = trashItem.item;
@@ -19341,9 +19425,11 @@
 
     on('#btnSaveSharedToMyLib', 'click', async () => {
       if (!state.sharedLessonData) return;
+      if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', 1)) return;
       
       let targetCatId = state.activeCategoryId || (state.categories[0] ? state.categories[0].id : null);
       if (!targetCatId) {
+        if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) return;
         targetCatId = 'cat_saved_' + Date.now();
         const newCat = {
           id: targetCatId,
@@ -20545,6 +20631,10 @@
     if (uploadTargetCategorySelect) {
       uploadTargetCategorySelect.addEventListener('change', async (e) => {
         if (e.target.value === '__new_category__') {
+          if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) {
+            uploadTargetCategorySelect.value = state.activeCategoryId || (state.categories && state.categories[0] ? state.categories[0].id : '');
+            return;
+          }
           const newName = prompt('Nhập tên mục mới:');
           if (newName && newName.trim()) {
             const trimmed = normalizeNFC(newName.trim());
@@ -20574,7 +20664,40 @@
       });
     }
 
+    function updateUploadQuotaDisplay() {
+      const badge = document.getElementById('uploadQuotaBadge');
+      if (!badge) return;
+      const tier = typeof getUserTier === 'function' ? getUserTier() : 'free';
+      const max = typeof limit === 'function' ? limit('maxLessons') : Infinity;
+      const cur = (state.lessons || []).length;
+      const tierName = (tier === 'guest') ? 'Khách' : (tier === 'plus' ? 'Plus' : (tier === 'pro' ? 'Pro' : 'Thường'));
+
+      badge.classList.remove('hidden');
+      if (state && state.isAdmin) {
+        badge.innerText = `Admin · Không giới hạn`;
+        badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center border bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+        return;
+      }
+
+      if (max === Infinity) {
+        badge.innerText = `${tierName}: ${cur}/∞ bài`;
+        badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center border bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+      } else {
+        const isFull = cur >= max;
+        badge.innerText = `${tierName}: ${cur}/${max} bài`;
+        if (isFull) {
+          badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center border bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+        } else {
+          badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center border bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+        }
+      }
+    }
+
     function openUploadModal(initialTab = 'upload') {
+      if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', 1)) {
+        return;
+      }
+      updateUploadQuotaDisplay();
       state.stagedUploadFiles = [];
       populateUploadCategoriesDropdown();
       setUploadTab(initialTab);
@@ -20828,6 +20951,12 @@
           finalHtml = typeof wrapIntoReadingDocument === 'function' ? wrapIntoReadingDocument(bodyHtml, extractedTitle) : bodyHtml;
         }
 
+        if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+        const stagedValidCount = (state.stagedUploadFiles || []).filter(f => !f.isError).length;
+        if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', stagedValidCount + 1)) {
+          return;
+        }
+
         const stableId = 'staged_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
         const finalTitle = normalizeNFC(extractedTitle);
         const sizeBytes = new Blob([finalHtml]).size;
@@ -20836,7 +20965,11 @@
           (l.title && l.title.trim().toLowerCase() === finalTitle.trim().toLowerCase())
         );
 
-        if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+        const maxKB = (typeof limit === 'function') ? limit('maxFileKB') : 512;
+        const maxBytes = (maxKB !== Infinity && maxKB > 0) ? maxKB * 1024 : 10 * 1024 * 1024;
+        const isSizeError = sizeBytes > maxBytes;
+        const sizeErrMsg = isSizeError ? `Nội dung vượt quá giới hạn gói (${formatFileSize ? formatFileSize(maxBytes) : (maxKB + ' KB')})` : null;
+
         state.stagedUploadFiles.push({
           id: stableId,
           lessonId: stableId,
@@ -20848,8 +20981,8 @@
           sourceType: detectedType,
           rawSource: rawContent,
           size: sizeBytes,
-          isError: sizeBytes > 5 * 1024 * 1024,
-          errorMessage: sizeBytes > 5 * 1024 * 1024 ? 'Nội dung vượt quá 5 MB' : null,
+          isError: isSizeError,
+          errorMessage: sizeErrMsg,
           isDuplicate: isDuplicate,
           order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
         });
@@ -21631,6 +21764,32 @@
     async function handleFilesSelected(files) {
       if (!files || files.length === 0) return;
 
+      const currentCount = (state.lessons?.length || 0) + ((state.stagedUploadFiles || []).filter(f => !f.isError).length);
+      const maxAllowed = (typeof limit === 'function') ? limit('maxLessons') : Infinity;
+
+      if (maxAllowed !== Infinity) {
+        const availableSlots = Math.max(0, maxAllowed - currentCount);
+        if (availableSlots <= 0) {
+          if (typeof checkAndEnforceLimit === 'function') {
+            checkAndEnforceLimit('lesson', 1);
+          }
+          return;
+        }
+
+        const filesArr = Array.from(files);
+        if (filesArr.length > availableSlots) {
+          const userPlan = (state.user && state.user.plan) ? state.user.plan : (state.userId ? 'free' : 'guest');
+          if (userPlan === 'guest') {
+            showToast(`Chế độ Khách chỉ được lưu tối đa ${maxAllowed} bài học. Hệ thống chỉ nhận ${availableSlots} file còn lại. Vui lòng tạo tài khoản để mở rộng!`, 'warning');
+            if (typeof openAuthModal === 'function') openAuthModal('register');
+          } else {
+            showToast(`Gói của bạn còn ${availableSlots} vị trí bài học (tối đa ${maxAllowed} bài). Đã nhận ${availableSlots} file đầu tiên. Nâng cấp gói để thêm bài không giới hạn!`, 'warning');
+            if (typeof openUpgradeModal === 'function') openUpgradeModal(userPlan === 'plus' ? 'pro' : 'plus');
+          }
+          files = filesArr.slice(0, availableSlots);
+        }
+      }
+
       for (const file of files) {
         const lowerName = file.name.toLowerCase();
         const isHtml = lowerName.endsWith('.html') || lowerName.endsWith('.htm');
@@ -21660,9 +21819,12 @@
           continue;
         }
 
-        // 2. Kiểm tra dung lượng tối đa 5 MB
-        if (file.size > 5 * 1024 * 1024) {
+        // 2. Kiểm tra dung lượng tối đa theo gói
+        const maxKB = (typeof limit === 'function') ? limit('maxFileKB') : 512;
+        const maxBytes = (maxKB !== Infinity && maxKB > 0) ? maxKB * 1024 : 10 * 1024 * 1024;
+        if (file.size > maxBytes) {
           if (!state.stagedUploadFiles) state.stagedUploadFiles = [];
+          const formattedMax = (maxKB >= 1024) ? `${(maxKB / 1024).toFixed(1)} MB` : `${maxKB} KB`;
           state.stagedUploadFiles.push({
             id: stableLessonId,
             lessonId: stableLessonId,
@@ -21674,7 +21836,7 @@
             sourceType: isMd ? 'markdown' : isTxt ? 'text' : 'html',
             size: file.size,
             isError: true,
-            errorMessage: `Dung lượng vượt quá 5 MB (${formatFileSize(file.size)})`,
+            errorMessage: `Dung lượng vượt quá giới hạn gói ${formattedMax} (${formatFileSize(file.size)})`,
             isDuplicate: false,
             order: (state.lessons?.length || 0) + (state.stagedUploadFiles?.length || 0) + 1
           });
@@ -22061,6 +22223,10 @@
         return;
       }
 
+      if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', validFiles.length)) {
+        return;
+      }
+
       btnConfirmUpload.disabled = true;
       const progressEl = document.getElementById('btnConfirmUploadProgress');
       const textEl = document.getElementById('btnConfirmUploadText');
@@ -22076,6 +22242,10 @@
 
       // Nếu chưa có mục nào, tạo mục mặc định
       if (!targetCatId) {
+        if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) {
+          btnConfirmUpload.disabled = false;
+          return;
+        }
         targetCatId = 'cat_default_' + Date.now();
         const defaultCat = {
           id: targetCatId,
@@ -22209,6 +22379,9 @@
 
     // // FIX-1: Khôi phục và nâng cấp modal tạo/đổi tên mục
     function openCategoryModal(cat = null) {
+      if (!cat && typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) {
+        return;
+      }
       if (cat) {
         editingCategoryId = cat.id;
         categoryModalTitle.innerText = "Đổi tên mục bài học";
@@ -22244,6 +22417,10 @@
       const name = normalizeNFC(categoryNameInput.value.trim());
       if (!name) {
         showToast("Tên mục không được để trống", "error");
+        return;
+      }
+
+      if (!editingCategoryId && typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) {
         return;
       }
 
