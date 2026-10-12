@@ -3647,9 +3647,16 @@
       <button class="hl-color-btn w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer" style="background-color: #059669;" data-color="green" title="Khung màu Xanh"></button>
       <button class="hl-color-btn w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer" style="background-color: #db2777;" data-color="pink" title="Khung màu Hồng"></button>
       <button class="hl-color-btn w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer" style="background-color: #7c3aed;" data-color="purple" title="Khung màu Tím"></button>
-      <label id="btnCustomColorLabel" class="relative w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer flex items-center justify-center overflow-hidden" title="Chọn màu tùy ý" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);">
-        <input type="color" id="customFrameColorInput" class="opacity-0 w-0 h-0 absolute cursor-pointer" value="#6366f1" />
-      </label>
+      <div id="wrapCustomColorBtn" class="relative inline-flex items-center justify-center">
+        <label id="btnCustomColorLabel" class="relative w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer flex items-center justify-center overflow-hidden" title="Chọn màu tùy ý" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);">
+          <input type="color" id="customFrameColorInput" class="opacity-0 w-0 h-0 absolute cursor-pointer" value="#6366f1" />
+        </label>
+        <!-- Mác PLUS khi ở chế độ Free -->
+        <span id="badgePlusCustomColor" class="hidden absolute -top-2.5 -right-3.5 px-1 py-0.2 rounded-full text-[7.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs items-center gap-0.5 border border-indigo-200/60 dark:border-indigo-700/60 uppercase pointer-events-none select-none z-10 leading-tight">
+          <svg class="w-2 h-2 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+          <span>PLUS</span>
+        </span>
+      </div>
     </div>
 
     <!-- Nút Thêm Ghi chú -->
@@ -7326,7 +7333,7 @@
           shareDays: [1, 7, 30],
           canExtendShare: true,
           sharePassword: false,
-          customColor: true,
+          customColor: false,
           exportNotesMd: true,
           trashDays: 15,
           statsDays: 30,
@@ -7929,6 +7936,9 @@
       if (typeof updateFullTextSearchBadges === 'function') {
         updateFullTextSearchBadges();
       }
+      if (typeof updateCustomColorBadges === 'function') {
+        updateCustomColorBadges();
+      }
     });
     window.addEventListener('storage', (e) => {
       if (e.key === 'thuvienhtml_plans_config') {
@@ -7943,6 +7953,9 @@
             }
             if (typeof updateFullTextSearchBadges === 'function') {
               updateFullTextSearchBadges();
+            }
+            if (typeof updateCustomColorBadges === 'function') {
+              updateCustomColorBadges();
             }
           }
         } catch(err) {}
@@ -14932,6 +14945,9 @@
         if (typeof updateFullTextSearchBadges === 'function') {
           try { updateFullTextSearchBadges(); } catch (_) {}
         }
+        if (typeof updateCustomColorBadges === 'function') {
+          try { updateCustomColorBadges(); } catch (_) {}
+        }
       } catch (globalUiErr) {
         console.warn("[UI] Lỗi tổng thể updateUserUI (được ngăn chặn an toàn):", globalUiErr);
       }
@@ -19461,6 +19477,52 @@
       }
     }
     window.updateFullTextSearchBadges = updateFullTextSearchBadges;
+
+    // Kiểm tra quyền tùy chỉnh màu khung (chỉ Plus và Pro mới có thể dùng được)
+    function canUseCustomColor() {
+      const currentTier = (state && state.userTier) || 'free';
+      const isAdmin = Boolean(state && state.isAdmin);
+      if (isAdmin || currentTier === 'plus' || currentTier === 'pro') return true;
+      if (typeof can === 'function' && can('customColor')) return true;
+      return false;
+    }
+    window.canUseCustomColor = canUseCustomColor;
+
+    // Cập nhật huy hiệu "PLUS" cho tính năng tùy chỉnh màu của khung:
+    // Thêm mác Plus khi đang ở chế độ Free, xóa mác Plus khi đang ở chế độ Plus hoặc Pro
+    function updateCustomColorBadges() {
+      const isPlusOrPro = canUseCustomColor();
+      const showPlusBadge = !isPlusOrPro;
+
+      const badge = document.getElementById('badgePlusCustomColor');
+      if (badge) {
+        if (showPlusBadge) {
+          badge.classList.remove('hidden');
+          badge.classList.add('inline-flex');
+        } else {
+          badge.classList.add('hidden');
+          badge.classList.remove('inline-flex');
+        }
+      }
+
+      const label = document.getElementById('btnCustomColorLabel');
+      if (label) {
+        if (showPlusBadge) {
+          label.title = "Tùy chỉnh màu khung (Đặc quyền gói Plus/Pro - Nhấn để nâng cấp)";
+          label.setAttribute('aria-label', "Tùy chỉnh màu khung - Đặc quyền gói Plus/Pro");
+        } else {
+          label.title = "Chọn màu tùy ý";
+          label.setAttribute('aria-label', "Chọn màu tùy ý");
+        }
+      }
+
+      // Nếu đang ở Free nhưng đang lưu màu custom thì hoàn nguyên về màu mặc định
+      if (!isPlusOrPro && typeof activeFramingColor !== 'undefined' && activeFramingColor === 'custom') {
+        activeFramingColor = 'yellow';
+        try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
+      }
+    }
+    window.updateCustomColorBadges = updateCustomColorBadges;
 
     function openSearchCommandPalette(initialQuery = '') {
       // Đóng mobile sidebar drawer nếu đang mở
@@ -26082,6 +26144,10 @@
         }
       }
 
+      if (typeof updateCustomColorBadges === 'function') {
+        updateCustomColorBadges();
+      }
+
       // // FIX-2: Cập nhật viền thể hiện màu trên thanh bôi đen di động
       document.querySelectorAll('.mobile-hl-color-btn').forEach(btn => {
         const col = btn.getAttribute('data-color');
@@ -26813,8 +26879,25 @@
         }
       }
 
-      const frameId = 'fr_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
-      const chosenColor = colorName || activeFramingColor || 'yellow';
+      let chosenColor = colorName || activeFramingColor || 'yellow';
+      const isCustom = (chosenColor === 'custom' || Boolean(customColor));
+      const isCustomAllowed = typeof canUseCustomColor === 'function' ? canUseCustomColor() :
+        ((state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || (typeof can === 'function' && can('customColor')));
+
+      if (isCustom && !isCustomAllowed) {
+        if (typeof showToast === 'function') {
+          showToast("Tính năng tùy chỉnh màu khung chỉ dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
+        }
+        if (typeof openUpgradeModal === 'function') {
+          openUpgradeModal('plus');
+        }
+        chosenColor = 'yellow';
+        activeFramingColor = 'yellow';
+        try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
+        if (typeof updateToolbarColorIndicators === 'function') {
+          updateToolbarColorIndicators();
+        }
+      }
       const chosenCustomColor = (chosenColor === 'custom' ? (customColor || activeCustomColor) : null);
       const chosenLabel = (labelText || '').trim().substring(0, 12);
       const chosenNote = (noteText || '').trim();
@@ -27137,11 +27220,45 @@
       });
     });
 
-    // Nút chọn màu tùy ý (Custom Color Picker)
+    // Nút chọn màu tùy ý (Custom Color Picker - Chỉ dành cho gói Plus & Pro)
+    const wrapCustomColorBtn = document.getElementById('wrapCustomColorBtn');
+    const btnCustomColorLabel = document.getElementById('btnCustomColorLabel');
     const customFrameColorInput = document.getElementById('customFrameColorInput');
+
+    function checkCustomColorPermission(e) {
+      const allowed = typeof canUseCustomColor === 'function' ? canUseCustomColor() :
+        ((state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || (typeof can === 'function' && can('customColor')));
+      if (!allowed) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof e.stopImmediatePropagation === 'function') {
+            e.stopImmediatePropagation();
+          }
+        }
+        if (typeof showToast === 'function') {
+          showToast("Tính năng tùy chỉnh màu khung chỉ dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
+        }
+        if (typeof openUpgradeModal === 'function') {
+          openUpgradeModal('plus');
+        }
+        return false;
+      }
+      return true;
+    }
+
+    if (wrapCustomColorBtn) {
+      wrapCustomColorBtn.addEventListener('click', checkCustomColorPermission, true);
+    }
+    if (btnCustomColorLabel) {
+      btnCustomColorLabel.addEventListener('click', checkCustomColorPermission, true);
+    }
+
     if (customFrameColorInput) {
+      customFrameColorInput.addEventListener('click', checkCustomColorPermission, true);
       customFrameColorInput.value = activeCustomColor || '#6366f1';
       const handleCustomColorChange = (e) => {
+        if (!checkCustomColorPermission(e)) return;
         const hex = e.target.value;
         activeFramingColor = 'custom';
         activeCustomColor = hex;
@@ -32086,6 +32203,10 @@
 
       safeRun('updateFullTextSearchBadges', () => {
         if (typeof updateFullTextSearchBadges === 'function') updateFullTextSearchBadges();
+      });
+
+      safeRun('updateCustomColorBadges', () => {
+        if (typeof updateCustomColorBadges === 'function') updateCustomColorBadges();
       });
 
       try { autoCleanupDuplicateData(); } catch (_) {}
