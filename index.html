@@ -27578,15 +27578,18 @@
       return true;
     }
 
-    if (wrapCustomColorBtn) {
-      wrapCustomColorBtn.addEventListener('click', checkCustomColorPermission, true);
-    }
-    if (btnCustomColorLabel) {
-      btnCustomColorLabel.addEventListener('click', checkCustomColorPermission, true);
-    }
+    const customColorTriggerElements = [wrapCustomColorBtn, btnCustomColorLabel, customFrameColorInput].filter(Boolean);
+    customColorTriggerElements.forEach(el => {
+      ['pointerdown', 'mousedown', 'touchstart', 'click'].forEach(evtName => {
+        el.addEventListener(evtName, (e) => {
+          if (!checkCustomColorPermission(e)) {
+            // Đã ngăn chặn và hiện popup nâng cấp trong checkCustomColorPermission
+          }
+        }, true);
+      });
+    });
 
     if (customFrameColorInput) {
-      customFrameColorInput.addEventListener('click', checkCustomColorPermission, true);
       customFrameColorInput.value = activeCustomColor || '#6366f1';
       const handleCustomColorChange = (e) => {
         if (!checkCustomColorPermission(e)) return;
