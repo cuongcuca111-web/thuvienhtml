@@ -4056,18 +4056,22 @@ function getAdminPromptLibrary() {
   }
   try {
     const raw = localStorage.getItem('antigravity_prompt_library');
-    if (raw) return JSON.parse(raw);
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch (_) {}
   return window.DEFAULT_PROMPT_LIBRARY || [];
 }
 
 function saveAdminPromptLibrary(items) {
+  const safeItems = Array.isArray(items) ? items : [];
   if (typeof window.savePromptLibraryData === 'function') {
-    window.savePromptLibraryData(items);
+    window.savePromptLibraryData(safeItems);
   } else {
     try {
-      localStorage.setItem('antigravity_prompt_library', JSON.stringify(items));
-      window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: items }));
+      localStorage.setItem('antigravity_prompt_library', JSON.stringify(safeItems));
+      window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: safeItems }));
     } catch (e) {
       console.warn('[Admin] Lỗi lưu Thư viện Prompt:', e);
     }
@@ -4155,6 +4159,10 @@ export function renderPromptsTab(container) {
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           </button>
           <input type="file" id="fileAdminImportPrompts" accept=".json" class="hidden" />
+
+          <button id="btnAdminTabClearAllPrompts" type="button" class="p-2 rounded-xl border border-rose-200 dark:border-rose-900/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold transition active:scale-95 cursor-pointer" title="Xóa toàn bộ Prompt trong thư viện">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
         </div>
       </div>
 
@@ -4238,7 +4246,23 @@ export function renderPromptsTab(container) {
       </div>
 
       <!-- PROMPT CARDS GRID -->
-      ${filteredPrompts.length === 0 ? `
+      ${allPrompts.length === 0 ? `
+        <div class="p-12 text-center rounded-2xl bg-white dark:bg-[#1A1D23] border border-dashed border-gray-300 dark:border-gray-800">
+          <div class="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 mx-auto flex items-center justify-center mb-3">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          </div>
+          <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-1">Thư viện Prompt hiện đang trống</h4>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-md mx-auto">Bạn đã xóa hết prompt trong kho. Hệ thống đã lưu trạng thái rỗng và không tự ý khôi phục. Bạn có thể tải lên prompt mới hoặc khôi phục lại kho prompt mẫu ban đầu bất kỳ lúc nào.</p>
+          <div class="flex items-center justify-center gap-2">
+            <button id="btnAdminEmptyAddPrompt" type="button" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+              + Tải lên Prompt mới
+            </button>
+            <button id="btnAdminEmptyResetDefaults" type="button" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer">
+              ↺ Khôi phục 6 prompt mẫu
+            </button>
+          </div>
+        </div>
+      ` : (filteredPrompts.length === 0 ? `
         <div class="p-12 text-center rounded-2xl bg-white dark:bg-[#1A1D23] border border-dashed border-gray-300 dark:border-gray-800">
           <div class="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 mx-auto flex items-center justify-center mb-3">
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -4378,7 +4402,7 @@ export function renderPromptsTab(container) {
             `;
           }).join('')}
         </div>
-      `}
+      `)}
     </div>
   `;
 
@@ -4456,6 +4480,38 @@ function bindPromptsTabEvents(container) {
         toast('Đã khôi phục kho Prompt mẫu mặc định!');
         renderPromptsTab(container);
       }
+    };
+  }
+
+  // 6b. Nút Xóa tất cả Prompt
+  const btnClearAll = container.querySelector('#btnAdminTabClearAllPrompts');
+  if (btnClearAll) {
+    btnClearAll.onclick = () => {
+      if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ prompt khỏi thư viện? Kho prompt sẽ được làm trống hoàn toàn cho đến khi bạn thêm mới hoặc khôi phục gốc.')) {
+        saveAdminPromptLibrary([]);
+        toast('Đã xóa sạch toàn bộ prompt trong thư viện!');
+        renderPromptsTab(container);
+      }
+    };
+  }
+
+  // Nút hành động trong trạng thái trống
+  const btnEmptyAdd = container.querySelector('#btnAdminEmptyAddPrompt');
+  if (btnEmptyAdd) {
+    btnEmptyAdd.onclick = () => {
+      if (typeof window.openAdminPromptEditor === 'function') {
+        window.openAdminPromptEditor(null);
+      }
+    };
+  }
+
+  const btnEmptyReset = container.querySelector('#btnAdminEmptyResetDefaults');
+  if (btnEmptyReset) {
+    btnEmptyReset.onclick = () => {
+      const defaults = window.DEFAULT_PROMPT_LIBRARY || [];
+      saveAdminPromptLibrary(JSON.parse(JSON.stringify(defaults)));
+      toast('Đã khôi phục 6 prompt mẫu mặc định!');
+      renderPromptsTab(container);
     };
   }
 
@@ -4593,9 +4649,16 @@ function openQuickPromptImageDialog(prompt, container) {
         <img id="quickPromptImgPreview" src="${escapePromptHtml(prompt.displayImage || '')}" class="w-full h-full object-cover" onerror="this.src='${window.PROMPT_FALLBACK_SVG || ''}';" />
       </div>
 
+      <!-- Nút Tải ảnh từ thư viện thiết bị -->
+      <input type="file" id="quickPromptFileInput" accept="image/*" class="hidden" />
+      <button type="button" id="btnQuickUploadFromGallery" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-violet-500 dark:border-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/40 text-violet-700 dark:text-violet-300 text-xs font-semibold flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+        <svg class="w-4 h-4 text-violet-600 dark:text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        <span>Chọn ảnh từ thư viện thiết bị</span>
+      </button>
+
       <!-- Input URL -->
       <div>
-        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Đường dẫn URL ảnh:</label>
+        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Hoặc dán URL ảnh trực tiếp:</label>
         <input type="url" id="quickPromptImgInput" value="${escapePromptHtml(prompt.displayImage || '')}" placeholder="https://images.unsplash.com/..." class="w-full h-9 px-3 rounded-xl bg-gray-50 dark:bg-[#14171C] border border-gray-200 dark:border-gray-700 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-violet-600" />
       </div>
 
@@ -4616,7 +4679,7 @@ function openQuickPromptImageDialog(prompt, container) {
 
       <!-- Nút hành động -->
       <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-        <button id="btnCancelQuickImg" type="button" class="px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+        <button id="btnCancelQuickImg" type="button" class="px-3.5 py-1.5 rounded-xl border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
           Hủy
         </button>
         <button id="btnSaveQuickImg" type="button" class="px-4 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shadow-xs cursor-pointer">
@@ -4630,6 +4693,8 @@ function openQuickPromptImageDialog(prompt, container) {
 
   const imgInput = modal.querySelector('#quickPromptImgInput');
   const imgPreview = modal.querySelector('#quickPromptImgPreview');
+  const fileInput = modal.querySelector('#quickPromptFileInput');
+  const btnGallery = modal.querySelector('#btnQuickUploadFromGallery');
   const btnClose = modal.querySelector('#btnCloseQuickImgModal');
   const btnCancel = modal.querySelector('#btnCancelQuickImg');
   const btnSave = modal.querySelector('#btnSaveQuickImg');
@@ -4637,6 +4702,37 @@ function openQuickPromptImageDialog(prompt, container) {
   const closeMe = () => modal.remove();
   if (btnClose) btnClose.onclick = closeMe;
   if (btnCancel) btnCancel.onclick = closeMe;
+
+  if (btnGallery && fileInput) {
+    btnGallery.onclick = () => fileInput.click();
+    fileInput.onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Vui lòng chọn tệp hình ảnh!');
+        return;
+      }
+      try {
+        let dataUrl;
+        if (typeof window.compressImageClientSide === 'function') {
+          dataUrl = await window.compressImageClientSide(file, 900, 0.8);
+        } else {
+          dataUrl = await new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(r.result);
+            r.onerror = rej;
+            r.readAsDataURL(file);
+          });
+        }
+        if (imgInput) imgInput.value = dataUrl;
+        if (imgPreview) imgPreview.src = dataUrl;
+        toast('Đã nạp ảnh từ thư viện! Bấm "Lưu ảnh này" để hoàn tất.');
+      } catch (err) {
+        alert('Lỗi đọc ảnh: ' + err.message);
+      }
+      fileInput.value = '';
+    };
+  }
 
   modal.querySelectorAll('.btn-quick-preset-pick').forEach(b => {
     b.onclick = () => {
