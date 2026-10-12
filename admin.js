@@ -3537,14 +3537,16 @@ function showAdminProofLightbox(opts) {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'adminProofLightboxModal';
-    modal.className = 'fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs transition-opacity';
+    modal.className = 'fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity';
     document.body.appendChild(modal);
+  } else {
+    modal.className = 'fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity';
   }
 
   const isPendingOrConfirmed = status === 'user_confirmed' || status === 'pending';
 
   modal.innerHTML = `
-    <div class="bg-white dark:bg-[#1A1D23] rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh]">
+    <div class="bg-white dark:bg-[#1A1D23] rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
       <div class="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
         <div>
           <h4 class="font-serif font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]">Biên lai chuyển khoản của khách</h4>
@@ -3579,8 +3581,14 @@ function showAdminProofLightbox(opts) {
 
   modal.classList.remove('hidden');
 
+  const onKeydown = (e) => {
+    if (e.key === 'Escape') closeMe();
+  };
+  window.addEventListener('keydown', onKeydown);
+
   const closeMe = () => {
     modal.classList.add('hidden');
+    window.removeEventListener('keydown', onKeydown);
   };
   modal.querySelector('#btnCloseProofLightbox').onclick = closeMe;
   modal.querySelector('#btnProofLightboxClose').onclick = closeMe;

@@ -6557,13 +6557,29 @@
             </div>
           </div>
 
-          <!-- Bố cục Hai cột (Desktop) / Một cột (Mobile) -->
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
+          <!-- Bố cục Hai cột (Desktop) / Một cột (Mobile) - Cân đối, chuyên nghiệp -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-stretch">
             
-            <!-- CỘT TRÁI (md:col-span-5): MÃ QR -->
-            <div class="md:col-span-5 flex flex-col items-center space-y-3">
-              <div class="relative w-full max-w-[270px] p-4 bg-white rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-xs flex flex-col items-center">
-                <div id="qrWrapper" class="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-white p-1">
+            <!-- CỘT TRÁI (md:col-span-5): MÃ QR & HƯỚNG DẪN BẢO MẬT -->
+            <div class="md:col-span-5 flex flex-col justify-between space-y-3.5">
+              
+              <!-- THẺ MÃ QR VIETQR CHÍNH -->
+              <div class="relative w-full p-4 bg-white dark:bg-[#181B22] rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs flex flex-col items-center">
+                
+                <!-- Thanh tiêu đề VietQR / Trạng thái -->
+                <div class="w-full flex items-center justify-between pb-2.5 mb-2 border-b border-[#F0EFEA] dark:border-[#232833] text-xs">
+                  <div class="flex items-center gap-1.5 font-bold text-[#1C1B18] dark:text-[#E8E6E1]">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span>VietQR Chuẩn Napas</span>
+                  </div>
+                  <span class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-200/50 dark:border-indigo-800/50">24/7 Tự Động</span>
+                </div>
+
+                <!-- Khung chứa ảnh QR -->
+                <div id="qrWrapper" class="relative w-full max-w-[240px] aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 shadow-2xs border border-gray-100 dark:border-gray-800">
                   <img id="qrImageElement" src="" alt="Mã QR VietQR" class="w-full h-full object-contain" />
                   
                   <!-- Lớp phủ khi mã QR hết hạn -->
@@ -6578,26 +6594,69 @@
                   </div>
                 </div>
 
-                <p class="text-[11px] text-[#78756D] mt-2.5 font-medium text-center">Quét bằng ứng dụng ngân hàng bất kỳ</p>
-              </div>
+                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-2.5 font-medium text-center">Quét bằng mọi ứng dụng Ngân hàng hoặc Ví điện tử</p>
 
-              <!-- Nút tải ảnh QR -->
-              <div class="flex items-center gap-2">
-                <button type="button" id="btnDownloadQr" class="px-3.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:border-indigo-500 bg-white dark:bg-[#1A1D24] text-[11px] font-medium text-[#78756D] dark:text-[#9AA3B2] hover:text-[#1C1B18] dark:hover:text-[#E8E6E1] transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                  <span>Tải ảnh QR</span>
+                <!-- Nút tải ảnh QR -->
+                <button type="button" id="btnDownloadQr" class="w-full mt-3 py-2 px-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 bg-gray-50/80 hover:bg-gray-100 dark:bg-[#1F242C] dark:hover:bg-[#252B35] text-xs font-semibold text-gray-700 dark:text-gray-200 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
+                  <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span>Lưu ảnh mã QR về máy</span>
                 </button>
               </div>
+
+              <!-- KHỐI HƯỚNG DẪN 3 BƯỚC NHANH & ĐẢM BẢO BẢO MẬT (LẤP ĐẦY KHOẢNG TRỐNG KHOA HỌC) -->
+              <div class="w-full p-4 rounded-2xl bg-white dark:bg-[#181B22] border border-[#E0DED7] dark:border-[#262C36] shadow-2xs flex-1 flex flex-col justify-between space-y-3">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-[#1C1B18] dark:text-[#E8E6E1]">
+                  <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>3 bước thanh toán nhanh</span>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                  <div class="flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                    <div class="leading-tight">
+                      <span class="font-medium text-gray-800 dark:text-gray-200">Mở App Ngân hàng</span>
+                      <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Chọn tính năng "Quét mã QR" trên ứng dụng</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                    <div class="leading-tight">
+                      <span class="font-medium text-gray-800 dark:text-gray-200">Quét mã VietQR</span>
+                      <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Số tiền &amp; nội dung được tự động điền sẵn</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                    <div class="leading-tight">
+                      <span class="font-medium text-gray-800 dark:text-gray-200">Xác nhận chuyển tiền</span>
+                      <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Hệ thống kích hoạt tài khoản trong vài giây</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Huy hiệu an toàn & tự động -->
+                <div class="pt-2.5 border-t border-[#F0EFEA] dark:border-[#232833] flex items-center gap-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <span>Kích hoạt tự động 24/7 an toàn &amp; bảo mật</span>
+                </div>
+              </div>
+
             </div>
 
-            <!-- CỘT PHẢI (md:col-span-7): BIÊN LAI THANH TOÁN (CÂN ĐỐI, KHÔNG LỆCH CHỮ) -->
+            <!-- CỘT PHẢI (md:col-span-7): BIÊN LAI THANH TOÁN (CÂN ĐỐI, KHOA HỌC) -->
             <div class="md:col-span-7 flex flex-col justify-between space-y-3.5">
               
               <!-- Khối Số tiền thanh toán (Tỷ lệ hài hòa, font 24px) -->
               <div class="p-3.5 rounded-xl bg-white dark:bg-[#181B22] border border-[#E0DED7] dark:border-[#262C36] shadow-2xs">
                 <div class="flex items-center justify-between">
                   <div>
-                    <span class="text-xs text-[#78756D] dark:text-[#9AA3B2] font-medium block">Số tiền cần chuyển</span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs text-[#78756D] dark:text-[#9AA3B2] font-medium block">Số tiền cần chuyển</span>
+                      <span class="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200/60 dark:border-emerald-800/60">Chính xác</span>
+                    </div>
                     <div class="font-serif text-2xl font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums mt-0.5 tracking-tight" id="transferAmount">
                       59.000 ₫
                     </div>
