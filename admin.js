@@ -710,11 +710,30 @@ const PARAM_DEFS = [
   { key: 'aiFlashcardsEnabled', label: 'Bật Tự sinh Flashcard (AI)', desc: 'Cho phép AI tạo câu hỏi ôn tập theo bài', type: 'boolean' }
 ];
 
-function renderPlansTab(container) {
-  // Lấy bản sao cấu hình hiện tại để người dùng chỉnh sửa
+let isPlansInitializedFromServer = false;
+
+async function renderPlansTab(container) {
+  // Lần đầu mở tab: tự động tải cấu hình thực tế từ Firestore về để đảm bảo dữ liệu mới nhất
+  if (!isPlansInitializedFromServer) {
+    try {
+      const currentRes = await callAdminApi('/api/admin/plans/current').catch(() => null);
+      if (currentRes && currentRes.plans && Object.keys(currentRes.plans).length > 0) {
+        if (!adminContext.effectivePlans) adminContext.effectivePlans = {};
+        adminContext.effectivePlans.plans = currentRes.plans;
+        adminContext.effectivePlans.version = currentRes.version || 1;
+        plansVersion = currentRes.version || 1;
+        originalPlansConfig = JSON.parse(JSON.stringify(currentRes.plans));
+        pendingPlansChanges = JSON.parse(JSON.stringify(currentRes.plans));
+        isPlansInitializedFromServer = true;
+      }
+    } catch (e) {}
+  }
+
   const currentConfig = adminContext.effectivePlans || {};
-  plansVersion = currentConfig.version || 1;
-  originalPlansConfig = JSON.parse(JSON.stringify(currentConfig.plans || {}));
+  plansVersion = plansVersion || currentConfig.version || 1;
+  if (!originalPlansConfig) {
+    originalPlansConfig = JSON.parse(JSON.stringify(currentConfig.plans || {}));
+  }
   if (!pendingPlansChanges) {
     pendingPlansChanges = JSON.parse(JSON.stringify(originalPlansConfig));
   }
@@ -730,14 +749,14 @@ function renderPlansTab(container) {
         <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Thay đổi có hiệu lực tức thì trên toàn bộ ứng dụng người dùng thông qua Firestore Realtime.</p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
-        <button id="btnResetAllPlans" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1">
+        <button id="btnResetAllPlans" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1 cursor-pointer">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
           <span>Đặt lại mặc định</span>
         </button>
-        <button id="btnUndoPlans" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition" disabled>
+        <button id="btnUndoPlans" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer" disabled>
           Hoàn tác
         </button>
-        <button id="btnSavePlans" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5 disabled:opacity-50" disabled>
+        <button id="btnSavePlans" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
           <span>Lưu thay đổi</span>
         </button>
       </div>
@@ -843,13 +862,15 @@ function renderParamCell(param, tier, val) {
 }
 
 function bindPlansTableEvents(container) {
-  // Thay đổi số
+  // Thay đổi số (lắng nghe cả oninput và onchange)
   container.querySelectorAll('.plan-num-input').forEach(input => {
-    input.onchange = (e) => {
+    const handleNumChange = (e) => {
       const { tier, key } = e.target.dataset;
       pendingPlansChanges[tier][key] = parseInt(e.target.value, 10) || 0;
       updatePlansImpact();
     };
+    input.oninput = handleNumChange;
+    input.onchange = handleNumChange;
   });
 
   // Nút tăng giảm +/-
@@ -973,8 +994,8 @@ function updatePlansImpact() {
 
   for (const tier of TIERS) {
     for (const def of PARAM_DEFS) {
-      const oldV = (originalPlansConfig[tier] ? originalPlansConfig[tier][def.key] : undefined);
-      const newV = (pendingPlansChanges[tier] ? pendingPlansChanges[tier][def.key] : undefined);
+      const oldV = (originalPlansConfig && originalPlansConfig[tier] ? originalPlansConfig[tier][def.key] : undefined);
+      const newV = (pendingPlansChanges && pendingPlansChanges[tier] ? pendingPlansChanges[tier][def.key] : undefined);
       if (JSON.stringify(oldV) !== JSON.stringify(newV)) {
         const formatVal = (v) => (v === -1 || v === null ? 'Vô hạn' : JSON.stringify(v));
         diffs.push(`<strong>${TIER_NAMES[tier]}</strong>: ${def.label} (${formatVal(oldV)} → <span class="text-indigo-600 font-bold">${formatVal(newV)}</span>)`);
@@ -989,21 +1010,28 @@ function updatePlansImpact() {
     return a <= b;
   }
 
-  ['maxLessons', 'maxSections', 'maxActiveShares'].forEach(key => {
-    if (!compareLimits(pendingPlansChanges.guest[key], pendingPlansChanges.free[key])) {
-      warnings.push(`Cảnh báo: Gói Khách có ${key} lớn hơn gói Thường!`);
-    }
-    if (!compareLimits(pendingPlansChanges.free[key], pendingPlansChanges.plus[key])) {
-      warnings.push(`Cảnh báo: Gói Thường có ${key} lớn hơn gói Plus!`);
-    }
-    if (!compareLimits(pendingPlansChanges.plus[key], pendingPlansChanges.pro[key])) {
-      warnings.push(`Cảnh báo: Gói Plus có ${key} lớn hơn gói Pro!`);
-    }
-  });
+  if (pendingPlansChanges && pendingPlansChanges.guest && pendingPlansChanges.free && pendingPlansChanges.plus && pendingPlansChanges.pro) {
+    ['maxLessons', 'maxSections', 'maxActiveShares'].forEach(key => {
+      if (!compareLimits(pendingPlansChanges.guest[key], pendingPlansChanges.free[key])) {
+        warnings.push(`Cảnh báo: Gói Khách có ${key} lớn hơn gói Thường!`);
+      }
+      if (!compareLimits(pendingPlansChanges.free[key], pendingPlansChanges.plus[key])) {
+        warnings.push(`Cảnh báo: Gói Thường có ${key} lớn hơn gói Plus!`);
+      }
+      if (!compareLimits(pendingPlansChanges.plus[key], pendingPlansChanges.pro[key])) {
+        warnings.push(`Cảnh báo: Gói Plus có ${key} lớn hơn gói Pro!`);
+      }
+    });
+  }
 
   const hasChanges = diffs.length > 0;
-  btnSave.disabled = !hasChanges;
-  btnUndo.disabled = !hasChanges;
+  if (btnUndo) btnUndo.disabled = !hasChanges;
+  btnSave.disabled = false;
+  if (hasChanges) {
+    btnSave.classList.add('ring-2', 'ring-indigo-400', 'shadow-md');
+  } else {
+    btnSave.classList.remove('ring-2', 'ring-indigo-400', 'shadow-md');
+  }
 
   if (hasChanges || warnings.length > 0) {
     box.className = `p-4 rounded-xl border text-xs ${warnings.length > 0 ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-200' : 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/60 text-indigo-900 dark:text-indigo-200'}`;
@@ -1023,8 +1051,29 @@ function updatePlansImpact() {
 async function savePlansChanges() {
   if (!await ensureFreshAdminSession()) return;
   const btn = document.getElementById('btnSavePlans');
-  btn.disabled = true;
-  btn.innerText = 'Đang lưu...';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang lưu...</span>';
+  }
+
+  // Thu thập trực tiếp giá trị mới nhất từ toàn bộ DOM trước khi gửi máy chủ
+  const container = document.getElementById('adminTabContentContainer');
+  if (container) {
+    container.querySelectorAll('.plan-num-input').forEach(input => {
+      const { tier, key } = input.dataset;
+      const isUnlimitedCb = container.querySelector(`.plan-unlimited-checkbox[data-tier="${tier}"][data-key="${key}"]`);
+      if (isUnlimitedCb && isUnlimitedCb.checked) {
+        pendingPlansChanges[tier][key] = -1;
+      } else {
+        pendingPlansChanges[tier][key] = parseInt(input.value, 10) || 0;
+      }
+    });
+
+    container.querySelectorAll('.plan-bool-input').forEach(cb => {
+      const { tier, key } = cb.dataset;
+      pendingPlansChanges[tier][key] = cb.checked;
+    });
+  }
 
   try {
     const res = await callAdminApi('/api/admin/plans/update', {
@@ -1036,20 +1085,39 @@ async function savePlansChanges() {
     });
 
     plansVersion = res.version;
-    originalPlansConfig = JSON.parse(JSON.stringify(pendingPlansChanges));
-    toast(`Đã cập nhật hạn mức các gói lên phiên bản v${res.version}!`);
+    const savedPlans = res.plans || pendingPlansChanges;
+    originalPlansConfig = JSON.parse(JSON.stringify(savedPlans));
+    pendingPlansChanges = JSON.parse(JSON.stringify(savedPlans));
+
+    // Đồng bộ trực tiếp vào adminContext, window.effectivePlans và localStorage
+    if (adminContext.effectivePlans) {
+      adminContext.effectivePlans.plans = savedPlans;
+      adminContext.effectivePlans.version = res.version;
+    }
+    if (window.effectivePlans) {
+      window.effectivePlans.plans = savedPlans;
+      window.effectivePlans.version = res.version;
+    }
+    try {
+      localStorage.setItem('thuvienhtml_plans_config', JSON.stringify({
+        plans: savedPlans,
+        version: res.version,
+        pricing: (adminContext.effectivePlans && adminContext.effectivePlans.pricing) || {}
+      }));
+    } catch (e) {}
+
+    const verBadge = document.getElementById('adminCurrentVersionBadge');
+    if (verBadge) verBadge.innerText = `Cấu hình: v${res.version}`;
+
+    toast(`Đã lưu thay đổi hạn mức các gói thành công (Phiên bản v${res.version})!`);
     renderPlansTab(document.getElementById('adminTabContentContainer'));
   } catch (err) {
-    if (err.message && err.message.includes('Xung đột phiên bản')) {
-      if (confirm('Cấu hình đã bị thay đổi bởi người khác. Tải lại bản mới nhất từ máy chủ?')) {
-        location.reload();
-      }
-    } else {
-      alert("Lỗi khi lưu hạn mức: " + err.message);
-    }
+    alert("Lỗi khi lưu hạn mức: " + err.message);
   } finally {
-    btn.disabled = false;
-    btn.innerText = 'Lưu thay đổi';
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Lưu thay đổi</span>';
+    }
   }
 }
 

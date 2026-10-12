@@ -23,11 +23,14 @@ module.exports = async function handler(req, res) {
   // 1. ACTION: UPDATE (POST) - Cập nhật hạn mức các gói
   if (action === 'update') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { plans, version } = req.body || {};
+    const { plans } = req.body || {};
 
     const validation = validatePlansConfig(plans);
     if (!validation.valid) {
-      return res.status(400).json({ error: 'Dữ liệu không hợp lệ', details: validation.errors });
+      return res.status(400).json({
+        error: 'Dữ liệu không hợp lệ: ' + validation.errors.join('; '),
+        details: validation.errors
+      });
     }
 
     try {
@@ -39,16 +42,9 @@ module.exports = async function handler(req, res) {
       if (docSnap.exists) {
         oldData = docSnap.data();
         currentVersion = oldData.version || 0;
-        // Kiểm tra xung đột phiên bản (Optimistic locking)
-        if (typeof version === 'number' && version !== currentVersion) {
-          return res.status(409).json({
-            error: 'Xung đột phiên bản: Cấu hình đã được người khác cập nhật trước đó.',
-            currentVersion
-          });
-        }
       }
 
-      const newVersion = currentVersion + 1;
+      const newVersion = (currentVersion || 0) + 1;
       const updatePayload = {
         version: newVersion,
         updatedAt: new Date().toISOString(),
@@ -58,6 +54,9 @@ module.exports = async function handler(req, res) {
 
       if (oldData && oldData.pricing) {
         updatePayload.pricing = oldData.pricing;
+      }
+      if (oldData && oldData.bankTransfer) {
+        updatePayload.bankTransfer = oldData.bankTransfer;
       }
 
       await plansRef.set(updatePayload, { merge: true });
@@ -83,11 +82,34 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({
         success: true,
         version: newVersion,
+        plans: validation.sanitizedPlans,
         updatedAt: updatePayload.updatedAt
       });
     } catch (err) {
       console.error('Lỗi khi cập nhật cấu hình plans:', err);
-      return res.status(500).json({ error: 'Không thể lưu cấu hình. Vui lòng thử lại sau.' });
+      return res.status(500).json({ error: 'Không thể lưu cấu hình: ' + err.message });
+    }
+  }
+
+  // 1.1 ACTION: CURRENT (GET) - Lấy cấu hình các gói hiện tại từ Firestore
+  if (action === 'current' || action === 'get' || action === 'plans') {
+    if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
+    try {
+      const plansRef = db.doc('config/plans');
+      const snap = await plansRef.get();
+      if (snap.exists) {
+        const data = snap.data();
+        return res.status(200).json({
+          success: true,
+          version: data.version || 1,
+          plans: data.plans || {},
+          pricing: data.pricing || {},
+          updatedAt: data.updatedAt || null
+        });
+      }
+      return res.status(200).json({ success: true, version: 1, plans: {}, pricing: {} });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi tải cấu hình: ' + err.message });
     }
   }
 
