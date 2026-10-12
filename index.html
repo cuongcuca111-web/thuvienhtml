@@ -1711,6 +1711,111 @@
     }
 
 
+    /* ============================================================
+       THẺ GÓI PRO LUXURY: KHUNG KÉP CHAMPAGNE & NỀN INK SANG TRỌNG
+       ============================================================ */
+    .card-plan-pro-luxury {
+      position: relative;
+      border-radius: 20px;
+      color: #FFFFFF;
+      isolation: isolate;
+      border: 1px solid transparent;
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+      background-image:
+        linear-gradient(180deg, #0F1226 0%, #151A3A 100%),
+        linear-gradient(135deg, rgba(99, 102, 241, 0.75) 0%, #D9C7A0 50%, rgba(99, 102, 241, 0.75) 100%);
+      box-shadow: 0 10px 28px -6px rgba(15, 18, 38, 0.55), 0 0 1px 1px rgba(217, 199, 160, 0.2);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-plan-pro-luxury:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px -8px rgba(15, 18, 38, 0.7), 0 0 20px -2px rgba(217, 199, 160, 0.3);
+      background-image:
+        linear-gradient(180deg, #0F1226 0%, #151A3A 100%),
+        linear-gradient(135deg, rgba(129, 140, 248, 0.95) 0%, #E6D5B8 50%, rgba(129, 140, 248, 0.95) 100%);
+    }
+    .card-plan-pro-luxury:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(217, 199, 160, 0.45), 0 16px 36px -8px rgba(15, 18, 38, 0.7);
+    }
+
+    /* Viền trong: cách vào 4px, 1px mờ rgba(255,255,255,0.14), bán kính cùng bo góc */
+    .card-plan-pro-inner-border {
+      position: absolute;
+      inset: 4px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 4 góc tem chứng nhận SVG tinh xảo */
+    .pro-corner-accent {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      color: #D9C7A0;
+      opacity: 0.85;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .pro-corner-tl { top: 6px; left: 6px; }
+    .pro-corner-tr { top: 6px; right: 6px; }
+    .pro-corner-bl { bottom: 6px; left: 6px; }
+    .pro-corner-br { bottom: 6px; right: 6px; }
+
+    /* Vệt sáng chạy dọc viền đúng 1 lần khi mở modal (800ms) */
+    .pro-shimmer-sweep {
+      position: absolute;
+      inset: -1px;
+      border-radius: 20px;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 3;
+    }
+    .pro-shimmer-sweep::after {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -60%;
+      width: 220%;
+      height: 220%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(217, 199, 160, 0.55) 40deg, transparent 80deg);
+      opacity: 0;
+    }
+    .pro-shimmer-active .pro-shimmer-sweep::after {
+      animation: proBorderShimmerSweep 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes proBorderShimmerSweep {
+      0% {
+        transform: rotate(0deg);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.95;
+      }
+      80% {
+        opacity: 0.75;
+      }
+      100% {
+        transform: rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card-plan-pro-luxury,
+      .card-plan-pro-luxury:hover {
+        transform: none !important;
+        transition: none !important;
+      }
+      .pro-shimmer-active .pro-shimmer-sweep::after {
+        animation: none !important;
+      }
+    }
+
   </style>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
@@ -6393,9 +6498,9 @@
             </div>
 
             <!-- THẺ 2: GÓI PLUS (KHUYÊN DÙNG) -->
-            <div id="cardPlanPlus" class="plan-card p-5 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-[#181B22] shadow-sm relative flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5">
-              <!-- Nhãn Khuyên dùng -->
-              <div class="absolute -top-3 left-5 px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-bold tracking-wider uppercase shadow-2xs">
+            <div id="cardPlanPlus" class="plan-card p-5 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-[#181B22] shadow-sm relative flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5" role="radio" aria-checked="false" tabindex="0">
+              <!-- Nhãn Khuyên dùng (tinh tế, không tranh với Pro) -->
+              <div class="absolute -top-3 left-5 px-2 py-0.5 rounded-md bg-indigo-600/90 text-white text-[9.5px] font-bold tracking-wider uppercase shadow-2xs">
                 Khuyên dùng
               </div>
 
@@ -6473,88 +6578,104 @@
               </div>
             </div>
 
-            <!-- THẺ 3: GÓI PRO (CAO CẤP NHẤT) -->
-            <div id="cardPlanPro" class="plan-card p-5 rounded-2xl border-2 border-amber-500/80 dark:border-amber-400/80 bg-gradient-to-b from-amber-500/[0.04] via-white to-white dark:from-amber-400/[0.06] dark:via-[#181B22] dark:to-[#181B22] shadow-md shadow-amber-500/10 dark:shadow-amber-400/10 relative flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:shadow-amber-500/15 hover:border-amber-500 dark:hover:border-amber-400 hover:-translate-y-1">
-              <!-- Nhãn Cao cấp nhất -->
-              <div class="absolute -top-3 left-5 px-2.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white text-[10px] font-extrabold tracking-wider uppercase shadow-sm flex items-center gap-1.5 ring-1 ring-amber-400/30">
-                <svg class="w-3 h-3 fill-current text-amber-100" viewBox="0 0 24 24">
-                  <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+            <!-- THẺ 3: GÓI PRO (CAO CẤP NHẤT - KHUNG KÉP CHAMPAGNE & NỀN INK) -->
+            <div id="cardPlanPro" class="plan-card card-plan-pro-luxury p-5 relative flex flex-col justify-between" role="radio" aria-checked="false" tabindex="0">
+              <!-- Khung kép: viền trong 1px mờ cách 4px -->
+              <div class="card-plan-pro-inner-border" aria-hidden="true"></div>
+
+              <!-- 4 góc tem chứng nhận SVG -->
+              <svg class="pro-corner-accent pro-corner-tl" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9V1H9"/></svg>
+              <svg class="pro-corner-accent pro-corner-tr" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 1H9V9"/></svg>
+              <svg class="pro-corner-accent pro-corner-bl" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 1V9H9"/></svg>
+              <svg class="pro-corner-accent pro-corner-br" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M9 1V9H1"/></svg>
+
+              <!-- Lớp quét sáng Shimmer chạy 1 lần khi mở modal -->
+              <div class="pro-shimmer-sweep" aria-hidden="true"></div>
+
+              <!-- Nhãn Cao cấp nhất ở mép trên đè lên viền -->
+              <div class="absolute -top-3 left-5 px-2.5 py-0.5 rounded-md bg-[#0F1226] border border-[#D9C7A0]/70 text-[#D9C7A0] text-[11px] font-bold tracking-[0.1em] uppercase shadow-sm flex items-center gap-1.5 z-10" aria-label="Gói cao cấp nhất">
+                <svg class="w-3.5 h-3.5 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 18h16M5 14l2.5-6L12 11l4.5-3L19 14H5z"/>
+                  <circle cx="5" cy="8" r="1.2" fill="currentColor"/>
+                  <circle cx="12" cy="6" r="1.2" fill="currentColor"/>
+                  <circle cx="19" cy="8" r="1.2" fill="currentColor"/>
                 </svg>
                 <span>Cao cấp nhất</span>
               </div>
 
-              <div>
-                <!-- Icon vương miện + Tên gói -->
+              <div class="relative z-2">
+                <!-- Tên gói Serif 24px + gạch champagne mảnh bên dưới -->
                 <div class="flex items-center justify-between mb-2 mt-1">
-                  <div class="flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-950/70 dark:to-amber-900/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shadow-xs">
-                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
-                      </svg>
-                    </span>
-                    <h4 class="font-serif font-bold text-lg text-amber-950 dark:text-amber-200 flex items-center gap-1.5">
-                      <span>Pro</span>
-                      <span class="text-[9px] font-sans font-extrabold px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300/60 dark:border-amber-700/60 uppercase tracking-wider">VIP</span>
-                    </h4>
+                  <div>
+                    <h4 class="font-serif font-bold text-[24px] text-white leading-tight">Pro</h4>
+                    <div class="w-8 h-[1.5px] bg-[#D9C7A0]/70 mt-1 rounded-full"></div>
                   </div>
-                  <span id="badgeCurrentPro" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold border border-amber-300/60 dark:border-amber-700/60">Đang dùng</span>
+                  <span id="badgeCurrentPro" class="hidden text-[10px] px-2 py-0.5 rounded-md bg-[#D9C7A0]/15 text-[#E6D5B8] font-bold border border-[#D9C7A0]/40">Đang dùng</span>
                 </div>
 
-                <p id="planDescPro" class="text-xs text-[#78756D] dark:text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
+                <p id="planDescPro" class="text-xs text-[#9AA3B2] min-h-[32px] leading-relaxed mb-3">
                   Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.
                 </p>
 
-                <!-- Giá -->
+                <!-- Giá: Serif 44px số sáng tabular-nums, / tháng muted sáng -->
                 <div class="py-2">
-                  <div id="cardSavingsPillPro" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 mb-1.5 transition-all duration-300 w-fit shadow-2xs">
-                    <svg class="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span id="cardSavingsTextPro">Tiết kiệm 310.000 ₫/năm</span>
+                  <div id="cardSavingsPillPro" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#D9C7A0]/10 text-[#D9C7A0] border border-[#D9C7A0]/30 mb-1.5 transition-all duration-300 w-fit">
+                    <svg class="w-3 h-3 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span id="cardSavingsTextPro">Tiết kiệm 20%</span>
                   </div>
                   <div class="flex items-baseline gap-1">
-                    <span class="font-serif text-[38px] leading-none font-bold text-[#1C1B18] dark:text-[#E8E6E1] tabular-nums transition-all" id="priceDisplayPro">129.000 ₫</span>
-                    <span class="text-xs text-[#78756D] dark:text-[#9AA3B2]" id="periodSuffixPro">/ tháng</span>
+                    <span class="font-serif text-[44px] leading-none font-bold text-white tabular-nums transition-all" id="priceDisplayPro">129.000 ₫</span>
+                    <span class="text-xs text-[#9AA3B2]" id="periodSuffixPro">/ tháng</span>
                   </div>
-                  <div class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-1.5 h-4 transition-all" id="priceYearlySubPro">
+                  <div class="text-[11px] text-[#9AA3B2] mt-1.5 h-4 transition-all" id="priceYearlySubPro">
                     <!-- JS chèn thông tin giá năm -->
                   </div>
                 </div>
 
-                <div class="border-t border-[#EBE8E1] dark:border-[#262C36] my-3.5"></div>
+                <div class="border-t border-white/10 my-3.5"></div>
 
                 <!-- Danh sách quyền lợi -->
                 <div id="planFeaturesContainerPro" class="space-y-2 text-xs">
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số bài học</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProLessons">50 bài</span>
+                    <span class="text-[#9AA3B2]">Số bài học</span>
+                    <span class="font-semibold text-white" id="featProLessons">50 bài</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Số danh mục</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProSections">10 mục</span>
+                    <span class="text-[#9AA3B2]">Số danh mục</span>
+                    <span class="font-semibold text-white" id="featProSections">10 mục</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Dung lượng mỗi bài</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProFileSize">2 MB</span>
+                    <span class="text-[#9AA3B2]">Dung lượng mỗi bài</span>
+                    <span class="font-semibold text-white" id="featProFileSize">2 MB</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Link chia sẻ đang chạy</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProActiveShares">Không giới hạn</span>
+                    <span class="text-[#9AA3B2]">Link chia sẻ đang chạy</span>
+                    <span class="font-semibold text-white" id="featProActiveShares">Không giới hạn</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Thùng rác lưu trữ</span>
-                    <span class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1]" id="featProTrashDays">365 ngày</span>
+                    <span class="text-[#9AA3B2]">Thùng rác lưu trữ</span>
+                    <span class="font-semibold text-white" id="featProTrashDays">365 ngày</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[#78756D] dark:text-[#9AA3B2]">Khóa mật khẩu link</span>
+                    <span class="text-[#9AA3B2]">Khóa mật khẩu link</span>
                     <span id="featProSharePassword" class="inline-flex items-center justify-center">
-                      <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      <svg class="w-4 h-4 text-[#D9C7A0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </span>
                   </div>
                 </div>
+
+                <!-- Dòng cuối: Bao gồm mọi quyền lợi của gói Plus -->
+                <div class="mt-3 pt-2.5 border-t border-white/10 flex items-center gap-1.5 text-xs text-[#E6D5B8]/90 font-medium">
+                  <svg class="w-3.5 h-3.5 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Bao gồm mọi quyền lợi của gói Plus</span>
+                </div>
               </div>
 
-              <!-- Nút chọn gói Pro (Gradient Ánh Kim Hoàng Gia) -->
-              <div class="mt-6 pt-2">
-                <button type="button" class="btn-select-plan w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-semibold text-xs shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 transition-all active:scale-[0.98] cursor-pointer" data-plan="pro" id="btnActionPro">
+              <!-- Nút chọn gói Pro (Nền trắng ngà chữ ink, hover champagne nhạt) -->
+              <div class="mt-6 pt-2 relative z-2">
+                <button type="button" class="btn-select-plan w-full py-2.5 rounded-xl bg-[#FAF8F5] hover:bg-[#EFE7D8] text-[#0F1226] font-semibold text-xs shadow-md shadow-black/20 transition-all active:scale-[0.98] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#D9C7A0] focus-visible:outline-none" data-plan="pro" id="btnActionPro">
                   Chọn gói Pro
                 </button>
               </div>
@@ -7669,6 +7790,17 @@
       void modal.offsetWidth;
       modal.classList.add('modal-active');
       document.body.style.overflow = 'hidden';
+
+      // Kích hoạt vệt sáng quét dọc viền thẻ Pro đúng 1 lần (800ms)
+      try {
+        const cardPro = document.getElementById('cardPlanPro');
+        if (cardPro) {
+          cardPro.classList.remove('pro-shimmer-active');
+          void cardPro.offsetWidth;
+          cardPro.classList.add('pro-shimmer-active');
+        }
+      } catch (eShimmer) {}
+
       requestAnimationFrame(() => updateUpgradePricingDisplay(false));
     }
 
@@ -7784,11 +7916,16 @@
       return String(val);
     }
 
-    function renderPasswordCheck(hasPass) {
+    function renderPasswordCheck(hasPass, tierKey = 'plus') {
       if (hasPass) {
+        if (tierKey === 'pro') {
+          return '<svg class="w-4 h-4 text-[#D9C7A0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        }
         return '<svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
       }
-      return '<span class="text-gray-400 dark:text-gray-500 font-bold">—</span>';
+      return tierKey === 'pro'
+        ? '<span class="text-white/30 font-bold">—</span>'
+        : '<span class="text-gray-400 dark:text-gray-500 font-bold">—</span>';
     }
 
     function updateUpgradePricingDisplay(triggerAnimation = false) {
@@ -7883,7 +8020,8 @@
         const textPro = document.getElementById('cardSavingsTextPro');
         if (pillPro && textPro) {
           if (isYearly && proSavings > 0) {
-            textPro.textContent = `Tiết kiệm ${proSavings.toLocaleString('vi-VN')} ₫/năm`;
+            const pct = pricing.yearlyDiscount > 0 ? pricing.yearlyDiscount : Math.round((proSavings / (pricing.proMonthly * 12)) * 100);
+            textPro.textContent = pct > 0 ? `Tiết kiệm ${pct}%` : `Tiết kiệm ${proSavings.toLocaleString('vi-VN')} ₫/năm`;
             pillPro.classList.remove('hidden');
             pillPro.classList.add('inline-flex');
           } else {
@@ -7949,7 +8087,17 @@
         }
         const btnActionPro = document.getElementById('btnActionPro');
         if (btnActionPro) {
-          btnActionPro.innerText = currentTier === 'pro' ? 'Gia hạn gói Pro' : 'Chọn gói Pro';
+          if (currentTier === 'pro') {
+            btnActionPro.innerText = 'Đang sử dụng';
+            btnActionPro.disabled = true;
+            btnActionPro.classList.add('opacity-60', 'cursor-default');
+            btnActionPro.classList.remove('hover:bg-[#EFE7D8]', 'active:scale-[0.98]', 'cursor-pointer');
+          } else {
+            btnActionPro.innerText = 'Chọn gói Pro';
+            btnActionPro.disabled = false;
+            btnActionPro.classList.remove('opacity-60', 'cursor-default');
+            btnActionPro.classList.add('hover:bg-[#EFE7D8]', 'active:scale-[0.98]', 'cursor-pointer');
+          }
         }
 
         // TỰ ĐỘNG CẬP NHẬT TẤT CẢ TÍNH NĂNG & HẠN MỨC CHO CẢ 3 GÓI TỪ PHIÊN BẢN ADMIN
@@ -8006,15 +8154,19 @@
 
             let valHtml = '';
             if (meta.type === 'bool') {
-              valHtml = `<span class="inline-flex items-center justify-center">${renderPasswordCheck(Boolean(val))}</span>`;
+              valHtml = `<span class="inline-flex items-center justify-center">${renderPasswordCheck(Boolean(val), tierKey)}</span>`;
             } else {
               const formatted = meta.format ? meta.format(val) : String(val);
-              valHtml = `<span class="${tierKey === 'free' ? 'font-medium' : 'font-semibold'} text-[#1C1B18] dark:text-[#E8E6E1]">${escapeHtml(formatted)}</span>`;
+              const textClass = tierKey === 'pro'
+                ? 'font-semibold text-white'
+                : (tierKey === 'free' ? 'font-medium' : 'font-semibold') + ' text-[#1C1B18] dark:text-[#E8E6E1]';
+              valHtml = `<span class="${textClass}">${escapeHtml(formatted)}</span>`;
             }
 
+            const labelClass = tierKey === 'pro' ? 'text-[#9AA3B2]' : 'text-[#78756D] dark:text-[#9AA3B2]';
             rows.push(`
               <div class="flex items-center justify-between">
-                <span class="text-[#78756D] dark:text-[#9AA3B2]">${escapeHtml(meta.label)}</span>
+                <span class="${labelClass}">${escapeHtml(meta.label)}</span>
                 ${valHtml}
               </div>
             `);
@@ -8024,10 +8176,12 @@
           const customPins = Array.isArray(planObj.customFeatures) ? planObj.customFeatures : [];
           customPins.forEach(line => {
             if (!line || !line.trim()) return;
+            const checkColor = tierKey === 'pro' ? 'text-[#D9C7A0]' : 'text-emerald-600 dark:text-emerald-400';
+            const textStyle = tierKey === 'pro' ? 'text-white' : 'text-[#1C1B18] dark:text-[#E8E6E1]';
             rows.push(`
               <div class="flex items-start gap-1.5 pt-0.5">
-                <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span class="text-xs text-[#1C1B18] dark:text-[#E8E6E1] leading-tight font-medium">${escapeHtml(line.trim())}</span>
+                <svg class="w-3.5 h-3.5 ${checkColor} shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span class="text-xs ${textStyle} leading-tight font-medium">${escapeHtml(line.trim())}</span>
               </div>
             `);
           });
@@ -8254,7 +8408,11 @@
         const titleEl = document.getElementById('upgradeModalTitle');
         const subTitleEl = document.getElementById('upgradeModalSubtitle');
         if (titleEl) {
-          titleEl.innerText = `Thanh toán gói ${planId.toUpperCase()}`;
+          if (planId.toLowerCase() === 'pro') {
+            titleEl.innerText = 'Thanh toán gói PRO · Cao cấp nhất';
+          } else {
+            titleEl.innerText = `Thanh toán gói ${planId.toUpperCase()}`;
+          }
         }
         if (subTitleEl) {
           subTitleEl.innerText = `Mã đơn: ${data.code || ''} · Mở app ngân hàng quét mã hoặc chuyển theo biên lai bên dưới`;
@@ -14918,8 +15076,8 @@
         } else if (currentTier === 'pro') {
           tierIconHref = '#icon-tier-pro';
           tierLabelText = 'Pro';
-          tierBadgeClass = 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-300 dark:from-amber-950/70 dark:to-orange-950/70 dark:text-amber-200 dark:border-amber-700 shadow-2xs';
-          headerTierClass = 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-300 dark:from-amber-950/70 dark:to-orange-950/70 dark:text-amber-200 dark:border-amber-700';
+          tierBadgeClass = 'bg-[#0F1226] text-[#E6D5B8] border border-[#D9C7A0]/60 shadow-2xs';
+          headerTierClass = 'bg-[#0F1226] text-[#E6D5B8] border border-[#D9C7A0]/60 shadow-2xs';
         } else if (currentTier === 'guest') {
           tierIconHref = '#icon-user';
           tierLabelText = 'Khách';
