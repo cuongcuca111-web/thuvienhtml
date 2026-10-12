@@ -340,12 +340,11 @@ module.exports = async function handler(req, res) {
   if (action === 'orders' && req.method === 'GET') {
     const statusFilter = String(req.query.status || 'all').toLowerCase();
     const search = String(req.query.search || '').trim().toLowerCase();
-    const limitNum = Math.min(100, Math.max(10, parseInt(req.query.limit, 10) || 50));
+    const limitNum = Math.min(500, Math.max(10, parseInt(req.query.limit, 10) || 250));
 
     try {
-      // Dùng 1 trường orderBy('createdAt', 'desc') an toàn 100% không cần composite index,
-      // sau đó lọc statusFilter và search ngay trong bộ nhớ.
-      const fetchLimit = statusFilter === 'all' && !search ? limitNum : 150;
+      // Luôn lấy đủ số lượng đơn (tối đa 500 đơn gần nhất) để sắp xếp đơn chờ lên trên
+      const fetchLimit = 500;
       let snap;
       try {
         if (statusFilter !== 'all') {
@@ -368,7 +367,7 @@ module.exports = async function handler(req, res) {
           console.warn('[Admin Billing Orders] Chưa có composite index status+createdAt, tự động chuyển sang lọc trong bộ nhớ:', queryErr.message);
           snap = await db.collection('billing_orders')
             .orderBy('createdAt', 'desc')
-            .limit(150)
+            .limit(500)
             .get();
         } else {
           throw queryErr;

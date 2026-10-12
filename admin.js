@@ -2383,7 +2383,7 @@ async function renderBillingTab(container) {
   try {
     const [cfgRes, ordersRes, banksRes] = await Promise.all([
       callAdminApi('/api/admin/billing/config').catch(() => ({ bankTransfer: {}, vietqrSecrets: {} })),
-      callAdminApi('/api/admin/billing/orders?status=all&limit=50').catch(() => ({ orders: [], counts: {} })),
+      callAdminApi('/api/admin/billing/orders?status=all&limit=250').catch(() => ({ orders: [], counts: {} })),
       callAdminApi('/api/admin/billing/banks').catch(() => ({ banks: [] }))
     ]);
 
@@ -2657,89 +2657,151 @@ function sortOrdersByPriority(orders) {
   });
 }
 
+function renderSingleOrderRow(ord) {
+  let statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800">Chờ thanh toán</span>`;
+  if (ord.status === 'paid') {
+    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800">Đã kích hoạt</span>`;
+  } else if (ord.status === 'user_confirmed') {
+    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-700 animate-pulse">Khách báo đã chuyển</span>`;
+  } else if (ord.status === 'expired') {
+    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">Hết hạn</span>`;
+  } else if (ord.status === 'cancelled') {
+    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800">Đã hủy</span>`;
+  }
+
+  const createdDate = ord.createdAt ? new Date(ord.createdAt).toLocaleString('vi-VN') : '—';
+  const amountStr = (ord.amount || 0).toLocaleString('vi-VN') + ' ₫';
+  const planText = `${(ord.planId || '').toUpperCase()} (${ord.period === 'yearly' ? 'Năm' : 'Tháng'})`;
+  const isPending = ord.status === 'user_confirmed' || ord.status === 'pending';
+
+  return `
+    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition ${ord.status === 'user_confirmed' ? 'bg-amber-50/25 dark:bg-amber-950/15' : ''} ${!isPending ? 'opacity-85' : ''}">
+      <td class="py-3 px-3 text-center">
+        <input type="checkbox" class="order-select-checkbox rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" data-status="${esc(ord.status)}">
+      </td>
+      <td class="py-3 px-3.5">
+        <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">${esc(ord.code)}</div>
+        <div class="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
+          <span>Nội dung CK:</span>
+          <span class="font-mono font-bold text-gray-800 dark:text-gray-200 select-all">${esc(ord.code)}</span>
+          <button type="button" class="btn-admin-copy-code p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-indigo-600 transition cursor-pointer" data-code="${esc(ord.code)}" title="Sao chép nội dung chuyển khoản">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+      </td>
+      <td class="py-3 px-3.5">
+        <div class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">${esc(ord.userEmail || 'Ẩn danh')}</div>
+        <div class="text-[10px] text-gray-400 font-mono">${esc((ord.uid || '').substring(0, 10))}...</div>
+      </td>
+      <td class="py-3 px-3.5 font-semibold text-gray-700 dark:text-gray-300">${esc(planText)}</td>
+      <td class="py-3 px-3.5 text-right font-mono font-bold text-[#1C1B18] dark:text-[#E8E6E1]">${esc(amountStr)}</td>
+      <td class="py-3 px-3.5 text-center">
+        ${ord.proofUrl ? `
+          <button type="button" class="btn-admin-view-proof inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 font-semibold text-[11px] border border-indigo-200 dark:border-indigo-800 transition cursor-pointer active:scale-95 shadow-2xs" data-img="${esc(ord.proofUrl)}" data-code="${esc(ord.code)}" data-amount="${esc(amountStr)}" data-email="${esc(ord.userEmail || 'Ẩn danh')}" data-id="${esc(ord.id)}" data-status="${esc(ord.status)}" title="Bấm để xem ảnh biên lai chuyển khoản">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Xem bill</span>
+          </button>
+        ` : `
+          <span class="text-[11px] text-gray-400 italic">Chưa có</span>
+        `}
+      </td>
+      <td class="py-3 px-3.5 text-center">${statusBadge}</td>
+      <td class="py-3 px-3.5 text-gray-500 text-[11px]">${esc(createdDate)}</td>
+      <td class="py-3 px-3.5 text-right space-x-1 whitespace-nowrap">
+        ${isPending ? `
+          <button type="button" class="btn-admin-confirm-order px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Duyệt đơn ngay">
+            Duyệt
+          </button>
+          <button type="button" class="btn-admin-cancel-order px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-gray-600 dark:text-gray-300 font-semibold text-[11px] transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Hủy đơn ngay">
+            Hủy
+          </button>
+        ` : ord.status === 'paid' ? `
+          <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Đã duyệt</span>
+          </span>
+        ` : ord.status === 'cancelled' ? `
+          <span class="inline-flex items-center gap-1 text-[11px] text-rose-500 dark:text-rose-400 font-medium">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Đã hủy</span>
+          </span>
+        ` : `
+          <span class="text-[11px] text-gray-400 font-medium">Hết hạn</span>
+        `}
+      </td>
+    </tr>
+  `;
+}
+
 function renderOrdersTableRows(orders) {
   const sorted = sortOrdersByPriority(orders);
   if (!sorted || sorted.length === 0) {
     return `<tr><td colspan="9" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
   }
 
-  return sorted.map(ord => {
-    let statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600">Chờ thanh toán</span>`;
-    if (ord.status === 'paid') {
-      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Đã kích hoạt</span>`;
-    } else if (ord.status === 'user_confirmed') {
-      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse">Khách báo đã chuyển</span>`;
-    } else if (ord.status === 'expired') {
-      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-500">Hết hạn</span>`;
-    } else if (ord.status === 'cancelled') {
-      statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Đã hủy</span>`;
-    }
+  // Tách biệt: Đơn chờ lên trên, Đơn đã duyệt hoặc đã hủy xuống dưới
+  const waitingOrders = sorted.filter(o => o.status === 'user_confirmed' || o.status === 'pending');
+  const finishedOrders = sorted.filter(o => o.status !== 'user_confirmed' && o.status !== 'pending');
 
-    const createdDate = ord.createdAt ? new Date(ord.createdAt).toLocaleString('vi-VN') : '—';
-    const amountStr = (ord.amount || 0).toLocaleString('vi-VN') + ' ₫';
-    const planText = `${(ord.planId || '').toUpperCase()} (${ord.period === 'yearly' ? 'Năm' : 'Tháng'})`;
+  let html = '';
 
-    return `
-      <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition ${ord.status === 'user_confirmed' ? 'bg-amber-50/20 dark:bg-amber-950/10' : ''}">
-        <td class="py-3 px-3 text-center">
-          <input type="checkbox" class="order-select-checkbox rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" data-status="${esc(ord.status)}">
-        </td>
-        <td class="py-3 px-3.5">
-          <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">${esc(ord.code)}</div>
-          <div class="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
-            <span>Nội dung CK:</span>
-            <span class="font-mono font-bold text-gray-800 dark:text-gray-200 select-all">${esc(ord.code)}</span>
-            <button type="button" class="btn-admin-copy-code p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-indigo-600 transition cursor-pointer" data-code="${esc(ord.code)}" title="Sao chép nội dung chuyển khoản">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-            </button>
+  // 1. CÁC ĐƠN CHỜ LÊN TRÊN (Ưu tiên cao nhất)
+  if (waitingOrders.length > 0) {
+    html += `
+      <tr class="bg-amber-50/70 dark:bg-amber-950/40 border-b border-amber-200/80 dark:border-amber-800/80">
+        <td colspan="9" class="py-2.5 px-3.5 text-[11px] font-bold text-amber-900 dark:text-amber-200">
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-2 uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              <span>Đơn chờ xử lý (${waitingOrders.length} đơn cần duyệt / chờ chuyển khoản)</span>
+            </span>
+            <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded-full">▲ Ưu tiên lên trên</span>
           </div>
-        </td>
-        <td class="py-3 px-3.5">
-          <div class="font-medium text-[#1C1B18] dark:text-[#E8E6E1]">${esc(ord.userEmail || 'Ẩn danh')}</div>
-          <div class="text-[10px] text-gray-400 font-mono">${esc((ord.uid || '').substring(0, 10))}...</div>
-        </td>
-        <td class="py-3 px-3.5 font-semibold text-gray-700 dark:text-gray-300">${esc(planText)}</td>
-        <td class="py-3 px-3.5 text-right font-mono font-bold text-[#1C1B18] dark:text-[#E8E6E1]">${esc(amountStr)}</td>
-        <td class="py-3 px-3.5 text-center">
-          ${ord.proofUrl ? `
-            <button type="button" class="btn-admin-view-proof inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 font-semibold text-[11px] border border-indigo-200 dark:border-indigo-800 transition cursor-pointer active:scale-95 shadow-2xs" data-img="${esc(ord.proofUrl)}" data-code="${esc(ord.code)}" data-amount="${esc(amountStr)}" data-email="${esc(ord.userEmail || 'Ẩn danh')}" data-id="${esc(ord.id)}" data-status="${esc(ord.status)}" title="Bấm để xem ảnh biên lai chuyển khoản">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              <span>Xem bill</span>
-            </button>
-          ` : `
-            <span class="text-[11px] text-gray-400 italic">Chưa có</span>
-          `}
-        </td>
-        <td class="py-3 px-3.5 text-center">${statusBadge}</td>
-        <td class="py-3 px-3.5 text-gray-500 text-[11px]">${esc(createdDate)}</td>
-        <td class="py-3 px-3.5 text-right space-x-1 whitespace-nowrap">
-          ${(ord.status === 'user_confirmed' || ord.status === 'pending') ? `
-            <button type="button" class="btn-admin-confirm-order px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Duyệt đơn ngay">
-              Duyệt
-            </button>
-            <button type="button" class="btn-admin-cancel-order px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-gray-600 dark:text-gray-300 font-semibold text-[11px] transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Hủy đơn ngay">
-              Hủy
-            </button>
-          ` : ord.status === 'paid' ? `
-            <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Đã duyệt</span>
-            </span>
-          ` : ord.status === 'cancelled' ? `
-            <span class="inline-flex items-center gap-1 text-[11px] text-rose-500 dark:text-rose-400 font-medium">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              <span>Đã hủy</span>
-            </span>
-          ` : `
-            <span class="text-[11px] text-gray-400 font-medium">Hết hạn</span>
-          `}
         </td>
       </tr>
     `;
-  }).join('');
+    html += waitingOrders.map(renderSingleOrderRow).join('');
+  } else if (finishedOrders.length > 0) {
+    // Nếu không có đơn chờ nào, hiển thị thông báo trạng thái
+    html += `
+      <tr class="bg-emerald-50/60 dark:bg-emerald-950/20 border-b border-emerald-200 dark:border-emerald-900/40">
+        <td colspan="9" class="py-2.5 px-3.5 text-[11px] text-emerald-800 dark:text-emerald-300 font-semibold">
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Tất cả đơn hàng đã được xử lý (không có đơn chờ duyệt)</span>
+            </span>
+            <span class="text-[10px] text-gray-500 font-mono">${finishedOrders.length} đơn đã hoàn tất</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  // 2. DẢI PHÂN CÁCH VÀ CÁC ĐƠN ĐÃ XỬ LÝ (ĐÃ DUYỆT HOẶC ĐÃ HỦY) XUỐNG DƯỚI
+  if (finishedOrders.length > 0) {
+    if (waitingOrders.length > 0) {
+      html += `
+        <tr class="bg-[#F4F3EF] dark:bg-[#12141A] border-y-2 border-gray-200 dark:border-gray-800">
+          <td colspan="9" class="py-2.5 px-3.5 text-[11px] font-bold text-gray-600 dark:text-gray-300">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 uppercase tracking-wider font-semibold">
+                <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <span>Đơn đã xử lý (${finishedOrders.length} đơn đã duyệt hoặc đã hủy)</span>
+              </span>
+              <span class="text-[10px] text-gray-500 font-medium bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded-full">▼ Tự động chuyển xuống dưới</span>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+    html += finishedOrders.map(renderSingleOrderRow).join('');
+  }
+
+  return html;
 }
 
-function bindBillingTabEvents(container, orders) {
+function bindBillingTabEvents(container, initialOrders) {
   // Chuyển tab con: Đơn hàng vs Cấu hình
   const btnOrders = container.querySelector('#btnSubTabOrders');
   const btnConfig = container.querySelector('#btnSubTabConfig');
@@ -2942,7 +3004,9 @@ function bindBillingTabEvents(container, orders) {
     };
   }
 
-  // Thao tác hàng loạt: Chọn đơn, Duyệt hàng loạt, Hủy hàng loạt
+  // Khai báo các phần tử bộ lọc và thao tác hàng loạt
+  const searchInput = container.querySelector('#billingSearchOrderInput');
+  const statusFilter = container.querySelector('#billingStatusFilter');
   const selectAllCheckbox = container.querySelector('#selectAllOrdersCheckbox');
   const bulkBar = container.querySelector('#bulkOrdersActionsBar');
   const selectedCountEl = container.querySelector('#selectedOrdersCount');
@@ -2968,6 +3032,135 @@ function bindBillingTabEvents(container, orders) {
     }
   }
 
+  function bindOrderRowEvents() {
+    // Checkbox từng hàng đơn
+    container.querySelectorAll('.order-select-checkbox').forEach(cb => {
+      cb.onchange = updateBulkBar;
+    });
+
+    // Duyệt đơn hàng thủ công (Bấm 1 lần là duyệt ngay, không popup confirm)
+    container.querySelectorAll('.btn-admin-confirm-order').forEach(btn => {
+      btn.onclick = async () => {
+        const orderId = btn.dataset.id;
+        const orderCode = btn.dataset.code || '';
+        btn.disabled = true;
+        btn.innerText = 'Đang duyệt...';
+        try {
+          const res = await callAdminApi('/api/admin/billing/orders-confirm', {
+            method: 'POST',
+            body: JSON.stringify({ orderId, reason: 'Admin duyệt thủ công từ bảng quản trị' })
+          });
+          toast(res.message || `Đã kích hoạt thành công đơn ${orderCode}!`);
+          await reloadOrdersList();
+        } catch (err) {
+          alert('Lỗi duyệt đơn: ' + err.message);
+          btn.disabled = false;
+          btn.innerText = 'Duyệt';
+        }
+      };
+    });
+
+    // Hủy đơn hàng thủ công (Bấm 1 lần là hủy ngay, không popup confirm)
+    container.querySelectorAll('.btn-admin-cancel-order').forEach(btn => {
+      btn.onclick = async () => {
+        const orderId = btn.dataset.id;
+        const orderCode = btn.dataset.code || '';
+        btn.disabled = true;
+        btn.innerText = 'Đang hủy...';
+        try {
+          await callAdminApi('/api/admin/billing/orders-cancel', {
+            method: 'POST',
+            body: JSON.stringify({ orderId, reason: 'Hủy bởi quản trị viên' })
+          });
+          toast(`Đã hủy đơn ${orderCode}`);
+          await reloadOrdersList();
+        } catch (err) {
+          alert('Lỗi hủy đơn: ' + err.message);
+          btn.disabled = false;
+          btn.innerText = 'Hủy';
+        }
+      };
+    });
+
+    // Sao chép nhanh nội dung chuyển khoản
+    container.querySelectorAll('.btn-admin-copy-code').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const code = btn.dataset.code || '';
+        if (!code) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(() => {
+            toast(`Đã sao chép nội dung CK: ${code}`);
+          }).catch(() => {});
+        } else {
+          toast(`Nội dung CK: ${code}`);
+        }
+      };
+    });
+
+    // Xem ảnh bill chuyển khoản (Lightbox)
+    container.querySelectorAll('.btn-admin-view-proof').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const imgUrl = btn.dataset.img;
+        const code = btn.dataset.code || '';
+        const amount = btn.dataset.amount || '';
+        const email = btn.dataset.email || '';
+        const orderId = btn.dataset.id || '';
+        const status = btn.dataset.status || '';
+        if (!imgUrl) return;
+        showAdminProofLightbox({
+          imgUrl,
+          code,
+          amount,
+          email,
+          orderId,
+          status,
+          container,
+          onApproved: reloadOrdersList
+        });
+      };
+    });
+  }
+
+  // Tải lại danh sách đơn hàng in-place, bảo toàn ô tìm kiếm & sắp xếp lại đơn
+  const reloadOrdersList = async () => {
+    const s = searchInput ? searchInput.value.trim() : '';
+    const st = statusFilter ? statusFilter.value : 'all';
+    try {
+      const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=250`);
+      const sorted = sortOrdersByPriority(res.orders || []);
+      const tbody = container.querySelector('#billingOrdersTableBody');
+      if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted);
+
+      // Cập nhật số đếm ở nút tab con và badge
+      const counts = res.counts || {};
+      const uCount = counts.userConfirmed || 0;
+      const btnOrdersEl = container.querySelector('#btnSubTabOrders');
+      if (btnOrdersEl) {
+        btnOrdersEl.innerHTML = `<span>Đơn hàng (${sorted.length})</span>${uCount > 0 ? `<span class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px]">${uCount}</span>` : ''}`;
+      }
+      const pendingDot = document.getElementById('adminPendingOrdersDot');
+      if (pendingDot) {
+        if (uCount > 0) pendingDot.classList.remove('hidden');
+        else pendingDot.classList.add('hidden');
+      }
+
+      // Reset thanh chọn hàng loạt
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      }
+      updateBulkBar();
+
+      // Gán lại sự kiện hàng đơn
+      bindOrderRowEvents();
+    } catch (err) {
+      console.error('Lỗi tải lại danh sách đơn hàng:', err);
+    }
+  };
+
+  // Checkbox chọn tất cả
   if (selectAllCheckbox) {
     selectAllCheckbox.onchange = () => {
       const allCheckboxes = container.querySelectorAll('.order-select-checkbox');
@@ -2976,10 +3169,7 @@ function bindBillingTabEvents(container, orders) {
     };
   }
 
-  container.querySelectorAll('.order-select-checkbox').forEach(cb => {
-    cb.onchange = updateBulkBar;
-  });
-
+  // Nút bỏ chọn tất cả
   if (btnDeselectAll) {
     btnDeselectAll.onclick = () => {
       container.querySelectorAll('.order-select-checkbox').forEach(cb => { cb.checked = false; });
@@ -2991,6 +3181,7 @@ function bindBillingTabEvents(container, orders) {
     };
   }
 
+  // Nút duyệt hàng loạt
   if (btnBulkConfirm) {
     btnBulkConfirm.onclick = async () => {
       const checkedBoxes = Array.from(container.querySelectorAll('.order-select-checkbox:checked'));
@@ -3006,15 +3197,17 @@ function bindBillingTabEvents(container, orders) {
           body: JSON.stringify({ orderIds, reason: 'Admin duyệt hàng loạt' })
         });
         toast(res.message || `Đã duyệt thành công ${orderIds.length} đơn!`);
-        renderBillingTab(container);
+        await reloadOrdersList();
       } catch (err) {
         alert('Lỗi duyệt hàng loạt: ' + err.message);
+      } finally {
         btnBulkConfirm.disabled = false;
-        btnBulkConfirm.innerHTML = '<span>Xác nhận hàng loạt</span>';
+        btnBulkConfirm.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Xác nhận hàng loạt</span>';
       }
     };
   }
 
+  // Nút hủy hàng loạt
   if (btnBulkCancel) {
     btnBulkCancel.onclick = async () => {
       const checkedBoxes = Array.from(container.querySelectorAll('.order-select-checkbox:checked'));
@@ -3030,113 +3223,27 @@ function bindBillingTabEvents(container, orders) {
           body: JSON.stringify({ orderIds, reason: 'Admin hủy hàng loạt' })
         });
         toast(res.message || `Đã hủy thành công ${orderIds.length} đơn!`);
-        renderBillingTab(container);
+        await reloadOrdersList();
       } catch (err) {
         alert('Lỗi hủy hàng loạt: ' + err.message);
+      } finally {
         btnBulkCancel.disabled = false;
-        btnBulkCancel.innerHTML = '<span>Hủy hàng loạt</span>';
+        btnBulkCancel.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> <span>Hủy hàng loạt</span>';
       }
     };
   }
 
-  // Duyệt đơn hàng thủ công (Bấm 1 lần là duyệt ngay, không popup confirm)
-  container.querySelectorAll('.btn-admin-confirm-order').forEach(btn => {
-    btn.onclick = async () => {
-      const orderId = btn.dataset.id;
-      const orderCode = btn.dataset.code || '';
-      btn.disabled = true;
-      btn.innerText = 'Đang duyệt...';
-      try {
-        const res = await callAdminApi('/api/admin/billing/orders-confirm', {
-          method: 'POST',
-          body: JSON.stringify({ orderId, reason: 'Admin duyệt thủ công từ bảng quản trị' })
-        });
-        toast(res.message || `Đã kích hoạt thành công đơn ${orderCode}!`);
-        renderBillingTab(container);
-      } catch (err) {
-        alert('Lỗi duyệt đơn: ' + err.message);
-        btn.disabled = false;
-        btn.innerText = 'Duyệt';
-      }
-    };
-  });
-
-  // Hủy đơn hàng (Bấm 1 lần là hủy ngay, không prompt, không confirm)
-  container.querySelectorAll('.btn-admin-cancel-order').forEach(btn => {
-    btn.onclick = async () => {
-      const orderId = btn.dataset.id;
-      const orderCode = btn.dataset.code || '';
-      btn.disabled = true;
-      btn.innerText = 'Đang hủy...';
-      try {
-        await callAdminApi('/api/admin/billing/orders-cancel', {
-          method: 'POST',
-          body: JSON.stringify({ orderId, reason: 'Hủy bởi quản trị viên' })
-        });
-        toast(`Đã hủy đơn ${orderCode}`);
-        renderBillingTab(container);
-      } catch (err) {
-        alert('Lỗi hủy đơn: ' + err.message);
-        btn.disabled = false;
-        btn.innerText = 'Hủy';
-      }
-    };
-  });
-
-  // Sao chép nhanh nội dung chuyển khoản
-  container.querySelectorAll('.btn-admin-copy-code').forEach(btn => {
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      const code = btn.dataset.code || '';
-      if (!code) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(() => {
-          toast(`Đã sao chép nội dung CK: ${code}`);
-        }).catch(() => {});
-      } else {
-        toast(`Nội dung CK: ${code}`);
-      }
-    };
-  });
-
-  // Xem ảnh bill chuyển khoản (Lightbox)
-  container.querySelectorAll('.btn-admin-view-proof').forEach(btn => {
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      const imgUrl = btn.dataset.img;
-      const code = btn.dataset.code || '';
-      const amount = btn.dataset.amount || '';
-      const email = btn.dataset.email || '';
-      const orderId = btn.dataset.id || '';
-      const status = btn.dataset.status || '';
-      if (!imgUrl) return;
-      showAdminProofLightbox({ imgUrl, code, amount, email, orderId, status, container });
-    };
-  });
-
   // Tìm kiếm & Lọc trạng thái đơn hàng
-  const searchInput = container.querySelector('#billingSearchOrderInput');
-  const statusFilter = container.querySelector('#billingStatusFilter');
+  if (searchInput) searchInput.oninput = debounce(reloadOrdersList, 300);
+  if (statusFilter) statusFilter.onchange = reloadOrdersList;
 
-  const filterHandler = async () => {
-    const s = searchInput ? searchInput.value.trim() : '';
-    const st = statusFilter ? statusFilter.value : 'all';
-    try {
-      const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=50`);
-      const sorted = sortOrdersByPriority(res.orders || []);
-      const tbody = container.querySelector('#billingOrdersTableBody');
-      if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted);
-      // Gán lại sự kiện cho các nút mới
-      bindBillingTabEvents(container, sorted);
-    } catch (e) {}
-  };
-
-  if (searchInput) searchInput.oninput = debounce(filterHandler, 300);
-  if (statusFilter) statusFilter.onchange = filterHandler;
+  // Gán sự kiện hàng ban đầu
+  bindOrderRowEvents();
+  updateBulkBar();
 }
 
 function showAdminProofLightbox(opts) {
-  const { imgUrl, code, amount, email, orderId, status, container } = opts || {};
+  const { imgUrl, code, amount, email, orderId, status, container, onApproved } = opts || {};
   let modal = document.getElementById('adminProofLightboxModal');
   if (!modal) {
     modal = document.createElement('div');
@@ -3204,7 +3311,11 @@ function showAdminProofLightbox(opts) {
         });
         toast(`Đã kích hoạt thành công đơn ${code}!`);
         closeMe();
-        if (container) renderBillingTab(container);
+        if (typeof onApproved === 'function') {
+          await onApproved();
+        } else if (container) {
+          renderBillingTab(container);
+        }
       } catch (err) {
         alert('Lỗi duyệt đơn: ' + err.message);
         btnApprove.disabled = false;
