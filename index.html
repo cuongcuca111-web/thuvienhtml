@@ -31825,21 +31825,17 @@
           </div>
 
           <div class="flex items-center gap-2 pt-1 border-t border-gray-200/60 dark:border-gray-800 flex-wrap">
-            <button data-action="copy" data-url="${link.url}" class="touch-target px-2.5 py-1 text-[11px] rounded-lg bg-white dark:bg-[#20242C] border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 transition flex items-center gap-1 cursor-pointer">
-              <svg class="w-3.5 h-3.5"><use href="#icon-copy"></use></svg>
+            <button data-action="copy" data-url="${link.url}" class="touch-target px-2.5 py-1 text-[11px] rounded-lg bg-white dark:bg-[#20242C] border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 transition flex items-center gap-1.5 cursor-pointer">
+              <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-copy"></use></svg>
               <span>Sao chép link</span>
             </button>
 
             ${isActive ? `
-            <button data-action="revoke" data-id="${link.id}" class="touch-target px-2.5 py-1 text-[11px] rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 hover:bg-rose-100 text-rose-700 dark:text-rose-300 font-medium transition flex items-center gap-1 cursor-pointer">
-              <svg class="w-3.5 h-3.5"><use href="#icon-alert-triangle"></use></svg>
+            <button data-action="revoke" data-id="${link.id}" class="touch-target px-2.5 py-1 text-[11px] rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 hover:bg-rose-100 dark:hover:bg-rose-900/80 text-rose-700 dark:text-rose-300 font-medium transition flex items-center gap-1.5 cursor-pointer ml-auto" title="Thu hồi link chia sẻ này">
+              <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-alert-triangle"></use></svg>
               <span>Thu hồi</span>
             </button>
             ` : ''}
-
-            <button data-action="delete" data-id="${link.id}" class="touch-target px-2 py-1 text-[11px] rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 transition ml-auto cursor-pointer" title="Xóa khỏi lịch sử">
-              <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
-            </button>
           </div>
         `;
 
@@ -31858,17 +31854,21 @@
               await navigator.clipboard.writeText(url);
               showToast("Đã sao chép liên kết vào clipboard!", "success");
             } catch (_) {}
-          } else if (action === 'revoke' && id) {
-            if (confirm("Bạn có chắc muốn thu hồi link chia sẻ này ngay lập tức? Người nhận sẽ không thể truy cập bài học nữa, và bạn sẽ có thể tạo link mới cho tài liệu này.")) {
-              revokeShareLink(id);
-            }
+          } else if ((action === 'revoke' || action === 'delete') && id) {
+            // // REQ: Thu hồi luôn không popup xác nhận, nút quay tròn ~1 giây rồi mới thu hồi hẳn
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            btn.innerHTML = `
+              <svg class="w-3.5 h-3.5 animate-spin text-rose-600 dark:text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Đang thu hồi…</span>
+            `;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await revokeShareLink(id);
           } else if (action === 'extend' && id) {
             extendShareLink(id, 7);
-          } else if (action === 'delete' && id) {
-            state.sharedLinks = state.sharedLinks.filter(l => l.id !== id);
-            saveSharedLinks();
-            renderSharedLinksList();
-            showToast("Đã xóa khỏi danh sách quản lý link");
           }
         });
       });
