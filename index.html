@@ -34,12 +34,61 @@
     function escapeAttr(value) { return escapeHtml(value); }
     window.escapeHtml = escapeHtml;
     window.escapeAttr = escapeAttr;
+
+    // // UNIFIED TIER BADGE COMPONENT
+    function tierBadge(tierInput, options = {}) {
+      try {
+        const rawTier = (tierInput || 'free').toLowerCase();
+        const tier = (rawTier === 'pro' || rawTier === 'plus' || rawTier === 'guest') ? rawTier : 'free';
+        const size = options.size || (options.variant === 'requires' ? 'sm' : 'md');
+        const variant = options.variant || 'plan';
+
+        let defaultLabel = 'Thường';
+        if (tier === 'pro') defaultLabel = 'Pro';
+        else if (tier === 'plus') defaultLabel = 'Plus';
+        else if (tier === 'guest') defaultLabel = 'Khách';
+
+        const labelText = options.label !== undefined ? String(options.label) : defaultLabel;
+        const titleText = options.title || (variant === 'requires' ? `Yêu cầu gói ${defaultLabel}` : `Gói ${defaultLabel}`);
+        const ariaText = options.ariaLabel || titleText;
+
+        let iconSvg = '';
+        if (tier === 'pro') {
+          iconSvg = '<svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 18h16M5 14.5l2.5-6L12 11.5l4.5-3L19 14.5H5z" fill="currentColor" fill-opacity="0.28"/><circle cx="5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="12" cy="6.5" r="1.3" fill="currentColor"/><circle cx="19" cy="8.5" r="1.3" fill="currentColor"/></svg>';
+        } else if (tier === 'plus') {
+          iconSvg = '<svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg>';
+        } else if (tier === 'guest') {
+          iconSvg = '<svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor" fill-opacity="0.25"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg>';
+        } else {
+          iconSvg = '<svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 20.5A7 7 0 0 1 9.8 6.6C15.5 5.5 17 5 19 2.5c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" fill="currentColor" fill-opacity="0.25"/><path d="M2 21.5c0-3 1.85-5.4 5.08-6C9.5 15 12 13.5 13 12.5"/></svg>';
+        }
+
+        const extraClass = options.className ? ` ${options.className}` : '';
+        const idAttr = options.id ? ` id="${escapeAttr(options.id)}"` : '';
+
+        return `<span${idAttr} class="tier-badge tier-badge--${tier} tier-badge--${size} tier-badge--${variant}${extraClass}" role="status" aria-label="${escapeAttr(ariaText)}" title="${escapeAttr(titleText)}" data-tier="${tier}" data-size="${size}" data-variant="${variant}">${iconSvg}<span class="tier-badge__label">${escapeHtml(labelText)}</span></span>`;
+      } catch (err) {
+        console.warn('[tierBadge] Lỗi tạo huy hiệu:', err);
+        return `<span class="tier-badge tier-badge--free tier-badge--sm"><span class="tier-badge__label">${escapeHtml(tierInput || 'Free')}</span></span>`;
+      }
+    }
+    window.tierBadge = tierBadge;
   </script>
 
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG bên dưới.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
+      {
+        version: 'v4.9.9',
+        date: '2026-10-12T17:05:00+07:00',
+        title: 'Hệ thống huy hiệu gói hợp nhất & Căn giữa quang học tuyệt đối',
+        items: [
+          { type: 'improved', text: 'Hợp nhất toàn bộ huy hiệu gói (Pro / Plus / Thường / Khách) trên toàn web về một thành phần tierBadge chuẩn' },
+          { type: 'fixed', text: 'Căn giữa quang học hình học chính xác cho icon ngôi sao 5 cánh và các icon gói theo bounding box' },
+          { type: 'improved', text: 'Đồng bộ huy hiệu tại nút tài khoản, menu, trợ lý AI đọc bài, chọn màu khung, chia sẻ link và quản trị' }
+        ]
+      },
       {
         version: 'v4.9.8',
         date: '2026-10-12T16:35:00+07:00',
@@ -1873,6 +1922,164 @@
       }
     }
 
+    /* ===== TIER BADGE ===== */
+    :root {
+      --tier-icon-shift-pro: 0px;
+      --tier-icon-shift-plus: -0.5px;
+      --tier-icon-shift-free: 0px;
+      --tier-icon-shift-guest: 0px;
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      border-radius: 9999px;
+      border: 1px solid var(--tier-border, transparent);
+      background: var(--tier-bg, transparent);
+      color: var(--tier-fg, inherit);
+      white-space: nowrap;
+      gap: 4px;
+      font-weight: 600;
+      font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+      box-sizing: border-box;
+      vertical-align: middle;
+      user-select: none;
+      flex-shrink: 0;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+      text-decoration: none !important;
+    }
+
+    .tier-badge:hover {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Kích thước */
+    .tier-badge--sm {
+      height: 18px;
+      font-size: 11px;
+      padding: 0 6px;
+      --tier-icon-size: 11px;
+    }
+    .tier-badge--md {
+      height: 22px;
+      font-size: 12px;
+      padding: 0 8px;
+      --tier-icon-size: 13px;
+    }
+    .tier-badge--lg {
+      height: 28px;
+      font-size: 14px;
+      padding: 0 10px;
+      --tier-icon-size: 16px;
+    }
+
+    /* Icon */
+    .tier-badge__icon {
+      display: block;
+      flex: none;
+      width: var(--tier-icon-size, 1em);
+      height: var(--tier-icon-size, 1em);
+      color: var(--tier-icon-color, currentColor);
+      transform: translateY(var(--tier-icon-shift, 0px));
+    }
+
+    .tier-badge__label {
+      display: inline-block;
+      line-height: 1;
+      letter-spacing: normal;
+    }
+
+    @supports (text-box-trim: trim-both) {
+      .tier-badge__label {
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+      }
+    }
+
+    /* Pro */
+    .tier-badge--pro {
+      --tier-bg: #0F1226;
+      --tier-fg: #E6D5B8;
+      --tier-border: rgba(217, 199, 160, 0.6);
+      --tier-icon-color: #D9C7A0;
+      --tier-icon-shift: var(--tier-icon-shift-pro);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .dark .tier-badge--pro, html.dark .tier-badge--pro {
+      --tier-bg: #0A0D1E;
+      --tier-fg: #F0E2C8;
+      --tier-border: rgba(217, 199, 160, 0.7);
+      --tier-icon-color: #E2D2AD;
+    }
+    .tier-badge--pro:hover {
+      border-color: rgba(217, 199, 160, 0.9);
+    }
+
+    /* Plus */
+    .tier-badge--plus {
+      --tier-bg: linear-gradient(135deg, #6366F1 0%, #A855F7 50%, #EC4899 100%);
+      --tier-fg: #FFFFFF;
+      --tier-border: rgba(255, 255, 255, 0.35);
+      --tier-icon-color: #FFFFFF;
+      --tier-icon-shift: var(--tier-icon-shift-plus);
+      box-shadow: 0 1px 2px rgba(99, 102, 241, 0.25);
+    }
+    .dark .tier-badge--plus, html.dark .tier-badge--plus {
+      --tier-bg: linear-gradient(135deg, #4F46E5 0%, #9333EA 50%, #DB2777 100%);
+      --tier-border: rgba(255, 255, 255, 0.25);
+    }
+    .tier-badge--plus:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Free / Thường */
+    .tier-badge--free {
+      --tier-bg: #F3F4F6;
+      --tier-fg: #374151;
+      --tier-border: #E5E7EB;
+      --tier-icon-color: #4B5563;
+      --tier-icon-shift: var(--tier-icon-shift-free);
+    }
+    .dark .tier-badge--free, html.dark .tier-badge--free {
+      --tier-bg: #1F242C;
+      --tier-fg: #D1D5DB;
+      --tier-border: #374151;
+      --tier-icon-color: #9CA3AF;
+    }
+    .tier-badge--free:hover {
+      border-color: #9CA3AF;
+    }
+
+    /* Guest / Khách */
+    .tier-badge--guest {
+      --tier-bg: #FEF3C7;
+      --tier-fg: #92400E;
+      --tier-border: #FCD34D;
+      --tier-icon-color: #B45309;
+      --tier-icon-shift: var(--tier-icon-shift-guest);
+    }
+    .dark .tier-badge--guest, html.dark .tier-badge--guest {
+      --tier-bg: #271E0B;
+      --tier-fg: #FCD34D;
+      --tier-border: #78350F;
+      --tier-icon-color: #FBBF24;
+    }
+
+    .tier-badge--requires {
+      cursor: pointer;
+    }
+    .tier-badge--requires:hover {
+      transform: translateY(-0.5px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tier-badge, .tier-badge--requires:hover {
+        transition: none !important;
+        transform: none !important;
+      }
+    }
   </style>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
@@ -2637,7 +2844,7 @@
                     <div class="min-w-0">
                       <div class="flex items-center gap-1.5">
                         <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Trợ lý AI đọc bài</span>
-                        <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white tracking-wider uppercase shadow-2xs shrink-0 cursor-default" title="Tính năng dành riêng cho gói Pro">PRO</span>
+                        <span id="aiAssistantRequiresBadge" class="shrink-0 flex items-center"><span class="tier-badge tier-badge--pro tier-badge--sm tier-badge--requires" role="status" aria-label="Yêu cầu gói Pro" title="Yêu cầu gói Pro" data-tier="pro" data-size="sm" data-variant="requires"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 18h16M5 14.5l2.5-6L12 11.5l4.5-3L19 14.5H5z" fill="currentColor" fill-opacity="0.28"/><circle cx="5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="12" cy="6.5" r="1.3" fill="currentColor"/><circle cx="19" cy="8.5" r="1.3" fill="currentColor"/></svg><span class="tier-badge__label">Pro</span></span></span>
                       </div>
                       <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Giải thích, ví dụ &amp; dịch trên thanh nổi</div>
                     </div>
@@ -2670,10 +2877,7 @@
             <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
           </div>
           <!-- Huy hiệu Tier thu gọn trên header -->
-          <span id="headerTierBadge" class="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border transition shadow-2xs" title="Gói tài khoản">
-            <svg class="w-3 h-3 shrink-0"><use id="headerTierIcon" href="#icon-tier-free"></use></svg>
-            <span id="headerTierText">Free</span>
-          </span>
+          <span id="headerTierBadge" class="hidden sm:inline-flex tier-badge tier-badge--free tier-badge--sm tier-badge--plan" role="status" aria-label="Gói Thường" title="Gói Thường" data-tier="free" data-size="sm" data-variant="plan"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 20.5A7 7 0 0 1 9.8 6.6C15.5 5.5 17 5 19 2.5c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" fill="currentColor" fill-opacity="0.25"/><path d="M2 21.5c0-3 1.85-5.4 5.08-6C9.5 15 12 13.5 13 12.5"/></svg><span class="tier-badge__label">Thường</span></span>
           <span id="headerAccountLabel" class="hidden min-[1180px]:inline-block font-medium max-w-[90px] truncate text-xs text-[#1C1917] dark:text-[#EDECE8]">Tài khoản</span>
           <svg class="w-3 h-3 hidden min-[1180px]:inline opacity-60 text-[#6E6B65] dark:text-[#979DA8] shrink-0"><use href="#icon-chevron-down"></use></svg>
         </button>
@@ -3469,10 +3673,7 @@
           <!-- Dòng 1: Tên & Huy hiệu gói -->
           <div class="flex items-center justify-between gap-1.5">
             <span class="font-bold text-[#1A1A1A] dark:text-[#ECEEF2] truncate text-xs" id="userNameDisplay">Người dùng</span>
-            <span id="userTierBadge" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border whitespace-nowrap">
-              <svg class="w-3 h-3 shrink-0"><use id="userTierIcon" href="#icon-tier-free"></use></svg>
-              <span id="userTierLabel">Free</span>
-            </span>
+            <span id="userTierBadge" class="tier-badge tier-badge--free tier-badge--md tier-badge--plan shrink-0" role="status" aria-label="Gói Thường" title="Gói Thường" data-tier="free" data-size="md" data-variant="plan"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 20.5A7 7 0 0 1 9.8 6.6C15.5 5.5 17 5 19 2.5c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" fill="currentColor" fill-opacity="0.25"/><path d="M2 21.5c0-3 1.85-5.4 5.08-6C9.5 15 12 13.5 13 12.5"/></svg><span class="tier-badge__label">Thường</span></span>
           </div>
 
           <!-- Dòng 2: Email & Trạng thái đồng bộ (Cùng hàng cân đối) -->
@@ -3676,21 +3877,15 @@
             </label>
             <label id="lblExpiry7" class="expiry-option-card cursor-pointer flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-[#111317] hover:border-indigo-400 dark:hover:border-indigo-500 transition text-center select-none relative group" title="Đặc quyền gói Plus trở lên">
               <input type="radio" name="shareDurationOption" value="7" class="sr-only" />
-              <!-- Huy hiệu PLUS nổi bật trên góc thẻ -->
-              <span class="absolute -top-2.5 -right-1 px-1.5 py-0.5 rounded-full text-[8.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs flex items-center gap-0.5 border border-indigo-200 dark:border-indigo-700 uppercase">
-                <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
-                <span>PLUS</span>
-              </span>
+              <!-- Huy hiệu Plus nổi bật trên góc thẻ -->
+              <span class="absolute -top-2.5 -right-1 tier-badge tier-badge--plus tier-badge--sm tier-badge--requires shadow-xs" role="status" aria-label="Yêu cầu gói Plus" title="Yêu cầu gói Plus" data-tier="plus" data-size="sm" data-variant="requires"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Plus</span></span>
               <span class="text-xs font-bold text-gray-800 dark:text-gray-200">7 Ngày</span>
               <span class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 font-medium">1 tuần</span>
             </label>
             <label id="lblExpiry30" class="expiry-option-card cursor-pointer flex flex-col items-center justify-center py-2 px-1 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-[#111317] hover:border-amber-400 dark:hover:border-amber-500 transition text-center select-none relative group" title="Đặc quyền gói Pro">
               <input type="radio" name="shareDurationOption" value="30" class="sr-only" />
-              <!-- Huy hiệu PRO nổi bật trên góc thẻ -->
-              <span class="absolute -top-2.5 -right-1 px-1.5 py-0.5 rounded-full text-[8.5px] font-black tracking-wider bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 text-white shadow-2xs flex items-center gap-0.5 border border-amber-200 dark:border-amber-700 uppercase">
-                <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M4 18h16M5 14l2.5-6L12 11l4.5-3L19 14H5z"/></svg>
-                <span>PRO</span>
-              </span>
+              <!-- Huy hiệu Pro nổi bật trên góc thẻ -->
+              <span class="absolute -top-2.5 -right-1 tier-badge tier-badge--pro tier-badge--sm tier-badge--requires shadow-xs" role="status" aria-label="Yêu cầu gói Pro" title="Yêu cầu gói Pro" data-tier="pro" data-size="sm" data-variant="requires"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 18h16M5 14.5l2.5-6L12 11.5l4.5-3L19 14.5H5z" fill="currentColor" fill-opacity="0.28"/><circle cx="5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="12" cy="6.5" r="1.3" fill="currentColor"/><circle cx="19" cy="8.5" r="1.3" fill="currentColor"/></svg><span class="tier-badge__label">Pro</span></span>
               <span class="text-xs font-bold text-gray-800 dark:text-gray-200">30 Ngày</span>
               <span class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">1 tháng</span>
             </label>
@@ -3813,11 +4008,8 @@
         <label id="btnCustomColorLabel" class="relative w-5 h-5 rounded-full border-2 border-white/80 dark:border-black/80 hover:scale-110 active:scale-95 transition cursor-pointer flex items-center justify-center overflow-hidden" title="Chọn màu tùy ý" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);">
           <input type="color" id="customFrameColorInput" class="opacity-0 w-0 h-0 absolute cursor-pointer" value="#6366f1" />
         </label>
-        <!-- Mác PLUS khi ở chế độ Free -->
-        <span id="badgePlusCustomColor" class="hidden absolute -top-2.5 -right-3.5 px-1 py-0.2 rounded-full text-[7.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs items-center gap-0.5 border border-indigo-200/60 dark:border-indigo-700/60 uppercase pointer-events-none select-none z-10 leading-tight">
-          <svg class="w-2 h-2 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
-          <span>PLUS</span>
-        </span>
+        <!-- Mác Plus khi ở chế độ Free -->
+        <span id="badgePlusCustomColor" class="hidden absolute -top-2.5 -right-3.5 tier-badge tier-badge--plus tier-badge--sm tier-badge--requires shadow-xs scale-[0.8] origin-left pointer-events-none select-none z-10" role="status" aria-label="Yêu cầu gói Plus" title="Yêu cầu gói Plus" data-tier="plus" data-size="sm" data-variant="requires"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Plus</span></span>
       </div>
     </div>
 
@@ -5920,7 +6112,7 @@
           <div class="flex items-center gap-2">
             <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
               <span>Hạn mức:</span>
-              <span id="sharedLinksTierBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Gói Thường</span>
+              <span id="sharedLinksTierBadgeContainer"><span id="sharedLinksTierBadge" class="tier-badge tier-badge--free tier-badge--sm tier-badge--plan" role="status" aria-label="Gói Thường" title="Gói Thường" data-tier="free" data-size="sm" data-variant="plan"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 20.5A7 7 0 0 1 9.8 6.6C15.5 5.5 17 5 19 2.5c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" fill="currentColor" fill-opacity="0.25"/><path d="M2 21.5c0-3 1.85-5.4 5.08-6C9.5 15 12 13.5 13 12.5"/></svg><span class="tier-badge__label">Thường</span></span></span>
             </span>
           </div>
           <div class="flex items-center gap-1.5">
@@ -6504,8 +6696,8 @@
                   <div class="flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-gray-100 dark:bg-[#20252E] text-gray-600 dark:text-gray-300 flex items-center justify-center">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
-                        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                        <path d="M11 20.5A7 7 0 0 1 9.8 6.6C15.5 5.5 17 5 19 2.5c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" fill="currentColor" fill-opacity="0.25"></path>
+                        <path d="M2 21.5c0-3 1.85-5.4 5.08-6C9.5 15 12 13.5 13 12.5"></path>
                       </svg>
                     </span>
                     <h4 class="font-serif font-bold text-lg text-[#1C1B18] dark:text-[#E8E6E1]">Thường</h4>
@@ -6566,8 +6758,8 @@
                 <div class="flex items-center justify-between mb-2 mt-1">
                   <div class="flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"></path>
                       </svg>
                     </span>
                     <h4 class="font-serif font-bold text-lg text-indigo-950 dark:text-indigo-300">Plus</h4>
@@ -6651,11 +6843,11 @@
 
               <!-- Nhãn Cao cấp nhất ở mép trên đè lên viền -->
               <div class="absolute -top-3 left-5 px-2.5 py-0.5 rounded-md bg-[#0F1226] border border-[#D9C7A0]/70 text-[#D9C7A0] text-[11px] font-bold tracking-[0.1em] uppercase shadow-sm flex items-center gap-1.5 z-10" aria-label="Gói cao cấp nhất">
-                <svg class="w-3.5 h-3.5 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 18h16M5 14l2.5-6L12 11l4.5-3L19 14H5z"/>
-                  <circle cx="5" cy="8" r="1.2" fill="currentColor"/>
-                  <circle cx="12" cy="6" r="1.2" fill="currentColor"/>
-                  <circle cx="19" cy="8" r="1.2" fill="currentColor"/>
+                <svg class="w-3.5 h-3.5 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <path d="M4 18h16M5 14.5l2.5-6L12 11.5l4.5-3L19 14.5H5z" fill="currentColor" fill-opacity="0.28"/>
+                  <circle cx="5" cy="8.5" r="1.3" fill="currentColor"/>
+                  <circle cx="12" cy="6.5" r="1.3" fill="currentColor"/>
+                  <circle cx="19" cy="8.5" r="1.3" fill="currentColor"/>
                 </svg>
                 <span>Cao cấp nhất</span>
               </div>
@@ -7150,10 +7342,9 @@
       <!-- Tóm tắt thông tin gói đang xử lý -->
       <div class="p-3.5 rounded-xl bg-white dark:bg-[#1C2028] border border-[#EBE8E1] dark:border-[#232833] flex items-center justify-between text-xs">
         <div>
-          <span class="text-[#78756D] dark:text-[#9AA3B2] text-[11px]">Gói dịch vụ</span>
-          <p id="qrLoadingPlanName" class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1] mt-0.5 font-sans">
-            Gói Plus (1 Tháng)
-          </p>
+          <div id="qrLoadingPlanName" class="font-semibold text-[#1C1B18] dark:text-[#E8E6E1] mt-0.5 font-sans flex items-center gap-1.5">
+            <span class="tier-badge tier-badge--plus tier-badge--sm tier-badge--plan" role="status" aria-label="Gói Plus" title="Gói Plus" data-tier="plus" data-size="sm" data-variant="plan"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Plus</span></span> <span class="font-normal text-xs text-stone-500">(1 Tháng)</span>
+          </div>
         </div>
         <div class="text-right">
           <span class="text-[#78756D] dark:text-[#9AA3B2] text-[11px]">Số tiền</span>
@@ -8316,9 +8507,13 @@
         const amountEl = document.getElementById('qrLoadingAmount');
 
         if (planNameEl) {
-          const planLabel = planId === 'pro' ? 'Gói Pro' : 'Gói Plus';
           const periodLabel = period === 'yearly' ? '1 Năm' : '1 Tháng';
-          planNameEl.innerText = `${planLabel} (${periodLabel})`;
+          if (typeof window.tierBadge === 'function') {
+            planNameEl.innerHTML = `<div class="flex items-center gap-1.5">${window.tierBadge(planId, { size: 'sm', variant: 'plan' })} <span class="font-normal text-xs text-stone-500">(${periodLabel})</span></div>`;
+          } else {
+            const planLabel = planId === 'pro' ? 'Gói Pro' : 'Gói Plus';
+            planNameEl.innerText = `${planLabel} (${periodLabel})`;
+          }
         }
         if (amountEl) {
           amountEl.innerText = `${(amount || 0).toLocaleString('vi-VN')} ₫`;
@@ -8482,10 +8677,11 @@
         const titleEl = document.getElementById('upgradeModalTitle');
         const subTitleEl = document.getElementById('upgradeModalSubtitle');
         if (titleEl) {
-          if (planId.toLowerCase() === 'pro') {
-            titleEl.innerText = 'Thanh toán gói PRO · Cao cấp nhất';
+          if (typeof window.tierBadge === 'function') {
+            titleEl.innerHTML = `<span class="inline-flex items-center gap-2">Thanh toán ${window.tierBadge(planId, { size: 'md', variant: 'plan' })}</span>`;
           } else {
-            titleEl.innerText = `Thanh toán gói ${planId.toUpperCase()}`;
+            const planLabel = planId.toLowerCase() === 'pro' ? 'Pro' : 'Plus';
+            titleEl.innerText = `Thanh toán gói ${planLabel}`;
           }
         }
         if (subTitleEl) {
@@ -15137,43 +15333,36 @@
         // KHỐI 3: HUY HIỆU TIER (FREE / PLUS / PRO / GUEST) HEADER & POPOVER
         // -------------------------------------------------------------
         const currentTier = isAnonymous ? 'guest' : (state.userTier || 'free');
-        let tierIconHref = '#icon-tier-free';
-        let tierLabelText = 'Free';
-        let tierBadgeClass = 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
-        let headerTierClass = 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
-
-        if (currentTier === 'plus') {
-          tierIconHref = '#icon-tier-plus';
-          tierLabelText = 'Plus';
-          tierBadgeClass = 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800';
-          headerTierClass = 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800';
-        } else if (currentTier === 'pro') {
-          tierIconHref = '#icon-tier-pro';
-          tierLabelText = 'Pro';
-          tierBadgeClass = 'bg-[#0F1226] text-[#E6D5B8] border border-[#D9C7A0]/60 shadow-2xs';
-          headerTierClass = 'bg-[#0F1226] text-[#E6D5B8] border border-[#D9C7A0]/60 shadow-2xs';
-        } else if (currentTier === 'guest') {
-          tierIconHref = '#icon-user';
-          tierLabelText = 'Khách';
-          tierBadgeClass = 'bg-amber-100/90 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800';
-          headerTierClass = 'bg-amber-100/90 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800';
-        }
-
         try {
           const headerTierBadge = document.getElementById('headerTierBadge');
-          if (headerTierBadge) {
-            headerTierBadge.className = `hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border transition shadow-2xs ${headerTierClass}`;
-            headerTierBadge.title = `Gói tài khoản: ${tierLabelText}`;
+          if (headerTierBadge && typeof window.tierBadge === 'function') {
+            headerTierBadge.outerHTML = window.tierBadge(currentTier, {
+              size: 'sm',
+              variant: 'plan',
+              id: 'headerTierBadge',
+              className: 'hidden sm:inline-flex'
+            });
           }
-          setAttr('headerTierIcon', 'href', tierIconHref);
-          setText('headerTierText', tierLabelText);
 
           const userTierBadge = document.getElementById('userTierBadge');
-          if (userTierBadge) {
-            userTierBadge.className = `inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 shadow-2xs border ${tierBadgeClass}`;
+          if (userTierBadge && typeof window.tierBadge === 'function') {
+            userTierBadge.outerHTML = window.tierBadge(currentTier, {
+              size: 'md',
+              variant: 'plan',
+              id: 'userTierBadge',
+              className: 'shrink-0'
+            });
           }
-          setAttr('userTierIcon', 'href', tierIconHref);
-          setText('userTierLabel', tierLabelText);
+
+          // Cập nhật nhãn yêu cầu Pro ở popover Tùy chọn hiển thị (Trợ lý AI đọc bài)
+          const aiReqBadge = document.getElementById('aiAssistantRequiresBadge');
+          if (aiReqBadge) {
+            if (currentTier === 'pro') {
+              aiReqBadge.innerHTML = '<span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold" title="Đã mở khóa toàn bộ quyền lợi">✓ Đã mở</span>';
+            } else if (typeof window.tierBadge === 'function') {
+              aiReqBadge.innerHTML = window.tierBadge('pro', { size: 'sm', variant: 'requires' });
+            }
+          }
         } catch (errK3) {
           console.warn("[updateUserUI] Lỗi khối 3 (Tier badges):", errK3);
         }
@@ -19950,9 +20139,9 @@
       }
 
       // Nếu đang ở Free nhưng đang lưu màu custom hoặc màu khác cam thì hoàn nguyên về màu mặc định
-      if (!isPlusOrPro && typeof activeFramingColor !== 'undefined' && activeFramingColor === 'custom') {
-        activeFramingColor = 'yellow';
-        try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
+      if (!isPlusOrPro && typeof activeFramingColor !== 'undefined' && !isDefaultFrameColor(activeFramingColor)) {
+        activeFramingColor = DEFAULT_FRAME_COLOR;
+        try { localStorage.setItem('last_framing_color', DEFAULT_FRAME_COLOR); } catch (_) {}
       }
     }
     window.updateCustomColorBadges = updateCustomColorBadges;
@@ -19960,6 +20149,22 @@
     // ============================================================
     // BỘ ĐIỀU PHỐI QUYỀN CHỌN MÀU KHUNG (FRAME COLORS GATEKEEPER)
     // ============================================================
+    const DEFAULT_FRAME_COLOR = 'yellow';
+    function normalizeFrameColor(color) {
+      if (!color) return DEFAULT_FRAME_COLOR;
+      const c = String(color).toLowerCase().trim();
+      if (c === 'cam' || c === '#d97706' || c === '#f59e0b' || c === 'yellow' || c === 'orange') {
+        return DEFAULT_FRAME_COLOR;
+      }
+      return c;
+    }
+    function isDefaultFrameColor(color) {
+      return normalizeFrameColor(color) === DEFAULT_FRAME_COLOR;
+    }
+    window.DEFAULT_FRAME_COLOR = DEFAULT_FRAME_COLOR;
+    window.normalizeFrameColor = normalizeFrameColor;
+    window.isDefaultFrameColor = isDefaultFrameColor;
+
     function canUseFrameColors() {
       try {
         if (state && state.isAdmin) return true;
@@ -19975,6 +20180,7 @@
     window.canUseFrameColors = canUseFrameColors;
 
     let lastFrameColorDismissTime = 0;
+    let lastFrameColorShowTime = 0;
     let frameColorAutoCloseTimer = null;
     let frameColorOutsideClickListener = null;
     let frameColorEscKeyListener = null;
@@ -20005,10 +20211,17 @@
 
     function showFrameColorUpgrade(anchorEl) {
       try {
+        const now = Date.now();
+        // Chống lặp popup: bỏ qua nếu vừa mới hiển thị trong vòng 300ms
+        if (now - lastFrameColorShowTime < 300) {
+          return;
+        }
+        lastFrameColorShowTime = now;
+
         // Tự động đóng popover cũ nếu đang mở để chỉ giữ 1 popover duy nhất
         hideFrameColorUpgrade();
 
-        const isRecentDismissed = (Date.now() - lastFrameColorDismissTime) < 60000;
+        const isRecentDismissed = (now - lastFrameColorDismissTime) < 60000;
 
         // Kích hoạt hiệu ứng rung nhẹ chấm cam 200ms
         const camDots = document.querySelectorAll('.hl-color-btn[data-color="yellow"], .mobile-hl-color-btn[data-color="yellow"] span');
@@ -20195,18 +20408,30 @@
     }
     window.showFrameColorUpgrade = showFrameColorUpgrade;
 
-    // HÀM CỔNG DUY NHẤT KIỂM DUYỆT ĐỔI MÀU KHUNG
+    // HÀM CỔNG DUY NHẤT KIỂM DUYỆT ĐỔI MÀU KHUNG (CHỈ GỌI TỪ SỰ KIỆN CLICK LÊN CHẤM MÀU)
     function requestFrameColor(color, anchorEl) {
       try {
-        // Màu cam mặc định ('yellow') luôn luôn được phép cho mọi gói
-        if (color === 'yellow' || color === '#d97706') {
+        const normColor = normalizeFrameColor(color);
+
+        // Màu cam mặc định ('yellow') luôn luôn được phép cho mọi gói và khách
+        if (isDefaultFrameColor(normColor)) {
           return true;
         }
 
         // Màu tùy ý (custom): yêu cầu quyền customColor hoặc frameColors
-        if (color === 'custom') {
+        if (normColor === 'custom') {
           const allowedCustom = (typeof canUseCustomColor === 'function' && canUseCustomColor()) || canUseFrameColors();
           if (allowedCustom) return true;
+
+          // Nếu gói Thường/Khách không có quyền, đặt lại activeFramingColor về mặc định
+          if (typeof activeFramingColor !== 'undefined') {
+            activeFramingColor = DEFAULT_FRAME_COLOR;
+            try { localStorage.setItem('last_framing_color', DEFAULT_FRAME_COLOR); } catch (_) {}
+            if (typeof updateToolbarColorIndicators === 'function') {
+              updateToolbarColorIndicators();
+            }
+          }
+
           showFrameColorUpgrade(anchorEl || document.getElementById('wrapCustomColorBtn'));
           return false;
         }
@@ -20216,8 +20441,19 @@
           return true;
         }
 
-        // Bị chặn: hiện gợi ý nâng cấp
-        showFrameColorUpgrade(anchorEl || document.querySelector(`.hl-color-btn[data-color="${color}"]`));
+        // Bị khóa (gói Thường/Khách bấm chấm màu khác cam):
+        // 1. Luôn hoàn nguyên state activeFramingColor về cam mặc định để không dính sang lần Đóng khung sau
+        if (typeof activeFramingColor !== 'undefined') {
+          activeFramingColor = DEFAULT_FRAME_COLOR;
+          try { localStorage.setItem('last_framing_color', DEFAULT_FRAME_COLOR); } catch (_) {}
+          if (typeof updateToolbarColorIndicators === 'function') {
+            updateToolbarColorIndicators();
+          }
+        }
+
+        // 2. Hiện gợi ý nâng cấp (chỉ 1 popup duy nhất)
+        const targetBtn = anchorEl || document.querySelector(`.hl-color-btn[data-color="${normColor}"]`) || document.querySelector(`.mobile-hl-color-btn[data-color="${normColor}"]`);
+        showFrameColorUpgrade(targetBtn);
         return false;
       } catch (err) {
         console.warn('[requestFrameColor] Lỗi:', err);
@@ -27719,29 +27955,30 @@
         }
       }
 
-      let chosenColor = colorName || activeFramingColor || 'yellow';
+      let rawChosen = colorName || activeFramingColor || DEFAULT_FRAME_COLOR;
+      let chosenColor = (typeof normalizeFrameColor === 'function') ? normalizeFrameColor(rawChosen) : (rawChosen || 'yellow');
       const hasFrameColorsPermission = typeof canUseFrameColors === 'function' ? canUseFrameColors() : true;
-      if (!hasFrameColorsPermission && chosenColor !== 'yellow') {
-        chosenColor = 'yellow';
-        activeFramingColor = 'yellow';
-        try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
+      const isDefault = (typeof isDefaultFrameColor === 'function') ? isDefaultFrameColor(chosenColor) : (chosenColor === 'yellow');
+
+      if (!hasFrameColorsPermission && !isDefault) {
+        chosenColor = (typeof DEFAULT_FRAME_COLOR !== 'undefined') ? DEFAULT_FRAME_COLOR : 'yellow';
+        activeFramingColor = chosenColor;
+        try { localStorage.setItem('last_framing_color', chosenColor); } catch (_) {}
       }
 
-      const isCustom = (chosenColor === 'custom' || Boolean(customColor));
-      const isCustomAllowed = typeof canUseCustomColor === 'function' ? canUseCustomColor() : hasFrameColorsPermission;
+      const isCustom = (chosenColor === 'custom');
+      const isCustomAllowed = isCustom && (typeof canUseCustomColor === 'function' ? canUseCustomColor() : hasFrameColorsPermission);
 
       if (isCustom && !isCustomAllowed) {
-        if (typeof showFrameColorUpgrade === 'function') {
-          showFrameColorUpgrade(document.getElementById('wrapCustomColorBtn'));
-        }
-        chosenColor = 'yellow';
-        activeFramingColor = 'yellow';
-        try { localStorage.setItem('last_framing_color', 'yellow'); } catch (_) {}
+        // Tuyệt đối KHÔNG gọi popup nâng cấp ở đây! Tự động quay về cam mặc định
+        chosenColor = (typeof DEFAULT_FRAME_COLOR !== 'undefined') ? DEFAULT_FRAME_COLOR : 'yellow';
+        activeFramingColor = chosenColor;
+        try { localStorage.setItem('last_framing_color', chosenColor); } catch (_) {}
         if (typeof updateToolbarColorIndicators === 'function') {
           updateToolbarColorIndicators();
         }
       }
-      const chosenCustomColor = (chosenColor === 'custom' && isCustomAllowed ? (customColor || activeCustomColor) : null);
+      const chosenCustomColor = (isCustom && isCustomAllowed ? (customColor || activeCustomColor) : null);
       const chosenLabel = (labelText || '').trim().substring(0, 12);
       const chosenNote = (noteText || '').trim();
 
@@ -28039,30 +28276,51 @@
     const btnApplyFraming = document.getElementById('btnApplyFraming');
     if (btnApplyFraming) {
       btnApplyFraming.addEventListener('click', () => {
-        applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
+        try {
+          const hasColorPerm = typeof canUseFrameColors === 'function' ? canUseFrameColors() : false;
+          let colorToUse = (typeof normalizeFrameColor === 'function') ? normalizeFrameColor(activeFramingColor) : (activeFramingColor || 'yellow');
+          let customColorToUse = null;
+
+          if (!hasColorPerm || (typeof isDefaultFrameColor === 'function' && isDefaultFrameColor(colorToUse))) {
+            colorToUse = (typeof DEFAULT_FRAME_COLOR !== 'undefined') ? DEFAULT_FRAME_COLOR : 'yellow';
+            activeFramingColor = colorToUse;
+            try { localStorage.setItem('last_framing_color', colorToUse); } catch (_) {}
+          } else if (colorToUse === 'custom') {
+            const hasCustomPerm = typeof canUseCustomColor === 'function' ? canUseCustomColor() : hasColorPerm;
+            if (hasCustomPerm) {
+              customColorToUse = activeCustomColor || null;
+            } else {
+              colorToUse = (typeof DEFAULT_FRAME_COLOR !== 'undefined') ? DEFAULT_FRAME_COLOR : 'yellow';
+              activeFramingColor = colorToUse;
+            }
+          }
+
+          // Nút Đóng khung chỉ tạo khung bằng màu đang chọn và KHÔNG BAO GIỜ gọi gate/popup nâng cấp
+          applyFramingToCurrentSelection(colorToUse, '', '', customColorToUse);
+        } catch (err) {
+          console.warn('[btnApplyFraming] Lỗi khi đóng khung:', err);
+        }
       });
     }
 
     // 4 nút màu có sẵn trên Toolbar
     document.querySelectorAll('#highlightFloatingToolbar .hl-color-btn').forEach(btn => {
-      ['pointerdown', 'mousedown', 'touchstart'].forEach(evtName => {
-        btn.addEventListener(evtName, (e) => {
-          const color = btn.getAttribute('data-color') || 'yellow';
-          if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-          }
-        }, { passive: false });
+      btn.addEventListener('pointerdown', (e) => {
+        // Chỉ ngăn mất vùng chọn văn bản, KHÔNG gọi gate/popup ở sự kiện pointerdown
+        e.preventDefault();
       });
 
       btn.addEventListener('click', (e) => {
-        const color = btn.getAttribute('data-color') || 'yellow';
+        e.preventDefault();
+        e.stopPropagation();
+        const rawColor = btn.getAttribute('data-color') || 'yellow';
+        const color = (typeof normalizeFrameColor === 'function') ? normalizeFrameColor(rawColor) : rawColor;
+
+        // Gate requestFrameColor CHỈ ĐƯỢC GỌI TỪ SỰ KIỆN CLICK LÊN CHẤM MÀU
         if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
-          e.preventDefault();
-          e.stopPropagation();
           return;
         }
+
         activeFramingColor = color;
         localStorage.setItem('last_framing_color', color);
         updateToolbarColorIndicators();
@@ -28073,7 +28331,7 @@
           activeHighlightItem.updatedAt = Date.now();
           saveLearningData();
           postMessageToLessonIframe({ type: 'APPLY_COLOR', id: activeHighlightItem.id, color: color });
-          showToast(`Đã đổi màu khung sang ${color === 'yellow' ? 'Vàng' : color === 'green' ? 'Xanh' : color === 'pink' ? 'Hồng' : 'Tím'}`);
+          showToast(`Đã đổi màu khung sang ${color === 'yellow' ? 'Cam' : color === 'green' ? 'Xanh' : color === 'pink' ? 'Hồng' : 'Tím'}`);
         } else if (currentSelectionInfoBridge || currentSelectionInfo) {
           applyFramingToCurrentSelection(color);
         }
@@ -28101,12 +28359,14 @@
 
     const customColorTriggerElements = [wrapCustomColorBtn, btnCustomColorLabel, customFrameColorInput].filter(Boolean);
     customColorTriggerElements.forEach(el => {
-      ['pointerdown', 'mousedown', 'touchstart', 'click'].forEach(evtName => {
-        el.addEventListener(evtName, (e) => {
-          if (!checkCustomColorPermission(e)) {
-            // Đã ngăn chặn và hiện popup nâng cấp trong requestFrameColor
-          }
-        }, true);
+      el.addEventListener('pointerdown', (e) => {
+        const allowedCustom = (typeof canUseCustomColor === 'function' && canUseCustomColor()) || (typeof canUseFrameColors === 'function' && canUseFrameColors());
+        if (!allowedCustom) {
+          e.preventDefault();
+        }
+      });
+      el.addEventListener('click', (e) => {
+        checkCustomColorPermission(e);
       });
     });
 
@@ -28227,22 +28487,19 @@
     // // FIX-2: GẮN SỰ KIỆN CÁC NÚT TRÊN THANH CÔNG CỤ BÔI ĐEN DI ĐỘNG (mobileSelectionActionBar)
     // 4 nút màu trên mobile
     document.querySelectorAll('.mobile-hl-color-btn').forEach(btn => {
-      ['pointerdown', 'mousedown', 'touchstart'].forEach(evtName => {
-        btn.addEventListener(evtName, (e) => {
-          const color = btn.getAttribute('data-color') || 'yellow';
-          if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-          }
-        }, { passive: false });
+      btn.addEventListener('pointerdown', (e) => {
+        // Chỉ ngăn mất vùng chọn văn bản, KHÔNG gọi gate/popup ở sự kiện pointerdown
+        e.preventDefault();
       });
 
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        const color = btn.getAttribute('data-color') || 'yellow';
+        e.stopPropagation();
+        const rawColor = btn.getAttribute('data-color') || 'yellow';
+        const color = (typeof normalizeFrameColor === 'function') ? normalizeFrameColor(rawColor) : rawColor;
+
+        // Gate requestFrameColor CHỈ ĐƯỢC GỌI TỪ SỰ KIỆN CLICK LÊN CHẤM MÀU
         if (typeof requestFrameColor === 'function' && !requestFrameColor(color, btn)) {
-          e.stopPropagation();
           return;
         }
         activeFramingColor = color;
@@ -28255,7 +28512,7 @@
           activeHighlightItem.updatedAt = Date.now();
           saveLearningData();
           postMessageToLessonIframe({ type: 'APPLY_COLOR', id: activeHighlightItem.id, color: color });
-          showToast(`Đã đổi màu khung sang ${color === 'yellow' ? 'Vàng' : color === 'green' ? 'Xanh' : color === 'pink' ? 'Hồng' : 'Tím'}`);
+          showToast(`Đã đổi màu khung sang ${color === 'yellow' ? 'Cam' : color === 'green' ? 'Xanh' : color === 'pink' ? 'Hồng' : 'Tím'}`);
         } else if (currentSelectionInfoBridge || currentSelectionInfo) {
           applyFramingToCurrentSelection(color);
         }
@@ -28267,9 +28524,32 @@
     const mbBtnApplyFraming = document.getElementById('mbBtnApplyFraming');
     if (mbBtnApplyFraming) {
       mbBtnApplyFraming.addEventListener('click', (e) => {
-        e.preventDefault();
-        applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
-        clearAllSelectionContexts();
+        try {
+          if (e) e.preventDefault();
+          const hasColorPerm = typeof canUseFrameColors === 'function' ? canUseFrameColors() : false;
+          let colorToUse = (typeof normalizeFrameColor === 'function') ? normalizeFrameColor(activeFramingColor) : (activeFramingColor || 'yellow');
+          let customColorToUse = null;
+
+          if (!hasColorPerm || (typeof isDefaultFrameColor === 'function' && isDefaultFrameColor(colorToUse))) {
+            colorToUse = (typeof DEFAULT_FRAME_COLOR !== 'undefined') ? DEFAULT_FRAME_COLOR : 'yellow';
+            activeFramingColor = colorToUse;
+            try { localStorage.setItem('last_framing_color', colorToUse); } catch (_) {}
+          } else if (colorToUse === 'custom') {
+            const hasCustomPerm = typeof canUseCustomColor === 'function' ? canUseCustomColor() : hasColorPerm;
+            if (hasCustomPerm) {
+              customColorToUse = activeCustomColor || null;
+            } else {
+              colorToUse = (typeof DEFAULT_FRAME_COLOR !== 'undefined') ? DEFAULT_FRAME_COLOR : 'yellow';
+              activeFramingColor = colorToUse;
+            }
+          }
+
+          // Nút Đóng khung chỉ tạo khung bằng màu đang chọn và KHÔNG BAO GIỜ gọi gate/popup nâng cấp
+          applyFramingToCurrentSelection(colorToUse, '', '', customColorToUse);
+          clearAllSelectionContexts();
+        } catch (err) {
+          console.warn('[mbBtnApplyFraming] Lỗi khi đóng khung:', err);
+        }
       });
     }
 
@@ -28279,7 +28559,7 @@
       mbBtnAddNote.addEventListener('click', (e) => {
         e.preventDefault();
         if (currentSelectionInfoBridge || currentSelectionInfo) {
-          const item = applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
+          const item = applyFramingToCurrentSelection(activeFramingColor, '', '', (activeFramingColor === 'custom' ? activeCustomColor : null));
           clearAllSelectionContexts();
           if (item) {
             setTimeout(() => openFrameDetailModal(item.id), 120);
@@ -32309,27 +32589,15 @@
       const plan = typeof getPlan === 'function' ? getPlan() : ((window.PLANS_DEFAULT && window.PLANS_DEFAULT.plans[userTier]) || {});
       const maxShares = typeof limit === 'function' ? limit('maxActiveShares') : (plan.maxActiveShares === -1 ? Infinity : (plan.maxActiveShares || 1));
 
-      const tierBadge = document.getElementById('sharedLinksTierBadge');
       const usageText = document.getElementById('sharedLinksUsageText');
       const progressBar = document.getElementById('sharedLinksProgressBar');
       const limitAlert = document.getElementById('sharedLinksLimitAlert');
       const limitAlertMsg = document.getElementById('sharedLinksLimitAlertMsg');
       const btnUpgrade = document.getElementById('btnUpgradeFromSharedLinks');
 
-      const tierNames = { guest: 'Khách', free: 'Gói Thường', plus: 'Gói Plus', pro: 'Gói Pro' };
-      const tierName = tierNames[userTier] || plan.name || 'Gói Thường';
-
-      if (tierBadge) {
-        tierBadge.textContent = tierName;
-        if (userTier === 'pro') {
-          tierBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs';
-        } else if (userTier === 'plus') {
-          tierBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800';
-        } else if (userTier === 'free') {
-          tierBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
-        } else {
-          tierBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
-        }
+      const tierBadgeContainer = document.getElementById('sharedLinksTierBadgeContainer');
+      if (tierBadgeContainer && typeof window.tierBadge === 'function') {
+        tierBadgeContainer.innerHTML = window.tierBadge(userTier, { size: 'sm', variant: 'plan', id: 'sharedLinksTierBadge' });
       }
 
       const isUnlimited = (maxShares === Infinity || maxShares === -1);
@@ -33570,11 +33838,150 @@
       bootApp();
     }
 
-          // Chạy selfTest nếu có tham số ?debug=1
+      // Chạy selfTest nếu có tham số ?debug=1
       if (new URLSearchParams(window.location.search).get('debug') === '1') {
         setTimeout(selfTest, 500);
       }
-    console.log("%c Thư viện Sách HTML v4.9.1 - build 11/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+
+      // Kiểm thử quang học huy hiệu gói nếu có tham số ?debug=badges
+      function initBadgeDebugTestHarness() {
+        try {
+          const tiers = ['pro', 'plus', 'free', 'guest'];
+          const sizes = ['sm', 'md', 'lg'];
+          const variants = ['plan', 'requires'];
+
+          const modal = document.createElement('div');
+          modal.id = 'badgeDebugHarnessModal';
+          modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:999999;overflow-y:auto;padding:24px;display:flex;flex-direction:column;align-items:center;font-family:system-ui,-apple-system,sans-serif;box-sizing:border-box;';
+
+          const card = document.createElement('div');
+          card.style.cssText = 'background:#FAF9F5;color:#1C1B18;max-width:960px;width:100%;border-radius:20px;padding:28px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);border:1px solid #E7E5DF;';
+          card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #E5E7EB;">
+              <div>
+                <h2 style="margin:0;font-size:20px;font-weight:700;">Kiểm Thử Căn Giữa Quang Học Huy Hiệu Gói (Tier Badges)</h2>
+                <p style="margin:4px 0 0;font-size:12px;color:#6B7280;">Đo lường sai lệch trục dọc giữa tâm Icon và tâm Label qua getBoundingClientRect (&le; 0.5px là ĐẠT)</p>
+              </div>
+              <button id="btnCloseBadgeDebug" style="background:#E5E7EB;border:none;padding:6px 14px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;">Đóng</button>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+              <div id="debugHarnessLight" style="padding:16px;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;">
+                <h4 style="margin:0 0 12px;font-size:13px;font-weight:700;color:#374151;">Giao diện Sáng (Light Mode)</h4>
+                <div id="debugBadgesListLight" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"></div>
+              </div>
+              <div id="debugHarnessDark" class="dark" style="padding:16px;background:#161A20;color:#EDEDED;border:1px solid #262C36;border-radius:14px;">
+                <h4 style="margin:0 0 12px;font-size:13px;font-weight:700;color:#9CA3AF;">Giao diện Tối (Dark Mode)</h4>
+                <div id="debugBadgesListDark" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"></div>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="margin:0 0 10px;font-size:14px;font-weight:700;">Bảng Kết Quả Đo Trực Quan</h4>
+              <div style="overflow-x:auto;border:1px solid #E5E7EB;border-radius:12px;max-height:300px;overflow-y:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:11px;text-align:left;">
+                  <thead style="background:#F3F4F6;position:sticky;top:0;z-index:1;">
+                    <tr>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Gói</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Cỡ</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Biến thể</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Giao diện</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Tâm Icon Y</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Tâm Chữ Y</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Sai lệch</th>
+                      <th style="padding:8px 10px;border-bottom:1px solid #E5E7EB;">Đánh giá</th>
+                    </tr>
+                  </thead>
+                  <tbody id="debugResultsTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          `;
+
+          modal.appendChild(card);
+          document.body.appendChild(modal);
+
+          document.getElementById('btnCloseBadgeDebug').onclick = () => modal.remove();
+
+          const listLight = document.getElementById('debugBadgesListLight');
+          const listDark = document.getElementById('debugBadgesListDark');
+
+          let lightHtml = '';
+          let darkHtml = '';
+          tiers.forEach(t => {
+            sizes.forEach(s => {
+              variants.forEach(v => {
+                const markup = window.tierBadge(t, { size: s, variant: v });
+                lightHtml += markup;
+                darkHtml += markup;
+              });
+            });
+          });
+          listLight.innerHTML = lightHtml;
+          listDark.innerHTML = darkHtml;
+
+          // Thực hiện đo và in console.table
+          requestAnimationFrame(() => {
+            const results = [];
+            const tbody = document.getElementById('debugResultsTbody');
+            tbody.innerHTML = '';
+
+            ['Light', 'Dark'].forEach(theme => {
+              const container = document.getElementById('debugBadgesList' + theme);
+              const badges = container.querySelectorAll('.tier-badge');
+              badges.forEach(b => {
+                const icon = b.querySelector('.tier-badge__icon');
+                const label = b.querySelector('.tier-badge__label');
+                if (!icon || !label) return;
+
+                const iRect = icon.getBoundingClientRect();
+                const lRect = label.getBoundingClientRect();
+                const iCenter = iRect.top + (iRect.height / 2);
+                const lCenter = lRect.top + (lRect.height / 2);
+                const diff = Math.abs(iCenter - lCenter);
+                const passed = diff <= 0.5;
+
+                const item = {
+                  tier: b.getAttribute('data-tier'),
+                  size: b.getAttribute('data-size'),
+                  variant: b.getAttribute('data-variant'),
+                  theme: theme,
+                  iconCenterY: Number(iCenter.toFixed(2)),
+                  labelCenterY: Number(lCenter.toFixed(2)),
+                  diffPx: Number(diff.toFixed(3)),
+                  status: passed ? '✅ ĐẠT' : '❌ LỆCH'
+                };
+                results.push(item);
+
+                const tr = document.createElement('tr');
+                tr.style.backgroundColor = passed ? '#F0FDF4' : '#FEF2F2';
+                tr.innerHTML = `
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-weight:700;">${item.tier}</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;">${item.size}</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;">${item.variant}</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;">${item.theme}</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-family:monospace;">${item.iconCenterY}</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-family:monospace;">${item.labelCenterY}</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-weight:700;font-family:monospace;">${item.diffPx}px</td>
+                  <td style="padding:6px 10px;border-bottom:1px solid #E5E7EB;font-weight:700;color:${passed ? '#15803D' : '#DC2626'};">${item.status}</td>
+                `;
+                tbody.appendChild(tr);
+              });
+            });
+
+            console.log("%c[TIER BADGES OPTICAL CENTERING TEST RESULTS]", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;");
+            console.table(results);
+            window.__badgeTestResults = results;
+          });
+        } catch (e) {
+          console.error('[initBadgeDebugTestHarness] Lỗi khởi tạo phòng thử nghiệm:', e);
+        }
+      }
+
+      if (new URLSearchParams(window.location.search).get('debug') === 'badges') {
+        setTimeout(initBadgeDebugTestHarness, 600);
+      }
+    console.log("%c Thư viện Sách HTML v4.9.9 - build 12/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
