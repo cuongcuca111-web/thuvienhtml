@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.6',
+        date: '2026-10-13T01:00:00+07:00',
+        title: 'Cấp gói dịch vụ theo dạng Dropdown & Nút Xác nhận lưu đồng bộ thời gian thực',
+        items: [
+          { type: 'feature', text: 'Bổ sung danh sách chọn gói (Dropdown) và nút "Xác nhận lưu" trực tiếp cho từng người dùng trong bảng tài khoản mới và khung tra cứu' },
+          { type: 'feature', text: 'Đồng bộ dữ liệu thời gian thực: Tự động ghi nhận trực tiếp vào users/{uid}/billing/plan và Custom Claims, giúp giao diện web của người dùng kích hoạt gói tức thì mà không cần tải lại trang' },
+          { type: 'improved', text: 'Hỗ trợ đầy đủ các gói: Miễn phí (Free), Plus (30 ngày / 1 năm / Vĩnh viễn), Pro (30 ngày / 1 năm / Vĩnh viễn)' }
+        ]
+      },
+      {
         version: 'v5.2.5',
         date: '2026-10-13T00:52:00+07:00',
         title: 'Khắc phục triệt để lỗi ẩn đơn hàng VietQR do trình duyệt tự động điền (Autofill)',

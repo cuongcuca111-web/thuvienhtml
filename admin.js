@@ -1891,7 +1891,7 @@ function renderRecentUsersTable(tableBox, users) {
           <th class="py-2.5 px-3">UID (Bấm để tra cứu)</th>
           <th class="py-2.5 px-3">Gói đang dùng</th>
           <th class="py-2.5 px-3">Thời gian tạo</th>
-          <th class="py-2.5 px-3 text-right">Thao tác</th>
+          <th class="py-2.5 px-3 text-right">Cấp gói &amp; Đồng bộ dữ liệu web</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
@@ -1943,12 +1943,24 @@ function renderRecentUsersTable(tableBox, users) {
                 ${esc(createdText)}
               </td>
               <td class="py-2.5 px-3 text-right whitespace-nowrap">
-                <button class="btn-inspect-uid px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition mr-1.5 cursor-pointer" data-uid="${esc(u.uid)}">
-                  Tra cứu gói
-                </button>
-                <button class="btn-quick-grant px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-xs transition cursor-pointer" data-uid="${esc(u.uid)}">
-                  Cấp gói
-                </button>
+                <div class="inline-flex items-center gap-1.5 justify-end">
+                  <select class="user-grant-plan-select text-xs font-semibold py-1.5 px-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-gray-800 dark:text-gray-200 cursor-pointer focus:ring-2 focus:ring-indigo-500 shadow-2xs" data-uid="${esc(u.uid)}">
+                    <option value="free:0" ${u.tier === 'free' ? 'selected' : ''}>Miễn phí (Free)</option>
+                    <option value="plus:30" ${u.tier === 'plus' && (!u.expiresAt || (new Date(u.expiresAt).getTime() - Date.now() < 60*86400000)) ? 'selected' : ''}>Gói Plus (30 ngày)</option>
+                    <option value="plus:365" ${u.tier === 'plus' && u.expiresAt && (new Date(u.expiresAt).getTime() - Date.now() >= 60*86400000) ? 'selected' : ''}>Gói Plus (1 Năm)</option>
+                    <option value="plus:0" ${u.tier === 'plus' && !u.expiresAt ? 'selected' : ''}>Gói Plus (Vĩnh viễn)</option>
+                    <option value="pro:30" ${u.tier === 'pro' && (!u.expiresAt || (new Date(u.expiresAt).getTime() - Date.now() < 60*86400000)) ? 'selected' : ''}>Gói Pro (30 ngày)</option>
+                    <option value="pro:365" ${u.tier === 'pro' && u.expiresAt && (new Date(u.expiresAt).getTime() - Date.now() >= 60*86400000) ? 'selected' : ''}>Gói Pro (1 Năm)</option>
+                    <option value="pro:0" ${u.tier === 'pro' && !u.expiresAt ? 'selected' : ''}>Gói Pro (Vĩnh viễn)</option>
+                  </select>
+                  <button type="button" class="btn-confirm-save-plan px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5" data-uid="${esc(u.uid)}" data-name="${esc(u.formattedUsername || u.displayName || u.username || 'người dùng')}">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span>Xác nhận lưu</span>
+                  </button>
+                  <button type="button" class="btn-inspect-uid px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition cursor-pointer" data-uid="${esc(u.uid)}" title="Tra cứu chi tiết tài khoản này">
+                    Tra cứu
+                  </button>
+                </div>
               </td>
             </tr>
           `;
@@ -1977,15 +1989,23 @@ function renderRecentUsersTable(tableBox, users) {
     };
   });
 
-  tableBox.querySelectorAll('.btn-quick-grant').forEach(btn => {
+  // Gán sự kiện cấp gói theo Dropdown & Xác nhận lưu để đồng bộ dữ liệu web
+  tableBox.querySelectorAll('.btn-confirm-save-plan').forEach(btn => {
     btn.onclick = async () => {
       const targetUid = btn.dataset.uid;
-      const tier = prompt("Chọn gói cấp (plus hoặc pro):", "plus");
-      if (!tier || !['plus', 'pro'].includes(tier.toLowerCase())) return;
+      const userName = btn.dataset.name || 'người dùng';
+      const row = btn.closest('tr');
+      const select = row ? row.querySelector('.user-grant-plan-select') : null;
+      if (!select) return;
+
+      const [tier, daysStr] = select.value.split(':');
+      const days = parseInt(daysStr, 10) || 0;
+
       if (!await ensureFreshAdminSession()) return;
-      const days = prompt("Số ngày sử dụng (nhập 0 để vĩnh viễn):", "30");
-      if (days === null) return;
-      const reason = prompt("Lý do cấp gói:", "Cấp từ danh sách người dùng mới");
+
+      btn.disabled = true;
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang lưu...</span>';
 
       try {
         await callAdminApi('/api/admin/users/grant', {
@@ -1993,14 +2013,23 @@ function renderRecentUsersTable(tableBox, users) {
           body: JSON.stringify({
             uid: targetUid,
             tier: tier.toLowerCase(),
-            days: parseInt(days, 10),
-            reason
+            days,
+            reason: `Admin cấp gói ${tier.toUpperCase()} (${days > 0 ? days + ' ngày' : 'vĩnh viễn'}) qua dropdown`
           })
         });
-        toast("Đã cấp gói thành công!");
-        preloadRecentUsers(false, true);
+
+        toast(`Đã cấp thành công gói ${tier.toUpperCase()} cho ${userName} và đồng bộ dữ liệu web!`);
+        btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Đã lưu</span>';
+
+        setTimeout(() => {
+          preloadRecentUsers(false, true);
+        }, 600);
       } catch (e) {
         alert("Lỗi cấp gói: " + e.message);
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
       }
     };
   });
@@ -2152,14 +2181,22 @@ function renderUsersTab(container) {
 
               <!-- NÚT THAO TÁC CẤP / THU HỒI GÓI -->
               <div class="flex items-center gap-2 pt-1 flex-wrap">
-                <button class="btn-grant-user px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 cursor-pointer shadow-2xs" data-uid="${u.uid}">
-                  Tặng / Đổi gói
+                <span class="text-xs font-semibold text-gray-500">Cấp gói dịch vụ:</span>
+                <select class="search-user-grant-plan-select text-xs font-semibold py-1.5 px-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-gray-800 dark:text-gray-200 cursor-pointer shadow-2xs" data-uid="${u.uid}">
+                  <option value="free:0" ${u.tier === 'free' ? 'selected' : ''}>Miễn phí (Free)</option>
+                  <option value="plus:30" ${u.tier === 'plus' && (!u.expiresAt || (new Date(u.expiresAt).getTime() - Date.now() < 60*86400000)) ? 'selected' : ''}>Gói Plus (30 ngày)</option>
+                  <option value="plus:365" ${u.tier === 'plus' && u.expiresAt && (new Date(u.expiresAt).getTime() - Date.now() >= 60*86400000) ? 'selected' : ''}>Gói Plus (1 Năm)</option>
+                  <option value="plus:0" ${u.tier === 'plus' && !u.expiresAt ? 'selected' : ''}>Gói Plus (Vĩnh viễn)</option>
+                  <option value="pro:30" ${u.tier === 'pro' && (!u.expiresAt || (new Date(u.expiresAt).getTime() - Date.now() < 60*86400000)) ? 'selected' : ''}>Gói Pro (30 ngày)</option>
+                  <option value="pro:365" ${u.tier === 'pro' && u.expiresAt && (new Date(u.expiresAt).getTime() - Date.now() >= 60*86400000) ? 'selected' : ''}>Gói Pro (1 Năm)</option>
+                  <option value="pro:0" ${u.tier === 'pro' && !u.expiresAt ? 'selected' : ''}>Gói Pro (Vĩnh viễn)</option>
+                </select>
+                <button type="button" class="btn-confirm-save-search-plan px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5" data-uid="${u.uid}" data-name="${esc(u.displayName || u.email || 'người dùng')}">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  <span>Xác nhận lưu</span>
                 </button>
-                <button class="btn-extend-user px-3 py-1.5 rounded-lg border border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold text-xs hover:bg-indigo-50 dark:hover:bg-indigo-950 cursor-pointer" data-uid="${u.uid}">
-                  + Gia hạn 30 ngày
-                </button>
-                <button class="btn-revoke-user px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold text-xs hover:bg-rose-100 cursor-pointer" data-uid="${u.uid}">
-                  Thu hồi về Thường
+                <button type="button" class="btn-revoke-user px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold text-xs hover:bg-rose-100 dark:hover:bg-rose-900/40 transition cursor-pointer" data-uid="${u.uid}">
+                  Thu hồi về Free
                 </button>
               </div>
             </div>
@@ -2191,6 +2228,52 @@ window.loadRecentUsers = loadRecentUsers;
 
 
 function bindUserActions(container, refreshFn) {
+  // Gán sự kiện cấp gói qua Dropdown & Xác nhận lưu cho khung tra cứu
+  container.querySelectorAll('.btn-confirm-save-search-plan').forEach(btn => {
+    btn.onclick = async () => {
+      const targetUid = btn.dataset.uid;
+      const userName = btn.dataset.name || 'người dùng';
+      const parentRow = btn.closest('.flex');
+      const select = parentRow ? parentRow.querySelector('.search-user-grant-plan-select') : null;
+      if (!select) return;
+
+      const [tier, daysStr] = select.value.split(':');
+      const days = parseInt(daysStr, 10) || 0;
+
+      if (!await ensureFreshAdminSession()) return;
+
+      btn.disabled = true;
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang lưu...</span>';
+
+      try {
+        await callAdminApi('/api/admin/users/grant', {
+          method: 'POST',
+          body: JSON.stringify({
+            uid: targetUid,
+            tier: tier.toLowerCase(),
+            days,
+            reason: `Admin cấp gói ${tier.toUpperCase()} (${days > 0 ? days + ' ngày' : 'vĩnh viễn'}) qua dropdown`
+          })
+        });
+
+        toast(`Đã cấp thành công gói ${tier.toUpperCase()} cho ${userName} và đồng bộ dữ liệu web!`);
+        btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Đã lưu</span>';
+
+        setTimeout(() => {
+          refreshFn();
+          preloadRecentUsers(false, true);
+        }, 600);
+      } catch (e) {
+        alert("Lỗi cấp gói: " + e.message);
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    };
+  });
+
   container.querySelectorAll('.btn-grant-user').forEach(btn => {
     btn.onclick = async () => {
       const tier = prompt("Chọn gói cấp (plus hoặc pro):", "plus");

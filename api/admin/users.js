@@ -9,6 +9,13 @@ function resolveAction(req) {
   return (parts[parts.length - 1] || '').toLowerCase();
 }
 
+// Bộ nhớ đệm danh sách người dùng gần đây trên server
+let recentUsersCache = {
+  data: null,
+  cachedAt: 0,
+  ttlMs: 4 * 60 * 1000 // 4 phút
+};
+
 module.exports = async function handler(req, res) {
   const action = resolveAction(req);
 
@@ -17,13 +24,6 @@ module.exports = async function handler(req, res) {
   if (!ctx) return;
 
   const { admin, db, uid: adminUid } = ctx;
-
-// Bộ nhớ đệm danh sách người dùng gần đây trên server
-let recentUsersCache = {
-  data: null,
-  cachedAt: 0,
-  ttlMs: 4 * 60 * 1000 // 4 phút
-};
 
   // 1. ACTION: RECENT / LIST (GET) - Theo dõi người dùng mới tạo tài khoản gần đây
   if (action === 'recent' || action === 'list') {
@@ -292,6 +292,33 @@ let recentUsersCache = {
         tierGrantReason: String(reason || '')
       }, { merge: true });
 
+      // 3. Đồng bộ trực tiếp vào users/{uid}/billing/plan (Single Source of Truth cho client web onSnapshot)
+      const userBillingPlanRef = db.doc(`users/${uid}/billing/plan`);
+      if (tier === 'free') {
+        await userBillingPlanRef.set({
+          tier: 'free',
+          active: false,
+          expiresAt: null,
+          updatedBy: adminUid,
+          updatedAt: new Date().toISOString(),
+          grantReason: String(reason || '')
+        }, { merge: true });
+      } else {
+        await userBillingPlanRef.set({
+          tier,
+          active: true,
+          period: numDays >= 360 ? 'yearly' : 'monthly',
+          expiresAt,
+          updatedBy: adminUid,
+          updatedAt: new Date().toISOString(),
+          grantReason: String(reason || '')
+        }, { merge: true });
+      }
+
+      // Xóa cache danh sách người dùng trên server
+      recentUsersCache.data = null;
+      recentUsersCache.cachedAt = 0;
+
       await recordAuditLog(db, {
         uid: adminUid,
         action: 'user_grant',
@@ -334,6 +361,21 @@ let recentUsersCache = {
         tierRevokedAt: new Date().toISOString(),
         tierRevokeReason: String(reason || '')
       }, { merge: true });
+
+      // Đồng bộ trực tiếp vào users/{uid}/billing/plan
+      const userBillingPlanRef = db.doc(`users/${uid}/billing/plan`);
+      await userBillingPlanRef.set({
+        tier: 'free',
+        active: false,
+        expiresAt: null,
+        updatedBy: adminUid,
+        updatedAt: new Date().toISOString(),
+        revokeReason: String(reason || '')
+      }, { merge: true });
+
+      // Xóa cache danh sách người dùng trên server
+      recentUsersCache.data = null;
+      recentUsersCache.cachedAt = 0;
 
       await recordAuditLog(db, {
         uid: adminUid,
