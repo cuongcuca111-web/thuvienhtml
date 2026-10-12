@@ -80,6 +80,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.1.6',
+        date: '2026-10-12T20:45:00+07:00',
+        title: 'Tắt ngay Thư viện Prompt & Nâng z-index tuyệt đối cho Popup Nâng cấp gói',
+        items: [
+          { type: 'fix', text: 'Tắt lập tức (display: none) popup Thư viện Prompt AI khi bấm Nhận prompt chưa đúng gói, chuyển trọng tâm trực tiếp vào popup Nâng cấp' },
+          { type: 'improved', text: 'Thiết lập z-index: 9999 tối cao cho Popup Nâng cấp gói, đảm bảo luôn hiển thị nổi hoàn toàn phía trước mọi cửa sổ' }
+        ]
+      },
+      {
         version: 'v5.1.5',
         date: '2026-10-12T20:35:00+07:00',
         title: 'Tự động đóng Thư Viện Prompt khi hiển thị Popup nâng cấp gói',
@@ -6705,7 +6714,7 @@
   </div>
 
   <!-- MODAL: NÂNG CẤP GÓI DỊCH VỤ & THANH TOÁN VIETQR -->
-  <div id="upgradeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[85] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
+  <div id="upgradeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" style="z-index: 9999;" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[920px] max-h-[94dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header Modal: Biên tập, tối giản, không icon tím -->
@@ -34556,21 +34565,30 @@ Nhiệm vụ phân tích toàn diện:
         showToast(`Prompt này là đặc quyền của gói ${tierName}. Vui lòng nâng cấp gói để mở khóa!`, 'warning');
       }
 
-      // Tự động tắt tab thư viện prompt & chi tiết prompt trước khi hiển thị popup nâng cấp gói
-      if (typeof hideModalAnimated === 'function') {
-        hideModalAnimated('promptLibraryModal');
-        hideModalAnimated('promptDetailModal');
-      } else {
+      // Tự động tắt ngay lập tức và triệt để popup thư viện prompt & popup chi tiết prompt
+      try {
         const libModal = document.getElementById('promptLibraryModal');
         if (libModal) {
-          libModal.classList.remove('modal-active');
+          if (libModal._closeTimer) {
+            clearTimeout(libModal._closeTimer);
+            libModal._closeTimer = null;
+          }
+          libModal.classList.remove('modal-active', 'modal-closing');
           libModal.classList.add('hidden');
+          libModal.style.display = 'none';
         }
         const detailModal = document.getElementById('promptDetailModal');
         if (detailModal) {
-          detailModal.classList.remove('modal-active');
+          if (detailModal._closeTimer) {
+            clearTimeout(detailModal._closeTimer);
+            detailModal._closeTimer = null;
+          }
+          detailModal.classList.remove('modal-active', 'modal-closing');
           detailModal.classList.add('hidden');
+          detailModal.style.display = 'none';
         }
+      } catch (eModal) {
+        console.warn('[PromptLibrary] Lỗi đóng popup prompt:', eModal);
       }
 
       if (typeof openUpgradeModal === 'function') {
@@ -34675,6 +34693,8 @@ Nhiệm vụ phân tích toàn diện:
         };
       }
 
+      const detailModal = document.getElementById('promptDetailModal');
+      if (detailModal) detailModal.style.display = '';
       if (typeof showModalAnimated === 'function') {
         showModalAnimated('promptDetailModal');
       }
@@ -34759,10 +34779,16 @@ Nhiệm vụ phân tích toàn diện:
       const btnOpen = document.getElementById('btnPromptLibrary');
       if (btnOpen) {
         btnOpen.addEventListener('click', () => {
-          if (typeof showModalAnimated === 'function') {
-            showModalAnimated('promptLibraryModal');
+          if (typeof window.openPromptLibrary === 'function') {
+            window.openPromptLibrary();
+          } else {
+            const libModal = document.getElementById('promptLibraryModal');
+            if (libModal) libModal.style.display = '';
+            if (typeof showModalAnimated === 'function') {
+              showModalAnimated('promptLibraryModal');
+            }
+            renderPromptLibrary();
           }
-          renderPromptLibrary();
         });
       }
 
@@ -35075,6 +35101,8 @@ Nhiệm vụ phân tích toàn diện:
     }
     window.renderPromptLibrary = renderPromptLibrary;
     window.openPromptLibrary = () => {
+      const libModal = document.getElementById('promptLibraryModal');
+      if (libModal) libModal.style.display = '';
       if (typeof showModalAnimated === 'function') {
         showModalAnimated('promptLibraryModal');
       }
