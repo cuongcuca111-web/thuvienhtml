@@ -7958,7 +7958,7 @@
           exportNotesMd: { label: 'Xuất ghi chú Markdown', type: 'bool' },
           trashDays: { label: 'Thùng rác lưu trữ', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} ngày` },
           statsDays: { label: 'Lưu trữ thống kê', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} ngày` },
-          fullTextSearch: { label: 'Tìm kiếm toàn văn', type: 'bool' },
+          fullTextSearch: { label: 'Tìm kiếm văn bản', type: 'bool' },
           monthlyAiRequests: { label: 'Lượt AI mỗi tháng', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${Number(v).toLocaleString('vi-VN')} lượt` },
           maxFlashcardsPerFile: { label: 'Flashcard tối đa / bài', format: v => (v === -1 || v === Infinity) ? 'Không giới hạn' : `${v} thẻ` },
           aiScheduleEnabled: { label: 'Lịch học thông minh AI', type: 'bool' },
@@ -19620,15 +19620,20 @@
     }
     window.clearRecentSearches = clearRecentSearches;
 
-    // Cập nhật huy hiệu "PLUS" cho tính năng tìm kiếm toàn văn bản:
-    // Hiện mác Plus khi ở chế độ Free/Khách, xóa mác Plus khi ở chế độ Plus hoặc Pro
-    function updateFullTextSearchBadges() {
+    // Kiểm tra quyền tìm kiếm văn bản (chỉ Plus và Pro mới có thể dùng được, hoặc được Admin mở khóa cho gói Free)
+    function canUseFullTextSearch() {
+      if (state && state.isAdmin) return true;
+      if (typeof can === 'function' && can('fullTextSearch')) return true;
       const currentTier = (state && state.userTier) || 'free';
-      const isAdmin = Boolean(state && state.isAdmin);
-      const isPlusOrPro = (currentTier === 'plus' || currentTier === 'pro' || isAdmin);
+      return (currentTier === 'plus' || currentTier === 'pro');
+    }
+    window.canUseFullTextSearch = canUseFullTextSearch;
 
-      // Thêm mác Plus khi đang ở chế độ Free, xóa mác Plus khi đang ở chế độ Plus hoặc Pro
-      const showPlusBadge = !isPlusOrPro;
+    // Cập nhật huy hiệu "PLUS" cho tính năng tìm kiếm văn bản:
+    // Hiện mác Plus khi chưa có quyền, ẩn mác Plus khi đã được cấp quyền (hoặc Admin mở khóa cho Free)
+    function updateFullTextSearchBadges() {
+      const hasSearchAccess = canUseFullTextSearch();
+      const showPlusBadge = !hasSearchAccess;
 
       const badgeScope = document.getElementById('badgePlusSearchScope');
       if (badgeScope) {
@@ -19701,6 +19706,16 @@
     window.updateCustomColorBadges = updateCustomColorBadges;
 
     function openSearchCommandPalette(initialQuery = '') {
+      if (!canUseFullTextSearch()) {
+        if (typeof showToast === 'function') {
+          showToast("Tính năng tìm kiếm bài học & văn bản chỉ dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
+        }
+        if (typeof openUpgradeModal === 'function') {
+          openUpgradeModal('plus');
+        }
+        return;
+      }
+
       // Đóng mobile sidebar drawer nếu đang mở
       const mainSidebar = document.getElementById('mainSidebar');
       const sidebarBackdrop = document.getElementById('sidebarBackdrop');
@@ -19728,11 +19743,6 @@
           paletteSearchInput.focus();
           paletteSearchInput.select();
         }, 40);
-      }
-
-      const isPlusOrPro = (state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || can('fullTextSearch');
-      if (!isPlusOrPro && state.activeLessonId) {
-        searchScope = 'current';
       }
 
       updateFullTextSearchBadges();
@@ -19777,6 +19787,32 @@
 
     function renderPaletteEmptyPrompt() {
       if (!paletteSearchResultsList) return;
+      if (!canUseFullTextSearch()) {
+        paletteSearchResultsList.innerHTML = `
+          <div class="py-10 px-4 text-center select-none">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs">
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white mb-2 uppercase tracking-wider shadow-2xs">
+              <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+              <span>Đặc quyền gói Plus &amp; Pro</span>
+            </div>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Tính năng Tìm kiếm văn bản</h3>
+            <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm mx-auto leading-relaxed mb-4">
+              Tính năng quét và tra cứu từ khóa trong nội dung bài học chỉ dành riêng cho tài khoản Plus trở lên. Vui lòng nâng cấp gói để tiếp tục sử dụng.
+            </p>
+            <div class="flex items-center justify-center gap-2">
+              <button type="button" onclick="openUpgradeModal('plus')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs hover:shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+                <span>Nâng cấp gói Plus</span>
+              </button>
+            </div>
+          </div>
+        `;
+        if (paletteSearchCountBadge) paletteSearchCountBadge.innerText = '';
+        searchActiveIndex = -1;
+        return;
+      }
       const recents = getRecentSearches();
       let recentsHtml = '';
       if (recents.length > 0) {
@@ -19862,10 +19898,9 @@
 
     if (paletteScopeLibrary) {
       paletteScopeLibrary.addEventListener('click', () => {
-        const isPlusOrPro = (state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || can('fullTextSearch');
-        if (!isPlusOrPro) {
+        if (!canUseFullTextSearch()) {
           if (typeof showToast === 'function') {
-            showToast("Tìm kiếm toàn văn bản trong thư viện dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
+            showToast("Tìm kiếm văn bản trong thư viện dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
           }
           if (typeof openUpgradeModal === 'function') {
             openUpgradeModal('plus');
@@ -19882,6 +19917,15 @@
 
     if (paletteScopeCurrent) {
       paletteScopeCurrent.addEventListener('click', () => {
+        if (!canUseFullTextSearch()) {
+          if (typeof showToast === 'function') {
+            showToast("Tìm kiếm văn bản dành cho gói Plus trở lên. Vui lòng nâng cấp!", "warning");
+          }
+          if (typeof openUpgradeModal === 'function') {
+            openUpgradeModal('plus');
+          }
+          return;
+        }
         searchScope = 'current';
         updatePaletteScopeButtons();
         if (paletteSearchInput && paletteSearchInput.value.trim()) {
@@ -19891,6 +19935,14 @@
     }
 
     if (paletteSearchInput) {
+      paletteSearchInput.addEventListener('focus', () => {
+        if (!canUseFullTextSearch()) {
+          paletteSearchInput.blur();
+          if (typeof openUpgradeModal === 'function') {
+            openUpgradeModal('plus');
+          }
+        }
+      });
       paletteSearchInput.addEventListener('input', (e) => {
         updatePaletteClearButton();
         const val = e.target.value.trim();
@@ -20180,9 +20232,8 @@
         return;
       }
 
-      // Kiểm tra quyền tìm kiếm toàn văn bản: chỉ Plus và Pro mới có thể dùng được Thư viện
-      const isPlusOrPro = (state && (state.userTier === 'plus' || state.userTier === 'pro')) || Boolean(state && state.isAdmin) || can('fullTextSearch');
-      if (searchScope === 'library' && !isPlusOrPro) {
+      // Kiểm tra quyền tìm kiếm văn bản: chỉ Plus và Pro mới có thể dùng được (hoặc Admin mở khóa cho gói Free)
+      if (!canUseFullTextSearch()) {
         dropdownEl.innerHTML = `
           <div class="py-10 px-4 text-center select-none">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs">
@@ -20192,26 +20243,27 @@
               <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
               <span>Đặc quyền gói Plus &amp; Pro</span>
             </div>
-            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Tìm kiếm toàn văn bản trong thư viện</h3>
+            <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Tính năng Tìm kiếm văn bản</h3>
             <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm mx-auto leading-relaxed mb-4">
-              Tính năng quét toàn bộ nội dung của tất cả bài học trong thư viện chỉ dành riêng cho tài khoản Plus trở lên.
+              Tính năng quét và tra cứu từ khóa trong nội dung bài học chỉ dành riêng cho tài khoản Plus trở lên. Vui lòng nâng cấp gói để tiếp tục sử dụng.
             </p>
             <div class="flex items-center justify-center gap-2">
               <button type="button" onclick="openUpgradeModal('plus')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs hover:shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
                 <span>Nâng cấp gói Plus</span>
               </button>
-              ${state.activeLessonId ? `
-                <button type="button" onclick="document.getElementById('paletteScopeCurrent')?.click()" class="px-3.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium text-xs transition cursor-pointer">
-                  Tìm trong bài hiện tại
-                </button>
-              ` : ''}
             </div>
           </div>
         `;
         if (paletteSearchCountBadge) paletteSearchCountBadge.innerText = '';
         dropdownEl.classList.remove('hidden');
         searchActiveIndex = -1;
+        if (typeof showToast === 'function') {
+          showToast("Vui lòng nâng cấp gói để sử dụng tính năng tìm kiếm văn bản!", "warning");
+        }
+        if (typeof openUpgradeModal === 'function') {
+          openUpgradeModal('plus');
+        }
         return;
       }
 

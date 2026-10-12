@@ -720,7 +720,7 @@ const PARAM_DEFS = [
   { key: 'exportNotesMd', label: 'Xuất ghi chú sang .md', desc: 'Xuất tất cả ghi chú ra định dạng Markdown', type: 'boolean' },
   { key: 'trashDays', label: 'Số ngày lưu thùng rác', desc: 'Tự động dọn dẹp sau số ngày quy định', type: 'number', min: 0, max: 365, step: 1, allowUnlimited: false },
   { key: 'statsDays', label: 'Số ngày lưu thống kê', desc: 'Phạm vi lưu trữ biểu đồ và lịch sử học tập', type: 'number', min: 1, max: 3650, step: 7, allowUnlimited: true },
-  { key: 'fullTextSearch', label: 'Tìm kiếm toàn văn', desc: 'Tìm kiếm sâu bên trong toàn bộ nội dung file', type: 'boolean' },
+  { key: 'fullTextSearch', label: 'Tìm kiếm văn bản (Search)', desc: 'Mở khóa tính năng tìm kiếm bài học & tra cứu từ khóa trong văn bản', type: 'boolean' },
   { key: 'monthlyAiRequests', label: 'Lượt AI mỗi tháng', desc: 'Số lượt gọi AI tối đa hàng tháng (-1 = Vô hạn)', type: 'number', min: 0, max: 100000, step: 10, allowUnlimited: true },
   { key: 'maxFlashcardsPerFile', label: 'Flashcard tối đa / bài', desc: 'Số lượng thẻ tối đa tự sinh cho mỗi file HTML', type: 'number', min: 1, max: 200, step: 5, allowUnlimited: true },
   { key: 'aiScheduleEnabled', label: 'Bật Lịch thông minh (AI)', desc: 'Cho phép AI ước tính độ khó và chia lịch học', type: 'boolean' },
