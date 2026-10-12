@@ -80,6 +80,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.1.1',
+        date: '2026-10-12T18:25:00+07:00',
+        title: 'Sửa lỗi loadRecentUsers trong Quản trị & tierName trong Link đã chia sẻ',
+        items: [
+          { type: 'fix', text: 'Khắc phục lỗi ReferenceError loadRecentUsers khi tải danh sách người dùng trong trang Admin' },
+          { type: 'fix', text: 'Khắc phục lỗi ReferenceError tierName khi hiển thị thông báo hạn mức trong hộp thoại Link đã chia sẻ' }
+        ]
+      },
+      {
         version: 'v5.1.0',
         date: '2026-10-12T18:15:00+07:00',
         title: 'Ra mắt tính năng Thư Viện Prompt AI & Phân quyền theo gói',
@@ -32717,6 +32726,8 @@
       const userTier = typeof getUserTier === 'function' ? getUserTier() : (state.userTier || 'guest');
       const plan = typeof getPlan === 'function' ? getPlan() : ((window.PLANS_DEFAULT && window.PLANS_DEFAULT.plans[userTier]) || {});
       const maxShares = typeof limit === 'function' ? limit('maxActiveShares') : (plan.maxActiveShares === -1 ? Infinity : (plan.maxActiveShares || 1));
+      const tierNames = { guest: 'Khách', free: 'Gói Thường', plus: 'Gói Plus', pro: 'Gói Pro' };
+      const tierName = (plan && plan.name) || tierNames[userTier] || 'Gói hiện tại';
 
       const usageText = document.getElementById('sharedLinksUsageText');
       const progressBar = document.getElementById('sharedLinksProgressBar');
@@ -34885,7 +34896,7 @@ Nhiệm vụ phân tích toàn diện:
       renderPromptLibrary();
     };
 
-    console.log("%c Thư viện Sách HTML v5.1.0 - build 12/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.1.1 - build 12/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>

@@ -2168,11 +2168,12 @@ function renderUsersTab(container) {
 
   btnSearch.onclick = doSearch;
   inputSearch.onkeydown = (e) => { if (e.key === 'Enter') doSearch(); };
-  btnRefreshRecent.onclick = loadRecentUsers;
-
-  // Tự động tải danh sách người dùng mới khi mở tab
-  loadRecentUsers();
 }
+
+// Hàm tương thích nếu có thành phần nào gọi loadRecentUsers
+const loadRecentUsers = (force = false) => preloadRecentUsers(false, force);
+window.loadRecentUsers = loadRecentUsers;
+
 
 function bindUserActions(container, refreshFn) {
   container.querySelectorAll('.btn-grant-user').forEach(btn => {
