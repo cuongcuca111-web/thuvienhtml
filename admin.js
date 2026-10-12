@@ -1488,86 +1488,273 @@ function renderPricingTab(container) {
 // =========================================================================
 function renderUsersTab(container) {
   container.innerHTML = `
-    <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
-      <div>
-        <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Tra cứu &amp; Quản lý tài khoản người dùng</h3>
-        <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Tìm kiếm người dùng theo địa chỉ Email hoặc UID để cấp quyền, gia hạn hoặc thu hồi gói.</p>
+    <div class="space-y-6">
+      <!-- KHỐI 1: TRA CỨU NGƯỜI DÙNG & GÓI THEO UID / EMAIL -->
+      <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+        <div>
+          <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Tra cứu &amp; Quản lý tài khoản người dùng</h3>
+          <p class="text-xs text-[#78756D] dark:text-[#9AA3B2]">Tra cứu thông tin gói đang dùng, số bài học và thời hạn tài khoản bằng UID hoặc Email.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="text" id="adminUserSearchInput" placeholder="Nhập UID hoặc Email người dùng cần tra cứu gói..." class="flex-1 px-3.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-mono" />
+          <button id="btnSearchUser" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition cursor-pointer flex items-center gap-1.5 shrink-0">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Tra cứu</span>
+          </button>
+        </div>
+
+        <div id="adminUserSearchResults" class="text-xs text-gray-500 pt-1">
+          <!-- Kết quả tra cứu chi tiết sẽ hiển thị ở đây -->
+        </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <input type="text" id="adminUserSearchInput" placeholder="Nhập Email hoặc UID người dùng..." class="flex-1 px-3.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs" />
-        <button id="btnSearchUser" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition">
-          Tìm kiếm
-        </button>
-      </div>
+      <!-- KHỐI 2: THEO DÕI NGƯỜI DÙNG MỚI TẠO TÀI KHOẢN (REALTIME TRACKING) -->
+      <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Theo dõi người dùng mới tạo tài khoản</h3>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 animate-pulse">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Trực tiếp
+              </span>
+            </div>
+            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Tự động hiển thị các thành viên mới tạo tài khoản web và gói đang sử dụng.</p>
+          </div>
 
-      <div id="adminUserSearchResults" class="text-xs text-gray-500 pt-2">
-        Nhập thông tin và bấm "Tìm kiếm" để hiển thị tài khoản.
+          <div class="flex items-center gap-2 self-start sm:self-auto">
+            <button id="btnRefreshRecentUsers" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1.5 cursor-pointer text-gray-700 dark:text-gray-300">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              <span>Làm mới</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="recentUsersTableContainer" class="overflow-x-auto text-xs text-gray-500">
+          Đang tải danh sách người dùng mới...
+        </div>
       </div>
     </div>
   `;
 
   const btnSearch = container.querySelector('#btnSearchUser');
   const inputSearch = container.querySelector('#adminUserSearchInput');
+  const btnRefreshRecent = container.querySelector('#btnRefreshRecentUsers');
+
+  function formatRelativeTime(dateStr) {
+    if (!dateStr) return '—';
+    const time = new Date(dateStr).getTime();
+    const diff = Date.now() - time;
+    if (diff < 60000) return 'Vừa xong';
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins} phút trước`;
+    const hours = Math.floor(diff / 60000);
+    if (hours < 24) return `${hours} giờ trước`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days} ngày trước`;
+    return new Date(dateStr).toLocaleDateString('vi-VN');
+  }
+
+  async function loadRecentUsers() {
+    const tableBox = container.querySelector('#recentUsersTableContainer');
+    if (!tableBox) return;
+    tableBox.innerHTML = '<div class="py-4 text-center text-gray-400">Đang đồng bộ danh sách tài khoản mới...</div>';
+
+    try {
+      const data = await callAdminApi('/api/admin/users/recent?limit=30');
+      const users = data.users || [];
+      if (users.length === 0) {
+        tableBox.innerHTML = '<div class="py-4 text-center text-gray-400">Chưa có người dùng nào được tạo.</div>';
+        return;
+      }
+
+      tableBox.innerHTML = `
+        <table class="w-full text-left border-collapse min-w-[750px]">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-semibold text-[11px]">
+              <th class="py-2.5 px-3">Người dùng</th>
+              <th class="py-2.5 px-3">UID (Bấm để tra cứu)</th>
+              <th class="py-2.5 px-3">Gói đang dùng</th>
+              <th class="py-2.5 px-3">Thời gian tạo</th>
+              <th class="py-2.5 px-3 text-right">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
+            ${users.map(u => {
+              const tierBadge = u.tier === 'pro' 
+                ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">PRO</span>'
+                : (u.tier === 'plus'
+                  ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">PLUS</span>'
+                  : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">FREE</span>');
+              
+              const expText = u.expiresAt ? `Hạn: ${new Date(u.expiresAt).toLocaleDateString('vi-VN')}` : (u.tier === 'free' ? 'Trọn đời' : 'Vĩnh viễn');
+              const createdText = formatRelativeTime(u.createdAt);
+              const fullCreatedDate = u.createdAt ? new Date(u.createdAt).toLocaleString('vi-VN') : '';
+
+              return `
+                <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition">
+                  <td class="py-2.5 px-3">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs shrink-0">
+                        ${esc((u.displayName || u.email || 'U')[0].toUpperCase())}
+                      </div>
+                      <div>
+                        <div class="font-bold text-gray-900 dark:text-gray-100 leading-tight">${esc(u.displayName || 'Thành viên')}</div>
+                        <div class="text-[11px] text-gray-400">${esc(u.email || 'Chưa liên kết email')}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-2.5 px-3 font-mono text-[11px]">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline font-semibold btn-click-uid" data-uid="${esc(u.uid)}" title="Bấm để tra cứu gói của UID này">
+                        ${esc(u.uid)}
+                      </span>
+                      <button class="btn-copy-user-uid text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded cursor-pointer" data-uid="${esc(u.uid)}" title="Sao chép UID">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      </button>
+                    </div>
+                  </td>
+                  <td class="py-2.5 px-3">
+                    <div class="flex flex-col gap-0.5">
+                      <div>${tierBadge}</div>
+                      <span class="text-[10px] text-gray-400">${esc(expText)}</span>
+                    </div>
+                  </td>
+                  <td class="py-2.5 px-3 text-[11px] text-gray-500" title="${esc(fullCreatedDate)}">
+                    ${esc(createdText)}
+                  </td>
+                  <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                    <button class="btn-inspect-uid px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 font-semibold text-xs transition mr-1.5 cursor-pointer" data-uid="${esc(u.uid)}">
+                      Tra cứu gói
+                    </button>
+                    <button class="btn-quick-grant px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-xs transition cursor-pointer" data-uid="${esc(u.uid)}">
+                      Cấp gói
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // Gán sự kiện click UID & copy UID
+      tableBox.querySelectorAll('.btn-copy-user-uid').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          navigator.clipboard.writeText(btn.dataset.uid);
+          toast("Đã sao chép UID!");
+        };
+      });
+
+      tableBox.querySelectorAll('.btn-click-uid, .btn-inspect-uid').forEach(el => {
+        el.onclick = () => {
+          const uid = el.dataset.uid;
+          inputSearch.value = uid;
+          doSearch();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+      });
+
+      tableBox.querySelectorAll('.btn-quick-grant').forEach(btn => {
+        btn.onclick = async () => {
+          const targetUid = btn.dataset.uid;
+          const tier = prompt("Chọn gói cấp (plus hoặc pro):", "plus");
+          if (!tier || !['plus', 'pro'].includes(tier.toLowerCase())) return;
+          if (!await ensureFreshAdminSession()) return;
+          const days = prompt("Số ngày sử dụng (nhập 0 để vĩnh viễn):", "30");
+          if (days === null) return;
+          const reason = prompt("Lý do cấp gói:", "Cấp từ danh sách người dùng mới");
+
+          try {
+            await callAdminApi('/api/admin/users/grant', {
+              method: 'POST',
+              body: JSON.stringify({
+                uid: targetUid,
+                tier: tier.toLowerCase(),
+                days: parseInt(days, 10),
+                reason
+              })
+            });
+            toast("Đã cấp gói thành công!");
+            loadRecentUsers();
+          } catch (e) {
+            alert("Lỗi cấp gói: " + e.message);
+          }
+        };
+      });
+
+    } catch (err) {
+      tableBox.innerHTML = `<div class="py-4 text-center text-rose-500">Lỗi tải danh sách người dùng mới: ${esc(err.message)}</div>`;
+    }
+  }
 
   async function doSearch() {
     const q = inputSearch.value.trim();
     if (!q) return;
     const resBox = container.querySelector('#adminUserSearchResults');
-    resBox.innerHTML = 'Đang tìm kiếm...';
+    resBox.innerHTML = '<div class="py-3 text-indigo-600 font-semibold">Đang tra cứu thông tin gói tài khoản...</div>';
 
     try {
       const data = await callAdminApi(`/api/admin/users/search?q=${encodeURIComponent(q)}`);
       if (!data.users || data.users.length === 0) {
-        resBox.innerHTML = '<div class="text-amber-600">Không tìm thấy người dùng phù hợp.</div>';
+        resBox.innerHTML = '<div class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300">Không tìm thấy tài khoản người dùng với UID hoặc Email này.</div>';
         return;
       }
 
       resBox.innerHTML = `
-        <div class="space-y-4">
+        <div class="space-y-4 pt-2">
           ${data.users.map(u => `
-            <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/40 space-y-3">
+            <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-800/40 space-y-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 dark:border-gray-700 pb-2.5">
                 <div>
-                  <div class="font-bold text-sm text-gray-900 dark:text-gray-100">${esc(u.email || u.displayName || 'Không có email')}</div>
-                  <div class="font-mono text-[11px] text-gray-400">UID: ${esc(u.uid)}</div>
+                  <div class="font-bold text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <span>${esc(u.displayName || u.email || 'Thành viên')}</span>
+                    ${u.email ? `<span class="text-xs font-normal text-gray-400">(${esc(u.email)})</span>` : ''}
+                  </div>
+                  <div class="font-mono text-[11px] text-gray-500 flex items-center gap-1.5 mt-0.5">
+                    <span>UID: <strong class="text-indigo-600 dark:text-indigo-400 select-all">${esc(u.uid)}</strong></span>
+                    <button class="btn-copy-user-uid text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer" data-uid="${esc(u.uid)}" title="Sao chép UID">
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${u.tier === 'pro' ? 'bg-amber-100 text-amber-800' : (u.tier === 'plus' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-200 text-gray-700')}">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase ${u.tier === 'pro' ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700' : (u.tier === 'plus' ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-700' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300')}">
                     Gói: ${esc(u.tier || 'free')}
                   </span>
-                  ${u.expiresAt ? `<span class="text-[11px] text-gray-500">Hết hạn: ${new Date(u.expiresAt).toLocaleDateString('vi-VN')}</span>` : '<span class="text-[11px] text-gray-400">Vĩnh viễn</span>'}
+                  ${u.expiresAt ? `<span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700">Hạn dùng: ${new Date(u.expiresAt).toLocaleDateString('vi-VN')}</span>` : '<span class="text-xs text-gray-500 bg-white dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700">Vĩnh viễn</span>'}
                 </div>
               </div>
 
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px]">
                 <div class="p-2 rounded bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                   <div class="text-gray-400">Số bài đã tạo</div>
-                  <div class="font-bold text-sm">${(u.usage ? u.usage.lessons : 0) || 0}</div>
+                  <div class="font-bold text-sm text-gray-900 dark:text-gray-100">${(u.usage ? u.usage.lessons : 0) || 0}</div>
                 </div>
                 <div class="p-2 rounded bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                   <div class="text-gray-400">Số mục / folder</div>
-                  <div class="font-bold text-sm">${(u.usage ? u.usage.sections : 0) || 0}</div>
+                  <div class="font-bold text-sm text-gray-900 dark:text-gray-100">${(u.usage ? u.usage.sections : 0) || 0}</div>
                 </div>
                 <div class="p-2 rounded bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                   <div class="text-gray-400">Ngày tạo tài khoản</div>
-                  <div class="font-semibold">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</div>
+                  <div class="font-semibold text-gray-800 dark:text-gray-200">${u.createdAt ? new Date(u.createdAt).toLocaleString('vi-VN') : 'N/A'}</div>
                 </div>
                 <div class="p-2 rounded bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                   <div class="text-gray-400">Lần đăng nhập cuối</div>
-                  <div class="font-semibold">${u.lastSignInTime ? new Date(u.lastSignInTime).toLocaleDateString('vi-VN') : 'N/A'}</div>
+                  <div class="font-semibold text-gray-800 dark:text-gray-200">${u.lastSignInTime ? new Date(u.lastSignInTime).toLocaleString('vi-VN') : 'N/A'}</div>
                 </div>
               </div>
 
               <!-- NÚT THAO TÁC CẤP / THU HỒI GÓI -->
               <div class="flex items-center gap-2 pt-1 flex-wrap">
-                <button class="btn-grant-user px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700" data-uid="${u.uid}">
+                <button class="btn-grant-user px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 cursor-pointer shadow-2xs" data-uid="${u.uid}">
                   Tặng / Đổi gói
                 </button>
-                <button class="btn-extend-user px-3 py-1.5 rounded-lg border border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold text-xs hover:bg-indigo-50 dark:hover:bg-indigo-950" data-uid="${u.uid}">
+                <button class="btn-extend-user px-3 py-1.5 rounded-lg border border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold text-xs hover:bg-indigo-50 dark:hover:bg-indigo-950 cursor-pointer" data-uid="${u.uid}">
                   + Gia hạn 30 ngày
                 </button>
-                <button class="btn-revoke-user px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 font-semibold text-xs hover:bg-rose-100" data-uid="${u.uid}">
+                <button class="btn-revoke-user px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold text-xs hover:bg-rose-100 cursor-pointer" data-uid="${u.uid}">
                   Thu hồi về Thường
                 </button>
               </div>
@@ -1576,14 +1763,26 @@ function renderUsersTab(container) {
         </div>
       `;
 
+      resBox.querySelectorAll('.btn-copy-user-uid').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          navigator.clipboard.writeText(btn.dataset.uid);
+          toast("Đã sao chép UID!");
+        };
+      });
+
       bindUserActions(resBox, doSearch);
     } catch (err) {
-      resBox.innerHTML = `<div class="text-rose-600">Lỗi: ${esc(err.message)}</div>`;
+      resBox.innerHTML = `<div class="p-3 rounded-lg bg-rose-50 text-rose-600 text-xs">Lỗi: ${esc(err.message)}</div>`;
     }
   }
 
   btnSearch.onclick = doSearch;
   inputSearch.onkeydown = (e) => { if (e.key === 'Enter') doSearch(); };
+  btnRefreshRecent.onclick = loadRecentUsers;
+
+  // Tự động tải danh sách người dùng mới khi mở tab
+  loadRecentUsers();
 }
 
 function bindUserActions(container, refreshFn) {
@@ -1706,16 +1905,17 @@ function renderCodesTab(container) {
       <!-- BẢNG DANH SÁCH MÃ -->
       <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <h3 class="font-serif text-base font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Danh sách mã kích hoạt</h3>
-            <select id="codeFilterStatus" class="px-2 py-1 rounded-lg border border-gray-300 dark:border-gray-700 text-xs bg-white dark:bg-[#161A20]">
+            <span class="text-[10px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/50">Mã chưa dùng lên đầu · Tự xóa mã vô hiệu quá 7 ngày</span>
+            <select id="codeFilterStatus" class="px-2 py-1 rounded-lg border border-gray-300 dark:border-gray-700 text-xs bg-white dark:bg-[#161A20] ml-1">
               <option value="all">Tất cả trạng thái</option>
               <option value="unused">Chưa dùng</option>
               <option value="used">Đã dùng</option>
               <option value="disabled">Đã vô hiệu</option>
             </select>
           </div>
-          <button id="btnExportCodesCsv" class="px-3.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1.5">
+          <button id="btnExportCodesCsv" class="px-3.5 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1.5 cursor-pointer">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Xuất CSV</span>
           </button>
@@ -1739,6 +1939,27 @@ function renderCodesTab(container) {
     try {
       const data = await callAdminApi(`/api/admin/codes/list?status=${filter}`);
       currentLoadedCodes = data.codes || [];
+
+      // SẮP XẾP ƯU TIÊN: Chưa dùng lên đầu, Đã dùng ở giữa, Đã vô hiệu xuống dưới cùng
+      currentLoadedCodes.sort((a, b) => {
+        const getPriority = (item) => {
+          if (item.isDisabled) return 2; // Vô hiệu -> xuống dưới
+          if (item.isUsed) return 1;     // Đã dùng -> ở giữa
+          return 0;                      // Chưa dùng -> lên đầu
+        };
+        const pA = getPriority(a);
+        const pB = getPriority(b);
+        if (pA !== pB) return pA - pB;
+
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+
+      if (data.autoDeletedCount && data.autoDeletedCount > 0) {
+        toast(`Đã tự động xóa ${data.autoDeletedCount} mã vô hiệu quá 7 ngày`);
+      }
+
       if (currentLoadedCodes.length === 0) {
         tableBox.innerHTML = 'Chưa có mã kích hoạt nào theo điều kiện lọc này.';
         return;

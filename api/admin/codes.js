@@ -36,26 +36,77 @@ module.exports = async function handler(req, res) {
   if (action === 'list') {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
     const statusFilter = req.query.status || 'all';
-    const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
+    const limitNum = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 100));
 
     try {
-      let query = db.collection('activation_codes');
+      // 1. Tự động dọn dẹp và xóa các mã đã vô hiệu hóa quá 7 ngày
+      const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+      const nowMs = Date.now();
+      let autoDeletedCount = 0;
 
-      if (statusFilter === 'unused') {
-        query = query.where('isUsed', '==', false).where('isDisabled', '==', false);
-      } else if (statusFilter === 'used') {
-        query = query.where('isUsed', '==', true);
-      } else if (statusFilter === 'disabled') {
-        query = query.where('isDisabled', '==', true);
+      try {
+        const disabledSnap = await db.collection('activation_codes')
+          .where('isDisabled', '==', true)
+          .get();
+
+        if (!disabledSnap.empty) {
+          const deleteBatch = db.batch();
+          disabledSnap.forEach(dDoc => {
+            const dData = dDoc.data();
+            const dTime = dData.disabledAt || dData.updatedAt || dData.createdAt;
+            if (dTime && (nowMs - new Date(dTime).getTime() >= SEVEN_DAYS_MS)) {
+              deleteBatch.delete(dDoc.ref);
+              autoDeletedCount++;
+            }
+          });
+          if (autoDeletedCount > 0) {
+            await deleteBatch.commit();
+            console.log(`[Admin Codes] Đã tự động dọn dẹp ${autoDeletedCount} mã vô hiệu hóa quá 7 ngày`);
+          }
+        }
+      } catch (cleanErr) {
+        console.warn('[Admin Codes] Lỗi tự động dọn dẹp mã vô hiệu:', cleanErr.message);
       }
 
-      const snap = await query.orderBy('createdAt', 'desc').limit(limitNum).get();
-      const codes = [];
+      // 2. Lấy danh sách mã kích hoạt
+      const snap = await db.collection('activation_codes')
+        .orderBy('createdAt', 'desc')
+        .limit(limitNum)
+        .get();
+
+      let codes = [];
       snap.forEach(doc => {
-        codes.push(doc.data());
+        const c = doc.data();
+        codes.push(c);
       });
 
-      return res.status(200).json({ codes });
+      // 3. Lọc theo trạng thái nếu có yêu cầu
+      if (statusFilter === 'unused') {
+        codes = codes.filter(c => !c.isUsed && !c.isDisabled);
+      } else if (statusFilter === 'used') {
+        codes = codes.filter(c => c.isUsed && !c.isDisabled);
+      } else if (statusFilter === 'disabled') {
+        codes = codes.filter(c => c.isDisabled);
+      }
+
+      // 4. SẮP XẾP ƯU TIÊN: Chưa dùng lên đầu, Đã dùng ở giữa, Đã vô hiệu xuống dưới cùng
+      codes.sort((a, b) => {
+        const getPriority = (item) => {
+          if (item.isDisabled) return 2; // Vô hiệu -> xuống dưới
+          if (item.isUsed) return 1;     // Đã dùng -> ở giữa
+          return 0;                      // Chưa dùng -> lên đầu
+        };
+
+        const pA = getPriority(a);
+        const pB = getPriority(b);
+        if (pA !== pB) return pA - pB;
+
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+
+      return res.status(200).json({ success: true, codes, autoDeletedCount });
     } catch (err) {
       console.error('Lỗi khi lấy danh sách mã:', err);
       return res.status(500).json({ error: 'Không thể tải danh sách mã kích hoạt.' });
