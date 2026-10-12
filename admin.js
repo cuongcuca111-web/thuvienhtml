@@ -3170,7 +3170,12 @@ function buildBillingTabDOM(container, cachedData) {
         <div id="billingSubTabOrdersContainer" class="${currentBillingSubTab === 'orders' ? '' : 'hidden'} space-y-4">
           <div class="bg-white dark:bg-[#1A1D23] p-4 rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <input type="text" id="billingSearchOrderInput" placeholder="Tìm theo mã TVH, email, UID..." class="w-full sm:w-64 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-medium" />
+              <div class="relative w-full sm:w-64">
+                <input type="search" id="billingSearchOrderInput" autocomplete="new-password" name="admin_order_search_filter_prevent_autofill" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Tìm theo mã TVH, email, UID..." class="w-full pl-3 pr-8 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-medium focus:bg-white dark:focus:bg-[#1A1E24]" />
+                <button type="button" id="btnClearSearchOrderInput" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition cursor-pointer" title="Xóa tìm kiếm">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
               <select id="billingStatusFilter" class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#161A20] text-xs font-semibold">
                 <option value="all">Tất cả trạng thái</option>
                 <option value="user_confirmed">Khách báo đã chuyển</option>
@@ -3188,7 +3193,7 @@ function buildBillingTabDOM(container, cachedData) {
                 <span>Dọn dẹp bộ nhớ</span>
               </button>
             </div>
-            <div class="text-xs text-gray-500">
+            <div class="text-xs text-gray-500" id="billingPendingNotice">
               Có <strong>${userConfirmedCount}</strong> đơn khách báo đã chuyển cần duyệt.
             </div>
           </div>
@@ -3467,9 +3472,28 @@ function renderSingleOrderRow(ord) {
   `;
 }
 
-function renderOrdersTableRows(orders) {
+function renderOrdersTableRows(orders, currentSearch = '') {
   const sorted = sortOrdersByPriority(orders);
   if (!sorted || sorted.length === 0) {
+    if (currentSearch && currentSearch.trim()) {
+      return `
+        <tr>
+          <td colspan="9" class="py-10 px-4 text-center">
+            <div class="flex flex-col items-center justify-center space-y-2.5 max-w-md mx-auto">
+              <div class="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </div>
+              <p class="text-xs text-gray-600 dark:text-gray-300">
+                Không tìm thấy đơn hàng nào khớp với từ khóa "<strong>${esc(currentSearch)}</strong>".
+              </p>
+              <button type="button" id="btnResetOrderSearchInTable" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer">
+                Xóa tìm kiếm để hiện lại toàn bộ đơn
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
     return `<tr><td colspan="9" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
   }
 
@@ -3878,6 +3902,37 @@ function bindBillingTabEvents(container, initialOrders) {
         }
       };
     });
+    // Xóa bộ lọc tìm kiếm từ thông báo bảng trống
+    const btnResetSearchInTable = container.querySelector('#btnResetOrderSearchInTable');
+    if (btnResetSearchInTable) {
+      btnResetSearchInTable.onclick = () => {
+        if (searchInput) searchInput.value = '';
+        if (btnClearSearch) btnClearSearch.classList.add('hidden');
+        reloadOrdersList();
+      };
+    }
+  }
+
+  // Khai báo nút xóa tìm kiếm nhanh
+  const btnClearSearch = container.querySelector('#btnClearSearchOrderInput');
+
+  const toggleClearBtn = () => {
+    if (!btnClearSearch) return;
+    if (searchInput && searchInput.value.trim()) {
+      btnClearSearch.classList.remove('hidden');
+    } else {
+      btnClearSearch.classList.add('hidden');
+    }
+  };
+
+  if (btnClearSearch) {
+    btnClearSearch.onclick = () => {
+      if (searchInput) {
+        searchInput.value = '';
+        toggleClearBtn();
+        reloadOrdersList();
+      }
+    };
   }
 
   // Tải lại danh sách đơn hàng in-place, bảo toàn ô tìm kiếm & sắp xếp lại đơn
@@ -3888,7 +3943,7 @@ function bindBillingTabEvents(container, initialOrders) {
       const res = await callAdminApi(`/api/admin/billing/orders?status=${st}&search=${encodeURIComponent(s)}&limit=100`);
       const sorted = sortOrdersByPriority(res.orders || []);
       const tbody = container.querySelector('#billingOrdersTableBody');
-      if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted);
+      if (tbody) tbody.innerHTML = renderOrdersTableRows(sorted, s);
 
       // Cập nhật số đếm ở nút tab con và badge
       const counts = res.counts || {};
@@ -3901,6 +3956,24 @@ function bindBillingTabEvents(container, initialOrders) {
       if (pendingDot) {
         if (uCount > 0) pendingDot.classList.remove('hidden');
         else pendingDot.classList.add('hidden');
+      }
+
+      // Cập nhật thông báo đơn chờ duyệt (hỗ trợ hiện nhanh nếu đang bị ẩn bởi bộ lọc tìm kiếm)
+      const noticeEl = container.querySelector('#billingPendingNotice');
+      if (noticeEl) {
+        if (uCount > 0 && sorted.length === 0 && s) {
+          noticeEl.innerHTML = `Có <strong>${uCount}</strong> đơn cần duyệt nhưng bị ẩn bởi từ khóa "${esc(s)}" <button type="button" id="btnQuickShowPendingOrders" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline cursor-pointer ml-1">(Bấm để hiện ngay)</button>`;
+          const qBtn = noticeEl.querySelector('#btnQuickShowPendingOrders');
+          if (qBtn) {
+            qBtn.onclick = () => {
+              if (searchInput) searchInput.value = '';
+              toggleClearBtn();
+              reloadOrdersList();
+            };
+          }
+        } else {
+          noticeEl.innerHTML = `Có <strong>${uCount}</strong> đơn khách báo đã chuyển cần duyệt.`;
+        }
       }
 
       // Reset thanh chọn hàng loạt
@@ -4021,8 +4094,32 @@ function bindBillingTabEvents(container, initialOrders) {
     };
   }
 
+  // Tự động kiểm tra và xóa sạch tài khoản admin nếu bị trình duyệt autofill vào ô tìm kiếm
+  const clearSearchIfAutofilled = () => {
+    if (!searchInput) return;
+    const v = searchInput.value.trim().toLowerCase();
+    const adminUser = ((currentAdminUser && currentAdminUser.email) ? currentAdminUser.email.split('@')[0] : 'minhcuong111').toLowerCase();
+    if (v === adminUser || v === 'minhcuong111' || v.includes('admin')) {
+      searchInput.value = '';
+      toggleClearBtn();
+      reloadOrdersList();
+    } else {
+      toggleClearBtn();
+    }
+  };
+
+  // Kích hoạt dọn dẹp autofill sau các khoảng thời gian trình duyệt hoàn tất điền form
+  setTimeout(clearSearchIfAutofilled, 60);
+  setTimeout(clearSearchIfAutofilled, 250);
+  setTimeout(clearSearchIfAutofilled, 600);
+
   // Tìm kiếm & Lọc trạng thái đơn hàng
-  if (searchInput) searchInput.oninput = debounce(reloadOrdersList, 300);
+  if (searchInput) {
+    searchInput.oninput = () => {
+      toggleClearBtn();
+      debounce(reloadOrdersList, 300)();
+    };
+  }
   if (statusFilter) statusFilter.onchange = reloadOrdersList;
 
   // Nút làm mới danh sách đơn hàng
@@ -4032,6 +4129,12 @@ function bindBillingTabEvents(container, initialOrders) {
       btnBillingRefreshOrders.disabled = true;
       btnBillingRefreshOrders.classList.add('opacity-50');
       toast('Đang làm mới danh sách đơn hàng...');
+      // Nếu ô tìm kiếm đang chứa tên admin do autofill, chủ động xóa sạch
+      const curV = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      if (curV === 'minhcuong111' || curV.includes('admin')) {
+        searchInput.value = '';
+        toggleClearBtn();
+      }
       await reloadOrdersList();
       btnBillingRefreshOrders.disabled = false;
       btnBillingRefreshOrders.classList.remove('opacity-50');

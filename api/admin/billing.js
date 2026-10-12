@@ -356,16 +356,15 @@ module.exports = async function handler(req, res) {
             .get();
         }
       } catch (queryErr) {
-        // Fallback tự động khi chưa có composite index: Lấy theo createdAt rồi lọc trong RAM
-        const isIndexErr = queryErr.message && (queryErr.message.includes('FAILED_PRECONDITION') || queryErr.message.includes('requires an index'));
-        if (isIndexErr) {
-          console.warn('[Admin Billing Orders] Chưa có composite index status+createdAt, tự động chuyển sang lọc trong bộ nhớ:', queryErr.message);
+        console.warn('[Admin Billing Orders] Lỗi truy vấn có điều kiện, chuyển sang fallback an toàn:', queryErr.message);
+        try {
           snap = await db.collection('billing_orders')
             .orderBy('createdAt', 'desc')
             .limit(150)
             .get();
-        } else {
-          throw queryErr;
+        } catch (sortErr) {
+          console.warn('[Admin Billing Orders] Lỗi truy vấn orderBy createdAt, lấy dữ liệu thô:', sortErr.message);
+          snap = await db.collection('billing_orders').limit(150).get();
         }
       }
 
@@ -401,7 +400,9 @@ module.exports = async function handler(req, res) {
           const matchCode = (data.code || '').toLowerCase().includes(search);
           const matchEmail = (data.userEmail || '').toLowerCase().includes(search);
           const matchUid = (data.uid || '').toLowerCase().includes(search);
-          if (!matchCode && !matchEmail && !matchUid) return;
+          const matchName = (data.userName || data.displayName || '').toLowerCase().includes(search);
+          const matchPlan = (data.planId || '').toLowerCase().includes(search);
+          if (!matchCode && !matchEmail && !matchUid && !matchName && !matchPlan) return;
         }
 
         orders.push({

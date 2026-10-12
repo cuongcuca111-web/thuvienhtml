@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.5',
+        date: '2026-10-13T00:52:00+07:00',
+        title: 'Khắc phục triệt để lỗi ẩn đơn hàng VietQR do trình duyệt tự động điền (Autofill)',
+        items: [
+          { type: 'fix', text: 'Chặn trình duyệt tự động điền (autofill) tài khoản admin vào ô tìm kiếm đơn hàng, tự động làm sạch bộ lọc để hiển thị ngay lập tức các đơn khách chờ duyệt' },
+          { type: 'feature', text: 'Bổ sung nút xóa tìm kiếm (x) nhanh và thông báo thông minh kèm nút mở ngay đơn chờ duyệt khi có bộ lọc đang ẩn đơn' },
+          { type: 'improved', text: 'Tối ưu cơ chế truy vấn API đơn hàng đa tầng (fallback an toàn), đảm bảo dữ liệu luôn nạp đầy đủ trong mọi điều kiện' }
+        ]
+      },
+      {
         version: 'v5.2.4',
         date: '2026-10-13T00:45:00+07:00',
         title: 'Ưu tiên hiển thị popup Tạo mã thanh toán trước Popup Nâng cấp gói',
