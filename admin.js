@@ -3423,13 +3423,6 @@ function buildBillingTabDOM(container, cachedData) {
     `;
 
     bindBillingTabEvents(container, orders);
-  } catch (err) {
-    container.innerHTML = `
-      <div class="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-rose-700 text-xs">
-        Lỗi tải bảng thanh toán: ${esc(err.message)}
-      </div>
-    `;
-  }
 }
 
 function sortOrdersByPriority(orders) {
