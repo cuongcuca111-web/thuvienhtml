@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.0.0',
+        date: '2026-10-12T17:50:00+07:00',
+        title: 'Đồng bộ hóa toàn diện huy hiệu Pro & Căn giữa hoàn hảo icon Plus',
+        items: [
+          { type: 'improved', text: 'Đồng bộ hóa 100% huy hiệu gói Pro chuẩn hoàng gia (nền tối, viền vàng champagne, vương miện) trên mọi vị trí và tính năng AI đọc bài' },
+          { type: 'fixed', text: 'Căn giữa quang học chính xác tuyệt đối icon ngôi sao ở giữa chữ Plus trên thanh tìm kiếm header, bộ lọc và các nút điều hướng' },
+          { type: 'improved', text: 'Tối ưu hóa Service Worker v5.0.0 tự động dọn dẹp cache cũ và áp dụng ngay lập tức cho người dùng' }
+        ]
+      },
+      {
         version: 'v4.9.9',
         date: '2026-10-12T17:05:00+07:00',
         title: 'Hệ thống huy hiệu gói hợp nhất & Căn giữa quang học tuyệt đối',
@@ -1925,7 +1935,7 @@
     /* ===== TIER BADGE ===== */
     :root {
       --tier-icon-shift-pro: 0px;
-      --tier-icon-shift-plus: -0.5px;
+      --tier-icon-shift-plus: 0.5px;
       --tier-icon-shift-free: 0px;
       --tier-icon-shift-guest: 0px;
     }
@@ -2569,10 +2579,7 @@
           <div class="flex items-center min-w-0 gap-2.5">
             <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors"><use href="#s-search"></use></svg>
             <span class="text-xs sm:text-sm text-[#6E6B65]/80 dark:text-[#979DA8]/80 font-normal truncate">Tìm kiếm bài học, câu hỏi ôn tập...</span>
-            <span id="badgePlusSearchHeader" class="hidden px-1.5 py-0.5 rounded-full text-[8.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs items-center gap-0.5 border border-indigo-200/60 dark:border-indigo-700/60 uppercase shrink-0">
-              <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
-              <span>PLUS</span>
-            </span>
+            <span id="badgePlusSearchHeader" class="hidden tier-badge tier-badge--plus tier-badge--sm tier-badge--requires shrink-0" role="status" aria-label="Yêu cầu gói Plus" title="Yêu cầu gói Plus" data-tier="plus" data-size="sm" data-variant="requires"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Plus</span></span>
           </div>
           <span id="headerSearchKeycap" class="text-[10px] font-medium font-mono text-[#6E6B65] dark:text-[#979DA8] px-1.5 py-0.5 rounded border border-[#E7E5DF] dark:border-[#262C36] bg-black/5 dark:bg-white/5 shrink-0 ml-2">Ctrl K</span>
         </button>
@@ -5753,10 +5760,7 @@
       <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
         <button type="button" id="paletteScopeLibrary" class="palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer flex items-center gap-1.5" data-scope="library">
           <span>Thư viện</span>
-          <span id="badgePlusSearchScope" class="hidden px-1.5 py-0.5 rounded-full text-[8.5px] font-black tracking-wider bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xs items-center gap-0.5 border border-indigo-200/60 dark:border-indigo-700/60 uppercase">
-            <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
-            <span>PLUS</span>
-          </span>
+          <span id="badgePlusSearchScope" class="hidden tier-badge tier-badge--plus tier-badge--sm tier-badge--requires" role="status" aria-label="Yêu cầu gói Plus" title="Yêu cầu gói Plus" data-tier="plus" data-size="sm" data-variant="requires"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Plus</span></span>
         </button>
         <button type="button" id="paletteScopeCurrent" class="palette-scope-tab px-3 py-1 rounded-md transition text-[#6E6B65] dark:text-[#979DA8] cursor-pointer" data-scope="current">
           Bài này
@@ -20346,9 +20350,8 @@
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs">
               <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
-            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white mb-2 uppercase tracking-wider shadow-2xs">
-              <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
-              <span>Đặc quyền gói Plus &amp; Pro</span>
+            <div class="inline-flex items-center gap-1.5 mb-2">
+              <span class="tier-badge tier-badge--plus tier-badge--sm tier-badge--requires" role="status" aria-label="Đặc quyền gói Plus &amp; Pro"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Đặc quyền gói Plus &amp; Pro</span></span>
             </div>
             <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Tính năng Tìm kiếm văn bản</h3>
             <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm mx-auto leading-relaxed mb-4">
@@ -20356,7 +20359,7 @@
             </p>
             <div class="flex items-center justify-center gap-2">
               <button type="button" onclick="openUpgradeModal('plus')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs hover:shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg>
                 <span>Nâng cấp gói Plus</span>
               </button>
             </div>
@@ -20792,9 +20795,8 @@
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs">
               <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
-            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white mb-2 uppercase tracking-wider shadow-2xs">
-              <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
-              <span>Đặc quyền gói Plus &amp; Pro</span>
+            <div class="inline-flex items-center gap-1.5 mb-2">
+              <span class="tier-badge tier-badge--plus tier-badge--sm tier-badge--requires" role="status" aria-label="Đặc quyền gói Plus &amp; Pro"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg><span class="tier-badge__label">Đặc quyền gói Plus &amp; Pro</span></span>
             </div>
             <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Tính năng Tìm kiếm văn bản</h3>
             <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm mx-auto leading-relaxed mb-4">
@@ -20802,7 +20804,7 @@
             </p>
             <div class="flex items-center justify-center gap-2">
               <button type="button" onclick="openUpgradeModal('plus')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs hover:shadow transition active:scale-95 cursor-pointer flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z"/></svg>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.04l2.29 5.65 6.08.43-4.66 3.93 1.46 5.91L12 16.74l-5.17 3.22 1.46-5.91-4.66-3.93 6.08-.43z"/></svg>
                 <span>Nâng cấp gói Plus</span>
               </button>
             </div>
