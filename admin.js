@@ -2467,11 +2467,37 @@ async function renderBillingTab(container) {
             </div>
           </div>
 
+          <!-- THANH THAO TÁC HÀNG LOẠT (BULK ACTIONS) -->
+          <div id="bulkOrdersActionsBar" class="hidden p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 flex items-center justify-between flex-wrap gap-2 text-xs shadow-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
+              <span class="font-bold text-indigo-950 dark:text-indigo-200">
+                Đã chọn <span id="selectedOrdersCount" class="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400">0</span> đơn hàng
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btnBulkConfirmOrders" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-2xs transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Xác nhận hàng loạt</span>
+              </button>
+              <button type="button" id="btnBulkCancelOrders" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-2xs transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span>Hủy hàng loạt</span>
+              </button>
+              <button type="button" id="btnDeselectAllOrders" class="px-2.5 py-1.5 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium text-xs transition cursor-pointer">
+                Bỏ chọn
+              </button>
+            </div>
+          </div>
+
           <div class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs overflow-hidden">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr class="border-b border-gray-100 dark:border-gray-800 bg-[#F8F7F4]/60 dark:bg-[#14171C]/60 text-gray-500 font-semibold">
+                    <th class="py-3 px-3 text-center w-10">
+                      <input type="checkbox" id="selectAllOrdersCheckbox" class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4" title="Chọn tất cả">
+                    </th>
                     <th class="py-3 px-3.5">Mã đơn / Nội dung CK</th>
                     <th class="py-3 px-3.5">Người dùng</th>
                     <th class="py-3 px-3.5">Gói / Chu kỳ</th>
@@ -2634,7 +2660,7 @@ function sortOrdersByPriority(orders) {
 function renderOrdersTableRows(orders) {
   const sorted = sortOrdersByPriority(orders);
   if (!sorted || sorted.length === 0) {
-    return `<tr><td colspan="8" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
+    return `<tr><td colspan="9" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
   }
 
   return sorted.map(ord => {
@@ -2654,7 +2680,10 @@ function renderOrdersTableRows(orders) {
     const planText = `${(ord.planId || '').toUpperCase()} (${ord.period === 'yearly' ? 'Năm' : 'Tháng'})`;
 
     return `
-      <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
+      <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition ${ord.status === 'user_confirmed' ? 'bg-amber-50/20 dark:bg-amber-950/10' : ''}">
+        <td class="py-3 px-3 text-center">
+          <input type="checkbox" class="order-select-checkbox rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" data-status="${esc(ord.status)}">
+        </td>
         <td class="py-3 px-3.5">
           <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">${esc(ord.code)}</div>
           <div class="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
@@ -2909,6 +2938,103 @@ function bindBillingTabEvents(container, orders) {
       } finally {
         btnSaveConfig.disabled = false;
         btnSaveConfig.innerText = 'Lưu cấu hình thanh toán';
+      }
+    };
+  }
+
+  // Thao tác hàng loạt: Chọn đơn, Duyệt hàng loạt, Hủy hàng loạt
+  const selectAllCheckbox = container.querySelector('#selectAllOrdersCheckbox');
+  const bulkBar = container.querySelector('#bulkOrdersActionsBar');
+  const selectedCountEl = container.querySelector('#selectedOrdersCount');
+  const btnBulkConfirm = container.querySelector('#btnBulkConfirmOrders');
+  const btnBulkCancel = container.querySelector('#btnBulkCancelOrders');
+  const btnDeselectAll = container.querySelector('#btnDeselectAllOrders');
+
+  function updateBulkBar() {
+    const checkboxes = container.querySelectorAll('.order-select-checkbox:checked');
+    const count = checkboxes.length;
+    if (selectedCountEl) selectedCountEl.innerText = String(count);
+    if (bulkBar) {
+      if (count > 0) {
+        bulkBar.classList.remove('hidden');
+      } else {
+        bulkBar.classList.add('hidden');
+      }
+    }
+    if (selectAllCheckbox) {
+      const allCheckboxes = container.querySelectorAll('.order-select-checkbox');
+      selectAllCheckbox.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;
+      selectAllCheckbox.indeterminate = count > 0 && count < allCheckboxes.length;
+    }
+  }
+
+  if (selectAllCheckbox) {
+    selectAllCheckbox.onchange = () => {
+      const allCheckboxes = container.querySelectorAll('.order-select-checkbox');
+      allCheckboxes.forEach(cb => { cb.checked = selectAllCheckbox.checked; });
+      updateBulkBar();
+    };
+  }
+
+  container.querySelectorAll('.order-select-checkbox').forEach(cb => {
+    cb.onchange = updateBulkBar;
+  });
+
+  if (btnDeselectAll) {
+    btnDeselectAll.onclick = () => {
+      container.querySelectorAll('.order-select-checkbox').forEach(cb => { cb.checked = false; });
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      }
+      updateBulkBar();
+    };
+  }
+
+  if (btnBulkConfirm) {
+    btnBulkConfirm.onclick = async () => {
+      const checkedBoxes = Array.from(container.querySelectorAll('.order-select-checkbox:checked'));
+      const orderIds = checkedBoxes.map(cb => cb.dataset.id).filter(Boolean);
+      if (orderIds.length === 0) return;
+
+      btnBulkConfirm.disabled = true;
+      btnBulkConfirm.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang duyệt...</span>';
+
+      try {
+        const res = await callAdminApi('/api/admin/billing/orders-confirm', {
+          method: 'POST',
+          body: JSON.stringify({ orderIds, reason: 'Admin duyệt hàng loạt' })
+        });
+        toast(res.message || `Đã duyệt thành công ${orderIds.length} đơn!`);
+        renderBillingTab(container);
+      } catch (err) {
+        alert('Lỗi duyệt hàng loạt: ' + err.message);
+        btnBulkConfirm.disabled = false;
+        btnBulkConfirm.innerHTML = '<span>Xác nhận hàng loạt</span>';
+      }
+    };
+  }
+
+  if (btnBulkCancel) {
+    btnBulkCancel.onclick = async () => {
+      const checkedBoxes = Array.from(container.querySelectorAll('.order-select-checkbox:checked'));
+      const orderIds = checkedBoxes.map(cb => cb.dataset.id).filter(Boolean);
+      if (orderIds.length === 0) return;
+
+      btnBulkCancel.disabled = true;
+      btnBulkCancel.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang hủy...</span>';
+
+      try {
+        const res = await callAdminApi('/api/admin/billing/orders-cancel', {
+          method: 'POST',
+          body: JSON.stringify({ orderIds, reason: 'Admin hủy hàng loạt' })
+        });
+        toast(res.message || `Đã hủy thành công ${orderIds.length} đơn!`);
+        renderBillingTab(container);
+      } catch (err) {
+        alert('Lỗi hủy hàng loạt: ' + err.message);
+        btnBulkCancel.disabled = false;
+        btnBulkCancel.innerHTML = '<span>Hủy hàng loạt</span>';
       }
     };
   }

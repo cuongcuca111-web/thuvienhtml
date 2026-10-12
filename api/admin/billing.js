@@ -454,117 +454,164 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // 5. DUYỆT ĐƠN THỦ CÔNG (POST /api/admin/billing/orders-confirm)
+  // 5. DUYỆT ĐƠN (ĐƠN LẺ HOẶC HÀNG LOẠT) (POST /api/admin/billing/orders-confirm)
   if (action === 'orders-confirm' && req.method === 'POST') {
-    const { orderId, reason } = req.body || {};
-    if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
+    const { orderId, orderIds, reason } = req.body || {};
+    const ids = Array.isArray(orderIds) && orderIds.length > 0 
+      ? orderIds.filter(Boolean) 
+      : (orderId ? [orderId] : []);
+
+    if (ids.length === 0) {
+      return res.status(400).json({ error: 'Thiếu orderId hoặc danh sách orderIds' });
+    }
 
     try {
-      const orderRef = db.collection('billing_orders').doc(orderId);
-      const orderSnap = await orderRef.get();
-      if (!orderSnap.exists) return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
-      const order = orderSnap.data();
-
-      if (order.status === 'paid') {
-        return res.status(400).json({ error: 'Đơn hàng này đã được xác nhận thanh toán trước đó' });
-      }
-
-      const targetUid = order.uid;
-      const planId = order.planId;
-      const period = order.period;
       const now = Date.now();
+      let successCount = 0;
+      let lastExpiresAt = null;
+      let lastPlanId = 'pro';
 
-      // Đọc gói hiện tại của người dùng để tính cộng dồn ngày
-      const userPlanRef = db.doc(`users/${targetUid}/billing/plan`);
-      const userPlanSnap = await userPlanRef.get();
-      let currentExpires = now;
+      for (const id of ids) {
+        try {
+          const orderRef = db.collection('billing_orders').doc(id);
+          const orderSnap = await orderRef.get();
+          if (!orderSnap.exists) continue;
+          const order = orderSnap.data();
 
-      if (userPlanSnap.exists) {
-        const upData = userPlanSnap.data();
-        if (upData.tier === planId && upData.expiresAt) {
-          const expMs = new Date(upData.expiresAt).getTime();
-          if (expMs > now) currentExpires = expMs;
+          if (order.status === 'paid') continue; // Đã thanh toán trước đó
+
+          const targetUid = order.uid;
+          const planId = order.planId || 'pro';
+          const period = order.period || 'monthly';
+          lastPlanId = planId;
+
+          // Đọc gói hiện tại của người dùng để tính cộng dồn ngày
+          const userPlanRef = db.doc(`users/${targetUid}/billing/plan`);
+          const userPlanSnap = await userPlanRef.get();
+          let currentExpires = now;
+
+          if (userPlanSnap.exists) {
+            const upData = userPlanSnap.data();
+            if (upData.tier === planId && upData.expiresAt) {
+              const expMs = new Date(upData.expiresAt).getTime();
+              if (expMs > now) currentExpires = expMs;
+            }
+          }
+
+          const addedDays = period === 'yearly' ? 365 : 30;
+          const newExpiresAt = new Date(currentExpires + addedDays * 24 * 60 * 60 * 1000).toISOString();
+          lastExpiresAt = newExpiresAt;
+
+          const batch = db.batch();
+
+          // Cập nhật đơn hàng thành paid
+          batch.update(orderRef, {
+            status: 'paid',
+            paidAt: new Date().toISOString(),
+            confirmedBy: uid,
+            confirmReason: reason || (ids.length > 1 ? 'Admin duyệt hàng loạt' : 'Admin duyệt thủ công'),
+            updatedAt: new Date().toISOString()
+          });
+
+          // Cập nhật quyền của người dùng trong Firestore
+          batch.set(userPlanRef, {
+            tier: planId,
+            period: period,
+            active: true,
+            activatedAt: new Date().toISOString(),
+            expiresAt: newExpiresAt,
+            updatedBy: uid,
+            lastOrderId: order.id
+          }, { merge: true });
+
+          await batch.commit();
+
+          // Cập nhật Custom Claims trên Firebase Auth nếu có thể
+          try {
+            const app = ctx.admin;
+            const currentClaims = (await app.auth().getUser(targetUid)).customClaims || {};
+            await app.auth().setCustomUserClaims(targetUid, {
+              ...currentClaims,
+              tier: planId
+            });
+          } catch (claimErr) {
+            console.warn('[Billing] Không thể set custom claims:', claimErr.message);
+          }
+
+          successCount++;
+        } catch (singleErr) {
+          console.warn(`[Batch Confirm] Lỗi duyệt đơn ${id}:`, singleErr.message);
         }
-      }
-
-      const addedDays = period === 'yearly' ? 365 : 30;
-      const newExpiresAt = new Date(currentExpires + addedDays * 24 * 60 * 60 * 1000).toISOString();
-
-      const batch = db.batch();
-
-      // Cập nhật đơn hàng thành paid
-      batch.update(orderRef, {
-        status: 'paid',
-        paidAt: new Date().toISOString(),
-        confirmedBy: uid,
-        confirmReason: reason || 'Admin duyệt thủ công',
-        updatedAt: new Date().toISOString()
-      });
-
-      // Cập nhật quyền của người dùng trong Firestore
-      batch.set(userPlanRef, {
-        tier: planId,
-        period: period,
-        active: true,
-        activatedAt: new Date().toISOString(),
-        expiresAt: newExpiresAt,
-        updatedBy: uid,
-        lastOrderId: order.id
-      }, { merge: true });
-
-      await batch.commit();
-
-      // Cập nhật Custom Claims trên Firebase Auth nếu có thể
-      try {
-        const app = ctx.admin;
-        const currentClaims = (await app.auth().getUser(targetUid)).customClaims || {};
-        await app.auth().setCustomUserClaims(targetUid, {
-          ...currentClaims,
-          tier: planId
-        });
-      } catch (claimErr) {
-        console.warn('[Billing] Không thể set custom claims trực tiếp:', claimErr.message);
       }
 
       await recordAuditLog(db, {
         uid,
-        action: 'CONFIRM_ORDER_MANUAL',
-        details: `Duyệt đơn ${order.code} (${planId.toUpperCase()} ${period}) cho người dùng UID: ${targetUid}`
+        action: ids.length > 1 ? 'CONFIRM_ORDERS_BATCH' : 'CONFIRM_ORDER_MANUAL',
+        details: `Duyệt thành công ${successCount}/${ids.length} đơn hàng`
       });
+
+      const message = ids.length > 1
+        ? `Đã duyệt thành công ${successCount} đơn hàng!`
+        : `Đã kích hoạt thành công gói ${lastPlanId.toUpperCase()} tới ngày ${lastExpiresAt ? new Date(lastExpiresAt).toLocaleDateString('vi-VN') : ''}`;
 
       return res.status(200).json({
         success: true,
-        message: `Đã kích hoạt thành công gói ${planId.toUpperCase()} tới ngày ${new Date(newExpiresAt).toLocaleDateString('vi-VN')}`
+        count: successCount,
+        message
       });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi duyệt đơn: ' + err.message });
     }
   }
 
-  // 6. HỦY ĐƠN HÀNG (POST /api/admin/billing/orders-cancel)
+  // 6. HỦY ĐƠN HÀNG (ĐƠN LẺ HOẶC HÀNG LOẠT) (POST /api/admin/billing/orders-cancel)
   if (action === 'orders-cancel' && req.method === 'POST') {
-    const { orderId, reason } = req.body || {};
-    if (!orderId) return res.status(400).json({ error: 'Thiếu orderId' });
+    const { orderId, orderIds, reason } = req.body || {};
+    const ids = Array.isArray(orderIds) && orderIds.length > 0 
+      ? orderIds.filter(Boolean) 
+      : (orderId ? [orderId] : []);
+
+    if (ids.length === 0) {
+      return res.status(400).json({ error: 'Thiếu orderId hoặc danh sách orderIds' });
+    }
 
     try {
-      const orderRef = db.collection('billing_orders').doc(orderId);
-      const orderSnap = await orderRef.get();
-      if (!orderSnap.exists) return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
+      let successCount = 0;
+      const batch = db.batch();
 
-      await orderRef.update({
-        status: 'cancelled',
-        cancelledReason: reason || 'Admin hủy đơn',
-        cancelledBy: uid,
-        updatedAt: new Date().toISOString()
-      });
+      for (const id of ids) {
+        try {
+          const orderRef = db.collection('billing_orders').doc(id);
+          const orderSnap = await orderRef.get();
+          if (!orderSnap.exists) continue;
+          const ord = orderSnap.data();
+          if (ord.status === 'paid') continue; // Không hủy đơn đã thanh toán
+
+          batch.update(orderRef, {
+            status: 'cancelled',
+            cancelledReason: reason || (ids.length > 1 ? 'Admin hủy hàng loạt' : 'Admin hủy đơn'),
+            cancelledBy: uid,
+            updatedAt: new Date().toISOString()
+          });
+          successCount++;
+        } catch (_) {}
+      }
+
+      if (successCount > 0) {
+        await batch.commit();
+      }
 
       await recordAuditLog(db, {
         uid,
-        action: 'CANCEL_ORDER_ADMIN',
-        details: `Hủy đơn ${orderSnap.data().code}. Lý do: ${reason || 'Không có'}`
+        action: ids.length > 1 ? 'CANCEL_ORDERS_BATCH' : 'CANCEL_ORDER_ADMIN',
+        details: `Hủy thành công ${successCount}/${ids.length} đơn hàng. Lý do: ${reason || 'Không có'}`
       });
 
-      return res.status(200).json({ success: true, message: 'Đã hủy đơn hàng' });
+      return res.status(200).json({
+        success: true,
+        count: successCount,
+        message: ids.length > 1 ? `Đã hủy thành công ${successCount} đơn hàng!` : 'Đã hủy đơn hàng'
+      });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi hủy đơn: ' + err.message });
     }

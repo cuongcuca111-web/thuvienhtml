@@ -6899,6 +6899,9 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
   <!-- MODAL: LỊCH SỬ MUA HÀNG & GIAO DỊCH VIETQR -->
   <div id="billingHistoryModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[75] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="billingHistoryTitle">
     <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[800px] max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
@@ -8235,6 +8238,16 @@
     let billingHistoryUnsub = null;
 
     async function openBillingHistoryModal(showPendingBanner = false) {
+      if (state.user && state.user.isAnonymous) {
+        showToast("Vui lòng đăng ký hoặc đăng nhập tài khoản để xem lịch sử mua hàng.");
+        const authModal = document.getElementById('authModal');
+        if (authModal) {
+          authModal.classList.remove('hidden');
+          authModal.classList.add('modal-active');
+        }
+        return;
+      }
+
       const modal = document.getElementById('billingHistoryModal');
       if (!modal) return;
 
@@ -8256,6 +8269,7 @@
       modal.classList.remove('hidden', 'modal-closing');
       void modal.offsetWidth;
       modal.classList.add('modal-active');
+      document.body.style.overflow = 'hidden';
 
       await fetchAndRenderBillingHistory();
       subscribeBillingHistoryRealtime();
@@ -8270,6 +8284,7 @@
         modal.classList.add('hidden');
         modal.classList.remove('modal-closing');
       }, 180);
+      document.body.style.overflow = '';
 
       if (billingHistoryUnsub) {
         try { billingHistoryUnsub(); } catch(e){}
