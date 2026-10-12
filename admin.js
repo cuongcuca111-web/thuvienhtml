@@ -1124,6 +1124,11 @@ async function savePlansChanges() {
       }));
     } catch (e) {}
 
+    window.dispatchEvent(new CustomEvent('plans_updated', { detail: { plans: savedPlans, version: res.version } }));
+    if (typeof window.updateUpgradePricingDisplay === 'function') {
+      try { window.updateUpgradePricingDisplay(); } catch(e){}
+    }
+
     const verBadge = document.getElementById('adminCurrentVersionBadge');
     if (verBadge) verBadge.innerText = `Cấu hình: v${res.version}`;
 
@@ -1176,6 +1181,21 @@ async function loadPlansHistory() {
               body: JSON.stringify({ historyId: btn.dataset.id })
             });
             toast(`Đã khôi phục về phiên bản v${res.version}!`);
+            if (res.plans) {
+              if (adminContext.effectivePlans) adminContext.effectivePlans.plans = res.plans;
+              if (window.effectivePlans) window.effectivePlans.plans = res.plans;
+              try {
+                localStorage.setItem('thuvienhtml_plans_config', JSON.stringify({
+                  plans: res.plans,
+                  version: res.version,
+                  pricing: (adminContext.effectivePlans && adminContext.effectivePlans.pricing) || {}
+                }));
+              } catch (e) {}
+              window.dispatchEvent(new CustomEvent('plans_updated', { detail: { plans: res.plans, version: res.version } }));
+              if (typeof window.updateUpgradePricingDisplay === 'function') {
+                try { window.updateUpgradePricingDisplay(); } catch(e){}
+              }
+            }
             renderPlansTab(document.getElementById('adminTabContentContainer'));
           } catch (e) {
             alert("Lỗi khôi phục: " + e.message);
