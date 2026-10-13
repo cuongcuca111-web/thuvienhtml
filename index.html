@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.3.1',
+        date: '2026-10-13T21:30:00+07:00',
+        title: 'Trung tâm Quản lý Tài khoản (Hồ sơ, Avatar Linh vật, Bảo mật & Tùy chọn)',
+        items: [
+          { type: 'feature', text: 'Ra mắt Trung tâm Quản lý Tài khoản: Chỉnh sửa tên hiển thị (displayName) và bộ sưu tập 12 avatar linh vật học tập sinh động' },
+          { type: 'feature', text: 'Quản lý Bảo mật & Mật khẩu: Đổi mật khẩu mới trực tiếp, gửi liên kết đặt lại mật khẩu qua email Firebase và sao chép UID 1 chạm' },
+          { type: 'feature', text: 'Gói Hội viên & Hạn mức AI: Xem chi tiết hạng thành viên (Free / Plus / Pro), hạn dùng và quyền lợi trợ lý AI Gemini' },
+          { type: 'feature', text: 'Tùy chọn học tập cá nhân hóa: Cài đặt mục tiêu đọc sách hàng ngày, ngôn ngữ AI dịch thuật mặc định và âm chuông Pomodoro' }
+        ]
+      },
+      {
         version: 'v5.3.0',
         date: '2026-10-13T10:15:00+07:00',
         title: 'Tùy chỉnh Prompt AI (Giải thích, Ví dụ, Dịch) & Sửa lỗi kiểm tra Google Gemini API Key',
@@ -3363,7 +3374,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.0 • build 13/10/2026 10:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.1 • build 13/10/2026 21:30</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -3911,7 +3922,7 @@
     </div>
 
     <!-- KHỐI PROFILE HEADER CHUYÊN NGHIỆP & KHOA HỌC (Cân đối hoàn hảo, không lãng phí diện tích) -->
-    <div class="p-3 rounded-2xl bg-[#F8F7F4] dark:bg-[#1C2028] border border-[#E6E6E1] dark:border-[#262C36] mb-2.5 space-y-2.5 shadow-2xs">
+    <div id="userProfileHeaderCard" class="p-3 rounded-2xl bg-[#F8F7F4] dark:bg-[#1C2028] border border-[#E6E6E1] dark:border-[#262C36] mb-2.5 space-y-2.5 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-800 transition cursor-pointer" title="Bấm để mở Quản lý Tài khoản">
       
       <!-- HÀNG 1: Avatar + Tên + Huy hiệu gói & Trạng thái tài khoản -->
       <div class="flex items-center gap-2.5">
@@ -3980,10 +3991,19 @@
       </div>
     </button>
 
+    <!-- Nút Mở Trung tâm Quản lý Tài khoản (Hồ sơ, Đổi tên, Avatar, Bảo mật) -->
+    <button id="btnOpenAccountCenterModal" type="button" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-semibold mb-0.5 transition cursor-pointer group">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span>Quản lý Tài khoản</span>
+      </div>
+      <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200/60 dark:border-indigo-800/60">Hồ sơ &amp; Bảo mật</span>
+    </button>
+
     <!-- Mục Hồ sơ & Thống kê học tập -->
     <button id="btnUserProfile" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition">
       <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-bar-chart"></use></svg>
-      <span>Hồ sơ &amp; Thống kê</span>
+      <span>Thống kê học tập</span>
     </button>
 
     <!-- Mục Lịch sử mua hàng / Đơn hàng -->
@@ -4079,7 +4099,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.0 • build 13/10/2026 10:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.1 • build 13/10/2026 21:30</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -7839,6 +7859,450 @@
   </div>
 
   <!-- ========================================================================= -->
+  <!-- MODAL: TRUNG TÂM QUẢN LÝ TÀI KHOẢN (ACCOUNT CENTER MODAL) -->
+  <!-- ========================================================================= -->
+  <div id="accountCenterModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[10005] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="accountCenterTitle">
+    <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[22px] sm:rounded-[22px] w-full max-w-[640px] max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors" role="document">
+      
+      <!-- Header Modal -->
+      <div class="flex items-center justify-between px-5 sm:px-6 py-4 shrink-0 border-b border-[#EBE8E1] dark:border-[#232833]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center shadow-xs shrink-0">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div>
+            <h3 id="accountCenterTitle" class="font-serif font-bold text-lg sm:text-xl text-[#1C1B18] dark:text-[#E8E6E1] tracking-tight leading-snug">
+              Quản lý Tài khoản
+            </h3>
+            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] mt-0.5">
+              Hồ sơ, ảnh đại diện, bảo mật &amp; tùy chọn học tập
+            </p>
+          </div>
+        </div>
+        <button id="btnCloseAccountCenterModal" type="button" class="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-1" aria-label="Đóng">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Thanh chuyển Tab -->
+      <div class="flex items-center px-4 sm:px-6 pt-1 border-b border-[#EBE8E1] dark:border-[#232833] overflow-x-auto no-scrollbar shrink-0 bg-[#F5F4EE]/50 dark:bg-[#12151B]/50 gap-1 text-xs">
+        <button type="button" class="acc-tab-btn active px-3 py-2.5 font-bold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 whitespace-nowrap cursor-pointer transition" data-tab="profile">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Hồ sơ cá nhân</span>
+        </button>
+        <button type="button" class="acc-tab-btn px-3 py-2.5 font-medium border-b-2 border-transparent text-[#78756D] hover:text-[#1C1B18] dark:text-[#9AA3B2] dark:hover:text-[#ECEEF2] flex items-center gap-1.5 whitespace-nowrap cursor-pointer transition" data-tab="subscription">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Gói &amp; Hạn mức</span>
+        </button>
+        <button type="button" class="acc-tab-btn px-3 py-2.5 font-medium border-b-2 border-transparent text-[#78756D] hover:text-[#1C1B18] dark:text-[#9AA3B2] dark:hover:text-[#ECEEF2] flex items-center gap-1.5 whitespace-nowrap cursor-pointer transition" data-tab="security">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Bảo mật</span>
+        </button>
+        <button type="button" class="acc-tab-btn px-3 py-2.5 font-medium border-b-2 border-transparent text-[#78756D] hover:text-[#1C1B18] dark:text-[#9AA3B2] dark:hover:text-[#ECEEF2] flex items-center gap-1.5 whitespace-nowrap cursor-pointer transition" data-tab="preferences">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Tùy chọn học tập</span>
+        </button>
+      </div>
+
+      <!-- Thân Modal cuộn -->
+      <div class="flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-5" id="accountCenterScrollBody">
+        
+        <!-- ==================== TAB 1: HỒ SƠ CÁ NHÂN ==================== -->
+        <div id="accTabContentProfile" class="acc-tab-content space-y-4">
+          <!-- Card Header Tổng quan cá nhân -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs flex items-center gap-4">
+            <div class="relative shrink-0">
+              <div id="accAvatarBig" class="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-indigo-400 text-white font-bold text-2xl flex items-center justify-center shadow-md border-2 border-white dark:border-[#262C36] select-none">
+                U
+              </div>
+              <span id="accProfileOnlineDot" class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-emerald-500"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 id="accProfileDisplayName" class="font-bold text-base text-[#1A1A1A] dark:text-[#ECEEF2] truncate">Thành viên</h4>
+                <span id="accProfileTierBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">Free</span>
+              </div>
+              <p id="accProfileEmail" class="text-xs text-[#6B6B66] dark:text-[#9AA3B2] truncate mt-0.5">user@example.com</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 font-medium">Đang trực tuyến</span>
+                <span id="accProfileSyncStatus" class="text-[10px] text-gray-500 dark:text-gray-400">Đã đồng bộ Cloud</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bộ sưu tập Avatar Linh vật & Biểu tượng -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                  Linh vật &amp; Biểu tượng đại diện
+                </label>
+                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+                  Chọn biểu tượng để thể hiện phong cách học tập của bạn
+                </p>
+              </div>
+              <span id="accCurrentAvatarLabel" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400"></span>
+            </div>
+
+            <div id="accAvatarPickerGrid" class="grid grid-cols-6 sm:grid-cols-6 gap-2 pt-1">
+              <!-- Render tự động bởi JS: 🦉, 🎓, 🚀, 🐱, 🔬, 📚, 🌟, ⚡, 🧠, ☕, 🔥, 👤 -->
+            </div>
+          </div>
+
+          <!-- Đổi Tên hiển thị -->
+          <form id="accDisplayNameForm" class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-3">
+            <div>
+              <label for="accInputDisplayName" class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">
+                Tên hiển thị của bạn
+              </label>
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  id="accInputDisplayName" 
+                  placeholder="Nhập tên hiển thị mới..." 
+                  maxlength="32"
+                  autocomplete="nickname"
+                  class="flex-1 px-3.5 py-2.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#D5D2CA] dark:border-[#2A313C] rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner"
+                  required
+                />
+                <button 
+                  type="submit" 
+                  id="btnAccSaveDisplayName"
+                  class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs cursor-pointer shrink-0"
+                >
+                  Lưu tên
+                </button>
+              </div>
+              <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-1.5">
+                Tên này sẽ hiển thị ở tiêu đề trang, menu tài khoản và các ghi chú của bạn.
+              </p>
+            </div>
+          </form>
+
+          <!-- Bảng Thông tin định danh chi tiết -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-3">
+            <h5 class="text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+              Thông tin định danh hệ thống
+            </h5>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <!-- Ô UID -->
+              <div class="p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800 flex items-center justify-between">
+                <div class="min-w-0 pr-2">
+                  <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-medium">Mã UID người dùng</span>
+                  <span id="accProfileUid" class="font-mono font-bold text-[11px] text-[#1A1A1A] dark:text-[#ECEEF2] truncate select-all">...</span>
+                </div>
+                <button type="button" id="btnAccCopyUid" class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-500 hover:text-indigo-600 transition cursor-pointer shrink-0" title="Sao chép UID">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+
+              <!-- Ô Email / Phương thức -->
+              <div class="p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800">
+                <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-medium">Phương thức đăng nhập</span>
+                <span id="accProfileProvider" class="font-semibold text-[11px] text-[#1A1A1A] dark:text-[#ECEEF2] truncate block">Tài khoản</span>
+              </div>
+
+              <!-- Ô Ngày tham gia -->
+              <div class="p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800">
+                <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-medium">Ngày tham gia</span>
+                <span id="accProfileJoinedDate" class="font-medium text-[11px] text-[#1A1A1A] dark:text-[#ECEEF2] block">Đang tải...</span>
+              </div>
+
+              <!-- Ô Lần đăng nhập cuối -->
+              <div class="p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800">
+                <span class="block text-[10px] text-gray-400 dark:text-gray-500 font-medium">Đăng nhập gần nhất</span>
+                <span id="accProfileLastLogin" class="font-medium text-[11px] text-[#1A1A1A] dark:text-[#ECEEF2] block">Đang tải...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 2: GÓI & HẠN MỨC AI ==================== -->
+        <div id="accTabContentSubscription" class="acc-tab-content space-y-4 hidden">
+          <!-- Card Thẻ Gói Hội viên -->
+          <div class="p-5 rounded-2xl bg-gradient-to-tr from-indigo-900 via-indigo-800 to-indigo-700 text-white shadow-md relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+            <div class="relative z-10">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs uppercase tracking-wider font-semibold text-indigo-200">Gói Dịch Vụ Của Bạn</span>
+                <span id="accSubTierBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 backdrop-blur-xs">FREE</span>
+              </div>
+              <h3 id="accSubTierName" class="text-2xl font-black tracking-tight mb-1">Gói Thường</h3>
+              <p id="accSubExpiryText" class="text-xs text-indigo-200">Không giới hạn thời gian sử dụng</p>
+            </div>
+          </div>
+
+          <!-- Quyền lợi và Hạn mức AI chi tiết -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-3">
+            <h5 class="text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+              Quyền lợi và Hạn mức tính năng
+            </h5>
+
+            <div class="space-y-2.5 text-xs">
+              <div class="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800 flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4"><use href="#icon-sparkles"></use></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">Trợ lý AI Gemini &amp; DeepSeek</div>
+                  <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">
+                    Giải thích ngữ pháp, tra ví dụ câu, dịch bài đọc và tóm tắt kiến thức chuẩn xác.
+                  </p>
+                  <span class="inline-block mt-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    ✓ Không giới hạn khi lưu API Key cá nhân
+                  </span>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800 flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">Kho sách &amp; Bài học tương tác</div>
+                  <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">
+                    Đọc sách đa chế độ, tìm kiếm thông minh, tra từ nhanh và làm bài tập trực quan.
+                  </p>
+                  <span class="inline-block mt-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    ✓ Toàn bộ bài học &amp; Danh mục
+                  </span>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800 flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">Đồng bộ Đám mây &amp; Tiến độ học</div>
+                  <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">
+                    Lưu tiến độ đọc, điểm thưởng, ghi chú cá nhân và đồng bộ trên mọi thiết bị di động / máy tính.
+                  </p>
+                  <span class="inline-block mt-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    ✓ Tự động đồng bộ thời gian thực
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lối tắt nâng cấp & quản lý gói -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+            <button 
+              type="button" 
+              id="btnAccOpenUpgrade"
+              class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4"><use href="#icon-upgrade-sparkle"></use></svg>
+              <span>Nâng cấp gói</span>
+            </button>
+            <button 
+              type="button" 
+              id="btnAccOpenRedeem"
+              class="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+              <span>Nhập mã kích hoạt</span>
+            </button>
+            <button 
+              type="button" 
+              id="btnAccOpenBilling"
+              class="py-2.5 px-3 rounded-xl border border-[#D5D2CA] dark:border-[#2A313C] hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              <span>Lịch sử mua hàng</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 3: BẢO MẬT & ĐĂNG NHẬP ==================== -->
+        <div id="accTabContentSecurity" class="acc-tab-content space-y-4 hidden">
+          <!-- Thông tin Phương thức đăng nhập hiện tại -->
+          <div id="accSecurityProviderCard" class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div class="flex-1">
+              <h5 class="text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">Trạng thái bảo mật tài khoản</h5>
+              <p id="accSecurityProviderDesc" class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5 leading-relaxed">
+                Tài khoản của bạn được bảo vệ qua hạ tầng xác thực an toàn của Google Firebase.
+              </p>
+            </div>
+          </div>
+
+          <!-- Form Đổi Mật Khẩu Mới -->
+          <form id="accChangePasswordForm" class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-3.5">
+            <h5 class="text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+              Đổi mật khẩu mới
+            </h5>
+            
+            <div>
+              <label for="accInputNewPassword" class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">
+                Mật khẩu mới (Tối thiểu 6 ký tự)
+              </label>
+              <input 
+                type="password" 
+                id="accInputNewPassword" 
+                placeholder="Nhập mật khẩu mới..." 
+                minlength="6"
+                autocomplete="new-password"
+                class="w-full px-3.5 py-2.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#D5D2CA] dark:border-[#2A313C] rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner"
+                required
+              />
+            </div>
+
+            <div>
+              <label for="accInputConfirmPassword" class="block text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2] mb-1">
+                Xác nhận lại mật khẩu mới
+              </label>
+              <input 
+                type="password" 
+                id="accInputConfirmPassword" 
+                placeholder="Nhập lại mật khẩu mới..." 
+                minlength="6"
+                autocomplete="new-password"
+                class="w-full px-3.5 py-2.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#D5D2CA] dark:border-[#2A313C] rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner"
+                required
+              />
+            </div>
+
+            <div class="pt-1">
+              <button 
+                type="submit" 
+                id="btnAccSubmitPassword"
+                class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Cập nhật mật khẩu</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Gửi liên kết đặt lại mật khẩu qua email -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-2.5">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h5 class="text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                  Đặt lại mật khẩu qua Email
+                </h5>
+                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5 leading-relaxed">
+                  Nhận liên kết đặt lại mật khẩu trực tiếp vào hòm thư nếu bạn quên hoặc muốn bảo mật tối đa.
+                </p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              id="btnAccSendResetEmail"
+              class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/70 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <span>Gửi liên kết đặt lại mật khẩu qua email</span>
+            </button>
+          </div>
+
+          <!-- Đăng xuất tài khoản -->
+          <div class="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 flex items-center justify-between gap-3">
+            <div>
+              <h5 class="text-xs font-bold text-rose-800 dark:text-rose-300">Đăng xuất tài khoản</h5>
+              <p class="text-[11px] text-rose-600/80 dark:text-rose-400/80 mt-0.5">
+                Thoát tài khoản khỏi thiết bị hiện tại
+              </p>
+            </div>
+            <button 
+              type="button" 
+              id="btnAccLogout"
+              class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-xs cursor-pointer shrink-0"
+            >
+              Đăng xuất
+            </button>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 4: TÙY CHỌN HỌC TẬP ==================== -->
+        <div id="accTabContentPreferences" class="acc-tab-content space-y-4 hidden">
+          <form id="accPreferencesForm" class="space-y-4">
+            
+            <!-- Mục tiêu thời gian học mỗi ngày -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-2">
+              <label for="accPrefDailyGoal" class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                🎯 Mục tiêu học tập hàng ngày
+              </label>
+              <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+                Đặt mục tiêu thời gian đọc bài và luyện tập mỗi ngày để duy trì chuỗi học tập (Streak)
+              </p>
+              <select 
+                id="accPrefDailyGoal" 
+                class="w-full px-3.5 py-2.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#D5D2CA] dark:border-[#2A313C] rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner cursor-pointer"
+              >
+                <option value="15">15 phút / ngày (Nhẹ nhàng, bắt đầu)</option>
+                <option value="30" selected>30 phút / ngày (Khuyên dùng, hiệu quả)</option>
+                <option value="45">45 phút / ngày (Chuyên sâu)</option>
+                <option value="60">60 phút / ngày (Mục tiêu cao độ)</option>
+              </select>
+            </div>
+
+            <!-- Ngôn ngữ dịch thuật AI mặc định -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-2">
+              <label for="accPrefAiLang" class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                🌐 Ngôn ngữ dịch thuật AI mặc định
+              </label>
+              <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+                Khi bạn bấm dịch câu hoặc từ vựng, AI sẽ ưu tiên chuyển sang ngôn ngữ này
+              </p>
+              <select 
+                id="accPrefAiLang" 
+                class="w-full px-3.5 py-2.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#D5D2CA] dark:border-[#2A313C] rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner cursor-pointer"
+              >
+                <option value="vi" selected>Tiếng Việt</option>
+                <option value="en">Tiếng Anh (English)</option>
+                <option value="zh">Tiếng Trung (中文)</option>
+                <option value="ja">Tiếng Nhật (日本語)</option>
+                <option value="ko">Tiếng Hàn (한국어)</option>
+                <option value="fr">Tiếng Pháp (Français)</option>
+                <option value="de">Tiếng Đức (Deutsch)</option>
+              </select>
+            </div>
+
+            <!-- Âm thanh chuông báo Pomodoro -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs flex items-center justify-between gap-3">
+              <div>
+                <label for="accPrefSoundEnabled" class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                  🔔 Chuông thông báo Pomodoro
+                </label>
+                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">
+                  Phát âm thanh chuông nhẹ nhàng khi kết thúc phiên đọc sách Pomodoro
+                </p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                <input type="checkbox" id="accPrefSoundEnabled" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="pt-2">
+              <button 
+                type="submit" 
+                id="btnAccSavePreferences"
+                class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs cursor-pointer"
+              >
+                Lưu tùy chọn học tập
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
   <!-- MODAL: THƯ VIỆN PROMPT (PROMPT LIBRARY MODAL) -->
   <!-- ========================================================================= -->
   <div id="promptLibraryModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="promptLibraryModalTitle">
@@ -8199,6 +8663,7 @@
       GoogleAuthProvider, 
       signInWithPopup, 
       updateProfile, 
+      updatePassword, 
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
@@ -9951,6 +10416,11 @@
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        const accM = document.getElementById('accountCenterModal');
+        if (accM && !accM.classList.contains('hidden')) {
+          closeAccountCenterModal();
+          return;
+        }
         const redeemM = document.getElementById('redeemCodeModal');
         if (redeemM && !redeemM.classList.contains('hidden')) {
           closeRedeemCodeModal();
@@ -10259,6 +10729,421 @@
           if (submitText) submitText.innerText = 'Kích hoạt ngay';
           if (submitSpinner) submitSpinner.classList.add('hidden');
         }
+      });
+    }
+
+    // =========================================================================
+    // TRUNG TÂM QUẢN LÝ TÀI KHOẢN (ACCOUNT CENTER SYSTEM)
+    // =========================================================================
+    const AVATAR_PRESETS = [
+      { id: 'owl', icon: '🦉', label: 'Cú thông thái' },
+      { id: 'grad', icon: '🎓', label: 'Học giả' },
+      { id: 'rocket', icon: '🚀', label: 'Khám phá' },
+      { id: 'cat', icon: '🐱', label: 'Mèo chăm chỉ' },
+      { id: 'scientist', icon: '🔬', label: 'Nghiên cứu' },
+      { id: 'book', icon: '📚', label: 'Thủ thư' },
+      { id: 'star', icon: '🌟', label: 'Ngôi sao' },
+      { id: 'bolt', icon: '⚡', label: 'Tia chớp' },
+      { id: 'brain', icon: '🧠', label: 'Sáng tạo' },
+      { id: 'coffee', icon: '☕', label: 'Tập trung' },
+      { id: 'fire', icon: '🔥', label: 'Nhiệt huyết' },
+      { id: 'default', icon: '👤', label: 'Mặc định' }
+    ];
+
+    function formatAccountDate(dateStr) {
+      if (!dateStr) return 'Chưa ghi nhận';
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} lúc ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      } catch (_) {
+        return dateStr;
+      }
+    }
+
+    function switchAccountCenterTab(targetTab) {
+      const tabs = document.querySelectorAll('.acc-tab-btn');
+      tabs.forEach((btn) => {
+        const isTarget = btn.dataset.tab === targetTab;
+        if (isTarget) {
+          btn.className = 'acc-tab-btn active px-3 py-2.5 font-bold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 whitespace-nowrap cursor-pointer transition';
+        } else {
+          btn.className = 'acc-tab-btn px-3 py-2.5 font-medium border-b-2 border-transparent text-[#78756D] hover:text-[#1C1B18] dark:text-[#9AA3B2] dark:hover:text-[#ECEEF2] flex items-center gap-1.5 whitespace-nowrap cursor-pointer transition';
+        }
+      });
+
+      const contents = document.querySelectorAll('.acc-tab-content');
+      contents.forEach((content) => {
+        content.classList.add('hidden');
+      });
+
+      const targetContent = document.getElementById(`accTabContent${targetTab.charAt(0).toUpperCase() + targetTab.slice(1)}`);
+      if (targetContent) {
+        targetContent.classList.remove('hidden');
+      }
+    }
+
+    function renderAccountAvatarPicker(currentAvatar) {
+      const container = document.getElementById('accAvatarPickerGrid');
+      if (!container) return;
+
+      container.innerHTML = '';
+      AVATAR_PRESETS.forEach((preset) => {
+        const isSelected = (preset.id === 'default' && (!currentAvatar || currentAvatar === '👤')) || (currentAvatar === preset.icon);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `h-11 rounded-xl flex items-center justify-center text-xl transition-all cursor-pointer border ${
+          isSelected 
+            ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-600 ring-2 ring-indigo-500/30 scale-105' 
+            : 'bg-[#FAF9F5] dark:bg-[#12151B] border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:scale-105'
+        }`;
+        btn.title = preset.label;
+        btn.innerHTML = `<span class="select-none leading-none">${preset.icon}</span>`;
+
+        btn.addEventListener('click', async () => {
+          const user = auth && auth.currentUser;
+          if (!user || user.isAnonymous) {
+            showToast('Vui lòng đăng nhập tài khoản để đổi avatar', 'warning');
+            return;
+          }
+
+          const newAvatar = preset.id === 'default' ? '' : preset.icon;
+          if (newAvatar) {
+            localStorage.setItem('thuvienhtml_user_avatar_' + user.uid, newAvatar);
+          } else {
+            localStorage.removeItem('thuvienhtml_user_avatar_' + user.uid);
+          }
+
+          try {
+            if (typeof updateProfile === 'function') {
+              await updateProfile(user, { photoURL: newAvatar ? ('emoji:' + newAvatar) : '' });
+            }
+          } catch (e) {
+            console.warn('[AvatarPicker] updateProfile silent fail:', e);
+          }
+
+          updateUserUI(user);
+          populateAccountCenterModal();
+          showToast(`Đã chọn avatar: ${preset.label}!`);
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    function populateAccountCenterModal() {
+      const user = auth && auth.currentUser;
+      const isAnonymous = !user || Boolean(user.isAnonymous);
+      const currentTier = isAnonymous ? 'guest' : (state.userTier || 'free');
+
+      // 1. Hồ sơ Tab
+      const rawUid = isAnonymous ? 'Chưa cấp (Chế độ Khách)' : (user.uid || '...');
+      const displayName = isAnonymous ? 'Chế độ Khách' : (user.displayName || user.email?.split('@')[0] || 'Thành viên');
+      const email = isAnonymous ? 'Chưa liên kết email' : (user.email && user.email.endsWith('@thuvienhtml.local') ? `@${displayName}` : (user.email || 'Đã xác thực'));
+      const savedAvatar = !isAnonymous ? (localStorage.getItem('thuvienhtml_user_avatar_' + (user.uid || '')) || (user.photoURL && user.photoURL.startsWith('emoji:') ? user.photoURL.replace('emoji:', '') : '')) : '';
+      const initialChar = (displayName[0] || 'U').toUpperCase();
+      const finalAvatar = savedAvatar || (isAnonymous ? 'K' : initialChar);
+
+      const avatarBig = document.getElementById('accAvatarBig');
+      if (avatarBig) avatarBig.textContent = finalAvatar;
+
+      const profileName = document.getElementById('accProfileDisplayName');
+      if (profileName) profileName.textContent = displayName;
+
+      const profileEmail = document.getElementById('accProfileEmail');
+      if (profileEmail) profileEmail.textContent = email;
+
+      const tierBadge = document.getElementById('accProfileTierBadge');
+      if (tierBadge) {
+        tierBadge.textContent = isAnonymous ? 'Khách' : (currentTier.toUpperCase());
+        tierBadge.className = currentTier === 'pro'
+          ? 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+          : (currentTier === 'plus'
+            ? 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700'
+            : 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60');
+      }
+
+      const inputName = document.getElementById('accInputDisplayName');
+      if (inputName) inputName.value = isAnonymous ? '' : (user.displayName || '');
+
+      const uidEl = document.getElementById('accProfileUid');
+      if (uidEl) uidEl.textContent = rawUid;
+
+      const providerEl = document.getElementById('accProfileProvider');
+      if (providerEl) {
+        if (isAnonymous) {
+          providerEl.textContent = 'Khách (Bộ nhớ máy)';
+        } else if (user.providerData && user.providerData[0]?.providerId === 'google.com') {
+          providerEl.textContent = 'Google Account';
+        } else {
+          providerEl.textContent = 'Tài khoản & Mật khẩu';
+        }
+      }
+
+      const joinedEl = document.getElementById('accProfileJoinedDate');
+      if (joinedEl) joinedEl.textContent = isAnonymous ? 'Phiên làm việc hiện tại' : formatAccountDate(user.metadata?.creationTime);
+
+      const lastLoginEl = document.getElementById('accProfileLastLogin');
+      if (lastLoginEl) lastLoginEl.textContent = isAnonymous ? 'Hôm nay' : formatAccountDate(user.metadata?.lastSignInTime);
+
+      renderAccountAvatarPicker(savedAvatar);
+
+      // 2. Gói & Hạn mức Tab
+      const subTierName = document.getElementById('accSubTierName');
+      const subTierBadge = document.getElementById('accSubTierBadge');
+      const subExpiryText = document.getElementById('accSubExpiryText');
+      if (subTierName) {
+        subTierName.textContent = isAnonymous ? 'Chế độ Khách' : (currentTier === 'pro' ? 'Gói Pro Cao Cấp' : (currentTier === 'plus' ? 'Gói Plus Tiêu Chuẩn' : 'Gói Thường (Free)'));
+      }
+      if (subTierBadge) {
+        subTierBadge.textContent = isAnonymous ? 'GUEST' : currentTier.toUpperCase();
+      }
+      if (subExpiryText) {
+        if (isAnonymous) {
+          subExpiryText.textContent = 'Dữ liệu chỉ lưu tạm trên trình duyệt máy này';
+        } else if (currentTier === 'free') {
+          subExpiryText.textContent = 'Không giới hạn thời gian sử dụng';
+        } else if (state.userTierExpiresAt) {
+          subExpiryText.textContent = `Hạn dùng đến: ${formatAccountDate(state.userTierExpiresAt)}`;
+        } else {
+          subExpiryText.textContent = 'Không giới hạn thời gian (Vĩnh viễn)';
+        }
+      }
+
+      // 3. Tùy chọn Tab
+      const prefDailyGoal = document.getElementById('accPrefDailyGoal');
+      if (prefDailyGoal) {
+        prefDailyGoal.value = localStorage.getItem('thuvienhtml_learning_goal_daily') || '30';
+      }
+      const prefAiLang = document.getElementById('accPrefAiLang');
+      if (prefAiLang) {
+        prefAiLang.value = localStorage.getItem('thuvienhtml_ai_default_lang') || 'vi';
+      }
+      const prefSound = document.getElementById('accPrefSoundEnabled');
+      if (prefSound) {
+        prefSound.checked = localStorage.getItem('thuvienhtml_pomo_sound_enabled') !== 'false';
+      }
+    }
+
+    function openAccountCenterModal(targetTab = 'profile') {
+      const modal = document.getElementById('accountCenterModal');
+      if (!modal) return;
+      if (typeof closeUserMenu === 'function') closeUserMenu();
+      populateAccountCenterModal();
+      switchAccountCenterTab(targetTab);
+      modal.classList.remove('hidden', 'modal-closing');
+      void modal.offsetWidth;
+      modal.classList.add('modal-active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAccountCenterModal() {
+      const modal = document.getElementById('accountCenterModal');
+      if (!modal) return;
+      modal.classList.remove('modal-active');
+      modal.classList.add('modal-closing');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('modal-closing');
+        document.body.style.overflow = '';
+      }, 180);
+    }
+
+    window.openAccountCenterModal = openAccountCenterModal;
+    window.closeAccountCenterModal = closeAccountCenterModal;
+    window.switchAccountCenterTab = switchAccountCenterTab;
+
+    // Event listeners cho Account Center Modal
+    const btnOpenAccountCenterModal = document.getElementById('btnOpenAccountCenterModal');
+    if (btnOpenAccountCenterModal) {
+      btnOpenAccountCenterModal.addEventListener('click', () => openAccountCenterModal('profile'));
+    }
+
+    const userProfileHeaderCard = document.getElementById('userProfileHeaderCard');
+    if (userProfileHeaderCard) {
+      userProfileHeaderCard.addEventListener('click', (e) => {
+        if (e.target.closest('#btnCopyUserId')) return;
+        openAccountCenterModal('profile');
+      });
+    }
+
+    const btnCloseAccountCenterModal = document.getElementById('btnCloseAccountCenterModal');
+    if (btnCloseAccountCenterModal) {
+      btnCloseAccountCenterModal.addEventListener('click', closeAccountCenterModal);
+    }
+
+    const accountCenterModal = document.getElementById('accountCenterModal');
+    if (accountCenterModal) {
+      accountCenterModal.addEventListener('click', (e) => {
+        if (e.target === accountCenterModal) closeAccountCenterModal();
+      });
+    }
+
+    // Tabs navigation buttons
+    document.querySelectorAll('.acc-tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.tab) switchAccountCenterTab(btn.dataset.tab);
+      });
+    });
+
+    // Form Lưu tên hiển thị
+    const accDisplayNameForm = document.getElementById('accDisplayNameForm');
+    if (accDisplayNameForm) {
+      accDisplayNameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth && auth.currentUser;
+        if (!user || user.isAnonymous) {
+          showToast('Vui lòng đăng ký / đăng nhập để đổi tên hiển thị', 'warning');
+          return;
+        }
+        const input = document.getElementById('accInputDisplayName');
+        const newName = (input?.value || '').trim();
+        if (!newName) {
+          showToast('Vui lòng nhập tên hiển thị hợp lệ', 'error');
+          return;
+        }
+        try {
+          await updateProfile(user, { displayName: newName });
+          localStorage.setItem('last_auth_user_name', newName);
+          updateUserUI(user);
+          populateAccountCenterModal();
+          showToast('Đã cập nhật tên hiển thị thành công!');
+        } catch (err) {
+          console.error('[AccountCenter] Update name error:', err);
+          showToast('Lỗi khi cập nhật tên hiển thị: ' + (err.message || 'Thử lại sau'), 'error');
+        }
+      });
+    }
+
+    // Nút copy UID trong modal
+    const btnAccCopyUid = document.getElementById('btnAccCopyUid');
+    if (btnAccCopyUid) {
+      btnAccCopyUid.addEventListener('click', async () => {
+        const uidEl = document.getElementById('accProfileUid');
+        const text = uidEl?.textContent?.trim();
+        if (text && text !== '...' && !text.includes('Chưa cấp')) {
+          try {
+            await navigator.clipboard.writeText(text);
+            showToast('Đã sao chép UID vào bộ nhớ tạm!');
+          } catch (_) {
+            showToast('Không thể sao chép UID', 'error');
+          }
+        }
+      });
+    }
+
+    // Form Đổi mật khẩu
+    const accChangePasswordForm = document.getElementById('accChangePasswordForm');
+    if (accChangePasswordForm) {
+      accChangePasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth && auth.currentUser;
+        if (!user || user.isAnonymous) {
+          showToast('Vui lòng đăng ký / đăng nhập để đổi mật khẩu', 'warning');
+          return;
+        }
+        const newPass = document.getElementById('accInputNewPassword')?.value || '';
+        const confirmPass = document.getElementById('accInputConfirmPassword')?.value || '';
+        if (newPass.length < 6) {
+          showToast('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
+          return;
+        }
+        if (newPass !== confirmPass) {
+          showToast('Xác nhận mật khẩu không trùng khớp', 'error');
+          return;
+        }
+
+        const submitBtn = document.getElementById('btnAccSubmitPassword');
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          await updatePassword(user, newPass);
+          accChangePasswordForm.reset();
+          showToast('Đã đổi mật khẩu thành công!');
+        } catch (err) {
+          console.error('[AccountCenter] Change password error:', err);
+          if (err.code === 'auth/requires-recent-login') {
+            showToast('Vì lý do an toàn, vui lòng đăng xuất và đăng nhập lại trước khi đổi mật khẩu, hoặc dùng nút gửi email bên dưới.', 'error', { duration: 6000 });
+          } else {
+            showToast('Lỗi khi đổi mật khẩu: ' + (err.message || 'Vui lòng thử lại'), 'error');
+          }
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    }
+
+    // Nút Gửi email đặt lại mật khẩu
+    const btnAccSendResetEmail = document.getElementById('btnAccSendResetEmail');
+    if (btnAccSendResetEmail) {
+      btnAccSendResetEmail.addEventListener('click', async () => {
+        const user = auth && auth.currentUser;
+        if (!user || user.isAnonymous) {
+          showToast('Vui lòng đăng ký tài khoản có email', 'warning');
+          return;
+        }
+        if (user.email && user.email.endsWith('@thuvienhtml.local')) {
+          showToast('Tài khoản được tạo nhanh bằng tên đăng nhập. Bạn có thể đổi mật khẩu trực tiếp ở form trên.', 'info', { duration: 5000 });
+          return;
+        }
+        try {
+          await sendPasswordResetEmail(auth, user.email);
+          showToast(`Đã gửi liên kết đặt lại mật khẩu đến ${user.email}!`);
+        } catch (err) {
+          console.error('[AccountCenter] Send reset email error:', err);
+          showToast('Lỗi gửi email: ' + (err.message || 'Vui lòng thử lại sau'), 'error');
+        }
+      });
+    }
+
+    // Nút Đăng xuất trong modal
+    const btnAccLogout = document.getElementById('btnAccLogout');
+    if (btnAccLogout) {
+      btnAccLogout.addEventListener('click', () => {
+        closeAccountCenterModal();
+        const mainLogout = document.getElementById('btnLogout');
+        if (mainLogout) mainLogout.click();
+      });
+    }
+
+    // Lối tắt chuyển modal trong Tab Gói
+    const btnAccOpenUpgrade = document.getElementById('btnAccOpenUpgrade');
+    if (btnAccOpenUpgrade) {
+      btnAccOpenUpgrade.addEventListener('click', () => {
+        closeAccountCenterModal();
+        if (typeof openUpgradeModal === 'function') openUpgradeModal();
+      });
+    }
+    const btnAccOpenRedeem = document.getElementById('btnAccOpenRedeem');
+    if (btnAccOpenRedeem) {
+      btnAccOpenRedeem.addEventListener('click', () => {
+        closeAccountCenterModal();
+        if (typeof openRedeemCodeModal === 'function') openRedeemCodeModal();
+      });
+    }
+    const btnAccOpenBilling = document.getElementById('btnAccOpenBilling');
+    if (btnAccOpenBilling) {
+      btnAccOpenBilling.addEventListener('click', () => {
+        closeAccountCenterModal();
+        if (typeof openBillingHistoryModal === 'function') openBillingHistoryModal(false);
+      });
+    }
+
+    // Form Lưu tùy chọn học tập
+    const accPreferencesForm = document.getElementById('accPreferencesForm');
+    if (accPreferencesForm) {
+      accPreferencesForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dailyGoal = document.getElementById('accPrefDailyGoal')?.value || '30';
+        const aiLang = document.getElementById('accPrefAiLang')?.value || 'vi';
+        const soundEnabled = document.getElementById('accPrefSoundEnabled')?.checked !== false;
+
+        localStorage.setItem('thuvienhtml_learning_goal_daily', dailyGoal);
+        localStorage.setItem('thuvienhtml_ai_default_lang', aiLang);
+        localStorage.setItem('thuvienhtml_pomo_sound_enabled', String(soundEnabled));
+
+        showToast('Đã lưu tùy chọn học tập thành công!');
       });
     }
 
@@ -15884,8 +16769,10 @@
           } else {
             const displayName = activeUser.displayName || activeUser.email?.split('@')[0] || "Thành viên";
             const initialChar = (displayName[0] || "U").toUpperCase();
-            setText('userInitial', initialChar);
-            setText('userDropdownInitial', initialChar);
+            const savedAvatar = !isAnonymous ? (localStorage.getItem('thuvienhtml_user_avatar_' + (activeUser.uid || '')) || (activeUser.photoURL && activeUser.photoURL.startsWith('emoji:') ? activeUser.photoURL.replace('emoji:', '') : '')) : '';
+            const finalAvatar = savedAvatar || initialChar;
+            setText('userInitial', finalAvatar);
+            setText('userDropdownInitial', finalAvatar);
             setText('headerAccountLabel', displayName);
             setText('userNameDisplay', displayName);
 
