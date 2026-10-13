@@ -2,7 +2,7 @@
 // Gộp toàn bộ API quản trị AI: save-key, delete-key, settings, usage, test, models
 const { verifyAdmin, recordAuditLog } = require('../../lib/admin-auth');
 const { encryptKey, decryptKey, maskApiKey } = require('../../lib/crypto');
-const { DEFAULT_MODELS } = require('../../lib/call-ai');
+const { DEFAULT_MODELS, invalidateAiSettingsCache } = require('../../lib/call-ai');
 
 const FALLBACK_MODELS = {
   gemini: [
@@ -90,6 +90,10 @@ module.exports = async function handler(req, res) {
         details: `Lưu API key nhà cung cấp ${provider.toUpperCase()} (${maskedKey})`
       });
 
+      if (typeof invalidateAiSettingsCache === 'function') {
+        invalidateAiSettingsCache();
+      }
+
       return res.status(200).json({
         success: true,
         provider,
@@ -125,6 +129,10 @@ module.exports = async function handler(req, res) {
         }
       }, { merge: true });
 
+      if (typeof invalidateAiSettingsCache === 'function') {
+        invalidateAiSettingsCache();
+      }
+
       await recordAuditLog(db, {
         uid,
         action: 'ai_key_delete',
@@ -150,7 +158,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { priority, models, dailyRequestCap, featureToggles } = req.body || {};
+      const { priority, models, dailyRequestCap, featureToggles, prompts } = req.body || {};
       try {
         const sanitizedPriority = Array.isArray(priority) && priority.length > 0
           ? priority.filter(p => ['gemini', 'claude', 'openai'].includes(p))
@@ -170,7 +178,19 @@ module.exports = async function handler(req, res) {
           updatedBy: uid
         };
 
+        if (prompts && typeof prompts === 'object') {
+          updateData.prompts = {
+            explain: typeof prompts.explain === 'string' ? prompts.explain.trim() : '',
+            example: typeof prompts.example === 'string' ? prompts.example.trim() : '',
+            translate: typeof prompts.translate === 'string' ? prompts.translate.trim() : ''
+          };
+        }
+
         await db.doc('config/ai_settings').set(updateData, { merge: true });
+
+        if (typeof invalidateAiSettingsCache === 'function') {
+          invalidateAiSettingsCache();
+        }
 
         await recordAuditLog(db, {
           uid,
@@ -244,19 +264,29 @@ module.exports = async function handler(req, res) {
   // 5. ACTION: TEST (POST)
   if (action === 'test') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { provider } = req.body || {};
+    const { provider, apiKey: rawApiKey } = req.body || {};
     const validProviders = ['gemini', 'claude', 'openai'];
     if (!provider || !validProviders.includes(provider)) {
       return res.status(400).json({ error: 'Nhà cung cấp không hợp lệ.' });
     }
 
     try {
-      const secDoc = await db.doc(`admin_secrets/${provider}`).get();
-      if (!secDoc.exists) {
-        return res.status(400).json({ error: 'Chưa có API key cho nhà cung cấp này.' });
+      let apiKey = rawApiKey ? String(rawApiKey).trim() : null;
+      let isTestingDirectKey = Boolean(apiKey);
+
+      if (!apiKey) {
+        const secDoc = await db.doc(`admin_secrets/${provider}`).get();
+        if (!secDoc.exists) {
+          return res.status(400).json({ error: 'Chưa có API key cho nhà cung cấp này. Vui lòng dán key vào ô nhập để kiểm tra hoặc lưu.' });
+        }
+        apiKey = decryptKey(secDoc.data());
       }
 
-      const apiKey = decryptKey(secDoc.data());
+      apiKey = (apiKey || '').replace(/[\r\n\t ]/g, '').trim();
+      if (!apiKey || apiKey.length < 8) {
+        return res.status(400).json({ error: 'Khóa API không hợp lệ hoặc quá ngắn.' });
+      }
+
       const settingsSnap = await db.doc('config/ai_settings').get();
       const settings = settingsSnap.exists ? settingsSnap.data() : {};
       let model = (settings.models && settings.models[provider] && settings.models[provider].fast) ||
@@ -268,12 +298,13 @@ module.exports = async function handler(req, res) {
 
       if (provider === 'gemini') {
         const testModels = [
+          model,
+          'gemini-2.5-flash',
           'gemini-1.5-flash',
           'gemini-2.0-flash',
-          'gemini-2.5-flash',
           'gemini-1.5-flash-8b',
           'gemini-1.5-pro'
-        ];
+        ].filter((m, i, arr) => m && arr.indexOf(m) === i);
 
         let geminiOk = false;
         let testLog = [];
@@ -308,7 +339,12 @@ module.exports = async function handler(req, res) {
         }
 
         if (!geminiOk) {
-          errorMsg = 'Chi tiết: ' + testLog.join(' | ');
+          const rawErr = testLog.join(' | ');
+          if (rawErr.includes('API key not valid') || rawErr.includes('API_KEY_INVALID')) {
+            errorMsg = 'Khóa API Google Gemini không hợp lệ hoặc đã bị vô hiệu hóa. Vui lòng kiểm tra lại tại Google AI Studio (https://aistudio.google.com/app/apikey) và đảm bảo key bắt đầu bằng "AIzaSy..." (tránh để trình duyệt tự điền mật khẩu).';
+          } else {
+            errorMsg = 'Chi tiết: ' + rawErr;
+          }
         }
       } else if (provider === 'claude') {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -326,7 +362,7 @@ module.exports = async function handler(req, res) {
         });
 
         if (resp.status === 401) {
-          errorMsg = 'Khóa API Claude không chính xác (x-api-key invalid).';
+          errorMsg = 'Khóa API Claude không chính xác (x-api-key invalid). Key Claude thường bắt đầu bằng "sk-ant-...".';
         } else if (resp.status === 429) {
           errorMsg = 'Hết hạn mức tài khoản Anthropic hoặc bị giới hạn tốc độ.';
         } else if (!resp.ok) {
@@ -351,7 +387,7 @@ module.exports = async function handler(req, res) {
         });
 
         if (resp.status === 401) {
-          errorMsg = 'Khóa API OpenAI không chính xác (Incorrect API key).';
+          errorMsg = 'Khóa API OpenAI không chính xác (Incorrect API key). Key OpenAI thường bắt đầu bằng "sk-...".';
         } else if (resp.status === 429) {
           errorMsg = 'Hết hạn mức tín dụng OpenAI (You exceeded your current quota).';
         } else if (!resp.ok) {
@@ -364,19 +400,25 @@ module.exports = async function handler(req, res) {
       }
 
       const nowIso = new Date().toISOString();
-      await db.doc('config/ai_settings').set({
-        providers: {
-          [provider]: {
-            status: success ? 'ready' : 'error',
-            lastTested: nowIso,
-            testMessage: success ? `Thành công (Model: ${model})` : errorMsg
+      if (!isTestingDirectKey) {
+        await db.doc('config/ai_settings').set({
+          providers: {
+            [provider]: {
+              status: success ? 'ready' : 'error',
+              lastTested: nowIso,
+              testMessage: success ? `Thành công (Model: ${model})` : errorMsg
+            }
           }
-        }
-      }, { merge: true });
+        }, { merge: true });
+      }
+
+      const successMsg = isTestingDirectKey
+        ? `Kiểm tra thành công khóa vừa nhập với model ${model}! Khóa này hoạt động tốt. Bạn hãy nhấn "Lưu key" để lưu vào hệ thống.`
+        : `Kết nối thành công tới ${provider.toUpperCase()}! Model ${model} phản hồi: "${testResponse}"`;
 
       return res.status(200).json({
         success,
-        message: success ? `Kết nối thành công tới ${provider.toUpperCase()}! Model ${model} phản hồi: "${testResponse}"` : `Kiểm tra thất bại: ${errorMsg}`,
+        message: success ? successMsg : `Kiểm tra thất bại: ${errorMsg}`,
         testedAt: nowIso
       });
     } catch (err) {

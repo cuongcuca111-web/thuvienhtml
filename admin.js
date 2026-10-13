@@ -2710,6 +2710,26 @@ async function renderAiTab(container) {
   const dailyCap = aiSettings.dailyRequestCap || 0;
   const isCapped = aiUsageData.isCapped || false;
 
+  const currentPrompts = aiSettings.prompts || {};
+  const DEFAULT_AI_PROMPTS = {
+    explain: `[YÊU CẦU: GIẢI THÍCH TRỰC TIẾP, DỄ HIỂU & NGẮN GỌN]
+- Người đọc đang gặp khó khăn khi hiểu đoạn trích <selected_text>.
+- Hãy giải thích trực tiếp, ngắn gọn bản chất ý nghĩa của đoạn trích (từ 2 đến 4 câu văn).
+- Dùng ngôn từ bình dân, dễ hiểu, đi thẳng vào trọng tâm: 'Ý của đoạn này là gì?', 'Vì sao lại như vậy?'.
+- Tuyệt đối không tách riêng các thuật ngữ (mục 'terms' để mảng rỗng []). Hãy tập trung toàn bộ lời giải thích vào mục 'text'.`,
+
+    example: `[YÊU CẦU: CHO VÍ DỤ MINH HỌA]
+- Đưa ra 1 đến 2 ví dụ thực tế bám sát kiến thức trong <selected_text>.
+- Ưu tiên bối cảnh quen thuộc, đời sống thực tế tại Việt Nam.
+- Mỗi ví dụ súc tích, dễ liên hệ (tối đa 2-3 câu).
+- Nếu đoạn trích là công thức, thuật toán hay khái niệm định lượng, hãy minh họa bằng một ví dụ số liệu đơn giản, cụ thể.`,
+
+    translate: `[YÊU CẦU: DỊCH THUẬT CHÍNH XÁC]
+- Dịch trung thực đoạn trích <selected_text> sang ngôn ngữ: "{targetLang}".
+- Giữ nguyên các thuật ngữ chuyên ngành chuẩn xác (kèm thuật ngữ gốc trong ngoặc đơn ở lần xuất hiện đầu tiên nếu cần thiết).
+- Dịch tự nhiên, đúng văn phong học thuật, không thêm thắt giải thích ngoài lề.`
+  };
+
   const PROVIDER_INFO = {
     gemini: {
       name: 'Google Gemini',
@@ -2834,23 +2854,26 @@ async function renderAiTab(container) {
                     API Key ${isConfigured ? `<span class="text-indigo-600 font-mono text-[11px]">(${esc(maskedKey)})</span>` : ''}
                   </label>
                   <div class="relative">
-                    <input type="password" id="inputKey_${prov}" autocomplete="off" placeholder="${isConfigured ? 'Nhập key mới để đè...' : 'Dán API key...'}" class="w-full px-3 py-2 pr-9 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-mono" />
+                    <input type="password" id="inputKey_${prov}" autocomplete="new-password" name="api_key_${prov}_input" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="${isConfigured ? 'Nhập key mới để đổi...' : 'Dán API key...'}" class="w-full px-3 py-2 pr-9 rounded-xl border border-gray-300 dark:border-gray-700 bg-[#FAF8F5] dark:bg-[#161A20] text-xs font-mono" />
                     <button type="button" class="btn-toggle-key-eye absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" data-target="inputKey_${prov}">
                       👁
                     </button>
                   </div>
+                  <p class="text-[10px] text-gray-400 mt-1">
+                    ${prov === 'gemini' ? 'Khóa Gemini bắt đầu bằng <code class="font-bold text-gray-600 dark:text-gray-300">AIzaSy...</code> từ <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="text-indigo-500 hover:underline">Google AI Studio</a>.' : (prov === 'openai' ? 'Khóa OpenAI bắt đầu bằng <code>sk-...</code>' : 'Khóa Claude bắt đầu bằng <code>sk-ant-...</code>')}
+                  </p>
                 </div>
 
                 <!-- CÁC NÚT THAO TÁC KEY -->
                 <div class="flex items-center gap-2">
-                  <button type="button" class="btn-save-key flex-1 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition" data-provider="${prov}">
+                  <button type="button" class="btn-save-key flex-1 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition cursor-pointer" data-provider="${prov}">
                     Lưu key
                   </button>
-                  <button type="button" class="btn-test-key px-3 py-1.5 rounded-lg border border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 font-semibold text-xs transition ${!isConfigured ? 'opacity-50 pointer-events-none' : ''}" data-provider="${prov}">
+                  <button type="button" class="btn-test-key px-3 py-1.5 rounded-lg border border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-semibold text-xs transition cursor-pointer" data-provider="${prov}">
                     Kiểm tra
                   </button>
                   ${isConfigured ? `
-                    <button type="button" class="btn-delete-key px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold" data-provider="${prov}" title="Xóa key">
+                    <button type="button" class="btn-delete-key px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold cursor-pointer" data-provider="${prov}" title="Xóa key">
                       ✕
                     </button>
                   ` : ''}
@@ -2957,6 +2980,78 @@ async function renderAiTab(container) {
           </div>
         </div>
       </div>
+
+      <!-- PHẦN 3: TÙY CHỈNH PROMPT AI (GIẢI THÍCH, VÍ DỤ, DỊCH) -->
+      <div class="bg-white dark:bg-[#1A1D23] p-5 rounded-xl border border-[#E0DED7] dark:border-[#262C36] shadow-2xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800 pb-3">
+          <div>
+            <h4 class="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#E8E6E1] flex items-center gap-2">
+              <svg class="w-4 h-4 text-indigo-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Tùy chỉnh Prompt AI (Giải thích, Ví dụ, Dịch)
+            </h4>
+            <p class="text-xs text-[#78756D] dark:text-[#9AA3B2] mt-0.5">
+              Cài đặt câu lệnh chỉ thị gửi tới AI khi người đọc bôi đen văn bản trong bài học và chọn một trong ba tính năng trên thanh công cụ nổi.
+            </p>
+          </div>
+          <button type="button" id="btnSaveAiPrompts" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-xs shrink-0 flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Lưu &amp; Đồng bộ Prompt AI
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <!-- PROMPT 1: GIẢI THÍCH -->
+          <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700/80 bg-gray-50/50 dark:bg-[#161A20] space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                  <span>📘</span> Prompt "Giải thích"
+                </label>
+                <button type="button" class="btn-reset-prompt text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer" data-target="promptInput_explain" data-default="explain">
+                  Khôi phục mặc định
+                </button>
+              </div>
+              <p class="text-[11px] text-gray-500">Áp dụng khi người đọc chọn nút <strong>Giải thích</strong> ở thanh nổi.</p>
+              <textarea id="promptInput_explain" rows="8" class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] text-xs font-mono text-[#1C1B18] dark:text-[#E8E6E1] focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="Chỉ thị cho AI khi giải thích...">${esc(currentPrompts.explain || DEFAULT_AI_PROMPTS.explain)}</textarea>
+            </div>
+            <div class="text-[10px] text-gray-400">Gợi ý: Dùng để định hình độ dài câu, phong cách văn phong (hài hước, học thuật, dễ hiểu...).</div>
+          </div>
+
+          <!-- PROMPT 2: VÍ DỤ -->
+          <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700/80 bg-gray-50/50 dark:bg-[#161A20] space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                  <span>💡</span> Prompt "Ví dụ"
+                </label>
+                <button type="button" class="btn-reset-prompt text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer" data-target="promptInput_example" data-default="example">
+                  Khôi phục mặc định
+                </button>
+              </div>
+              <p class="text-[11px] text-gray-500">Áp dụng khi người đọc chọn nút <strong>Ví dụ</strong> để xem tình huống thực tế.</p>
+              <textarea id="promptInput_example" rows="8" class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] text-xs font-mono text-[#1C1B18] dark:text-[#E8E6E1] focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="Chỉ thị cho AI khi lấy ví dụ...">${esc(currentPrompts.example || DEFAULT_AI_PROMPTS.example)}</textarea>
+            </div>
+            <div class="text-[10px] text-gray-400">Gợi ý: Dùng để yêu cầu bối cảnh thực tế tại Việt Nam hoặc ví dụ bằng code.</div>
+          </div>
+
+          <!-- PROMPT 3: DỊCH -->
+          <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700/80 bg-gray-50/50 dark:bg-[#161A20] space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                  <span>🌐</span> Prompt "Dịch"
+                </label>
+                <button type="button" class="btn-reset-prompt text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer" data-target="promptInput_translate" data-default="translate">
+                  Khôi phục mặc định
+                </button>
+              </div>
+              <p class="text-[11px] text-gray-500">Áp dụng khi người đọc chọn nút <strong>Dịch</strong> (Dùng <code>{targetLang}</code> cho ngôn ngữ).</p>
+              <textarea id="promptInput_translate" rows="8" class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] text-xs font-mono text-[#1C1B18] dark:text-[#E8E6E1] focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="Chỉ thị cho AI khi dịch thuật...">${esc(currentPrompts.translate || DEFAULT_AI_PROMPTS.translate)}</textarea>
+            </div>
+            <div class="text-[10px] text-gray-400">Gợi ý: Dùng <code>{targetLang}</code> để hệ thống tự động thay thế bằng ngôn ngữ người dùng chọn.</div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 
@@ -2985,6 +3080,26 @@ function bindAiTabEvents(container) {
         return;
       }
 
+      if (prov === 'gemini') {
+        if (!keyVal.startsWith('AIza') || keyVal.includes('@')) {
+          if (!confirm(`Cảnh báo: Khóa API Google Gemini chuẩn luôn bắt đầu bằng 'AIzaSy...' và không chứa ký tự '@'. Khóa bạn vừa nhập ("${keyVal.slice(0, 10)}...") có thể do trình duyệt tự động điền mật khẩu/email. Bạn có chắc chắn muốn lưu khóa này không?`)) {
+            return;
+          }
+        }
+      } else if (prov === 'openai') {
+        if (!keyVal.startsWith('sk-') || keyVal.includes('@')) {
+          if (!confirm(`Cảnh báo: Khóa API OpenAI thường bắt đầu bằng 'sk-'. Bạn có chắc chắn muốn lưu khóa này không?`)) {
+            return;
+          }
+        }
+      } else if (prov === 'claude') {
+        if (!keyVal.startsWith('sk-ant-') || keyVal.includes('@')) {
+          if (!confirm(`Cảnh báo: Khóa API Claude thường bắt đầu bằng 'sk-ant-'. Bạn có chắc chắn muốn lưu khóa này không?`)) {
+            return;
+          }
+        }
+      }
+
       btn.disabled = true;
       btn.innerText = 'Đang lưu...';
       try {
@@ -3004,32 +3119,42 @@ function bindAiTabEvents(container) {
     };
   });
 
-  // Kiểm tra key
+  // Kiểm tra key (hỗ trợ kiểm tra trực tiếp key vừa gõ hoặc key đã lưu)
   container.querySelectorAll('.btn-test-key').forEach(btn => {
     btn.onclick = async () => {
       const prov = btn.dataset.provider;
+      const input = document.getElementById(`inputKey_${prov}`);
+      const typedKey = input ? input.value.trim() : '';
+
+      const testPayload = { provider: prov };
+      if (typedKey) {
+        testPayload.apiKey = typedKey;
+      }
+
       const box = document.getElementById(`testResultBox_${prov}`);
       if (box) {
         box.classList.remove('hidden');
-        box.className = "text-[11px] p-2 rounded-lg bg-gray-100 text-gray-600";
-        box.innerText = "Đang gửi yêu cầu kiểm tra tới máy chủ...";
+        box.className = "text-[11px] p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300";
+        box.innerText = typedKey
+          ? "Đang gửi yêu cầu kiểm tra khóa vừa nhập tới nhà cung cấp..."
+          : "Đang gửi yêu cầu kiểm tra khóa đã lưu tới nhà cung cấp...";
       }
 
       btn.disabled = true;
       try {
         const res = await callAdminApi('/api/admin/ai/test', {
           method: 'POST',
-          body: JSON.stringify({ provider: prov })
+          body: JSON.stringify(testPayload)
         });
 
         if (box) {
-          box.className = `text-[11px] p-2 rounded-lg ${res.success ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'}`;
+          box.className = `text-[11px] p-2 rounded-lg ${res.success ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800' : 'bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800'}`;
           box.innerText = res.message;
         }
         toast(res.success ? "Kết nối AI thành công!" : "Kiểm tra kết nối thất bại.");
       } catch (err) {
         if (box) {
-          box.className = "text-[11px] p-2 rounded-lg bg-rose-50 text-rose-800 border border-rose-200";
+          box.className = "text-[11px] p-2 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800";
           box.innerText = "Lỗi kiểm tra: " + err.message;
         }
       } finally {
@@ -3081,13 +3206,22 @@ function bindAiTabEvents(container) {
         };
       });
 
+      const explainPrompt = document.getElementById('promptInput_explain') ? document.getElementById('promptInput_explain').value.trim() : '';
+      const examplePrompt = document.getElementById('promptInput_example') ? document.getElementById('promptInput_example').value.trim() : '';
+      const translatePrompt = document.getElementById('promptInput_translate') ? document.getElementById('promptInput_translate').value.trim() : '';
+
       try {
         await callAdminApi('/api/admin/ai/settings', {
           method: 'POST',
           body: JSON.stringify({
             priority: prioStr.split(','),
             dailyRequestCap: dailyCap,
-            models: modelsPayload
+            models: modelsPayload,
+            prompts: {
+              explain: explainPrompt,
+              example: examplePrompt,
+              translate: translatePrompt
+            }
           })
         });
         toast(`Đã chọn và cập nhật model: ${sel.value}`);
@@ -3097,6 +3231,54 @@ function bindAiTabEvents(container) {
       }
     };
   });
+
+  // Khôi phục prompt mặc định
+  container.querySelectorAll('.btn-reset-prompt').forEach(btn => {
+    btn.onclick = () => {
+      const targetId = btn.dataset.target;
+      const defKey = btn.dataset.default;
+      const targetEl = document.getElementById(targetId);
+      if (targetEl && DEFAULT_AI_PROMPTS[defKey]) {
+        targetEl.value = DEFAULT_AI_PROMPTS[defKey];
+        toast("Đã khôi phục prompt mặc định. Hãy bấm 'Lưu & Đồng bộ Prompt AI' để áp dụng.");
+      }
+    };
+  });
+
+  // Lưu riêng cấu hình Prompt AI
+  const btnSavePrompts = container.querySelector('#btnSaveAiPrompts');
+  if (btnSavePrompts) {
+    btnSavePrompts.onclick = async () => {
+      btnSavePrompts.disabled = true;
+      btnSavePrompts.innerText = 'Đang lưu...';
+
+      const explainPrompt = document.getElementById('promptInput_explain') ? document.getElementById('promptInput_explain').value.trim() : '';
+      const examplePrompt = document.getElementById('promptInput_example') ? document.getElementById('promptInput_example').value.trim() : '';
+      const translatePrompt = document.getElementById('promptInput_translate') ? document.getElementById('promptInput_translate').value.trim() : '';
+
+      try {
+        await callAdminApi('/api/admin/ai/settings', {
+          method: 'POST',
+          body: JSON.stringify({
+            prompts: {
+              explain: explainPrompt,
+              example: examplePrompt,
+              translate: translatePrompt
+            }
+          })
+        });
+        toast("Đã lưu & đồng bộ cấu hình Prompt AI (Giải thích, Ví dụ, Dịch) thành công!");
+      } catch (err) {
+        alert("Lỗi khi lưu Prompt AI: " + err.message);
+      } finally {
+        btnSavePrompts.disabled = false;
+        btnSavePrompts.innerHTML = `
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Lưu &amp; Đồng bộ Prompt AI
+        `;
+      }
+    };
+  }
 
   // Lưu cài đặt AI
   const btnSaveSettings = container.querySelector('#btnSaveAiSettings');
@@ -3118,13 +3300,22 @@ function bindAiTabEvents(container) {
         };
       });
 
+      const explainPrompt = document.getElementById('promptInput_explain') ? document.getElementById('promptInput_explain').value.trim() : '';
+      const examplePrompt = document.getElementById('promptInput_example') ? document.getElementById('promptInput_example').value.trim() : '';
+      const translatePrompt = document.getElementById('promptInput_translate') ? document.getElementById('promptInput_translate').value.trim() : '';
+
       try {
         await callAdminApi('/api/admin/ai/settings', {
           method: 'POST',
           body: JSON.stringify({
             priority: prioStr.split(','),
             dailyRequestCap: dailyCap,
-            models: modelsPayload
+            models: modelsPayload,
+            prompts: {
+              explain: explainPrompt,
+              example: examplePrompt,
+              translate: translatePrompt
+            }
           })
         });
         toast("Đã lưu cấu hình AI & Thứ tự ưu tiên thành công!");

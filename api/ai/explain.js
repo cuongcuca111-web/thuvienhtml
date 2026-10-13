@@ -85,9 +85,48 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Đoạn đã chọn quá dài (tối đa 1.500 ký tự). Hãy chọn đoạn ngắn hơn.' });
     }
 
-    // 3. Kiểm tra tính toán Cache máy chủ
+    // Đọc cài đặt prompt tùy chỉnh từ Firestore (nếu quản trị viên đã cấu hình)
+    let customPrompts = {};
+    try {
+      const settingsSnap = await db.doc('config/ai_settings').get();
+      if (settingsSnap.exists) {
+        customPrompts = settingsSnap.data().prompts || {};
+      }
+    } catch (cfgErr) {
+      console.warn('Lỗi đọc custom prompts:', cfgErr.message);
+    }
+
+    const DEFAULT_PROMPTS = {
+      explain: `[YÊU CẦU: GIẢI THÍCH TRỰC TIẾP, DỄ HIỂU & NGẮN GỌN]
+- Người đọc đang gặp khó khăn khi hiểu đoạn trích <selected_text>.
+- Hãy giải thích trực tiếp, ngắn gọn bản chất ý nghĩa của đoạn trích (từ 2 đến 4 câu văn).
+- Dùng ngôn từ bình dân, dễ hiểu, đi thẳng vào trọng tâm: 'Ý của đoạn này là gì?', 'Vì sao lại như vậy?'.
+- Tuyệt đối không tách riêng các thuật ngữ (mục 'terms' để mảng rỗng []). Hãy tập trung toàn bộ lời giải thích vào mục 'text'.`,
+
+      example: `[YÊU CẦU: CHO VÍ DỤ MINH HỌA]
+- Đưa ra 1 đến 2 ví dụ thực tế bám sát kiến thức trong <selected_text>.
+- Ưu tiên bối cảnh quen thuộc, đời sống thực tế tại Việt Nam.
+- Mỗi ví dụ súc tích, dễ liên hệ (tối đa 2-3 câu).
+- Nếu đoạn trích là công thức, thuật toán hay khái niệm định lượng, hãy minh họa bằng một ví dụ số liệu đơn giản, cụ thể.`,
+
+      translate: `[YÊU CẦU: DỊCH THUẬT CHÍNH XÁC]
+- Dịch trung thực đoạn trích <selected_text> sang ngôn ngữ: "{targetLang}".
+- Giữ nguyên các thuật ngữ chuyên ngành chuẩn xác (kèm thuật ngữ gốc trong ngoặc đơn ở lần xuất hiện đầu tiên nếu cần thiết).
+- Dịch tự nhiên, đúng văn phong học thuật, không thêm thắt giải thích ngoài lề.`
+    };
+
+    let instruction = '';
+    if (DEFAULT_PROMPTS[mode]) {
+      instruction = (customPrompts && typeof customPrompts[mode] === 'string' && customPrompts[mode].trim())
+        ? customPrompts[mode].trim()
+        : DEFAULT_PROMPTS[mode];
+      instruction = instruction.replace(/\{targetLang\}/g, targetLang);
+    }
+
+    // 3. Kiểm tra tính toán Cache máy chủ (kèm mã băm của Prompt để tự cập nhật khi đổi prompt)
+    const promptHash = instruction ? crypto.createHash('md5').update(instruction).digest('hex').substring(0, 8) : 'default';
     const cacheKey = crypto.createHash('sha256')
-      .update(`${mode}:${targetLang}:${rawText.toLowerCase()}`)
+      .update(`${mode}:${targetLang}:${promptHash}:${rawText.toLowerCase()}`)
       .digest('hex');
 
     const cacheDocRef = db.doc(`ai_cache/${cacheKey}`);
@@ -154,28 +193,13 @@ QUY TẮC BẢO MẬT VÀ TOÀN VẸN (BẮT BUỘC):
 5. BẮT BUỘC trả lời đúng theo định dạng JSON Schema được yêu cầu. Không thêm bất kỳ lời dẫn hay bọc markdown nào ngoài JSON.`;
 
     let userPrompt = '';
-    if (mode === 'explain') {
-      userPrompt = `[YEU CAU: GIAI THICH TRUC TIEP, DE HIEU & NGAN GON]
-- Nguoi doc dang gap kho khan khi hieu doan trich <selected_text>.
-- Hay giai thich truc tiep, ngan gon ban chat y nghia cua doan trich (chi tu 2 den 4 cau van).
-- Dung ngon tu binh dan, de hieu, di thang vao trong tam: 'Y cua doan nay la gi?', 'Vi sao lai nhu vay?'.
-- TUYET DOI KHONG tach rieng cac thuat ngu, khong liet ke dinh nghia tung tu (muc 'terms' de mang rong []). Hay tap trung toan bo loi giai thich truc tiep vao muc 'text'.
-
-<context>
-Tieu de muc: ${context.sectionTitle || 'Khong co'}
-Doan truoc: ${context.before || 'Khong co'}
-Doan sau: ${context.after || 'Khong co'}
-</context>
-
-<selected_text>
-${rawText}
-</selected_text>`;
-    } else if (mode === 'example') {
-      userPrompt = `[YÊU CẦU: CHO VÍ DỤ MINH HỌA]
-- Đưa ra 1 đến 2 ví dụ thực tế bám sát kiến thức trong <selected_text>.
-- Ưu tiên bối cảnh quen thuộc, đời sống thực tế tại Việt Nam.
-- Mỗi ví dụ súc tích, dễ liên hệ (tối đa 2-3 câu).
-- Nếu đoạn trích là công thức, thuật toán hay khái niệm định lượng, hãy minh họa bằng một ví dụ số liệu đơn giản, cụ thể.
+    if (['explain', 'example', 'translate'].includes(mode)) {
+      if (instruction.includes('<selected_text>')) {
+        userPrompt = instruction
+          .replace('<selected_text>', `<selected_text>\n${rawText}\n</selected_text>`)
+          .replace('<context>', `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`);
+      } else {
+        userPrompt = `${instruction}
 
 <context>
 Tiêu đề mục: ${context.sectionTitle || 'Không có'}
@@ -186,21 +210,7 @@ Tiêu đề mục: ${context.sectionTitle || 'Không có'}
 <selected_text>
 ${rawText}
 </selected_text>`;
-    } else if (mode === 'translate') {
-      userPrompt = `[YÊU CẦU: DỊCH THUẬT CHÍNH XÁC]
-- Dịch trung thực đoạn trích <selected_text> sang ngôn ngữ: "${targetLang}".
-- Giữ nguyên các thuật ngữ chuyên ngành chuẩn xác (kèm thuật ngữ gốc trong ngoặc đơn ở lần xuất hiện đầu tiên nếu cần thiết).
-- Dịch tự nhiên, đúng văn phong học thuật, không thêm thắt giải thích ngoài lề.
-
-<context>
-Tiêu đề mục: ${context.sectionTitle || 'Không có'}
-Đoạn trước: ${context.before || 'Không có'}
-Đoạn sau: ${context.after || 'Không có'}
-</context>
-
-<selected_text>
-${rawText}
-</selected_text>`;
+      }
     } else if (mode === 'flashcard') {
       userPrompt = `[YÊU CẦU: TẠO FLASHCARD HỌC TẬP TỪ ĐOẠN TRÍCH]
 - Tạo câu hỏi (mặt trước) và câu trả lời trọng tâm (mặt sau) bám sát kiến thức trong <selected_text>.
