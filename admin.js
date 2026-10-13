@@ -2691,13 +2691,18 @@ async function renderAiTab(container) {
   let aiSettings = {};
   let aiUsageData = {};
 
+  let liveGeminiModels = null;
   try {
-    const [settingsRes, usageRes] = await Promise.all([
+    const [settingsRes, usageRes, geminiModelsRes] = await Promise.all([
       callAdminApi('/api/admin/ai/settings'),
-      callAdminApi('/api/admin/ai/usage')
+      callAdminApi('/api/admin/ai/usage'),
+      callAdminApi('/api/admin/ai/models?provider=gemini').catch(() => null)
     ]);
     aiSettings = settingsRes.settings || {};
     aiUsageData = usageRes || {};
+    if (geminiModelsRes && Array.isArray(geminiModelsRes.models) && geminiModelsRes.models.length > 0) {
+      liveGeminiModels = geminiModelsRes.models;
+    }
   } catch (err) {
     container.innerHTML = `<div class="p-4 rounded-xl bg-rose-50 text-rose-600 text-xs">Lỗi tải dữ liệu: ${esc(err.message)}</div>`;
     return;
@@ -2736,13 +2741,13 @@ async function renderAiTab(container) {
       tagline: 'Mô hình đa phương thức thế hệ mới của Google, tốc độ cao & chi phí tối ưu.',
       defaultFast: 'gemini-1.5-flash',
       defaultStrong: 'gemini-1.5-pro',
-      availableModels: [
-        { id: 'gemini-1.5-flash', name: 'gemini-1.5-flash (Ổn định, phản hồi nhanh - Khuyên dùng)' },
-        { id: 'gemini-1.5-flash-8b', name: 'gemini-1.5-flash-8b (Siêu nhẹ, tiết kiệm)' },
-        { id: 'gemini-2.5-flash', name: 'gemini-2.5-flash (Siêu nhanh, thế hệ mới)' },
-        { id: 'gemini-2.0-flash', name: 'gemini-2.0-flash (Flash 2.0)' },
-        { id: 'gemini-1.5-pro', name: 'gemini-1.5-pro (Phân tích sâu, chi tiết)' },
-        { id: 'gemini-2.5-pro', name: 'gemini-2.5-pro (Cực mạnh, thế hệ mới)' }
+      availableModels: liveGeminiModels || [
+        { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Ổn định, phản hồi nhanh - Khuyên dùng)' },
+        { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B (Siêu nhẹ, tiết kiệm)' },
+        { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Siêu nhanh, thế hệ mới)' },
+        { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Thế hệ mới)' },
+        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Phân tích sâu, chi tiết)' },
+        { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Cực mạnh, thế hệ mới)' }
       ]
     },
     claude: {

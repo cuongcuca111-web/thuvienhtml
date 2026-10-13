@@ -299,34 +299,60 @@ module.exports = async function handler(req, res) {
       let errorMsg = '';
 
       if (provider === 'gemini') {
-        try {
-          const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(apiKey);
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
-              generationConfig: { maxOutputTokens: 10 }
-            })
-          });
+        const candidateModels = [
+          model,
+          model.endsWith('-latest') ? model.replace(/-latest$/, '') : `${model}-latest`,
+          model.endsWith('-002') ? model.replace(/-002$/, '') : `${model}-002`,
+          model.endsWith('-001') ? model.replace(/-001$/, '') : `${model}-001`
+        ].filter(Boolean);
+        const uniqueCandidates = [...new Set(candidateModels)];
 
-          if (resp.ok) {
-            const d = await resp.json();
-            testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
-            success = true;
-          } else {
-            const d = await resp.json().catch(() => ({}));
-            const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
-            if (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID')) {
-              errorMsg = 'Khóa API Google Gemini không hợp lệ hoặc đã bị vô hiệu hóa. Vui lòng kiểm tra lại tại Google AI Studio (https://aistudio.google.com/app/apikey) và đảm bảo key bắt đầu bằng "AIzaSy...".';
-            } else if (msg.includes('not found') || msg.includes('models/')) {
-              errorMsg = `Model ${model} không tồn tại hoặc tài khoản chưa có quyền truy cập. Lỗi: ${msg}`;
-            } else {
-              errorMsg = `${model}: ${msg}`;
+        let geminiOk = false;
+        let lastRespMsg = '';
+
+        for (const candModel of uniqueCandidates) {
+          const apiVersions = candModel.startsWith('gemini-1.5') ? ['v1', 'v1beta'] : ['v1beta', 'v1'];
+
+          for (const apiVer of apiVersions) {
+            try {
+              const url = `https://generativelanguage.googleapis.com/${apiVer}/models/${encodeURIComponent(candModel)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+              const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
+                  generationConfig: { maxOutputTokens: 10 }
+                })
+              });
+
+              if (resp.ok) {
+                const d = await resp.json();
+                testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
+                success = true;
+                geminiOk = true;
+                model = candModel;
+                break;
+              } else {
+                const d = await resp.json().catch(() => ({}));
+                const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
+                lastRespMsg = msg;
+                if (resp.status === 400 && (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID'))) {
+                  break;
+                }
+              }
+            } catch (netErr) {
+              lastRespMsg = netErr.message;
             }
           }
-        } catch (netErr) {
-          errorMsg = `${model}: ${netErr.message}`;
+          if (geminiOk) break;
+        }
+
+        if (!geminiOk) {
+          if (lastRespMsg.includes('API key not valid') || lastRespMsg.includes('API_KEY_INVALID')) {
+            errorMsg = 'Khóa API Google Gemini không hợp lệ hoặc đã bị vô hiệu hóa. Vui lòng kiểm tra lại tại Google AI Studio (https://aistudio.google.com/app/apikey) và đảm bảo key bắt đầu bằng "AIzaSy...".';
+          } else {
+            errorMsg = `Model ${model} không phản hồi: ${lastRespMsg}`;
+          }
         }
       } else if (provider === 'claude') {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -438,17 +464,28 @@ module.exports = async function handler(req, res) {
         try {
           const apiKey = decryptKey(secDoc.data());
           if (provider === 'gemini') {
-            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
-            if (resp.ok) {
-              const d = await resp.json();
-              const list = (d.models || [])
-                .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
-                .map(m => ({
-                  id: m.name.replace('models/', ''),
-                  name: `${m.displayName || m.name} (${m.name.replace('models/', '')})`
-                }));
-              if (list.length > 0) fetchedModels = list;
+            const [respV1, respBeta] = await Promise.all([
+              fetch(`https://generativelanguage.googleapis.com/v1/models?key=${encodeURIComponent(apiKey)}`).catch(() => null),
+              fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`).catch(() => null)
+            ]);
+            const modelsMap = new Map();
+            for (const resp of [respV1, respBeta]) {
+              if (resp && resp.ok) {
+                const d = await resp.json().catch(() => ({}));
+                (d.models || []).forEach(m => {
+                  if ((m.supportedGenerationMethods || []).includes('generateContent')) {
+                    const id = m.name.replace('models/', '');
+                    if (!modelsMap.has(id)) {
+                      modelsMap.set(id, {
+                        id: id,
+                        name: `${m.displayName || id} (${id})`
+                      });
+                    }
+                  }
+                });
+              }
             }
+            if (modelsMap.size > 0) fetchedModels = Array.from(modelsMap.values());
           } else if (provider === 'openai') {
             const resp = await fetch('https://api.openai.com/v1/models', {
               headers: { 'Authorization': `Bearer ${apiKey}` }
