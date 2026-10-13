@@ -85,6 +85,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.3.2',
+        date: '2026-10-13T21:45:00+07:00',
+        title: 'Đồng bộ Giao diện & Tone màu Luxury Champagne Thẻ Gói Pro trong Quản lý Tài khoản',
+        items: [
+          { type: 'feature', text: 'Đồng bộ tone màu và vibe thẻ Gói Pro trong Quản lý Tài khoản: Nền đen obsidian sang trọng (#0F1226 - #151A3A), khung kép viền champagne vàng (#D9C7A0), 4 góc tem SVG tinh xảo và nhãn vương miện "Cao cấp nhất"' },
+          { type: 'improved', text: 'Đồng bộ badge hội viên Pro khắp Quản lý Tài khoản theo bảng màu Champagne Gold hoàng gia, khớp 100% với giao diện modal Nâng cấp gói' }
+        ]
+      },
+      {
         version: 'v5.3.1',
         date: '2026-10-13T21:30:00+07:00',
         title: 'Trung tâm Quản lý Tài khoản (Hồ sơ, Avatar Linh vật, Bảo mật & Tùy chọn)',
@@ -3374,7 +3383,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.1 • build 13/10/2026 21:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.2 • build 13/10/2026 21:45</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4099,7 +4108,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.1 • build 13/10/2026 21:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.2 • build 13/10/2026 21:45</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -8026,16 +8035,53 @@
 
         <!-- ==================== TAB 2: GÓI & HẠN MỨC AI ==================== -->
         <div id="accTabContentSubscription" class="acc-tab-content space-y-4 hidden">
-          <!-- Card Thẻ Gói Hội viên -->
-          <div class="p-5 rounded-2xl bg-gradient-to-tr from-indigo-900 via-indigo-800 to-indigo-700 text-white shadow-md relative overflow-hidden">
-            <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
-            <div class="relative z-10">
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-xs uppercase tracking-wider font-semibold text-indigo-200">Gói Dịch Vụ Của Bạn</span>
-                <span id="accSubTierBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 backdrop-blur-xs">FREE</span>
+          <!-- Card Thẻ Gói Hội viên (Pro Luxury / Plus / Free / Guest) -->
+          <div id="accMembershipCard" class="card-plan-pro-luxury p-5 sm:p-6 relative flex flex-col justify-between overflow-hidden shadow-xl rounded-2xl transition-all">
+            <!-- Khung kép: viền trong 1px mờ cách 4px -->
+            <div id="accProInnerBorder" class="card-plan-pro-inner-border" aria-hidden="true"></div>
+
+            <!-- 4 góc tem chứng nhận SVG tinh xảo -->
+            <div id="accProCornerAccents">
+              <svg class="pro-corner-accent pro-corner-tl" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9V1H9"/></svg>
+              <svg class="pro-corner-accent pro-corner-tr" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 1H9V9"/></svg>
+              <svg class="pro-corner-accent pro-corner-bl" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 1V9H9"/></svg>
+              <svg class="pro-corner-accent pro-corner-br" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M9 1V9H1"/></svg>
+            </div>
+
+            <!-- Lớp quét sáng Shimmer -->
+            <div id="accProShimmer" class="pro-shimmer-sweep" aria-hidden="true"></div>
+
+            <div class="relative z-2 space-y-3">
+              <!-- Hàng trên: Nhãn Cao cấp nhất + Badge Đang dùng -->
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div id="accSubTopTag" class="px-2.5 py-0.5 rounded-md bg-[#0F1226] border border-[#D9C7A0]/70 text-[#D9C7A0] text-[11px] font-bold tracking-[0.1em] uppercase shadow-sm flex items-center gap-1.5 w-fit" aria-label="Gói cao cấp nhất">
+                  <svg class="w-3.5 h-3.5 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M4 18h16M5 14.5l2.5-6L12 11.5l4.5-3L19 14.5H5z" fill="currentColor" fill-opacity="0.28"/>
+                    <circle cx="5" cy="8.5" r="1.3" fill="currentColor"/>
+                    <circle cx="12" cy="6.5" r="1.3" fill="currentColor"/>
+                    <circle cx="19" cy="8.5" r="1.3" fill="currentColor"/>
+                  </svg>
+                  <span id="accSubTopTagText">Cao cấp nhất</span>
+                </div>
+                <span id="accSubTierBadge" class="text-[10px] px-2.5 py-0.5 rounded-md bg-[#D9C7A0]/15 text-[#E6D5B8] font-bold border border-[#D9C7A0]/40">Đang dùng</span>
               </div>
-              <h3 id="accSubTierName" class="text-2xl font-black tracking-tight mb-1">Gói Thường</h3>
-              <p id="accSubExpiryText" class="text-xs text-indigo-200">Không giới hạn thời gian sử dụng</p>
+
+              <!-- Tên gói & Gạch champagne -->
+              <div>
+                <h3 id="accSubTierName" class="font-serif text-2xl sm:text-[28px] font-bold text-white leading-tight tracking-tight">Pro</h3>
+                <div id="accSubGoldDivider" class="w-10 h-[2px] bg-[#D9C7A0]/80 mt-1.5 rounded-full"></div>
+              </div>
+
+              <!-- Mô tả & Hạn dùng -->
+              <div class="pt-1">
+                <p id="accSubDescText" class="text-xs text-[#9AA3B2] leading-relaxed">
+                  Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.
+                </p>
+                <div id="accSubExpiryBox" class="mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/40 border border-[#D9C7A0]/30 text-xs text-[#E6D5B8] shadow-inner">
+                  <svg class="w-3.5 h-3.5 text-[#D9C7A0] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  <span id="accSubExpiryText" class="font-medium">Hạn dùng đến: 11/12/2026 lúc 08:44</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -10858,10 +10904,10 @@
       if (tierBadge) {
         tierBadge.textContent = isAnonymous ? 'Khách' : (currentTier.toUpperCase());
         tierBadge.className = currentTier === 'pro'
-          ? 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+          ? 'text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#0F1226] text-[#D9C7A0] border border-[#D9C7A0]/60 shadow-xs'
           : (currentTier === 'plus'
-            ? 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700'
-            : 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60');
+            ? 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60'
+            : 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700');
       }
 
       const inputName = document.getElementById('accInputDisplayName');
@@ -10890,24 +10936,117 @@
       renderAccountAvatarPicker(savedAvatar);
 
       // 2. Gói & Hạn mức Tab
+      const card = document.getElementById('accMembershipCard');
+      const innerBorder = document.getElementById('accProInnerBorder');
+      const cornerAccents = document.getElementById('accProCornerAccents');
+      const shimmer = document.getElementById('accProShimmer');
+      const subTopTag = document.getElementById('accSubTopTag');
+      const subTopTagText = document.getElementById('accSubTopTagText');
       const subTierName = document.getElementById('accSubTierName');
       const subTierBadge = document.getElementById('accSubTierBadge');
+      const goldDivider = document.getElementById('accSubGoldDivider');
+      const subDescText = document.getElementById('accSubDescText');
+      const subExpiryBox = document.getElementById('accSubExpiryBox');
       const subExpiryText = document.getElementById('accSubExpiryText');
-      if (subTierName) {
-        subTierName.textContent = isAnonymous ? 'Chế độ Khách' : (currentTier === 'pro' ? 'Gói Pro Cao Cấp' : (currentTier === 'plus' ? 'Gói Plus Tiêu Chuẩn' : 'Gói Thường (Free)'));
-      }
-      if (subTierBadge) {
-        subTierBadge.textContent = isAnonymous ? 'GUEST' : currentTier.toUpperCase();
-      }
-      if (subExpiryText) {
-        if (isAnonymous) {
-          subExpiryText.textContent = 'Dữ liệu chỉ lưu tạm trên trình duyệt máy này';
-        } else if (currentTier === 'free') {
-          subExpiryText.textContent = 'Không giới hạn thời gian sử dụng';
-        } else if (state.userTierExpiresAt) {
-          subExpiryText.textContent = `Hạn dùng đến: ${formatAccountDate(state.userTierExpiresAt)}`;
-        } else {
-          subExpiryText.textContent = 'Không giới hạn thời gian (Vĩnh viễn)';
+
+      if (currentTier === 'pro') {
+        if (card) {
+          card.className = 'card-plan-pro-luxury p-5 sm:p-6 relative flex flex-col justify-between overflow-hidden shadow-xl rounded-2xl transition-all';
+        }
+        if (innerBorder) innerBorder.classList.remove('hidden');
+        if (cornerAccents) cornerAccents.classList.remove('hidden');
+        if (shimmer) shimmer.classList.remove('hidden');
+        if (goldDivider) goldDivider.classList.remove('hidden');
+        if (subTopTag) {
+          subTopTag.className = 'px-2.5 py-0.5 rounded-md bg-[#0F1226] border border-[#D9C7A0]/70 text-[#D9C7A0] text-[11px] font-bold tracking-[0.1em] uppercase shadow-sm flex items-center gap-1.5 w-fit';
+        }
+        if (subTopTagText) subTopTagText.textContent = 'Cao cấp nhất';
+        if (subTierName) {
+          subTierName.textContent = 'Pro';
+          subTierName.className = 'font-serif text-2xl sm:text-[28px] font-bold text-white leading-tight tracking-tight';
+        }
+        if (subTierBadge) {
+          subTierBadge.textContent = 'Đang dùng';
+          subTierBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-md bg-[#D9C7A0]/15 text-[#E6D5B8] font-bold border border-[#D9C7A0]/40';
+        }
+        if (subDescText) {
+          subDescText.textContent = 'Đầy đủ quyền lợi cao cấp nhất cùng AI mở rộng.';
+          subDescText.className = 'text-xs text-[#9AA3B2] leading-relaxed';
+        }
+        if (subExpiryBox) {
+          subExpiryBox.className = 'mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/40 border border-[#D9C7A0]/30 text-xs text-[#E6D5B8] shadow-inner';
+        }
+        if (subExpiryText) {
+          subExpiryText.textContent = state.userTierExpiresAt 
+            ? `Hạn dùng đến: ${formatAccountDate(state.userTierExpiresAt)}` 
+            : 'Không giới hạn thời gian (Vĩnh viễn)';
+        }
+      } else if (currentTier === 'plus') {
+        if (card) {
+          card.className = 'p-5 sm:p-6 rounded-2xl bg-gradient-to-tr from-[#1E2560] via-[#2A3482] to-[#3B47A8] text-white shadow-xl relative overflow-hidden border-2 border-indigo-500 transition-all';
+        }
+        if (innerBorder) innerBorder.classList.add('hidden');
+        if (cornerAccents) cornerAccents.classList.add('hidden');
+        if (shimmer) shimmer.classList.add('hidden');
+        if (goldDivider) goldDivider.classList.add('hidden');
+        if (subTopTag) {
+          subTopTag.className = 'px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[11px] font-bold tracking-[0.1em] uppercase shadow-sm flex items-center gap-1.5 w-fit';
+        }
+        if (subTopTagText) subTopTagText.textContent = 'Khuyên dùng';
+        if (subTierName) {
+          subTierName.textContent = 'Plus';
+          subTierName.className = 'font-sans text-2xl sm:text-[28px] font-bold text-white leading-tight tracking-tight';
+        }
+        if (subTierBadge) {
+          subTierBadge.textContent = 'Đang dùng';
+          subTierBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-md bg-white/20 text-white font-bold border border-white/30';
+        }
+        if (subDescText) {
+          subDescText.textContent = 'Tối ưu cho cá nhân học tập chuyên cần và thường xuyên.';
+          subDescText.className = 'text-xs text-indigo-200 leading-relaxed';
+        }
+        if (subExpiryBox) {
+          subExpiryBox.className = 'mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/30 border border-white/20 text-xs text-white shadow-inner';
+        }
+        if (subExpiryText) {
+          subExpiryText.textContent = state.userTierExpiresAt 
+            ? `Hạn dùng đến: ${formatAccountDate(state.userTierExpiresAt)}` 
+            : 'Không giới hạn thời gian (Vĩnh viễn)';
+        }
+      } else {
+        // Free / Guest
+        if (card) {
+          card.className = 'p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1A1D24] text-[#1A1A1A] dark:text-[#ECEEF2] shadow-sm relative overflow-hidden border border-[#E0DED7] dark:border-[#262C36] transition-all';
+        }
+        if (innerBorder) innerBorder.classList.add('hidden');
+        if (cornerAccents) cornerAccents.classList.add('hidden');
+        if (shimmer) shimmer.classList.add('hidden');
+        if (goldDivider) goldDivider.classList.add('hidden');
+        if (subTopTag) {
+          subTopTag.className = 'px-2.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-[11px] font-semibold flex items-center gap-1.5 w-fit';
+        }
+        if (subTopTagText) subTopTagText.textContent = isAnonymous ? 'Chế độ Khách' : 'Gói mặc định';
+        if (subTierName) {
+          subTierName.textContent = isAnonymous ? 'Khách' : 'Thường';
+          subTierName.className = 'font-sans text-2xl font-bold text-[#1A1A1A] dark:text-[#ECEEF2] leading-tight';
+        }
+        if (subTierBadge) {
+          subTierBadge.textContent = isAnonymous ? 'GUEST' : 'FREE';
+          subTierBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold';
+        }
+        if (subDescText) {
+          subDescText.textContent = isAnonymous 
+            ? 'Dữ liệu chỉ lưu tạm trên trình duyệt máy này.' 
+            : 'Dành cho người mới bắt đầu trải nghiệm thư viện bài học.';
+          subDescText.className = 'text-xs text-[#78756D] dark:text-[#9AA3B2] leading-relaxed';
+        }
+        if (subExpiryBox) {
+          subExpiryBox.className = 'mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300 shadow-inner';
+        }
+        if (subExpiryText) {
+          subExpiryText.textContent = isAnonymous 
+            ? 'Khuyên dùng: Đăng ký để lưu vĩnh viễn' 
+            : 'Không giới hạn thời gian sử dụng';
         }
       }
 
