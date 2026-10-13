@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Thư viện Sách HTML - Đọc & Ôn tập Chuyên sâu</title>
 
+  <!-- Chống lưu đệm phiên bản HTML cũ trên trình duyệt và CDN -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <!-- PWA & Mobile Standalone App Metadata -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -79,6 +84,16 @@
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG bên dưới.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
+      {
+        version: 'v5.2.8',
+        date: '2026-10-13T09:40:00+07:00',
+        title: 'Khắc phục triệt để lỗi quay lại phiên bản v4.9.5 khi tải lại trang (PWA Cache & Rollback Guard)',
+        items: [
+          { type: 'fix', text: 'Sửa lỗi TypeError trong fetch handler của Service Worker trên điều hướng HTML: Chuyển sang Network-First thuần túy giúp nạp ngay bản mới nhất từ máy chủ khi reload' },
+          { type: 'improved', text: 'Triển khai Rollback Guard (chống lùi phiên bản): Tự động phát hiện, hủy Service Worker cũ và xóa sạch cache v4.9.5 lỗi thời' },
+          { type: 'improved', text: 'Cấu hình tiêu đề Cache-Control: no-cache, no-store trên Vercel và thẻ meta HTML, đảm bảo mọi lần truy cập và tải lại trang đều lấy phiên bản mới nhất' }
+        ]
+      },
       {
         version: 'v5.2.7',
         date: '2026-10-13T09:30:00+07:00',
@@ -419,26 +434,58 @@
     window.formatTimeLeft = formatTimeLeft;
     window.copyToClipboard = copyToClipboard;
 
-    // // FIX: Tự động xóa cache cũ và tải lại 1 lần nếu phát hiện đang chạy phiên bản cũ
+    // Helper so sánh phiên bản ứng dụng (SemVer)
+    function compareAppVersions(v1, v2) {
+      if (!v1 || !v2) return 0;
+      const p1 = String(v1).replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+      const p2 = String(v2).replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+      for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+        const num1 = p1[i] || 0;
+        const num2 = p2[i] || 0;
+        if (num1 > num2) return 1;
+        if (num1 < num2) return -1;
+      }
+      return 0;
+    }
+    window.compareAppVersions = compareAppVersions;
+
+    // // FIX: CƠ CHẾ ROLLBACK GUARD & DỌN DẸP CACHE LỖI THỜI TRIỆT ĐỂ
     try {
-      const cachedVersion = localStorage.getItem('thuvienhtml_app_version');
-      if (cachedVersion && cachedVersion !== CURRENT_APP_VERSION) {
-        localStorage.setItem('thuvienhtml_app_version', CURRENT_APP_VERSION);
-        if ('caches' in window) {
-          caches.keys().then(keys => {
-            keys.forEach(k => {
-              if (k !== 'thuvienhtml-cache-' + CURRENT_APP_VERSION) caches.delete(k);
-            });
+      // 1. Dọn dẹp tức thì tất cả các kho cache cũ khác với bản hiện tại (bao gồm v4.9.5)
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          keys.forEach(k => {
+            if (k !== 'thuvienhtml-cache-' + CURRENT_APP_VERSION) {
+              console.log('[PWA] Dọn sạch kho cache cũ:', k);
+              caches.delete(k);
+            }
+          });
+        });
+      }
+
+      // 2. Rollback Guard: Nếu trình duyệt vô tình trả về bản HTML cũ hơn phiên bản đã biết
+      const highestVer = localStorage.getItem('thuvienhtml_highest_version');
+      if (highestVer && compareAppVersions(CURRENT_APP_VERSION, highestVer) < 0) {
+        console.warn(`[Rollback Guard] Trình duyệt đang chạy bản cũ (${CURRENT_APP_VERSION} < ${highestVer}). Hủy đăng ký Service Worker cũ và nạp lại bản mới nhất...`);
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            for (const r of regs) r.unregister();
           });
         }
-        const lastReloadKey = 'last_auto_version_reload';
-        const lastReloadTime = parseInt(localStorage.getItem(lastReloadKey) || '0', 10);
-        if (Date.now() - lastReloadTime > 15000) {
-          localStorage.setItem(lastReloadKey, String(Date.now()));
-          window.location.reload();
+        if ('caches' in window) {
+          caches.keys().then(keys => {
+            for (const k of keys) caches.delete(k);
+          });
         }
-      } else if (!cachedVersion) {
+        const forcedKey = 'sw_forced_version_reload';
+        if (!sessionStorage.getItem(forcedKey)) {
+          sessionStorage.setItem(forcedKey, '1');
+          window.location.replace(window.location.origin + window.location.pathname + '?bust=' + Date.now());
+        }
+      } else {
+        localStorage.setItem('thuvienhtml_highest_version', CURRENT_APP_VERSION);
         localStorage.setItem('thuvienhtml_app_version', CURRENT_APP_VERSION);
+        sessionStorage.removeItem('sw_forced_version_reload');
       }
     } catch (_) {}
 
@@ -24849,9 +24896,10 @@
         .then((reg) => {
           console.debug("[SW] Đăng ký thành công:", reg);
 
-          // Nếu có worker đang waiting sẵn
+          // Nếu có worker đang waiting sẵn, gửi ngay lệnh SKIP_WAITING
           if (reg.waiting) {
             _swWaitingWorker = reg.waiting;
+            try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch (_) {}
             promptAppUpdateSafely(false);
           }
 
@@ -24862,12 +24910,16 @@
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 _swWaitingWorker = newWorker;
+                try { newWorker.postMessage({ type: 'SKIP_WAITING' }); } catch (_) {}
                 promptAppUpdateSafely(false);
               }
             });
           });
 
-          // 3. Kiểm tra cập nhật định kỳ tối đa mỗi 30 phút
+          // 3. Luôn kiểm tra bản cập nhật mới nhất ngay khi nạp trang
+          try { reg.update(); } catch (_) {}
+
+          // Kiểm tra cập nhật định kỳ tối đa mỗi 30 phút
           const checkUpdateThrottled = () => {
             const lastCheck = parseInt(localStorage.getItem('sw_last_check_time') || '0', 10);
             if (Date.now() - lastCheck > 30 * 60 * 1000) {
@@ -24875,8 +24927,6 @@
               try { reg.update(); } catch (_) {}
             }
           };
-
-          checkUpdateThrottled();
 
           // Khi tab quay trở lại foreground (visibilitychange)
           document.addEventListener('visibilitychange', () => {

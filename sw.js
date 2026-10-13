@@ -1,8 +1,9 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v5.2.7)
-// - Đồng bộ phiên bản APP_VERSION v5.2.7 với index.html
+// Service Worker cho Ứng dụng Sách HTML (PWA v5.2.8)
+// - Đồng bộ phiên bản APP_VERSION v5.2.8 với index.html
 // - Tự động dọn sạch cache cũ và skipWaiting để người dùng luôn nhận bản cập nhật mới nhất
+// - Network-First thuần túy cho điều hướng HTML (không truyền options gây lỗi TypeError trên navigate request)
 
-const APP_VERSION = 'v5.2.7';
+const APP_VERSION = 'v5.2.8';
 const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [
@@ -53,11 +54,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Đối với điều hướng HTML hoặc tải trang chính: LUÔN ƯU TIÊN MẠNG TRƯỚC (Network-First với cache: 'no-cache')
+  // Đối với điều hướng HTML hoặc tải trang chính: LUÔN ƯU TIÊN MẠNG TRƯỚC (Network-First)
+  // Lưu ý: Không truyền tham số tùy chọn vào fetch(req) vì trình duyệt sẽ ném lỗi TypeError với request có mode 'navigate'
   const isHtmlPage = req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/') || url.pathname === '';
   if (isHtmlPage) {
     event.respondWith(
-      fetch(req, { cache: 'no-cache' })
+      fetch(req)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
@@ -65,10 +67,14 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
+        .catch(async () => {
           // Chỉ khi mất mạng hoàn toàn mới dùng bản trong cache
-          return caches.match(req).then((cached) => {
-            return cached || caches.match('./index.html') || caches.match('./');
+          const cached = await caches.match(req);
+          if (cached) return cached;
+          const fallback = await caches.match('./index.html') || await caches.match('./');
+          if (fallback) return fallback;
+          return new Response("Bạn đang ngoại tuyến. Vui lòng kết nối Internet để tải bản mới nhất.", {
+            headers: { "Content-Type": "text/html; charset=utf-8" }
           });
         })
     );
