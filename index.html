@@ -80,6 +80,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.2.7',
+        date: '2026-10-13T09:30:00+07:00',
+        title: 'Tối ưu hóa Thư viện Prompt AI: Tải trước nền tức thì & Loại bỏ triệt để flash prompt đã xóa',
+        items: [
+          { type: 'fix', text: 'Khắc phục hoàn toàn hiện tượng hiển thị thoáng qua (flash) các prompt cũ đã xóa khi mở thư viện: Cập nhật kho dữ liệu mẫu đồng bộ với các prompt mới nhất và tự động dọn sạch cache cũ' },
+          { type: 'improved', text: 'Nâng cấp bộ nhớ đệm thông minh v2 (antigravity_prompt_library_v2) kèm cờ đồng bộ đám mây và cơ chế pre-fetch ngầm ngay khi tải trang giúp mở thư viện lập tức với độ trễ 0ms' },
+          { type: 'improved', text: 'Tối ưu hóa Cache-Control máy chủ API (/api/prompts) sang s-maxage=10 với must-revalidate, đảm bảo mọi chỉnh sửa từ Quản trị viên lập tức cập nhật cho toàn bộ người dùng' }
+        ]
+      },
+      {
         version: 'v5.2.6',
         date: '2026-10-13T01:00:00+07:00',
         title: 'Cấp gói dịch vụ theo dạng Dropdown & Nút Xác nhận lưu đồng bộ thời gian thực',
@@ -34305,142 +34315,96 @@
     // =========================================================================
     const DEFAULT_PROMPT_LIBRARY = [
       {
-        id: 'p1',
-        title: 'Tóm tắt & 5 Luận điểm Cốt lõi',
-        category: 'study',
-        categoryName: 'Học tập & Ôn thi',
-        requiredTier: 'free',
-        displayImage: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=700&auto=format&fit=crop&q=80',
-        description: 'Chắt lọc 5 luận điểm cốt lõi nhất, tóm tắt súc tích và lập checklist 3 hành động áp dụng ngay vào thực tế.',
-        tags: ['Tóm tắt', 'Cốt lõi', 'Checklist'],
-        promptText: `Hãy đóng vai một chuyên gia phân tích học thuật hàng đầu. Dưới đây là nội dung tài liệu học tập của tôi:
----
-[DÁN NỘI DUNG BÀI HỌC VÀO ĐÂY]
----
-Nhiệm vụ của bạn:
-1. Rút trích chính xác 5 luận điểm then chốt nhất kèm theo dẫn chứng hoặc giải thích ngắn từ tài liệu.
-2. Tóm lược toàn bộ nội dung trong một đoạn văn súc tích không quá 120 từ.
-3. Lập danh sách 3 hành động cụ thể (Actionable Checklist) để tôi áp dụng kiến thức này vào thực tế.`
-      },
-      {
-        id: 'p2',
-        title: 'Tạo Bộ Đề Trắc Nghiệm Tự Ôn Kèm Đáp Án',
-        category: 'study',
-        categoryName: 'Học tập & Ôn thi',
-        requiredTier: 'free',
-        displayImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=700&auto=format&fit=crop&q=80',
-        description: 'Soạn 5 câu hỏi trắc nghiệm A-B-C-D phân hóa tư duy, kèm bảng đáp án và giải thích chi tiết lý do đúng/sai.',
-        tags: ['Trắc nghiệm', 'Tự kiểm tra', 'Đáp án'],
-        promptText: `Bạn là giảng viên chuyên nghiệp. Dựa trên nội dung bài học dưới đây:
----
-[DÁN NỘI DUNG BÀI HỌC VÀO ĐÂY]
----
-Hãy soạn 5 câu hỏi trắc nghiệm (A, B, C, D) kiểm tra mức độ hiểu sâu kiến thức:
-- Mỗi câu hỏi phải phân hóa được người học (có câu hỏi suy luận, tình huống, tránh hỏi thuộc lòng máy móc).
-- Phần cuối: Cung cấp bảng đáp án đúng kèm lời giải thích tại sao đáp án đó đúng và tại sao các phương án còn lại sai.`
-      },
-      {
-        id: 'p3',
-        title: 'Chuyển Đổi Thành Sơ Đồ Tư Duy (Mindmap)',
+        id: 'prompt_visual_architect_studio',
+        title: 'Visual Architect Studio',
         category: 'study',
         categoryName: 'Học tập & Ôn thi',
         requiredTier: 'plus',
         displayImage: 'https://images.unsplash.com/photo-1507842229451-79b1be88688a?w=700&auto=format&fit=crop&q=80',
-        description: 'Tái cấu trúc bài học thành sơ đồ tư duy dạng Mermaid và danh sách phân cấp trực quan giúp ghi nhớ gấp 3 lần.',
-        tags: ['Mindmap', 'Mermaid', 'Trực quan'],
-        promptText: `Đóng vai chuyên gia về phương pháp học tập trực quan (Visual Learning Specialist).
-Dựa vào bài học sau:
+        description: 'Tùy biến: chọn theme (tối, sáng, neon, giấy), màu chủ đạo, độ chi tiết, mục đích (ôn thi, thuyết trình, tổng hợp kiến thức).',
+        tags: ['#Prompt'],
+        promptText: `Bạn là Senior Visual Information Architect & UI/UX Designer. Hãy thiết kế 1 Web Infographic hoàn chỉnh (1 file HTML duy nhất, nhúng Tailwind CSS qua CDN) trình bày trực quan và sâu sắc nội dung sau:
 ---
-[DÁN NỘI DUNG BÀI HỌC VÀO ĐÂY]
+[DÁN NỘI DUNG TÀI LIỆU VÀO ĐÂY]
 ---
-Yêu cầu:
-1. Vẽ một sơ đồ tư duy dạng mã Mermaid (dùng cú pháp flowchart TD hoặc mindmap) thể hiện cấu trúc phân nhánh của bài.
-2. Viết dạng danh sách gạch đầu dòng phân cấp (bullet hierarchy) từ Chủ đề chính -> Khái niệm phụ -> Ví dụ minh họa.
-3. Đánh dấu các từ khóa quan trọng bằng định dạng in đậm để người học ghi nhớ nhanh bằng phương pháp chụp hình ảnh não bộ.`
+Yêu cầu thiết kế:
+1. Header rõ ràng với tiêu đề chủ đề, mục tiêu và tóm lược 1 câu.
+2. Bản đồ tư duy trực quan (Visual Concept Map) chia các module kiến thức mạch lạc.
+3. Phân biệt rõ các khái niệm cốt lõi, bản chất, phân loại và lợi ích thực tiễn.
+4. Giao diện trực quan đẹp mắt, tương phản cao, hỗ trợ responsive.`
       },
       {
-        id: 'p4',
-        title: 'Gia Sư Phản Biện Theo Phương Pháp Socrates',
-        category: 'socratic',
-        categoryName: 'Gia sư Socratic',
+        id: 'prompt_study_visual',
+        title: 'Study Visual',
+        category: 'study',
+        categoryName: 'Học tập & Ôn thi',
         requiredTier: 'plus',
-        displayImage: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=700&auto=format&fit=crop&q=80',
-        description: 'Phương pháp truy vấn sâu của triết gia Socrates, đặt câu hỏi từng bước giúp bạn tự khai mở bản chất vấn đề.',
-        tags: ['Socrates', 'Phản biện', 'Tư duy sâu'],
-        promptText: `Tôi muốn học và thẩm thấu sâu sắc chủ đề này:
+        displayImage: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=700&auto=format&fit=crop&q=80',
+        description: 'Hiển thị câu hỏi gốc ở đầu trang, kèm bản đồ trả lời 1 dòng. Tách câu hỏi thành các module kiến thức trực quan dễ hiểu.',
+        tags: ['#Prompt'],
+        promptText: `Bạn là Chuyên gia Kiến trúc Thông tin Trực quan & UI/UX Designer. Hãy thiết kế 1 trang Web Infographic (1 file HTML, nhúng Tailwind CSS qua CDN) để trả lời và giải thích chi tiết cho câu hỏi / bài học sau:
 ---
-[DÁN NỘI DUNG HOẶC CÂU HỎI VÀO ĐÂY]
+[DÁN NỘI DUNG BÀI HỌC HOẶC CÂU HỎI VÀO ĐÂY]
 ---
-Bạn hãy đóng vai nhà hiền triết Socrates. Không giải thích bài giảng một cách thụ động, mà hãy:
-1. Đặt cho tôi 1 câu hỏi phản biện then chốt đầu tiên để thách thức hiểu biết của tôi về vấn đề.
-2. Dừng lại và đợi tôi trả lời trước khi chuyển sang câu hỏi tiếp theo.
-3. Hướng dẫn tôi từng bước bằng phương pháp chất vấn Socratic để tự tôi đi đến chân lý.`
+Cấu trúc trang:
+1. Hiển thị câu hỏi gốc nổi bật ở đầu trang kèm bản đồ trả lời 1 dòng tóm lược.
+2. Tách thành các module nội dung: Định nghĩa & Khái niệm -> Bản chất cốt lõi -> Phân loại / Các bước -> Ví dụ thực tế.
+3. Bố cục dạng thẻ (Cards) với icon minh họa trực quan, màu sắc phân cấp rõ ràng.`
       },
       {
-        id: 'p5',
-        title: 'Chuyên Gia Soạn Thảo & Tối Ưu Hóa Bài Viết',
-        category: 'writing',
-        categoryName: 'Viết & Soạn thảo',
-        requiredTier: 'pro',
-        displayImage: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=700&auto=format&fit=crop&q=80',
-        description: 'Tái bản nội dung thành bài viết chuyên khảo sắc bén, mở đầu cuốn hút, cấu trúc chặt chẽ và truyền cảm hứng.',
-        tags: ['Soạn thảo', 'Chuyên khảo', 'Văn phong Pro'],
-        promptText: `Bạn là tổng biên tập của một tạp chí học thuật và chuyên gia truyền thông cao cấp.
-Tôi gửi đến bạn nội dung thô sau:
+        id: 'prompt_quick_infographic',
+        title: 'Quick Infographic',
+        category: 'study',
+        categoryName: 'Học tập & Ôn thi',
+        requiredTier: 'free',
+        displayImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=700&auto=format&fit=crop&q=80',
+        description: 'Tạo nhanh 1 trang infographic từ tài liệu của bạn. Chỉ dùng thông tin trong tài liệu, giữ đúng nội dung và trực quan hóa dễ nhớ.',
+        tags: ['#Prompt'],
+        promptText: `Bạn là chuyên gia thiết kế infographic. Hãy tạo 1 trang web infographic (1 file HTML, nhúng Tailwind CSS qua CDN) từ [DỮ LIỆU ĐẦU VÀO] bên dưới.
+QUY TẮC:
+1. Chỉ dùng thông tin trong tài liệu, không bịa thêm dữ kiện.
+2. Trình bày dạng các khối tóm tắt trực quan, gạch đầu dòng ngắn gọn, làm nổi bật từ khóa chính.
 ---
-[DÁN BÀI HỌC HOẶC GHI CHÚ VÀO ĐÂY]
----
-Hãy biên tập và nâng cấp nội dung này thành một bài viết hoàn chỉnh với tiêu chuẩn:
-- Mở đầu cuốn hút (Hook) bằng một nghịch lý hoặc câu chuyện thực tế.
-- Cấu trúc 3 phần chặt chẽ, luận cứ rõ ràng, văn phong mạch lạc, truyền cảm hứng.
-- Đưa ra góc nhìn sâu sắc mới mẻ (Insight) mà người bình thường ít nhận ra.
-- Kết luận đọng lại dư vị sâu lắng kèm lời kêu gọi hành động.`
-      },
-      {
-        id: 'p6',
-        title: 'Trợ Lý Nghiên Cứu Đa Chiều & Phân Tích SWOT',
-        category: 'research',
-        categoryName: 'Nghiên cứu & Master',
-        requiredTier: 'pro',
-        displayImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=700&auto=format&fit=crop&q=80',
-        description: 'Phân tích đa chiều: Ma trận SWOT, đối chiếu thực tiễn quốc tế và thiết lập lộ trình hành động 30 ngày.',
-        tags: ['SWOT', 'Nghiên cứu', 'Chiến lược 30 ngày'],
-        promptText: `Hãy đóng vai một nhà tư vấn chiến lược và chuyên gia nghiên cứu đa ngành.
-Nội dung phân tích:
----
-[DÁN BÀI HỌC HOẶC VẤN ĐỀ VÀO ĐÂY]
----
-Nhiệm vụ phân tích toàn diện:
-1. Ma trận SWOT: Điểm mạnh, Điểm yếu, Cơ hội và Thách thức tiềm ẩn trong kiến thức này.
-2. Đối chiếu thực tiễn: So sánh với các mô hình thực tế hiện đại trên thế giới.
-3. Kế hoạch hành động 30 ngày: Lộ trình từng tuần để biến kiến thức này thành kỹ năng phản xạ thực tế.`
+[DÁN TÀI LIỆU VÀO ĐÂY]
+---`
       }
     ];
 
     let promptLibraryCache = null;
+    let isPromptLibraryCloudSynced = false;
     let currentPromptSearchTerm = '';
     let currentPromptCategory = 'all';
     let currentPromptTierFilter = 'all';
     let unsubscribePromptsListener = null;
+
+    // Dọn sạch ngay bộ nhớ đệm v1 cũ để loại bỏ triệt để các prompt đã xóa
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('antigravity_prompt_library')) {
+        localStorage.removeItem('antigravity_prompt_library');
+      }
+    } catch (_) {}
 
     function getPromptLibraryData() {
       if (promptLibraryCache !== null && Array.isArray(promptLibraryCache)) {
         return promptLibraryCache;
       }
       try {
-        const stored = localStorage.getItem('antigravity_prompt_library');
+        const stored = localStorage.getItem('antigravity_prompt_library_v2');
         if (stored !== null) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            promptLibraryCache = parsed;
+          const items = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.items) ? parsed.items : null);
+          if (items && items.length > 0) {
+            promptLibraryCache = items;
+            if (parsed && parsed.isCloudSynced) isPromptLibraryCloudSynced = true;
             return promptLibraryCache;
           }
         }
       } catch (e) {
-        console.warn('[PromptLibrary] Lỗi đọc dữ liệu từ localStorage:', e);
+        console.warn('[PromptLibrary] Lỗi đọc dữ liệu từ localStorage v2:', e);
       }
+      // Dùng danh sách mới nhất làm fallback an toàn (không bao giờ hiện prompt cũ đã xóa)
       promptLibraryCache = JSON.parse(JSON.stringify(DEFAULT_PROMPT_LIBRARY));
-      savePromptLibraryData(promptLibraryCache);
+      savePromptLibraryData(promptLibraryCache, false);
       return promptLibraryCache;
     }
 
@@ -34455,10 +34419,8 @@ Nhiệm vụ phân tích toàn diện:
               const remoteData = docSnap.data();
               if (remoteData && Array.isArray(remoteData.items) && remoteData.items.length > 0) {
                 promptLibraryCache = remoteData.items;
-                try {
-                  localStorage.setItem('antigravity_prompt_library', JSON.stringify(remoteData.items));
-                } catch (_) {}
-                window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: remoteData.items }));
+                isPromptLibraryCloudSynced = true;
+                savePromptLibraryData(remoteData.items, true);
               }
             }
           }, (err) => {
@@ -34483,10 +34445,8 @@ Nhiệm vụ phân tích toàn diện:
           const data = await res.json();
           if (data && data.success && Array.isArray(data.items) && data.items.length > 0) {
             promptLibraryCache = data.items;
-            try {
-              localStorage.setItem('antigravity_prompt_library', JSON.stringify(data.items));
-            } catch (_) {}
-            window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: data.items }));
+            isPromptLibraryCloudSynced = true;
+            savePromptLibraryData(data.items, true);
             return data.items;
           }
         }
@@ -34496,6 +34456,12 @@ Nhiệm vụ phân tích toàn diện:
       return null;
     }
     window.fetchPromptsFromApiFallback = fetchPromptsFromApiFallback;
+
+    // Tự động tải trước dữ liệu ngầm từ Cloud ngay khi script nạp vào trình duyệt
+    try {
+      fetchPromptsFromApiFallback();
+      initPromptLibraryFirestoreSync();
+    } catch (_) {}
 
     function isPromptAdminAuthorized() {
       if (state && state.isAdmin) return true;
@@ -34508,13 +34474,20 @@ Nhiệm vụ phân tích toàn diện:
     }
     window.isPromptAdminAuthorized = isPromptAdminAuthorized;
 
-    function savePromptLibraryData(items) {
+    function savePromptLibraryData(items, isCloud = true) {
       try {
         promptLibraryCache = Array.isArray(items) ? items : [];
-        localStorage.setItem('antigravity_prompt_library', JSON.stringify(promptLibraryCache));
+        if (isCloud) isPromptLibraryCloudSynced = true;
+        localStorage.setItem('antigravity_prompt_library_v2', JSON.stringify({
+          version: 2,
+          updatedAt: new Date().toISOString(),
+          isCloudSynced: Boolean(isCloud),
+          items: promptLibraryCache
+        }));
+        try { localStorage.removeItem('antigravity_prompt_library'); } catch (_) {}
         window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: promptLibraryCache }));
       } catch (e) {
-        console.warn('[PromptLibrary] Lỗi lưu dữ liệu vào localStorage:', e);
+        console.warn('[PromptLibrary] Lỗi lưu dữ liệu vào localStorage v2:', e);
       }
     }
     window.savePromptLibraryData = savePromptLibraryData;

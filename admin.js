@@ -4414,10 +4414,11 @@ function getAdminPromptLibrary() {
     return window.getPromptLibraryData();
   }
   try {
-    const raw = localStorage.getItem('antigravity_prompt_library');
-    if (raw !== null) {
-      const parsed = JSON.parse(raw);
+    const rawV2 = localStorage.getItem('antigravity_prompt_library_v2');
+    if (rawV2 !== null) {
+      const parsed = JSON.parse(rawV2);
       if (Array.isArray(parsed)) return parsed;
+      if (parsed && Array.isArray(parsed.items)) return parsed.items;
     }
   } catch (_) {}
   return window.DEFAULT_PROMPT_LIBRARY || [];
@@ -4502,7 +4503,12 @@ function saveAdminPromptLibrary(items) {
     window.savePromptLibraryData(safeItems);
   } else {
     try {
-      localStorage.setItem('antigravity_prompt_library', JSON.stringify(safeItems));
+      localStorage.setItem('antigravity_prompt_library_v2', JSON.stringify({
+        items: safeItems,
+        updatedAt: new Date().toISOString(),
+        isCloudSynced: true
+      }));
+      try { localStorage.removeItem('antigravity_prompt_library'); } catch (_) {}
       window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: safeItems }));
     } catch (e) {
       console.warn('[Admin] Lỗi lưu Thư viện Prompt:', e);
