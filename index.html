@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.3.4',
+        date: '2026-10-13T22:30:00+07:00',
+        title: 'Bộ Sưu Tập 32 Biểu Tượng Avatar Độc Bản & Tính Năng Đổi Màu Nền Avatar',
+        items: [
+          { type: 'feature', text: 'Bổ sung 8 biểu tượng vector SVG độc quyền theo nhận diện Sách HTML (Codex HTML, Thẻ code, Terminal, HTML5 Shield, Sách tri thức, AI Trợ lý, Vương miện Pro, La bàn định hướng)' },
+          { type: 'feature', text: 'Bộ sưu tập avatar mở rộng 32 linh vật và biểu tượng chia 5 danh mục trực quan: Tất cả, Độc quyền HTML, Học tập & Tech, Linh vật, Năng lượng' },
+          { type: 'feature', text: 'Tính năng đổi màu nền Avatar với 10 dải màu gradient cao cấp (Indigo Hoàng gia, Obsidian Champagne, Ngọc lục bảo, Hoàng hôn HTML5, Cyber Cyan, Hoa hồng Ruby, Đêm huyền bí, Tím oải hương, Cực quang Bắc cực, Vàng kim vinh quang)' },
+          { type: 'improved', text: 'Đồng bộ tức thì biểu tượng và màu nền avatar xuyên suốt Header, Thanh điều hướng di động, Popover tài khoản và Trung tâm quản lý' }
+        ]
+      },
+      {
         version: 'v5.3.3',
         date: '2026-10-13T22:00:00+07:00',
         title: 'Tái Thiết Kế Logo Độc Bản: The Codex HTML </> (Sách Tri Thức & Cặp Thẻ HTML)',
@@ -2393,6 +2404,45 @@
       <path d="M13.2 5.5L10.8 17.5" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/>
       <circle cx="13" cy="5.5" r="1.1" fill="#FDE047"/>
     </symbol>
+    <!-- // BỘ ICON VECTOR SVG ĐỘC BẢN CHO AVATAR HỘI VIÊN SÁCH HTML -->
+    <symbol id="avatar-svg-codex" viewBox="0 0 24 24">
+      <path d="M4 6.5C6.5 5.5 9.5 5.8 12 7.2C14.5 5.8 17.5 5.5 20 6.5V18.5C17.5 17.5 14.5 17.8 12 19.2C9.5 17.8 6.5 17.5 4 18.5V6.5Z" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.15" stroke-linejoin="round"/>
+      <path d="M9.5 10L7.5 12L9.5 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14.5 10L16.5 12L14.5 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13.2 5.5L10.8 17.5" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="13" cy="5.5" r="1.1" fill="#FDE047"/>
+    </symbol>
+    <symbol id="avatar-svg-code" viewBox="0 0 24 24">
+      <path d="M8 7L3 12L8 17M16 7L21 12L16 17M14 4L10 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+    <symbol id="avatar-svg-terminal" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1"/>
+      <path d="M7 9L10 12L7 15M12 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="avatar-svg-html5" viewBox="0 0 24 24">
+      <path d="M4 3L5.8 19L12 21L18.2 19L20 3H4Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1" stroke-linejoin="round"/>
+      <path d="M12 6V18M7.5 7H16.5M7.8 11H16.2M8.2 15H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="avatar-svg-book" viewBox="0 0 24 24">
+      <path d="M4 6.5C6.5 5.5 9.5 5.8 12 7.2C14.5 5.8 17.5 5.5 20 6.5V18.5C17.5 17.5 14.5 17.8 12 19.2C9.5 17.8 6.5 17.5 4 18.5V6.5Z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+      <path d="M12 7.2V19.2" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M14 4.5L12 13" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="avatar-svg-ai" viewBox="0 0 24 24">
+      <path d="M12 2.5L14.5 9.5L21.5 12L14.5 14.5L12 21.5L9.5 14.5L2.5 12L9.5 9.5L12 2.5Z" fill="currentColor"/>
+      <circle cx="19" cy="5" r="1.5" fill="#FDE047"/>
+    </symbol>
+    <symbol id="avatar-svg-crown" viewBox="0 0 24 24">
+      <path d="M4 18H20M5 14.5L7.5 8L12 12L16.5 8L19 14.5H5Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.2" stroke-linejoin="round"/>
+      <circle cx="5" cy="8" r="1.2" fill="#FBBF24"/>
+      <circle cx="12" cy="6" r="1.2" fill="#FBBF24"/>
+      <circle cx="19" cy="8" r="1.2" fill="#FBBF24"/>
+    </symbol>
+    <symbol id="avatar-svg-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <polygon points="12,6.5 14.5,12 12,17.5 9.5,12" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.3"/>
+      <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+    </symbol>
     <!-- // FIX-1: BỘ ICON SVG ĐỘC BẢN CHO BẢNG TÙY CHỌN HIỂN THỊ (VIEWBOX 24X24, STROKE 1.75PX, PHONG CÁCH SÁCH EDITORIAL) -->
     <symbol id="icon-ds-font-size" viewBox="0 0 24 24">
       <path d="M4 19L8.5 6.5L13 19" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -3202,7 +3252,7 @@
       <!-- Avatar Nút Tài Khoản - LUÔN Ở NGOÀI CÙNG BÊN PHẢI TRÊN CÙNG HÀNG, KHÔNG RỚT DÒNG -->
       <div class="relative shrink-0">
         <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 p-0.5 sm:pl-1 sm:pr-2.5 rounded-full border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shadow-2xs shrink-0 cursor-pointer" title="Tài khoản và tùy chọn">
-          <div class="relative w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
+          <div id="headerUserAvatarWrap" class="relative w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
             <span id="userInitial">U</span>
             <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
           </div>
@@ -3438,7 +3488,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.3 • build 13/10/2026 22:00</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.4 • build 13/10/2026 22:30</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4163,7 +4213,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.3 • build 13/10/2026 22:00</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.4 • build 13/10/2026 22:30</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -8000,23 +8050,56 @@
             </div>
           </div>
 
-          <!-- Bộ sưu tập Avatar Linh vật & Biểu tượng -->
-          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-3">
-            <div class="flex items-center justify-between">
-              <div>
-                <label class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
-                  Linh vật &amp; Biểu tượng đại diện
-                </label>
-                <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
-                  Chọn biểu tượng để thể hiện phong cách học tập của bạn
-                </p>
+          <!-- Bộ sưu tập Avatar Linh vật & Biểu tượng Tự Thiết Kế + Đổi Màu Nền -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs space-y-4">
+            
+            <!-- Phần 1: Biểu tượng & Linh vật -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <label class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                    Linh vật &amp; Biểu tượng đại diện
+                  </label>
+                  <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+                    Biểu tượng độc bản Sách HTML &amp; phong cách học tập
+                  </p>
+                </div>
+                <span id="accCurrentAvatarLabel" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400"></span>
               </div>
-              <span id="accCurrentAvatarLabel" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400"></span>
+
+              <!-- Thanh phân loại danh mục -->
+              <div class="flex items-center gap-1 overflow-x-auto pb-1 mb-2 no-scrollbar text-[11px]" id="accAvatarCategoryTabs">
+                <button type="button" class="acc-avatar-cat-btn active px-2.5 py-1 rounded-lg font-bold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 transition" data-cat="all">Tất cả</button>
+                <button type="button" class="acc-avatar-cat-btn px-2.5 py-1 rounded-lg font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition" data-cat="exclusive">✨ Độc quyền HTML</button>
+                <button type="button" class="acc-avatar-cat-btn px-2.5 py-1 rounded-lg font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition" data-cat="study">🎓 Học tập &amp; Tech</button>
+                <button type="button" class="acc-avatar-cat-btn px-2.5 py-1 rounded-lg font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition" data-cat="mascots">🐾 Linh vật</button>
+                <button type="button" class="acc-avatar-cat-btn px-2.5 py-1 rounded-lg font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition" data-cat="energy">⚡ Năng lượng</button>
+              </div>
+
+              <div id="accAvatarPickerGrid" class="grid grid-cols-6 sm:grid-cols-8 gap-2 pt-1 max-h-56 overflow-y-auto p-1 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5">
+                <!-- Render tự động bởi JS (32 biểu tượng) -->
+              </div>
             </div>
 
-            <div id="accAvatarPickerGrid" class="grid grid-cols-6 sm:grid-cols-6 gap-2 pt-1">
-              <!-- Render tự động bởi JS: 🦉, 🎓, 🚀, 🐱, 🔬, 📚, 🌟, ⚡, 🧠, ☕, 🔥, 👤 -->
+            <!-- Phần 2: Đổi màu nền Avatar -->
+            <div class="pt-3 border-t border-[#E6E6E1]/60 dark:border-[#262C36]/60">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <label class="block text-xs font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">
+                    Màu nền Avatar
+                  </label>
+                  <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2]">
+                    Tùy biến dải màu chuyển sắc cho ảnh đại diện
+                  </p>
+                </div>
+                <span id="accCurrentBgLabel" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">Indigo Royal</span>
+              </div>
+
+              <div id="accAvatarBgPickerGrid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 pt-1">
+                <!-- Render 10 bảng màu gradient tự động bởi JS -->
+              </div>
             </div>
+
           </div>
 
           <!-- Đổi Tên hiển thị -->
@@ -10837,19 +10920,248 @@
     // TRUNG TÂM QUẢN LÝ TÀI KHOẢN (ACCOUNT CENTER SYSTEM)
     // =========================================================================
     const AVATAR_PRESETS = [
-      { id: 'owl', icon: '🦉', label: 'Cú thông thái' },
-      { id: 'grad', icon: '🎓', label: 'Học giả' },
-      { id: 'rocket', icon: '🚀', label: 'Khám phá' },
-      { id: 'cat', icon: '🐱', label: 'Mèo chăm chỉ' },
-      { id: 'scientist', icon: '🔬', label: 'Nghiên cứu' },
-      { id: 'book', icon: '📚', label: 'Thủ thư' },
-      { id: 'star', icon: '🌟', label: 'Ngôi sao' },
-      { id: 'bolt', icon: '⚡', label: 'Tia chớp' },
-      { id: 'brain', icon: '🧠', label: 'Sáng tạo' },
-      { id: 'coffee', icon: '☕', label: 'Tập trung' },
-      { id: 'fire', icon: '🔥', label: 'Nhiệt huyết' },
-      { id: 'default', icon: '👤', label: 'Mặc định' }
+      // Cụm 1: ✨ Độc quyền Sách HTML (Custom Vector SVG Icons)
+      { id: 'svg_codex', type: 'svg', svgId: 'avatar-svg-codex', label: 'Sách HTML (Độc bản)', desc: 'Logo web chính thức', cat: 'exclusive' },
+      { id: 'svg_code', type: 'svg', svgId: 'avatar-svg-code', label: 'Thẻ Mã </>', desc: 'Code Master', cat: 'exclusive' },
+      { id: 'svg_terminal', type: 'svg', svgId: 'avatar-svg-terminal', label: 'Terminal >_', desc: 'Console lập trình', cat: 'exclusive' },
+      { id: 'svg_html5', type: 'svg', svgId: 'avatar-svg-html5', label: 'Khiên HTML5', desc: 'Web Developer', cat: 'exclusive' },
+      { id: 'svg_book', type: 'svg', svgId: 'avatar-svg-book', label: 'Sách Mở', desc: 'Đọc chuyên sâu', cat: 'exclusive' },
+      { id: 'svg_ai', type: 'svg', svgId: 'avatar-svg-ai', label: 'AI Sparkle ✦', desc: 'Trí tuệ Gemini', cat: 'exclusive' },
+      { id: 'svg_crown', type: 'svg', svgId: 'avatar-svg-crown', label: 'Vương Miện Pro', desc: 'Hội viên Hoàng gia', cat: 'exclusive' },
+      { id: 'svg_compass', type: 'svg', svgId: 'avatar-svg-compass', label: 'La Bàn Tri Thức', desc: 'Định hướng học', cat: 'exclusive' },
+
+      // Cụm 2: 🎓 Học tập & Công nghệ
+      { id: 'grad', type: 'emoji', icon: '🎓', label: 'Học giả', desc: 'Cử nhân tri thức', cat: 'study' },
+      { id: 'book', type: 'emoji', icon: '📚', label: 'Thủ thư', desc: 'Kho sách vô tận', cat: 'study' },
+      { id: 'laptop', type: 'emoji', icon: '💻', label: 'Lập trình viên', desc: 'Code chuyên sâu', cat: 'study' },
+      { id: 'globe', type: 'emoji', icon: '🌐', label: 'Mạng toàn cầu', desc: 'World Wide Web', cat: 'study' },
+      { id: 'scientist', type: 'emoji', icon: '🔬', label: 'Nghiên cứu', desc: 'Khoa học thực nghiệm', cat: 'study' },
+      { id: 'palette', type: 'emoji', icon: '🎨', label: 'Thiết kế CSS', desc: 'Giao diện mỹ thuật', cat: 'study' },
+      { id: 'robot', type: 'emoji', icon: '🤖', label: 'Robot AI', desc: 'Công nghệ tương lai', cat: 'study' },
+      { id: 'magic', type: 'emoji', icon: '🪄', label: 'Phù thủy mã', desc: 'Biến hóa cú pháp', cat: 'study' },
+
+      // Cụm 3: 🐾 Linh vật đồng hành
+      { id: 'owl', type: 'emoji', icon: '🦉', label: 'Cú thông thái', desc: 'Cú đêm học tập', cat: 'mascots' },
+      { id: 'cat', type: 'emoji', icon: '🐱', label: 'Mèo chăm chỉ', desc: 'Bền bỉ mỗi ngày', cat: 'mascots' },
+      { id: 'fox', type: 'emoji', icon: '🦊', label: 'Cáo nhanh nhẹn', desc: 'Trình duyệt tinh anh', cat: 'mascots' },
+      { id: 'dragon', type: 'emoji', icon: '🐉', label: 'Rồng dũng mãnh', desc: 'Chinh phục thử thách', cat: 'mascots' },
+      { id: 'dolphin', type: 'emoji', icon: '🐬', label: 'Cá heo thông minh', desc: 'Tư duy nhạy bén', cat: 'mascots' },
+      { id: 'rocket', type: 'emoji', icon: '🚀', label: 'Tàu khám phá', desc: 'Bứt phá giới hạn', cat: 'mascots' },
+      { id: 'clover', type: 'emoji', icon: '🍀', label: 'Cỏ 4 lá may mắn', desc: 'Thi cử đỗ đạt', cat: 'mascots' },
+      { id: 'coffee', type: 'emoji', icon: '☕', label: 'Tách cà phê', desc: 'Tập trung tỉnh táo', cat: 'mascots' },
+
+      // Cụm 4: ⚡ Năng lượng & Thành tích
+      { id: 'star', type: 'emoji', icon: '🌟', label: 'Ngôi sao rực rỡ', desc: 'Tỏa sáng học đường', cat: 'energy' },
+      { id: 'bolt', type: 'emoji', icon: '⚡', label: 'Tia chớp thần tốc', desc: 'Ôn tập siêu tốc', cat: 'energy' },
+      { id: 'fire', type: 'emoji', icon: '🔥', label: 'Ngọn lửa nhiệt huyết', desc: 'Chuỗi ngày Streak', cat: 'energy' },
+      { id: 'brain', type: 'emoji', icon: '🧠', label: 'Bộ não sáng tạo', desc: 'Trí tuệ đỉnh cao', cat: 'energy' },
+      { id: 'gem', type: 'emoji', icon: '💎', label: 'Kim cương VIP', desc: 'Kiên định vững vàng', cat: 'energy' },
+      { id: 'trophy', type: 'emoji', icon: '🏆', label: 'Cúp quán quân', desc: 'Đỉnh cao bảng vàng', cat: 'energy' },
+      { id: 'target', type: 'emoji', icon: '🎯', label: 'Mục tiêu hoàn hảo', desc: '100% điểm số', cat: 'energy' },
+      { id: 'default', type: 'emoji', icon: '👤', label: 'Chữ cái mặc định', desc: 'Ký tự theo tên', cat: 'energy' }
     ];
+
+    const AVATAR_BG_PRESETS = [
+      { id: 'indigo', name: 'Indigo Hoàng gia', gradient: 'linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #7C3AED 100%)', border: 'none' },
+      { id: 'luxury', name: 'Obsidian Champagne', gradient: 'linear-gradient(135deg, #0F1226 0%, #151A3A 60%, #25223A 100%)', border: '1.5px solid rgba(217,199,160,0.6)' },
+      { id: 'emerald', name: 'Ngọc lục bảo', gradient: 'linear-gradient(135deg, #059669 0%, #0D9488 50%, #0284C7 100%)', border: 'none' },
+      { id: 'sunset', name: 'Hoàng hôn HTML5', gradient: 'linear-gradient(135deg, #F59E0B 0%, #EA580C 50%, #E11D48 100%)', border: 'none' },
+      { id: 'cyan', name: 'Cyber Cyan', gradient: 'linear-gradient(135deg, #06B6D4 0%, #0EA5E9 50%, #2563EB 100%)', border: 'none' },
+      { id: 'rose', name: 'Hoa hồng Ruby', gradient: 'linear-gradient(135deg, #E11D48 0%, #DB2777 50%, #9333EA 100%)', border: 'none' },
+      { id: 'midnight', name: 'Đêm huyền bí', gradient: 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%)', border: '1px solid rgba(255,255,255,0.2)' },
+      { id: 'lavender', name: 'Tím oải hương', gradient: 'linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #C026D3 100%)', border: 'none' },
+      { id: 'aurora', name: 'Cực quang Bắc cực', gradient: 'linear-gradient(135deg, #2DD4BF 0%, #10B981 40%, #4F46E5 100%)', border: 'none' },
+      { id: 'gold', name: 'Vàng kim vinh quang', gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%)', border: 'none' }
+    ];
+
+    function applyAvatarToElement(el, avatarValue, size = 'sm') {
+      if (!el) return;
+      if (!avatarValue) {
+        el.textContent = 'U';
+        return;
+      }
+      const preset = AVATAR_PRESETS.find(p => p.id === avatarValue || p.icon === avatarValue);
+      if (preset && preset.type === 'svg') {
+        const svgClass = size === 'lg' ? 'w-8 h-8 text-white shrink-0 pointer-events-none' : (size === 'md' ? 'w-5 h-5 text-white shrink-0 pointer-events-none' : 'w-4 h-4 text-white shrink-0 pointer-events-none');
+        el.innerHTML = `<svg class="${svgClass}" viewBox="0 0 24 24"><use href="#${preset.svgId}"></use></svg>`;
+      } else if (preset && preset.type === 'emoji') {
+        const textClass = size === 'lg' ? 'text-3xl leading-none select-none' : (size === 'md' ? 'text-lg leading-none select-none' : 'text-xs leading-none select-none');
+        el.innerHTML = `<span class="${textClass}">${preset.icon}</span>`;
+      } else if (typeof avatarValue === 'string' && avatarValue.startsWith('svg_')) {
+        const svgId = 'avatar-' + avatarValue.replace(/_/g, '-');
+        const svgClass = size === 'lg' ? 'w-8 h-8 text-white shrink-0 pointer-events-none' : (size === 'md' ? 'w-5 h-5 text-white shrink-0 pointer-events-none' : 'w-4 h-4 text-white shrink-0 pointer-events-none');
+        el.innerHTML = `<svg class="${svgClass}" viewBox="0 0 24 24"><use href="#${svgId}"></use></svg>`;
+      } else {
+        if (typeof avatarValue === 'string' && avatarValue.length > 2) {
+          el.textContent = avatarValue.slice(0, 2);
+        } else {
+          el.textContent = avatarValue;
+        }
+      }
+    }
+
+    function applyAvatarBgToElement(el, bgId) {
+      if (!el) return;
+      const bgPreset = AVATAR_BG_PRESETS.find(b => b.id === bgId) || AVATAR_BG_PRESETS[0];
+      if (bgPreset) {
+        el.style.background = bgPreset.gradient;
+        if (bgPreset.border && bgPreset.border !== 'none') {
+          el.style.border = bgPreset.border;
+        } else {
+          el.style.border = '';
+        }
+      }
+    }
+
+    let currentAvatarCatFilter = 'all';
+
+    function renderAccountAvatarPicker(currentAvatar, currentBg) {
+      const container = document.getElementById('accAvatarPickerGrid');
+      const bgContainer = document.getElementById('accAvatarBgPickerGrid');
+      if (!container) return;
+
+      // 1. Render Avatar Icons theo Danh mục
+      container.innerHTML = '';
+      const filtered = currentAvatarCatFilter === 'all' 
+        ? AVATAR_PRESETS 
+        : AVATAR_PRESETS.filter(p => p.cat === currentAvatarCatFilter);
+
+      filtered.forEach((preset) => {
+        const isSelected = (preset.id === 'default' && (!currentAvatar || currentAvatar === '👤')) || (currentAvatar === preset.id || currentAvatar === preset.icon);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `h-11 rounded-xl flex items-center justify-center transition-all cursor-pointer border ${
+          isSelected 
+            ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-600 ring-2 ring-indigo-500/30 scale-105 shadow-xs' 
+            : 'bg-[#FAF9F5] dark:bg-[#12151B] border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:scale-105'
+        }`;
+        btn.title = `${preset.label} (${preset.desc})`;
+
+        if (preset.type === 'svg') {
+          btn.innerHTML = `<svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 select-none shrink-0" viewBox="0 0 24 24"><use href="#${preset.svgId}"></use></svg>`;
+        } else {
+          btn.innerHTML = `<span class="text-xl select-none leading-none">${preset.icon}</span>`;
+        }
+
+        btn.addEventListener('click', async () => {
+          const user = auth && auth.currentUser;
+          const uidKey = user && !user.isAnonymous ? user.uid : 'guest';
+          const newAvatar = preset.id === 'default' ? '' : (preset.type === 'svg' ? preset.id : preset.icon);
+
+          if (newAvatar) {
+            localStorage.setItem('thuvienhtml_user_avatar_' + uidKey, newAvatar);
+          } else {
+            localStorage.removeItem('thuvienhtml_user_avatar_' + uidKey);
+          }
+
+          const activeBg = localStorage.getItem('thuvienhtml_user_avatar_bg_' + uidKey) || 'indigo';
+
+          if (user && !user.isAnonymous) {
+            try {
+              if (typeof updateProfile === 'function') {
+                await updateProfile(user, { photoURL: 'avatar:' + newAvatar + '|' + activeBg });
+              }
+            } catch (e) {
+              console.warn('[AvatarPicker] updateProfile silent fail:', e);
+            }
+          }
+
+          updateUserUI(user);
+          populateAccountCenterModal();
+          showToast(`Đã chọn biểu tượng: ${preset.label}!`);
+        });
+
+        container.appendChild(btn);
+      });
+
+      // 2. Render 10 Màu nền Avatar
+      if (bgContainer) {
+        bgContainer.innerHTML = '';
+        const activeBgId = currentBg || 'indigo';
+
+        AVATAR_BG_PRESETS.forEach((bgPreset) => {
+          const isSelected = activeBgId === bgPreset.id;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full transition-transform hover:scale-110 cursor-pointer flex items-center justify-center shrink-0 relative shadow-2xs ${
+            isSelected ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-[#1A1D24] scale-110' : 'opacity-85 hover:opacity-100'
+          }`;
+          btn.style.background = bgPreset.gradient;
+          if (bgPreset.border && bgPreset.border !== 'none') {
+            btn.style.border = bgPreset.border;
+          }
+          btn.title = bgPreset.name;
+
+          if (isSelected) {
+            btn.innerHTML = `<svg class="w-3.5 h-3.5 text-white drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          }
+
+          btn.addEventListener('click', async () => {
+            const user = auth && auth.currentUser;
+            const uidKey = user && !user.isAnonymous ? user.uid : 'guest';
+            localStorage.setItem('thuvienhtml_user_avatar_bg_' + uidKey, bgPreset.id);
+
+            const currentAv = localStorage.getItem('thuvienhtml_user_avatar_' + uidKey) || '';
+
+            if (user && !user.isAnonymous) {
+              try {
+                if (typeof updateProfile === 'function') {
+                  await updateProfile(user, { photoURL: 'avatar:' + currentAv + '|' + bgPreset.id });
+                }
+              } catch (e) {
+                console.warn('[AvatarBgPicker] updateProfile silent fail:', e);
+              }
+            }
+
+            updateUserUI(user);
+            populateAccountCenterModal();
+            showToast(`Đã đổi màu nền avatar: ${bgPreset.name}!`);
+          });
+
+          bgContainer.appendChild(btn);
+        });
+
+        const labelBg = document.getElementById('accCurrentBgLabel');
+        if (labelBg) {
+          const activeP = AVATAR_BG_PRESETS.find(b => b.id === activeBgId);
+          labelBg.textContent = activeP ? activeP.name : 'Indigo Hoàng gia';
+        }
+      }
+
+      // Nhãn biểu tượng đang chọn
+      const labelAv = document.getElementById('accCurrentAvatarLabel');
+      if (labelAv) {
+        const curP = AVATAR_PRESETS.find(p => p.id === currentAvatar || p.icon === currentAvatar);
+        labelAv.textContent = curP ? curP.label : (currentAvatar ? currentAvatar : 'Chữ cái mặc định');
+      }
+    }
+
+    function initAvatarCategoryTabs() {
+      const tabWrap = document.getElementById('accAvatarCategoryTabs');
+      if (!tabWrap || tabWrap.dataset.initialized) return;
+      tabWrap.dataset.initialized = 'true';
+
+      tabWrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('.acc-avatar-cat-btn');
+        if (!btn) return;
+        const cat = btn.dataset.cat || 'all';
+        currentAvatarCatFilter = cat;
+
+        tabWrap.querySelectorAll('.acc-avatar-cat-btn').forEach((b) => {
+          if (b === btn) {
+            b.className = 'acc-avatar-cat-btn active px-2.5 py-1 rounded-lg font-bold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 transition';
+          } else {
+            b.className = 'acc-avatar-cat-btn px-2.5 py-1 rounded-lg font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition';
+          }
+        });
+
+        const user = auth && auth.currentUser;
+        const uidKey = user && !user.isAnonymous ? user.uid : 'guest';
+        const savedAvatar = localStorage.getItem('thuvienhtml_user_avatar_' + uidKey) || '';
+        const savedBg = localStorage.getItem('thuvienhtml_user_avatar_bg_' + uidKey) || 'indigo';
+        renderAccountAvatarPicker(savedAvatar, savedBg);
+      });
+    }
 
     function formatAccountDate(dateStr) {
       if (!dateStr) return 'Chưa ghi nhận';
@@ -10885,54 +11197,6 @@
       }
     }
 
-    function renderAccountAvatarPicker(currentAvatar) {
-      const container = document.getElementById('accAvatarPickerGrid');
-      if (!container) return;
-
-      container.innerHTML = '';
-      AVATAR_PRESETS.forEach((preset) => {
-        const isSelected = (preset.id === 'default' && (!currentAvatar || currentAvatar === '👤')) || (currentAvatar === preset.icon);
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `h-11 rounded-xl flex items-center justify-center text-xl transition-all cursor-pointer border ${
-          isSelected 
-            ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-600 ring-2 ring-indigo-500/30 scale-105' 
-            : 'bg-[#FAF9F5] dark:bg-[#12151B] border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:scale-105'
-        }`;
-        btn.title = preset.label;
-        btn.innerHTML = `<span class="select-none leading-none">${preset.icon}</span>`;
-
-        btn.addEventListener('click', async () => {
-          const user = auth && auth.currentUser;
-          if (!user || user.isAnonymous) {
-            showToast('Vui lòng đăng nhập tài khoản để đổi avatar', 'warning');
-            return;
-          }
-
-          const newAvatar = preset.id === 'default' ? '' : preset.icon;
-          if (newAvatar) {
-            localStorage.setItem('thuvienhtml_user_avatar_' + user.uid, newAvatar);
-          } else {
-            localStorage.removeItem('thuvienhtml_user_avatar_' + user.uid);
-          }
-
-          try {
-            if (typeof updateProfile === 'function') {
-              await updateProfile(user, { photoURL: newAvatar ? ('emoji:' + newAvatar) : '' });
-            }
-          } catch (e) {
-            console.warn('[AvatarPicker] updateProfile silent fail:', e);
-          }
-
-          updateUserUI(user);
-          populateAccountCenterModal();
-          showToast(`Đã chọn avatar: ${preset.label}!`);
-        });
-
-        container.appendChild(btn);
-      });
-    }
-
     function populateAccountCenterModal() {
       const user = auth && auth.currentUser;
       const isAnonymous = !user || Boolean(user.isAnonymous);
@@ -10942,12 +11206,28 @@
       const rawUid = isAnonymous ? 'Chưa cấp (Chế độ Khách)' : (user.uid || '...');
       const displayName = isAnonymous ? 'Chế độ Khách' : (user.displayName || user.email?.split('@')[0] || 'Thành viên');
       const email = isAnonymous ? 'Chưa liên kết email' : (user.email && user.email.endsWith('@thuvienhtml.local') ? `@${displayName}` : (user.email || 'Đã xác thực'));
-      const savedAvatar = !isAnonymous ? (localStorage.getItem('thuvienhtml_user_avatar_' + (user.uid || '')) || (user.photoURL && user.photoURL.startsWith('emoji:') ? user.photoURL.replace('emoji:', '') : '')) : '';
+      const uidKey = isAnonymous ? 'guest' : (user.uid || 'guest');
+      let savedAvatar = localStorage.getItem('thuvienhtml_user_avatar_' + uidKey) || '';
+      let savedBg = localStorage.getItem('thuvienhtml_user_avatar_bg_' + uidKey) || 'indigo';
+
+      if (!savedAvatar && user && user.photoURL) {
+        if (user.photoURL.startsWith('avatar:')) {
+          const parts = user.photoURL.replace('avatar:', '').split('|');
+          savedAvatar = parts[0] || '';
+          if (parts[1]) savedBg = parts[1];
+        } else if (user.photoURL.startsWith('emoji:')) {
+          savedAvatar = user.photoURL.replace('emoji:', '');
+        }
+      }
+
       const initialChar = (displayName[0] || 'U').toUpperCase();
       const finalAvatar = savedAvatar || (isAnonymous ? 'K' : initialChar);
 
       const avatarBig = document.getElementById('accAvatarBig');
-      if (avatarBig) avatarBig.textContent = finalAvatar;
+      if (avatarBig) {
+        applyAvatarToElement(avatarBig, finalAvatar, 'lg');
+        applyAvatarBgToElement(avatarBig, savedBg);
+      }
 
       const profileName = document.getElementById('accProfileDisplayName');
       if (profileName) profileName.textContent = displayName;
@@ -10988,7 +11268,8 @@
       const lastLoginEl = document.getElementById('accProfileLastLogin');
       if (lastLoginEl) lastLoginEl.textContent = isAnonymous ? 'Hôm nay' : formatAccountDate(user.metadata?.lastSignInTime);
 
-      renderAccountAvatarPicker(savedAvatar);
+      initAvatarCategoryTabs();
+      renderAccountAvatarPicker(savedAvatar, savedBg);
 
       // 2. Gói & Hạn mức Tab
       const card = document.getElementById('accMembershipCard');
@@ -16954,19 +17235,40 @@
             uidDisplay.title = (!isAnonymous && rawUid) ? `UID: ${rawUid} (Bấm để sao chép)` : '';
           }
 
+          const uidKey = isAnonymous ? 'guest' : (activeUser.uid || 'guest');
+          let savedAvatar = localStorage.getItem('thuvienhtml_user_avatar_' + uidKey) || '';
+          let savedBg = localStorage.getItem('thuvienhtml_user_avatar_bg_' + uidKey) || 'indigo';
+
+          if (!savedAvatar && activeUser && activeUser.photoURL) {
+            if (activeUser.photoURL.startsWith('avatar:')) {
+              const parts = activeUser.photoURL.replace('avatar:', '').split('|');
+              savedAvatar = parts[0] || '';
+              if (parts[1]) savedBg = parts[1];
+            } else if (activeUser.photoURL.startsWith('emoji:')) {
+              savedAvatar = activeUser.photoURL.replace('emoji:', '');
+            }
+          }
+
           if (isAnonymous) {
-            setText('userInitial', 'K');
-            setText('userDropdownInitial', 'K');
+            const finalAvatar = savedAvatar || 'K';
+            applyAvatarToElement(document.getElementById('userInitial'), finalAvatar, 'sm');
+            applyAvatarToElement(document.getElementById('userDropdownInitial'), finalAvatar, 'md');
+            applyAvatarBgToElement(document.getElementById('headerUserAvatarWrap'), savedBg);
+            applyAvatarBgToElement(document.getElementById('userDropdownAvatar'), savedBg);
+
             setText('headerAccountLabel', 'Khách');
             setText('userNameDisplay', 'Chế độ Khách');
             setText('userEmailDisplay', 'Chưa liên kết email');
           } else {
             const displayName = activeUser.displayName || activeUser.email?.split('@')[0] || "Thành viên";
             const initialChar = (displayName[0] || "U").toUpperCase();
-            const savedAvatar = !isAnonymous ? (localStorage.getItem('thuvienhtml_user_avatar_' + (activeUser.uid || '')) || (activeUser.photoURL && activeUser.photoURL.startsWith('emoji:') ? activeUser.photoURL.replace('emoji:', '') : '')) : '';
             const finalAvatar = savedAvatar || initialChar;
-            setText('userInitial', finalAvatar);
-            setText('userDropdownInitial', finalAvatar);
+
+            applyAvatarToElement(document.getElementById('userInitial'), finalAvatar, 'sm');
+            applyAvatarToElement(document.getElementById('userDropdownInitial'), finalAvatar, 'md');
+            applyAvatarBgToElement(document.getElementById('headerUserAvatarWrap'), savedBg);
+            applyAvatarBgToElement(document.getElementById('userDropdownAvatar'), savedBg);
+
             setText('headerAccountLabel', displayName);
             setText('userNameDisplay', displayName);
 
@@ -16975,6 +17277,14 @@
             } else {
               setText('userEmailDisplay', activeUser.email || "Đã xác thực");
             }
+          }
+
+          const avatarBig = document.getElementById('accAvatarBig');
+          if (avatarBig) {
+            const modalDispName = isAnonymous ? 'Khách' : (activeUser.displayName || activeUser.email?.split('@')[0] || "Thành viên");
+            const finalModalAvatar = savedAvatar || (isAnonymous ? 'K' : (modalDispName[0] || "U").toUpperCase());
+            applyAvatarToElement(avatarBig, finalModalAvatar, 'lg');
+            applyAvatarBgToElement(avatarBig, savedBg);
           }
         } catch (errK1) {
           console.warn("[updateUserUI] Lỗi khối 1 (Profile info):", errK1);
