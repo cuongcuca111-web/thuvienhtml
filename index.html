@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.3.6',
+        date: '2026-10-13T23:00:00+07:00',
+        title: 'Tái Thiết Kế & Khắc Phục Lỗi Hiển Thị Chấm Trạng Thái Online Của Avatar',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi chấm xanh online bị che khuất/cắt xén: Tách biệt container chấm trạng thái ra ngoài lớp overflow-hidden của avatar, giúp chấm tròn hiển thị trọn vẹn 100%' },
+          { type: 'improved', text: 'Thiết kế mới chấm trạng thái cao cấp: Đường viền tương phản sắc nét (2px border), bóng đổ vi mô (shadow-2xs) và căn góc bottom-right chuẩn xác không bị đè lên huy hiệu gói hay viền nút' },
+          { type: 'feature', text: 'Đồng bộ trạng thái thông minh đa thiết bị: Hiển thị trực quan Xanh ngọc lục bảo (Online), Hổ phách (Khách) và Xám nhạt (Ngoại tuyến/Mất mạng) tức thì khi mạng thay đổi' },
+          { type: 'improved', text: 'Đồng bộ hoàn hảo tỷ lệ kích thước trên toàn bộ giao diện: Header (10px), Menu điều hướng (12px) và Trung tâm hồ sơ cá nhân (14px)' }
+        ]
+      },
+      {
         version: 'v5.3.5',
         date: '2026-10-13T22:45:00+07:00',
         title: 'Bộ Sưu Tập 24 Linh Vật Thú Cưng Độc Bản Tự Thiết Kế Cho Avatar Thành Viên',
@@ -3571,9 +3582,12 @@
       <!-- Avatar Nút Tài Khoản - LUÔN Ở NGOÀI CÙNG BÊN PHẢI TRÊN CÙNG HÀNG, KHÔNG RỚT DÒNG -->
       <div class="relative shrink-0">
         <button id="btnUserMenu" aria-label="Menu tài khoản và tùy chọn" class="touch-target relative h-9 p-0.5 sm:pl-1 sm:pr-2.5 rounded-full border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5 transition shadow-2xs shrink-0 cursor-pointer" title="Tài khoản và tùy chọn">
-          <div id="headerUserAvatarWrap" class="relative w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
-            <span id="userInitial">U</span>
-            <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500"></span>
+          <!-- Cụm Avatar + Chấm Online (Tách rời container để không bị overflow-hidden cắt xén) -->
+          <div class="relative shrink-0 flex items-center justify-center">
+            <div id="headerUserAvatarWrap" class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0 overflow-hidden ring-1 ring-black/5 dark:ring-white/10 select-none">
+              <span id="userInitial" class="flex items-center justify-center w-full h-full">U</span>
+            </div>
+            <span id="userStatusDot" class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#16181E] shadow-2xs z-10 pointer-events-none" title="Trực tuyến" aria-label="Trực tuyến"></span>
           </div>
           <!-- Huy hiệu Tier thu gọn trên header -->
           <span id="headerTierBadge" class="hidden sm:inline-flex tier-badge tier-badge--free tier-badge--sm tier-badge--plan" role="status" aria-label="Gói Thường" title="Gói Thường" data-tier="free" data-size="sm" data-variant="plan"><svg class="tier-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 20.5A7 7 0 0 1 9.8 6.6C15.5 5.5 17 5 19 2.5c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" fill="currentColor" fill-opacity="0.25"/><path d="M2 21.5c0-3 1.85-5.4 5.08-6C9.5 15 12 13.5 13 12.5"/></svg><span class="tier-badge__label">Thường</span></span>
@@ -3807,7 +3821,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.5 • build 13/10/2026 22:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.6 • build 13/10/2026 23:00</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4360,11 +4374,11 @@
       <!-- HÀNG 1: Avatar + Tên + Huy hiệu gói & Trạng thái tài khoản -->
       <div class="flex items-center gap-2.5">
         <!-- Avatar với chấm xanh online -->
-        <div class="relative shrink-0">
-          <div id="userDropdownAvatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-sm flex items-center justify-center shadow-xs border border-white/20">
-            <span id="userDropdownInitial">U</span>
+        <div class="relative shrink-0 flex items-center justify-center">
+          <div id="userDropdownAvatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white font-bold text-sm flex items-center justify-center shadow-xs border border-white/20 overflow-hidden select-none">
+            <span id="userDropdownInitial" class="flex items-center justify-center w-full h-full">U</span>
           </div>
-          <span id="userStatusDot" class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#1C2028] bg-emerald-500"></span>
+          <span id="userDropdownStatusDot" class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-emerald-500 shadow-2xs z-10 pointer-events-none" title="Trực tuyến" aria-label="Trực tuyến"></span>
         </div>
 
         <!-- Cụm thông tin định danh người dùng -->
@@ -4532,7 +4546,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.5 • build 13/10/2026 22:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.6 • build 13/10/2026 23:00</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -8350,11 +8364,11 @@
         <div id="accTabContentProfile" class="acc-tab-content space-y-4">
           <!-- Card Header Tổng quan cá nhân -->
           <div class="p-4 rounded-2xl bg-white dark:bg-[#1A1D24] border border-[#E6E6E1] dark:border-[#262C36] shadow-xs flex items-center gap-4">
-            <div class="relative shrink-0">
-              <div id="accAvatarBig" class="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-indigo-400 text-white font-bold text-2xl flex items-center justify-center shadow-md border-2 border-white dark:border-[#262C36] select-none">
+            <div class="relative shrink-0 flex items-center justify-center">
+              <div id="accAvatarBig" class="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-indigo-400 text-white font-bold text-2xl flex items-center justify-center shadow-md border-2 border-white dark:border-[#262C36] select-none overflow-hidden">
                 U
               </div>
-              <span id="accProfileOnlineDot" class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-emerald-500"></span>
+              <span id="accProfileOnlineDot" class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-emerald-500 shadow-2xs z-10 pointer-events-none" title="Trực tuyến" aria-label="Trực tuyến"></span>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
@@ -12738,11 +12752,13 @@
 
     // Lắng nghe sự kiện online / offline
     window.addEventListener('online', () => {
+      if (typeof syncAllUserStatusDots === 'function') syncAllUserStatusDots();
       showToast("Đã có kết nối Internet. Đang kiểm tra đồng bộ...", "info");
       flushPendingSyncQueue();
     });
 
     window.addEventListener('offline', () => {
+      if (typeof syncAllUserStatusDots === 'function') syncAllUserStatusDots();
       updateSyncIndicatorUI('offline');
       showToast("Bạn đang ngoại tuyến. Dữ liệu sẽ lưu trên máy và đồng bộ khi có mạng.", "warning");
     });
@@ -17553,6 +17569,50 @@
       }
     }
 
+    function syncAllUserStatusDots() {
+      try {
+        const isOnline = navigator.onLine;
+        const isAnonymous = !state.user || Boolean(state.user.isAnonymous);
+
+        // Header status dot (w-2.5 h-2.5 = 10px)
+        const statusDot = document.getElementById('userStatusDot');
+        if (statusDot) {
+          statusDot.className = (isOnline && !isAnonymous)
+            ? "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] bg-emerald-500 shadow-2xs z-10 pointer-events-none"
+            : (!isOnline
+              ? "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] bg-slate-400 shadow-2xs z-10 pointer-events-none"
+              : "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] bg-amber-400 shadow-2xs z-10 pointer-events-none");
+          statusDot.title = !isOnline ? "Ngoại tuyến (Offline)" : (isAnonymous ? "Chế độ Khách" : "Trực tuyến (Online)");
+        }
+
+        // Dropdown card status dot (w-3 h-3 = 12px)
+        const dropdownDot = document.getElementById('userDropdownStatusDot');
+        if (dropdownDot) {
+          dropdownDot.className = (isOnline && !isAnonymous)
+            ? "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-emerald-500 shadow-2xs z-10 pointer-events-none"
+            : (!isOnline
+              ? "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-slate-400 shadow-2xs z-10 pointer-events-none"
+              : "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-amber-400 shadow-2xs z-10 pointer-events-none");
+          dropdownDot.title = !isOnline ? "Ngoại tuyến (Offline)" : (isAnonymous ? "Chế độ Khách" : "Trực tuyến (Online)");
+        }
+
+        // Account modal big dot (w-3.5 h-3.5 = 14px)
+        const accDot = document.getElementById('accProfileOnlineDot');
+        if (accDot) {
+          accDot.className = (isOnline && !isAnonymous)
+            ? "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-emerald-500 shadow-2xs z-10 pointer-events-none"
+            : (!isOnline
+              ? "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-slate-400 shadow-2xs z-10 pointer-events-none"
+              : "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-amber-400 shadow-2xs z-10 pointer-events-none");
+        }
+      } catch (e) {
+        console.warn('[StatusDot] Lỗi đồng bộ chấm online:', e);
+      }
+    }
+    window.syncAllUserStatusDots = syncAllUserStatusDots;
+    window.addEventListener('online', syncAllUserStatusDots);
+    window.addEventListener('offline', syncAllUserStatusDots);
+
     function updateUserUI(user) {
       try {
         const activeUser = user || state.user || {};
@@ -17638,12 +17698,7 @@
         // KHỐI 2: TRẠNG THÁI ĐỒNG BỘ (STATUS DOT & BADGE TYPE)
         // -------------------------------------------------------------
         try {
-          const statusDot = document.getElementById('userStatusDot');
-          if (statusDot) {
-            statusDot.className = isAnonymous
-              ? "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-amber-400"
-              : "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161A20] bg-emerald-500";
-          }
+          syncAllUserStatusDots();
 
           const badgeType = document.getElementById('userBadgeType');
           if (badgeType) {
