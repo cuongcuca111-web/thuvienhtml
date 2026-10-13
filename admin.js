@@ -2734,15 +2734,15 @@ async function renderAiTab(container) {
     gemini: {
       name: 'Google Gemini',
       tagline: 'Mô hình đa phương thức thế hệ mới của Google, tốc độ cao & chi phí tối ưu.',
-      defaultFast: 'gemini-2.5-flash',
+      defaultFast: 'gemini-1.5-flash',
       defaultStrong: 'gemini-1.5-pro',
       availableModels: [
-        { id: 'gemini-2.5-flash', name: 'gemini-2.5-flash (Siêu nhanh, khuyên dùng)' },
-        { id: 'gemini-1.5-flash', name: 'gemini-1.5-flash (Ổn định, phản hồi nhanh)' },
+        { id: 'gemini-1.5-flash', name: 'gemini-1.5-flash (Ổn định, phản hồi nhanh - Khuyên dùng)' },
         { id: 'gemini-1.5-flash-8b', name: 'gemini-1.5-flash-8b (Siêu nhẹ, tiết kiệm)' },
-        { id: 'gemini-2.5-pro', name: 'gemini-2.5-pro (Cực mạnh, thế hệ mới)' },
+        { id: 'gemini-2.5-flash', name: 'gemini-2.5-flash (Siêu nhanh, thế hệ mới)' },
+        { id: 'gemini-2.0-flash', name: 'gemini-2.0-flash (Flash 2.0)' },
         { id: 'gemini-1.5-pro', name: 'gemini-1.5-pro (Phân tích sâu, chi tiết)' },
-        { id: 'gemini-2.0-flash', name: 'gemini-2.0-flash (Flash 2.0)' }
+        { id: 'gemini-2.5-pro', name: 'gemini-2.5-pro (Cực mạnh, thế hệ mới)' }
       ]
     },
     claude: {
@@ -3119,14 +3119,19 @@ function bindAiTabEvents(container) {
     };
   });
 
-  // Kiểm tra key (hỗ trợ kiểm tra trực tiếp key vừa gõ hoặc key đã lưu)
+  // Kiểm tra key (hỗ trợ kiểm tra trực tiếp key vừa gõ hoặc key đã lưu, đúng model đã chọn)
   container.querySelectorAll('.btn-test-key').forEach(btn => {
     btn.onclick = async () => {
       const prov = btn.dataset.provider;
       const input = document.getElementById(`inputKey_${prov}`);
       const typedKey = input ? input.value.trim() : '';
+      const fastEl = document.getElementById(`modelFast_${prov}`);
+      const selectedModel = fastEl ? fastEl.value.trim() : '';
 
-      const testPayload = { provider: prov };
+      const testPayload = {
+        provider: prov,
+        model: selectedModel
+      };
       if (typedKey) {
         testPayload.apiKey = typedKey;
       }
@@ -3136,8 +3141,8 @@ function bindAiTabEvents(container) {
         box.classList.remove('hidden');
         box.className = "text-[11px] p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300";
         box.innerText = typedKey
-          ? "Đang gửi yêu cầu kiểm tra khóa vừa nhập tới nhà cung cấp..."
-          : "Đang gửi yêu cầu kiểm tra khóa đã lưu tới nhà cung cấp...";
+          ? `Đang kiểm tra khóa vừa nhập với model ${selectedModel || prov.toUpperCase()}...`
+          : `Đang kiểm tra kết nối với model ${selectedModel || prov.toUpperCase()}...`;
       }
 
       btn.disabled = true;
@@ -3151,7 +3156,7 @@ function bindAiTabEvents(container) {
           box.className = `text-[11px] p-2 rounded-lg ${res.success ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800' : 'bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800'}`;
           box.innerText = res.message;
         }
-        toast(res.success ? "Kết nối AI thành công!" : "Kiểm tra kết nối thất bại.");
+        toast(res.success ? `Kết nối thành công tới ${selectedModel || prov.toUpperCase()}!` : "Kiểm tra kết nối thất bại.");
       } catch (err) {
         if (box) {
           box.className = "text-[11px] p-2 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800";

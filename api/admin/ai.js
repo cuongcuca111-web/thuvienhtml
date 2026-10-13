@@ -264,7 +264,7 @@ module.exports = async function handler(req, res) {
   // 5. ACTION: TEST (POST)
   if (action === 'test') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { provider, apiKey: rawApiKey } = req.body || {};
+    const { provider, apiKey: rawApiKey, model: requestedModel } = req.body || {};
     const validProviders = ['gemini', 'claude', 'openai'];
     if (!provider || !validProviders.includes(provider)) {
       return res.status(400).json({ error: 'Nhà cung cấp không hợp lệ.' });
@@ -289,62 +289,44 @@ module.exports = async function handler(req, res) {
 
       const settingsSnap = await db.doc('config/ai_settings').get();
       const settings = settingsSnap.exists ? settingsSnap.data() : {};
-      let model = (settings.models && settings.models[provider] && settings.models[provider].fast) ||
-                  (DEFAULT_MODELS[provider] && DEFAULT_MODELS[provider].fast);
+      let model = (requestedModel && typeof requestedModel === 'string' && requestedModel.trim())
+        ? requestedModel.trim()
+        : ((settings.models && settings.models[provider] && settings.models[provider].fast) ||
+           (DEFAULT_MODELS[provider] && DEFAULT_MODELS[provider].fast));
 
       let testResponse = '';
       let success = false;
       let errorMsg = '';
 
       if (provider === 'gemini') {
-        const testModels = [
-          model,
-          'gemini-2.5-flash',
-          'gemini-1.5-flash',
-          'gemini-2.0-flash',
-          'gemini-1.5-flash-8b',
-          'gemini-1.5-pro'
-        ].filter((m, i, arr) => m && arr.indexOf(m) === i);
+        try {
+          const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(apiKey);
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
+              generationConfig: { maxOutputTokens: 10 }
+            })
+          });
 
-        let geminiOk = false;
-        let testLog = [];
-
-        for (const m of testModels) {
-          try {
-            const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(m) + ':generateContent?key=' + encodeURIComponent(apiKey);
-            const resp = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
-                generationConfig: { maxOutputTokens: 10 }
-              })
-            });
-
-            if (resp.ok) {
-              const d = await resp.json();
-              testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
-              success = true;
-              geminiOk = true;
-              model = m;
-              break;
-            } else {
-              const d = await resp.json().catch(() => ({}));
-              const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
-              testLog.push(m + ': ' + msg);
-            }
-          } catch (netErr) {
-            testLog.push(m + ': ' + netErr.message);
-          }
-        }
-
-        if (!geminiOk) {
-          const rawErr = testLog.join(' | ');
-          if (rawErr.includes('API key not valid') || rawErr.includes('API_KEY_INVALID')) {
-            errorMsg = 'Khóa API Google Gemini không hợp lệ hoặc đã bị vô hiệu hóa. Vui lòng kiểm tra lại tại Google AI Studio (https://aistudio.google.com/app/apikey) và đảm bảo key bắt đầu bằng "AIzaSy..." (tránh để trình duyệt tự điền mật khẩu).';
+          if (resp.ok) {
+            const d = await resp.json();
+            testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
+            success = true;
           } else {
-            errorMsg = 'Chi tiết: ' + rawErr;
+            const d = await resp.json().catch(() => ({}));
+            const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
+            if (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID')) {
+              errorMsg = 'Khóa API Google Gemini không hợp lệ hoặc đã bị vô hiệu hóa. Vui lòng kiểm tra lại tại Google AI Studio (https://aistudio.google.com/app/apikey) và đảm bảo key bắt đầu bằng "AIzaSy...".';
+            } else if (msg.includes('not found') || msg.includes('models/')) {
+              errorMsg = `Model ${model} không tồn tại hoặc tài khoản chưa có quyền truy cập. Lỗi: ${msg}`;
+            } else {
+              errorMsg = `${model}: ${msg}`;
+            }
           }
+        } catch (netErr) {
+          errorMsg = `${model}: ${netErr.message}`;
         }
       } else if (provider === 'claude') {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -400,16 +382,29 @@ module.exports = async function handler(req, res) {
       }
 
       const nowIso = new Date().toISOString();
-      if (!isTestingDirectKey) {
-        await db.doc('config/ai_settings').set({
-          providers: {
-            [provider]: {
-              status: success ? 'ready' : 'error',
-              lastTested: nowIso,
-              testMessage: success ? `Thành công (Model: ${model})` : errorMsg
-            }
+      const settingsUpdate = {
+        providers: {
+          [provider]: {
+            status: success ? 'ready' : 'error',
+            lastTested: nowIso,
+            testMessage: success ? `Thành công (Model: ${model})` : errorMsg
           }
-        }, { merge: true });
+        }
+      };
+
+      if (success && requestedModel) {
+        settingsUpdate.models = {
+          ...(settings.models || {}),
+          [provider]: {
+            ...(settings.models && settings.models[provider] ? settings.models[provider] : {}),
+            fast: requestedModel
+          }
+        };
+      }
+
+      await db.doc('config/ai_settings').set(settingsUpdate, { merge: true });
+      if (typeof invalidateAiSettingsCache === 'function') {
+        invalidateAiSettingsCache();
       }
 
       const successMsg = isTestingDirectKey
