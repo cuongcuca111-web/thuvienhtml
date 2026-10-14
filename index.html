@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.3.8',
+        date: '2026-10-14T10:55:00+07:00',
+        title: 'Tái Thiết Kế & Đồng Bộ Hoàn Hảo Logo Trợ Lý AI Gemini & DeepSeek Theo Hệ Thống Icon Web',
+        items: [
+          { type: 'feature', text: 'Thiết kế logo vector SVG độc quyền: Kết hợp hình tượng Cá voi DeepSeek lướt sóng và Ngôi sao 4 cánh Google Gemini vút cao trên lưới tọa độ 24x24 pixel-perfect' },
+          { type: 'improved', text: 'Đồng bộ 100% với 2 logo tính năng bên dưới (Kho sách & Đồng bộ đám mây): Cùng kích thước hộp w-8 h-8 rounded-lg, nền bg-indigo-50/indigo-950, màu text-indigo-600/indigo-400 và độ dày nét stroke 2px bo tròn tinh tế' },
+          { type: 'improved', text: 'Tối ưu trải nghiệm thị giác đa nền tảng: Hiển thị mượt mà, sắc nét trên cả chế độ Sáng (Light) và Tối (Dark), không bị mờ nhạt hay lỗi tải gradient ngoài' },
+          { type: 'improved', text: 'Đồng bộ biểu tượng độc bản tại thanh cài đặt đọc bài (Trợ lý AI đọc bài đặc quyền Pro) tạo thể thống nhất cao cấp xuyên suốt ứng dụng' }
+        ]
+      },
+      {
         version: 'v5.3.7',
         date: '2026-10-14T10:45:00+07:00',
         title: 'Thiết Kế Logo Độc Bản Cho Trợ Lý AI Gemini & DeepSeek (Song Tinh Tri Thức)',
@@ -2432,20 +2443,20 @@
       </linearGradient>
     </defs>
 
-    <!-- // LOGO ĐỘC BẢN: TRỢ LÝ AI DUAL-ENGINE GEMINI & DEEPSEEK (SONG TINH TRI THỨC SÁCH HTML) -->
-    <symbol id="logo-ai-gemini-deepseek" viewBox="0 0 32 32">
-      <rect width="32" height="32" rx="8" fill="url(#g_ai_bg)" />
-      <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" fill="none" stroke="white" stroke-opacity="0.22" stroke-width="1" />
-      <!-- Vây cá voi / Sóng tri thức DeepSeek -->
-      <path d="M6 23.5C8 19 12 17.5 16 18.5C20 19.5 23 22.5 26 22C23.5 24.8 18.5 26.5 12.5 26C9 25.7 7 24.8 6 23.5Z" fill="url(#g_ai_deepseek)" />
-      <path d="M9 24C12.5 21.5 17 21 21.5 22.8C18.5 25 13.5 25.5 9 24Z" fill="#E0F2FE" fill-opacity="0.75" />
-      <circle cx="24" cy="21" r="1.3" fill="#BAE6FD" />
-      <!-- Ngôi sao 4 cánh Google Gemini vút cao -->
-      <path d="M17 5C17 9.5 13.5 12 10 12C13.5 12 17 14.5 17 19C17 14.5 20.5 12 24 12C20.5 12 17 9.5 17 5Z" fill="url(#g_ai_gemini)" />
-      <!-- Tia sáng tri thức vàng kim Codex HTML -->
-      <path d="M22.5 4.5C22.5 5.8 21.5 6.5 20.5 6.5C21.5 6.5 22.5 7.2 22.5 8.5C22.5 7.2 23.5 6.5 24.5 6.5C23.5 6.5 22.5 5.8 22.5 4.5Z" fill="url(#g_ai_gold)" />
-      <circle cx="11" cy="7" r="0.9" fill="#FDE047" />
-      <circle cx="7" cy="18" r="0.8" fill="#38BDF8" />
+    <!-- // LOGO ĐỘC BẢN: TRỢ LÝ AI DUAL-ENGINE GEMINI & DEEPSEEK (CÁ VOI DEEPSEEK & SAO GEMINI ĐỒNG BỘ 100% VỚI HỆ THỐNG ICON WEB) -->
+    <symbol id="logo-ai-gemini-deepseek" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Ngôi sao 4 cánh Google Gemini -->
+        <path d="M17.5 3.5C17.5 5.7 15.5 7.5 13.5 7.5C15.5 7.5 17.5 9.3 17.5 11.5C17.5 9.3 19.5 7.5 21.5 7.5C19.5 7.5 17.5 5.7 17.5 3.5Z" />
+        <!-- Cá voi DeepSeek thông thái bơi vút sóng -->
+        <path d="M4 14C4 10.5 7.5 9.5 11 10C14.5 10.5 17 12.5 17 15C17 17.5 14 19 10 19C6 19 4 16.5 4 14Z" />
+        <!-- Đuôi vây cá voi xoè 2 nhánh -->
+        <path d="M4 14C2.8 12.8 2.2 11.5 1.5 10M4 14C2.8 15.2 2.2 16.5 1.5 18" />
+        <!-- Vây bơi cá voi lướt sóng -->
+        <path d="M8 15.5C9 16.7 10.5 16.7 11.5 15.7" />
+        <!-- Mắt cá voi DeepSeek -->
+        <circle cx="13" cy="13" r="0.75" fill="currentColor" stroke="none" />
+      </g>
     </symbol>
 
     <!-- Biểu tượng fallback sparkles -->
@@ -3605,8 +3616,14 @@
                 <!-- Hàng 4: Trợ lý AI đọc bài (Giải thích, Ví dụ, Dịch) - ĐẶC QUYỀN GÓI PRO -->
                 <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs overflow-hidden select-none">
-                      <svg class="w-7 h-7 shrink-0" viewBox="0 0 32 32"><use href="#logo-ai-gemini-deepseek"></use></svg>
+                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.5 3.5C17.5 5.7 15.5 7.5 13.5 7.5C15.5 7.5 17.5 9.3 17.5 11.5C17.5 9.3 19.5 7.5 21.5 7.5C19.5 7.5 17.5 5.7 17.5 3.5Z"></path>
+                        <path d="M4 14C4 10.5 7.5 9.5 11 10C14.5 10.5 17 12.5 17 15C17 17.5 14 19 10 19C6 19 4 16.5 4 14Z"></path>
+                        <path d="M4 14C2.8 12.8 2.2 11.5 1.5 10M4 14C2.8 15.2 2.2 16.5 1.5 18"></path>
+                        <path d="M8 15.5C9 16.7 10.5 16.7 11.5 15.7"></path>
+                        <circle cx="13" cy="13" r="0.75" fill="currentColor" stroke="none"></circle>
+                      </svg>
                     </div>
                     <div class="min-w-0">
                       <div class="flex items-center gap-1.5">
@@ -3878,7 +3895,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.7 • build 14/10/2026 10:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.8 • build 14/10/2026 10:55</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4603,7 +4620,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.7 • build 14/10/2026 10:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.8 • build 14/10/2026 10:55</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -8623,8 +8640,14 @@
 
             <div class="space-y-2.5 text-xs">
               <div class="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-gray-200/80 dark:border-gray-800 flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-2xs overflow-hidden select-none">
-                  <svg class="w-8 h-8 shrink-0" viewBox="0 0 32 32"><use href="#logo-ai-gemini-deepseek"></use></svg>
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.5 3.5C17.5 5.7 15.5 7.5 13.5 7.5C15.5 7.5 17.5 9.3 17.5 11.5C17.5 9.3 19.5 7.5 21.5 7.5C19.5 7.5 17.5 5.7 17.5 3.5Z"></path>
+                    <path d="M4 14C4 10.5 7.5 9.5 11 10C14.5 10.5 17 12.5 17 15C17 17.5 14 19 10 19C6 19 4 16.5 4 14Z"></path>
+                    <path d="M4 14C2.8 12.8 2.2 11.5 1.5 10M4 14C2.8 15.2 2.2 16.5 1.5 18"></path>
+                    <path d="M8 15.5C9 16.7 10.5 16.7 11.5 15.7"></path>
+                    <circle cx="13" cy="13" r="0.75" fill="currentColor" stroke="none"></circle>
+                  </svg>
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="font-bold text-[#1A1A1A] dark:text-[#ECEEF2]">Trợ lý AI Gemini &amp; DeepSeek</div>
