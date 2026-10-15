@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.1',
+        date: '2026-10-15T13:15:00+07:00',
+        title: 'Khắc Phục Lỗi Cú Pháp Import & Khôi Phục Hoàn Toàn Quyền Truy Cập Bảng Quản Trị',
+        items: [
+          { type: 'fix', text: 'Sửa dứt điểm lỗi cú pháp "Unexpected token \'import\'" trong admin.js: Bổ sung câu lệnh đóng import thư viện firebase-auth bị thiếu, giúp trình duyệt nạp mô-đun quản trị viên thành công 100%.' },
+          { type: 'improved', text: 'Tối ưu hóa quy trình mở Bảng Quản trị: Đảm bảo điều hướng ẩn #/admin và các nút con dấu bí mật kích hoạt đăng nhập quản trị ngay tức khắc mà không bị chặn lỗi.' },
+          { type: 'improved', text: 'Đồng bộ toàn diện phiên bản v5.4.1 trên nhãn thông tin hệ thống, Service Worker và danh mục tính năng mới.' }
+        ]
+      },
+      {
         version: 'v5.4.0',
         date: '2026-10-15T12:00:00+07:00',
         title: 'Hệ Thống Theme Studio Lễ Hội Thông Minh, Smart AI Context & Thông Báo Đẩy ntfy.sh',
@@ -4046,7 +4056,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.9 • build 15/10/2026 10:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.1 • build 15/10/2026 13:25</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4771,7 +4781,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.9 • build 15/10/2026 10:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.1 • build 15/10/2026 13:25</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">

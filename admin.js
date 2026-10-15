@@ -1,4 +1,3 @@
-function toast(msg) { if (adminContext && typeof adminContext.showToast === 'function') adminContext.showToast(msg); }
 /**
  * Quản trị Hệ thống Thư viện Sách HTML (Admin Management Module)
  * Thiết kế theo phong cách Editorial, Indigo Accent, Responsive Mobile-first, Dark/Light Mode.
@@ -15,7 +14,10 @@ import {
   inMemoryPersistence,
   reauthenticateWithCredential,
   EmailAuthProvider
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+function toast(msg) { if (adminContext && typeof adminContext.showToast === 'function') adminContext.showToast(msg); }
 
 const ADMIN_LOGIN_DOMAIN = window.__ADMIN_LOGIN_DOMAIN || 'admin.thuvienhtml.app';
 
