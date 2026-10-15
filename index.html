@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.6',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Khôi Phục Tính Năng Kích Hoạt Theme Lễ Hội & Công Tắc Ẩn/Hiện Trong Tùy Chọn Hiển Thị',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi bấm kích hoạt không có chuyện gì xảy ra: Gỡ bỏ biến override cục bộ gây chặn luồng phát sóng, sửa lỗi Animation Loop của hiệu ứng hạt rơi và tối ưu tọa độ canvas toàn màn hình mượt mà.' },
+          { type: 'feature', text: 'Công tắc Ẩn/Hiện Theme Lễ Hội trong Tùy chọn hiển thị: Bổ sung tùy chọn bật/tắt hiệu ứng lễ hội linh hoạt cho mọi độc giả (kèm trạng thái động và icon linh hoạt), bảo mật tuyệt đối không cho phép đổi theme ngoài Theme Studio của Quản trị viên.' },
+          { type: 'improved', text: 'Nâng cấp viền băng tuyết đọng (Snow Cap): Tinh chỉnh viền SVG sắc nét, nổi bật trên cả nền sáng và tối của thanh tiêu đề cùng các cửa sổ popup.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.6.6 trên toàn bộ hệ thống (index.html, package.json, sw.js, admin.js).' }
+        ]
+      },
+      {
         version: 'v5.6.5',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Thanh Công Cụ Tập Trung Pomodoro & Tiếng Ồn Trắng Đa Dạng',
@@ -4022,55 +4033,24 @@
                   </button>
                 </div>
 
-                <!-- KHỐI QUẢN TRỊ: CHỦ ĐỀ & HIỆU ỨNG MÙA LỄ HỘI (ẨN MẶC ĐỊNH - CHỈ HIỂN THỊ CHO ADMIN) -->
-                <div id="festivalThemeSettingsWrapper" class="hidden border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 pt-1.5 mt-0.5 space-y-1">
-                  <!-- Hàng: Hiệu ứng mùa lễ hội (Festival Effects Toggle) -->
+                <!-- HÀNG: BẬT / ẨN THEME & HIỆU ỨNG LỄ HỘI (DÀNH CHO MỌI ĐỘC GIẢ - CHỈ BẬT TẮT, KHÔNG THAY ĐỔI THEME) -->
+                <div class="border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 pt-1.5 mt-0.5">
                   <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
                     <div class="flex items-center gap-2.5 min-w-0 pr-2">
                       <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                        <span class="text-sm">❄️</span>
+                        <span id="festivalToggleIcon" class="text-sm">❄️</span>
                       </div>
                       <div class="min-w-0">
                         <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-1.5">
-                          <span>Hiệu ứng mùa lễ hội</span>
-                          <span class="text-[9px] px-1 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight">Admin</span>
+                          <span>Theme & Hiệu ứng lễ hội</span>
                         </div>
-                        <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tuyết rơi, hoa đào, lá phong ngoài nền</div>
+                        <div id="festivalToggleStatusText" class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Bật hoặc ẩn hiệu ứng mùa sự kiện</div>
                       </div>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0" title="Bật hoặc ẩn hiệu ứng mùa lễ hội">
                       <input type="checkbox" id="toggleFestivalEffects" class="sr-only peer" checked>
                       <div class="w-9 h-5 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
                     </label>
-                  </div>
-
-                  <!-- Khối: Chọn Chủ đề & Hiệu ứng Lễ hội (Theme Presets) -->
-                  <div id="festivalThemeSelectorBox" class="p-2 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-1.5">
-                    <div class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] px-0.5 flex items-center justify-between">
-                      <div class="flex items-center gap-1">
-                        <span>CHỦ ĐỀ LỄ HỘI</span>
-                        <span class="text-[9px] px-1 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight">Admin</span>
-                      </div>
-                      <span id="activeThemeBadgeLabel" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold">Mặc định</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-1 text-[11px]">
-                      <button type="button" data-theme-id="christmas" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
-                        <span>❄️</span>
-                        <span class="truncate">Giáng Sinh</span>
-                      </button>
-                      <button type="button" data-theme-id="tet" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
-                        <span>🌸</span>
-                        <span class="truncate">Tết Đoàn Viên</span>
-                      </button>
-                      <button type="button" data-theme-id="autumn" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
-                        <span>🍁</span>
-                        <span class="truncate">Thu Vàng</span>
-                      </button>
-                      <button type="button" data-theme-id="default" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
-                        <span>📖</span>
-                        <span class="truncate">Mặc định</span>
-                      </button>
-                    </div>
                   </div>
                 </div>
 
@@ -4516,7 +4496,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.5 • build 15/10/2026 23:59</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.6 • build 15/10/2026 23:59</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -5251,7 +5231,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.5 • build 15/10/2026 23:59</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.6 • build 15/10/2026 23:59</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -10427,44 +10407,64 @@
 
     const FESTIVAL_THEME_PRESETS = [
       {
-        id: "christmas",
-        name: "Giáng Sinh",
-        effect: "snow",
-        lightAmbientBg: "#F0F7FF",
-        darkAmbientBg: "#0C111C",
-        accentColor: "#0284C7",
-        accentGlow: "#38BDF8",
-        showDecorCaps: true
-      },
-      {
-        id: "tet",
-        name: "Tết Đoàn Viên",
-        effect: "tet_blossom",
-        lightAmbientBg: "#FFF7F2",
-        darkAmbientBg: "#190F12",
-        accentColor: "#E11D48",
-        accentGlow: "#FB7185",
-        showDecorCaps: true
-      },
-      {
-        id: "autumn",
-        name: "Thu Vàng",
-        effect: "autumn_leaves",
-        lightAmbientBg: "#FFFBF2",
-        darkAmbientBg: "#17120C",
-        accentColor: "#D97706",
-        accentGlow: "#FBBF24",
-        showDecorCaps: true
-      },
-      {
         id: "default",
         name: "The Codex (Mặc định)",
+        desc: "Giao diện cổ điển giấy ấm sang trọng, tối giản, tập trung tối đa cho việc đọc sách",
         effect: "none",
         lightAmbientBg: "#FAF9F5",
         darkAmbientBg: "#111317",
         accentColor: "#4F46E5",
         accentGlow: "#818CF8",
-        showDecorCaps: false
+        showDecorCaps: false,
+        icon: "📖"
+      },
+      {
+        id: "christmas",
+        name: "Giáng Sinh An Lành",
+        desc: "Tuyết trắng rơi nhẹ ngoài viền nền, điểm xuyết nón tuyết đọng tinh tế ở góc Header & Popup",
+        effect: "snow",
+        lightAmbientBg: "#F0F4F8",
+        darkAmbientBg: "#0B1320",
+        accentColor: "#DC2626",
+        accentGlow: "#F87171",
+        showDecorCaps: true,
+        icon: "❄️"
+      },
+      {
+        id: "tet",
+        name: "Tết Đoàn Viên",
+        desc: "Cánh hoa đào hồng phai và hoa mai vàng rơi phất phơ ngoài nền, sắc đỏ may mắn đầu năm",
+        effect: "tet_blossom",
+        lightAmbientBg: "#FFF1F2",
+        darkAmbientBg: "#1F0A0E",
+        accentColor: "#E11D48",
+        accentGlow: "#FB7185",
+        showDecorCaps: true,
+        icon: "🌸"
+      },
+      {
+        id: "autumn",
+        name: "Thu Vàng Lãng Mạn",
+        desc: "Lá phong đỏ và vàng chao liệng ngoài lề, gam màu hổ phách dịu êm cho những buổi đọc thư thái",
+        effect: "autumn_leaves",
+        lightAmbientBg: "#FFFBEB",
+        darkAmbientBg: "#1C1308",
+        accentColor: "#D97706",
+        accentGlow: "#FBBF24",
+        showDecorCaps: true,
+        icon: "🍁"
+      },
+      {
+        id: "focus_exam",
+        name: "Mùa Thi Tập Trung",
+        desc: "Ánh đom đóm & tinh tú lấp lánh nhẹ nhàng trong đêm, truyền cảm hứng bứt phá điểm số",
+        effect: "sparkles",
+        lightAmbientBg: "#F8FAFC",
+        darkAmbientBg: "#090D16",
+        accentColor: "#06B6D4",
+        accentGlow: "#38BDF8",
+        showDecorCaps: false,
+        icon: "✨"
       }
     ];
 
@@ -10484,42 +10484,55 @@
     }
     window.isCurrentUserAdmin = isCurrentUserAdmin;
 
-    // Cập nhật hiển thị mục cấu hình Chủ đề Lễ hội (chỉ Admin mới nhìn thấy & thao tác)
-    function updateFestivalThemeAdminUI() {
-      const wrapper = document.getElementById('festivalThemeSettingsWrapper');
-      if (!wrapper) return;
-      const isAdmin = isCurrentUserAdmin();
-      if (isAdmin) {
-        wrapper.classList.remove('hidden');
-      } else {
-        wrapper.classList.add('hidden');
+    // Cập nhật nhãn trạng thái và icon cho nút Toggle trong Menu Tùy Chọn Hiển Thị
+    function updateFestivalToggleStatusUI() {
+      const toggleBtn = document.getElementById('toggleFestivalEffects');
+      const statusText = document.getElementById('festivalToggleStatusText');
+      const iconEl = document.getElementById('festivalToggleIcon');
+      if (!toggleBtn) return;
+
+      const isDisabled = localStorage.getItem('thuvienhtml_festival_disabled') === 'true';
+      toggleBtn.checked = !isDisabled;
+
+      const theme = activeFestivalTheme || DEFAULT_FESTIVAL_THEME;
+      const isDefault = theme.id === 'default' && theme.effect === 'none';
+
+      if (iconEl) {
+        if (theme.effect === 'snow') iconEl.textContent = '❄️';
+        else if (theme.effect === 'tet_blossom') iconEl.textContent = '🌸';
+        else if (theme.effect === 'autumn_leaves') iconEl.textContent = '🍁';
+        else if (theme.effect === 'sparkles') iconEl.textContent = '✨';
+        else iconEl.textContent = '🎉';
       }
+
+      if (statusText) {
+        if (isDefault) {
+          statusText.textContent = 'Chưa có sự kiện lễ hội phát sóng';
+        } else if (isDisabled) {
+          statusText.textContent = `Đang ẩn (${theme.name})`;
+        } else {
+          statusText.textContent = `Đang bật: ${theme.name}`;
+        }
+      }
+    }
+    window.updateFestivalToggleStatusUI = updateFestivalToggleStatusUI;
+
+    function updateFestivalThemeAdminUI() {
+      updateFestivalToggleStatusUI();
     }
     window.updateFestivalThemeAdminUI = updateFestivalThemeAdminUI;
 
-    // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ User Preset Override & Firestore Schedule)
+    // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ Admin Manual & Firestore Schedule)
     function resolveActiveTheme(cfg) {
-      // 1. Kiểm tra lựa chọn thủ công của người dùng trên máy (User Preset Override) - Chỉ áp dụng cho Quản trị viên
-      if (isCurrentUserAdmin()) {
-        const userOverrideId = localStorage.getItem('thuvienhtml_festival_theme_override');
-        if (userOverrideId) {
-          const matched = FESTIVAL_THEME_PRESETS.find(p => p.id === userOverrideId);
-          if (matched) return matched;
-        }
-      } else {
-        // Dọn dẹp override cục bộ nếu không phải admin để luôn theo cấu hình từ Admin / Mặc định
-        try { localStorage.removeItem('thuvienhtml_festival_theme_override'); } catch (_) {}
-      }
-
       if (!cfg) return DEFAULT_FESTIVAL_THEME;
       const now = Date.now();
 
-      // 2. Chế độ Thủ công từ Admin (Manual Force Override)
+      // 1. Chế độ Thủ công từ Admin (Manual Force Override - Phát sóng trực tiếp toàn hệ thống)
       if (cfg.activeMode === 'manual') {
         return cfg.theme || DEFAULT_FESTIVAL_THEME;
       }
 
-      // 3. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
+      // 2. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
       if (cfg.activeMode === 'schedule' && cfg.schedule && cfg.schedule.enabled) {
         let startMs = cfg.schedule.startTimestamp;
         let endMs = cfg.schedule.endTimestamp;
@@ -10533,11 +10546,11 @@
         }
       }
 
-      // 4. Mặc định: The Codex gốc
+      // 3. Mặc định: The Codex gốc
       return DEFAULT_FESTIVAL_THEME;
     }
 
-    // Cập nhật giao diện nút chọn Theme Presets trong Popover Cài Đặt Hiển Thị
+    // Cập nhật giao diện nút chọn Theme Presets nếu tồn tại
     function updateThemePresetUI(themeId) {
       const container = document.getElementById('festivalThemeSelectorBox');
       if (!container) return;
@@ -10551,18 +10564,6 @@
           badge.textContent = 'Giáng Sinh';
         }
       }
-
-      const buttons = container.querySelectorAll('.btn-theme-preset');
-      buttons.forEach(btn => {
-        const bId = btn.getAttribute('data-theme-id');
-        if (bId === currentId) {
-          btn.classList.add('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-400', 'dark:border-indigo-600', 'text-indigo-600', 'dark:text-indigo-300', 'font-semibold');
-          btn.classList.remove('border-transparent');
-        } else {
-          btn.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-400', 'dark:border-indigo-600', 'text-indigo-600', 'dark:text-indigo-300', 'font-semibold');
-          btn.classList.add('border-transparent');
-        }
-      });
     }
 
     // Đổi theme qua nút chọn Preset (Chỉ dành cho Quản trị viên)
@@ -10571,19 +10572,9 @@
         showToast("Tính năng tùy chỉnh chủ đề lễ hội chỉ dành cho Quản trị viên");
         return;
       }
-      if (themeId === 'default') {
-        localStorage.removeItem('thuvienhtml_festival_theme_override');
-        const resolved = resolveActiveTheme(currentThemeConfig);
-        applyFestivalTheme(resolved);
-        showToast("Đã khôi phục giao diện Mặc định");
-      } else {
-        localStorage.setItem('thuvienhtml_festival_theme_override', themeId);
-        const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === themeId);
-        if (preset) {
-          applyFestivalTheme(preset);
-          showToast(`Đã kích hoạt chủ đề: ${preset.name}`);
-        }
-      }
+      const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === themeId) || DEFAULT_FESTIVAL_THEME;
+      applyFestivalTheme(preset);
+      showToast(`Đã chọn chủ đề: ${preset.name}`);
     }
     window.setFestivalThemeById = setFestivalThemeById;
 
@@ -10661,28 +10652,28 @@
           <!-- Góc trái: Tuyết đọng bo góc mềm mại và giọt nước đá đọng -->
           <div class="snow-corner snow-corner-left">
             <svg viewBox="0 0 72 22" width="72" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0,0 L72,0 C66,6 60,11 50,9 C42,7 37,17 27,18 C19,19 15,10 9,12 C4,13 1,8 0,0 Z" fill="#FFFFFF" fill-opacity="0.96"/>
-              <path d="M2,0 L70,0 C64,4 58,8 49,6 C41,4 37,13 28,14 C20,15 16,8 10,9 C5,10 2,6 2,0 Z" fill="#F0F9FF" fill-opacity="0.6"/>
-              <circle cx="27" cy="20.5" r="1.5" fill="#BAE6FD" fill-opacity="0.9"/>
-              <circle cx="10" cy="14" r="1.2" fill="#E0F2FE" fill-opacity="0.8"/>
+              <path d="M0,0 L72,0 C66,6 60,11 50,9 C42,7 37,17 27,18 C19,19 15,10 9,12 C4,13 1,8 0,0 Z" fill="#FFFFFF" fill-opacity="0.96" stroke="#BAE6FD" stroke-width="0.8"/>
+              <path d="M2,0 L70,0 C64,4 58,8 49,6 C41,4 37,13 28,14 C20,15 16,8 10,9 C5,10 2,6 2,0 Z" fill="#F0F9FF" fill-opacity="0.75"/>
+              <circle cx="27" cy="20.5" r="1.8" fill="#BAE6FD" stroke="#38BDF8" stroke-width="0.5"/>
+              <circle cx="10" cy="14" r="1.4" fill="#E0F2FE" stroke="#7DD3FC" stroke-width="0.5"/>
             </svg>
           </div>
           <!-- Cầu nối: Đọng tuyết viền trên toàn bộ bề ngang card -->
           <div class="snow-edge-bridge">
             <svg viewBox="0 0 100 14" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0,0 L100,0 C92,5 82,9 70,7 C58,5 50,11 38,8 C26,5 14,10 0,0 Z" fill="#FFFFFF" fill-opacity="0.94"/>
-              <path d="M0,0 L100,0 C92,3 82,6 70,4 C58,3 50,7 38,5 C26,3 14,6 0,0 Z" fill="#F0F9FF" fill-opacity="0.5"/>
+              <path d="M0,0 L100,0 C92,5 82,9 70,7 C58,5 50,11 38,8 C26,5 14,10 0,0 Z" fill="#FFFFFF" fill-opacity="0.94" stroke="#BAE6FD" stroke-width="0.6"/>
+              <path d="M0,0 L100,0 C92,3 82,6 70,4 C58,3 50,7 38,5 C26,3 14,6 0,0 Z" fill="#F0F9FF" fill-opacity="0.7"/>
             </svg>
           </div>
           <!-- Góc phải: Tuyết đọng bo góc kèm ánh sao băng lung linh -->
           <div class="snow-corner snow-corner-right">
             <svg viewBox="0 0 72 22" width="72" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M72,0 L0,0 C6,6 12,11 22,9 C30,7 35,17 45,18 C53,19 57,10 63,12 C68,13 71,8 72,0 Z" fill="#FFFFFF" fill-opacity="0.96"/>
-              <path d="M70,0 L2,0 C8,4 14,8 23,6 C31,4 35,13 44,14 C52,15 56,8 62,9 C67,10 70,6 70,0 Z" fill="#F0F9FF" fill-opacity="0.6"/>
-              <circle cx="45" cy="20.5" r="1.5" fill="#BAE6FD" fill-opacity="0.9"/>
+              <path d="M72,0 L0,0 C6,6 12,11 22,9 C30,7 35,17 45,18 C53,19 57,10 63,12 C68,13 71,8 72,0 Z" fill="#FFFFFF" fill-opacity="0.96" stroke="#BAE6FD" stroke-width="0.8"/>
+              <path d="M70,0 L2,0 C8,4 14,8 23,6 C31,4 35,13 44,14 C52,15 56,8 62,9 C67,10 70,6 70,0 Z" fill="#F0F9FF" fill-opacity="0.75"/>
+              <circle cx="45" cy="20.5" r="1.8" fill="#BAE6FD" stroke="#38BDF8" stroke-width="0.5"/>
               <!-- Ánh sao tuyết 4 cánh tinh xảo -->
-              <path d="M63,4 L64.5,1 L66,4 L69,5.5 L66,7 L64.5,10 L63,7 L60,5.5 Z" fill="#7DD3FC" fill-opacity="0.9"/>
-              <circle cx="64.5" cy="5.5" r="1" fill="#FFFFFF"/>
+              <path d="M63,4 L64.5,1 L66,4 L69,5.5 L66,7 L64.5,10 L63,7 L60,5.5 Z" fill="#38BDF8" fill-opacity="0.95"/>
+              <circle cx="64.5" cy="5.5" r="1.2" fill="#FFFFFF"/>
             </svg>
           </div>
         </div>
@@ -10713,7 +10704,8 @@
       }
       document.body.classList.toggle('festival-theme-snow', !isDefault && !isUserDisabled && theme.effect === 'snow');
 
-      // 3. Cập nhật nút chọn giao diện Preset trong Popover
+      // 3. Cập nhật nút chọn giao diện và toggle trong Popover Tùy chọn hiển thị
+      updateFestivalToggleStatusUI();
       updateThemePresetUI(theme.id);
 
       // 4. Quản lý Hiệu ứng Đọng tuyết / Hoa ở góc và viền trên Popup
@@ -10851,9 +10843,7 @@
       }
 
       setModalActive(active) {
-        if (this.isModalActive === active) return;
         this.isModalActive = active;
-
         if (!this.modalCanvas) return;
 
         if (active && this.isRunning && this.effect !== 'none') {
@@ -10871,14 +10861,14 @@
               this.modalCanvas.classList.add('hidden');
               this.modalCtx?.clearRect(0, 0, this.width, this.height);
             }
-          }, 500);
+          }, 400);
         }
       }
 
       initParticles(effect) {
         this.effect = effect;
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 22 : 45;
+        const count = isMobile ? 32 : 65;
 
         this.ambientParticles = [];
         for (let i = 0; i < count; i++) {
@@ -10892,7 +10882,7 @@
 
       initModalParticles(effect) {
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 24 : 42;
+        const count = isMobile ? 28 : 50;
         this.modalParticles = [];
         for (let i = 0; i < count; i++) {
           this.modalParticles.push(this.createParticle(effect, true, true));
@@ -10901,22 +10891,15 @@
 
       createParticle(effect, randomY = false, isFullWidth = false) {
         const y = randomY ? Math.random() * this.height : -20;
-        let x = 0;
-
-        if (isFullWidth || window.innerWidth <= 900) {
-          x = Math.random() * this.width;
-        } else {
-          // Phân bổ hạt chủ yếu ở 2 vùng biên lề trái và phải (tránh vùng giữa nơi chứa khung đọc sách)
-          const isLeftMargin = Math.random() > 0.5;
-          x = isLeftMargin ? (Math.random() * (this.width * 0.28)) : (this.width * 0.72 + Math.random() * (this.width * 0.28));
-        }
+        // Phân bổ hạt tự nhiên toàn màn hình (vùng bài đọc được bảo vệ tự động bằng #iframeOuterContainer z-index: 2 nền đặc)
+        const x = Math.random() * this.width;
 
         const base = {
           x: x,
           y: y,
-          size: Math.random() * 3 + 2,
+          size: Math.random() * 3.2 + 2,
           speedY: Math.random() * 0.85 + 0.45,
-          speedX: (Math.random() - 0.5) * 0.6,
+          speedX: (Math.random() - 0.5) * 0.65,
           opacity: Math.random() * 0.55 + 0.35,
           swing: Math.random() * Math.PI * 2,
           swingSpeed: Math.random() * 0.02 + 0.01,
@@ -10925,22 +10908,23 @@
         };
 
         if (effect === 'snow') {
-          base.size = Math.random() * 2.8 + (isFullWidth ? 2.0 : 1.6);
-          base.speedY = Math.random() * 0.75 + 0.35;
+          base.size = Math.random() * 2.8 + 2.0;
+          base.speedY = Math.random() * 0.85 + 0.45;
           base.color = '#FFFFFF';
         } else if (effect === 'tet_blossom') {
           base.color = Math.random() > 0.4 ? '#FDA4AF' : '#FDE047';
           base.rotation = Math.random() * Math.PI * 2;
           base.rotSpeed = (Math.random() - 0.5) * 0.03;
-          base.size = Math.random() * 4 + 4;
+          base.size = Math.random() * 5 + 4;
         } else if (effect === 'autumn_leaves') {
           base.color = Math.random() > 0.5 ? '#EA580C' : '#D97706';
           base.rotation = Math.random() * Math.PI * 2;
           base.rotSpeed = (Math.random() - 0.5) * 0.02;
-          base.size = Math.random() * 5 + 4;
+          base.size = Math.random() * 6 + 4;
         } else if (effect === 'sparkles') {
           base.color = Math.random() > 0.5 ? '#38BDF8' : '#FCD34D';
           base.twinkle = Math.random() * Math.PI * 2;
+          base.size = Math.random() * 3 + 2;
         }
 
         return base;
@@ -10956,6 +10940,7 @@
 
         this.effect = effect;
         this.isRunning = true;
+        this.resize();
         this.isModalActive = isAnyPopupOpen();
         this.initParticles(effect);
 
@@ -10973,9 +10958,11 @@
           });
         }
 
-        if (!this.animFrameId) {
-          this.loop();
+        if (this.animFrameId) {
+          cancelAnimationFrame(this.animFrameId);
+          this.animFrameId = null;
         }
+        this.loop();
       }
 
       stop() {
@@ -10991,7 +10978,7 @@
               this.ambientCanvas.classList.add('hidden');
               this.ambientCtx?.clearRect(0, 0, this.width, this.height);
             }
-          }, 700);
+          }, 400);
         }
         if (this.modalCanvas) {
           this.modalCanvas.classList.add('opacity-0');
@@ -11000,7 +10987,7 @@
               this.modalCanvas.classList.add('hidden');
               this.modalCtx?.clearRect(0, 0, this.width, this.height);
             }
-          }, 500);
+          }, 400);
         }
       }
 
@@ -11034,9 +11021,15 @@
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = 'rgba(186, 230, 253, 0.45)';
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = 'rgba(186, 230, 253, 0.7)';
             ctx.fill();
+            if (p.size > 2.6) {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size * 0.45, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(224, 242, 254, ${p.opacity * 0.9})`;
+              ctx.fill();
+            }
           } else if (p.type === 'tet_blossom') {
             p.rotation += p.rotSpeed;
             ctx.translate(p.x, p.y);
@@ -11073,7 +11066,13 @@
       }
 
       loop() {
-        if (!this.isRunning) return;
+        if (!this.isRunning) {
+          if (this.animFrameId) {
+            cancelAnimationFrame(this.animFrameId);
+            this.animFrameId = null;
+          }
+          return;
+        }
         if (document.hidden || (typeof state !== 'undefined' && state.focusMode)) {
           this.pause();
           return;
@@ -11246,22 +11245,27 @@
         }
       }, 60000);
 
-      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị
+      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị (Mọi độc giả)
       const toggleBtn = document.getElementById('toggleFestivalEffects');
       if (toggleBtn) {
         toggleBtn.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
+        updateFestivalToggleStatusUI();
         toggleBtn.onchange = () => {
           const disabled = !toggleBtn.checked;
           if (disabled) {
             localStorage.setItem('thuvienhtml_festival_disabled', 'true');
+            showToast("Đã ẩn theme & hiệu ứng lễ hội", "info");
           } else {
             localStorage.removeItem('thuvienhtml_festival_disabled');
+            const themeName = activeFestivalTheme?.name || 'Lễ hội';
+            showToast(`Đã bật lại theme: ${themeName}`, "success");
           }
           if (currentThemeConfig) {
             applyFestivalTheme(resolveActiveTheme(currentThemeConfig));
           } else {
             applyFestivalTheme(resolveActiveTheme(null));
           }
+          updateFestivalToggleStatusUI();
         };
       }
 
