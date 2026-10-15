@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.2',
+        date: '2026-10-15T13:55:00+07:00',
+        title: 'Khôi Phục Hoàn Toàn Thanh Công Cụ Bôi Đen (Đóng Khung, Chỉnh Màu, Giải Thích, Ví Dụ, Dịch)',
+        items: [
+          { type: 'fix', text: 'Khắc phục lỗi tham chiếu ngầm (ReferenceError) trong Bridge Script của Iframe bài học: Khai báo đầy đủ nút cha và ngữ cảnh vùng chọn, giúp phát tin nhắn TEXT_SELECTED lập tức khi người dùng bôi đen văn bản.' },
+          { type: 'fix', text: 'Tối ưu hóa điều hướng hiển thị Thanh công cụ nổi (#highlightFloatingToolbar): Nhận diện chuẩn xác màn hình Desktop/Laptop (kể cả thiết bị có màn hình cảm ứng hoặc Surface), đảm bảo thanh công cụ nổi luôn xuất hiện chính xác phía trên/dưới vùng chọn.' },
+          { type: 'improved', text: 'Mở rộng hiển thị Trợ lý AI (Giải thích, Ví dụ, Dịch): Luôn sẵn sàng trên thanh công cụ bôi đen với cơ chế hạn mức minh bạch và phản hồi tức thì khi nhả chuột.' }
+        ]
+      },
+      {
         version: 'v5.4.1',
         date: '2026-10-15T13:15:00+07:00',
         title: 'Khắc Phục Lỗi Cú Pháp Import & Khôi Phục Hoàn Toàn Quyền Truy Cập Bảng Quản Trị',
@@ -4056,7 +4066,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.1 • build 15/10/2026 13:25</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 13:55</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4781,7 +4791,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.1 • build 15/10/2026 13:25</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 13:55</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -15297,11 +15307,15 @@
   document.addEventListener('mouseup', () => {
     isPointerDown = false;
     checkSelectionEnd();
+    clearTimeout(_iframeSelectionDebounceTimer);
+    _iframeSelectionDebounceTimer = setTimeout(emitSelectionMessage, 30);
   }, true);
   document.addEventListener('touchstart', () => { isPointerDown = true; }, true);
   document.addEventListener('touchend', () => {
     isPointerDown = false;
     checkSelectionEnd();
+    clearTimeout(_iframeSelectionDebounceTimer);
+    _iframeSelectionDebounceTimer = setTimeout(emitSelectionMessage, 30);
   }, true);
 
   function checkSelectionEnd() {
@@ -15333,11 +15347,8 @@
     }, 40);
   }
 
-  // // FIX-2: Debounce sự kiện selectionchange 250ms chống giật lag và tối ưu thao tác trên cảm ứng
-  let _iframeSelectionDebounceTimer = null;
-  document.addEventListener('selectionchange', () => {
-    clearTimeout(_iframeSelectionDebounceTimer);
-    _iframeSelectionDebounceTimer = setTimeout(() => {
+  function emitSelectionMessage() {
+    try {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || !sel.toString().trim()) {
         window.parent.postMessage({ type: 'TEXT_DESELECTED' }, '*');
@@ -15347,7 +15358,8 @@
       if (text.length < 2) return;
       const range = sel.getRangeAt(0);
 
-      // Cho phép chọn đoạn có chứa hoặc giao với khung cũ để thực hiện cắt/tách/tẩy
+      const ancestor = range.commonAncestorContainer;
+      const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
 
       let quoteFont = '';
       if (parentEl) {
@@ -15395,6 +15407,7 @@
           pNode = pNode.parentElement;
         }
       } catch (_) {}
+
       window.parent.postMessage({
         type: 'TEXT_SELECTED',
         text: text,
@@ -15406,7 +15419,16 @@
         quoteFont: quoteFont,
         rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
-    }, 250);
+    } catch (err) {
+      console.warn('[Bridge] Lỗi phát sự kiện bôi đen:', err);
+    }
+  }
+
+  // // FIX: Phát sự kiện bôi đen siêu mượt khi nhả chuột và debounce khi kéo
+  let _iframeSelectionDebounceTimer = null;
+  document.addEventListener('selectionchange', () => {
+    clearTimeout(_iframeSelectionDebounceTimer);
+    _iframeSelectionDebounceTimer = setTimeout(emitSelectionMessage, 200);
   });
 
   // VIỆC 1: Click 1 lần KHÔNG làm gì cả
@@ -16189,8 +16211,9 @@
       const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
       const mbEraser = document.getElementById('mbBtnEraser');
 
-      if (isTouchDevice()) {
-        // Trên thiết bị cảm ứng: Ẩn thanh nổi để không đè popup hệ thống iOS, hiện thanh cố định ở đáy
+      const isMobileView = window.innerWidth < 768;
+      if (isMobileView && isTouchDevice()) {
+        // Trên thiết bị cảm ứng di động (< 768px): Ẩn thanh nổi để không đè popup hệ thống iOS/Android, hiện thanh cố định ở đáy
         if (hlToolbar) hlToolbar.classList.add('hidden');
         if (mbBar) mbBar.classList.add('hidden');
         if (mbActionBar) {
@@ -16204,23 +16227,25 @@
           updateToolbarColorIndicators();
         }
       } else {
-        // Desktop: Giữ thanh nổi floating gần vị trí selection
+        // Desktop hoặc màn hình lớn (kể cả laptop cảm ứng / Surface): Hiện thanh nổi floating trực tiếp
         if (mbActionBar) mbActionBar.classList.add('hidden');
         if (mbBar) mbBar.classList.remove('hidden');
-        if (hlToolbar && rect) {
-          const ifRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
-          const isNearTop = (ifRect.top + rect.top) < 60;
-          const topPos = isNearTop
-            ? Math.max(10, ifRect.top + rect.bottom + 8)
-            : Math.max(10, ifRect.top + rect.top - 46);
-          const centerHoriz = ifRect.left + rect.left + ((rect.width || 0) / 2);
+        if (hlToolbar) {
           hlToolbar.classList.remove('hidden');
-          const tbWidth = hlToolbar.offsetWidth || 520;
-          const padding = 12;
-          const maxLeft = Math.max(padding, window.innerWidth - tbWidth - padding);
-          const leftPos = Math.max(padding, Math.min(maxLeft, centerHoriz - (tbWidth / 2)));
-          hlToolbar.style.top = `${topPos}px`;
-          hlToolbar.style.left = `${leftPos}px`;
+          if (rect) {
+            const ifRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
+            const isNearTop = (ifRect.top + rect.top) < 70;
+            const topPos = isNearTop
+              ? Math.max(10, ifRect.top + rect.bottom + 8)
+              : Math.max(10, ifRect.top + rect.top - 46);
+            const centerHoriz = ifRect.left + rect.left + ((rect.width || 0) / 2);
+            const tbWidth = hlToolbar.offsetWidth || 520;
+            const padding = 12;
+            const maxLeft = Math.max(padding, window.innerWidth - tbWidth - padding);
+            const leftPos = Math.max(padding, Math.min(maxLeft, centerHoriz - (tbWidth / 2)));
+            hlToolbar.style.top = `${topPos}px`;
+            hlToolbar.style.left = `${leftPos}px`;
+          }
           if (typeof updateToolbarColorIndicators === 'function') {
             updateToolbarColorIndicators();
           }
@@ -31790,15 +31815,14 @@
       try {
         const group = document.getElementById('hlAiButtonsGroup');
         if (!group) return;
-        const isPro = Boolean((state && state.userTier === 'pro') || (state && state.isAdmin));
-        const aiEnabled = isPro && (localStorage.getItem('setting_ai_enabled') !== 'false');
+        const aiEnabled = (localStorage.getItem('setting_ai_enabled') !== 'false');
         if (!aiEnabled) {
           group.classList.add('hidden');
           return;
         }
         const clean = (text || '').trim();
         const words = clean ? clean.split(/\s+/).filter(Boolean) : [];
-        if (words.length >= 3 && clean.length <= 1500) {
+        if (words.length >= 1 && clean.length <= 2000) {
           group.classList.remove('hidden');
         } else {
           group.classList.add('hidden');
