@@ -140,19 +140,19 @@ module.exports = async function handler(req, res) {
       sectionTitle: sanitizeText(rawContext.sectionTitle, 120)
     };
 
-    // Xử lý Smart Document Context (dàn ý H1-H3 + nội dung xoay quanh vùng chọn)
+    // Xử lý Smart Document Context (dàn ý H1-H3 + nội dung xoay quanh vùng chọn - tối ưu dung lượng siêu tốc)
     const rawDocContext = body.documentContext;
     let documentContextText = '';
     if (typeof rawDocContext === 'string') {
-      documentContextText = sanitizeText(rawDocContext, 15000);
+      documentContextText = sanitizeText(rawDocContext, 3500);
     } else if (rawDocContext && typeof rawDocContext === 'object') {
       const docTitle = sanitizeText(rawDocContext.title, 200);
-      const docOutline = sanitizeText(rawDocContext.outline, 3000);
-      const docContent = sanitizeText(rawDocContext.content, 12000);
+      const docOutline = sanitizeText(rawDocContext.outline, 1000);
+      const docContent = sanitizeText(rawDocContext.content, 2500);
       documentContextText = [
         docTitle ? `Tiêu đề bài học: ${docTitle}` : '',
-        docOutline ? `[Dàn ý các mục tiêu đề H1-H3]:\n${docOutline}` : '',
-        docContent ? `[Nội dung bài học]:\n${docContent}` : ''
+        docOutline ? `[Dàn ý các mục tiêu đề]:\n${docOutline}` : '',
+        docContent ? `[Ngữ cảnh xung quanh bài học]:\n${docContent}` : ''
       ].filter(Boolean).join('\n\n');
     }
 
@@ -403,8 +403,9 @@ D. [Phương án D]
       required: ['mode', 'text']
     };
 
-    // 6. Gọi callAI với mô hình nhanh (fast), tăng maxTokens lên 3072 (từ 2500 - 4096 tokens) để không bị cạn token suy nghĩ
+    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens = 1200 để phản hồi tức thì
     let aiResponse = null;
+    let callError = null;
     try {
       aiResponse = await callAI({
         system: systemPrompt,
@@ -412,18 +413,19 @@ D. [Phương án D]
         schema: jsonSchema,
         modelType: 'fast',
         taskType: 'fast',
-        maxTokens: 3072,
+        maxTokens: 1200,
         purpose: mode
       });
     } catch (callErr) {
+      callError = callErr;
       console.warn('Lỗi gọi callAI lần 1:', callErr.message);
     }
 
     let extractedExplanation = extractExplanationText(aiResponse?.data, aiResponse?.rawText || aiResponse?.text);
 
-    // Tự động gọi fallback nếu lần 1 thất bại, bị cắt cụt JSON hoặc trả chuỗi rác
-    if (!extractedExplanation || extractedExplanation.length < 5) {
-      console.warn('Kết quả AI lần 1 bị cắt cụt JSON hoặc không hợp lệ. Đang tự động gọi fallback plain-text...');
+    // Chỉ gọi fallback nếu lần 1 trả về text nhưng bị cắt cụt JSON hoặc không thể parse
+    if ((!extractedExplanation || extractedExplanation.length < 5) && !callError) {
+      console.warn('Kết quả AI lần 1 bị cắt cụt JSON hoặc không hợp lệ. Đang thử nhanh plain-text fallback...');
       try {
         const fallbackRes = await callAI({
           system: systemPrompt,
@@ -431,7 +433,7 @@ D. [Phương án D]
           schema: false,
           modelType: 'fast',
           taskType: 'fast',
-          maxTokens: 3072,
+          maxTokens: 1200,
           purpose: mode
         });
         const fallbackText = extractExplanationText(fallbackRes?.data, fallbackRes?.rawText || fallbackRes?.text);
@@ -446,9 +448,10 @@ D. [Phương án D]
 
     // TUYỆT ĐỐI KHÔNG lưu vào cache, KHÔNG trừ lượt dùng và KHÔNG bao giờ trả chữ "{" về giao diện
     if (!extractedExplanation || extractedExplanation === '{' || extractedExplanation === '{}' || extractedExplanation.length < 5) {
+      const errorMsg = callError ? callError.message : 'Mô hình AI bị quá tải hoặc phản hồi bị ngắt quãng. Vui lòng bấm "Thử lại" hoặc đổi sang phong cách giải thích khác.';
       return res.status(502).json({
         code: 'AI_RESPONSE_TRUNCATED',
-        error: 'Mô hình AI bị quá tải hoặc phản hồi bị ngắt quãng. Vui lòng bấm "Thử lại" hoặc đổi sang phong cách giải thích khác.'
+        error: errorMsg
       });
     }
 
