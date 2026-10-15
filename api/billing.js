@@ -198,14 +198,34 @@ module.exports = async function handler(req, res) {
         // Gửi thông báo đẩy về ntfy.sh (Non-blocking, bọc try-catch an toàn)
         try {
           const planTitle = (planId || 'pro').toUpperCase();
-          const periodText = period === 'yearly' ? 'Năm' : 'Tháng';
+          const periodText = period === 'yearly' ? '1 Năm' : '1 Tháng';
           const paidAmt = (transferAmount || order.amount || 0).toLocaleString('vi-VN');
           const buyerEmail = order.userEmail || order.email || targetUid;
+          const nowStr = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+          const host = req.headers['x-forwarded-host'] || req.headers.host;
+          const proto = req.headers['x-forwarded-proto'] || 'https';
+          const siteUrl = host ? `${proto}://${host}` : 'https://thuvienhtml.vercel.app';
+
+          const notifMsg = [
+            `⚡ THANH TOÁN TỰ ĐỘNG THÀNH CÔNG`,
+            `─────────────────────────────`,
+            `• Khách hàng: ${buyerEmail}`,
+            `• Gói tài khoản: ${planTitle} (${periodText})`,
+            `• Số tiền nhận: ${paidAmt} ₫`,
+            `• Mã đơn hàng: ${orderCode}`,
+            `• Hình thức: Webhook biến động số dư`,
+            `• Thời gian: ${nowStr}`,
+            `─────────────────────────────`,
+            `✅ Hệ thống đã tự động kích hoạt gói cho khách hàng.`
+          ].join('\n');
+
           sendNtfyNotification({
-            title: `🎉 Nâng cấp ${planTitle} thành công (Webhook)`,
-            message: `Người mua: ${buyerEmail}\nGói: ${planTitle} (${periodText})\nSố tiền: ${paidAmt} ₫\nMã đơn: ${orderCode}\nHình thức: Webhook tự động`,
+            title: `🎉 Kích hoạt tự động: ${planTitle} (${paidAmt} ₫)`,
+            message: notifMsg,
             priority: 4,
             tags: ['tada', 'moneybag'],
+            click: siteUrl,
             db
           }).catch(err => console.warn('[Webhook ntfy] Lỗi gửi:', err.message));
         } catch (_) {}
@@ -552,13 +572,43 @@ module.exports = async function handler(req, res) {
       // Gửi thông báo đẩy về ntfy.sh để Admin biết vào duyệt đơn ngay
       try {
         const planTitle = (order.planId || 'plus').toUpperCase();
+        const periodText = order.period === 'yearly' ? '1 Năm' : '1 Tháng';
         const amtText = (order.amount || 0).toLocaleString('vi-VN');
         const buyer = email || order.userEmail || uid;
+        const orderCode = order.code || orderId;
+        const nowStr = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+        const hasProof = Boolean(order.proofUrl || updateData.proofUrl);
+
+        const host = req.headers['x-forwarded-host'] || req.headers.host;
+        const proto = req.headers['x-forwarded-proto'] || 'https';
+        const siteUrl = host ? `${proto}://${host}` : 'https://thuvienhtml.vercel.app';
+
+        const notifMsg = [
+          `📦 YÊU CẦU DUYỆT CHUYỂN KHOẢN`,
+          `─────────────────────────────`,
+          `• Khách hàng: ${buyer}`,
+          `• Gói tài khoản: ${planTitle} (${periodText})`,
+          `• Số tiền: ${amtText} ₫`,
+          `• Mã đơn hàng: ${orderCode}`,
+          `• Thời gian: ${nowStr}`,
+          `─────────────────────────────`,
+          hasProof ? `📎 Đã đính kèm ảnh chụp biên lai.` : `⚠️ Chưa có ảnh biên lai đính kèm.`,
+          `👉 Vui lòng vào trang Quản trị (Admin) để kiểm tra và duyệt.`
+        ].join('\n');
+
         sendNtfyNotification({
-          title: `🔔 Yêu cầu duyệt chuyển khoản mới!`,
-          message: `Người mua: ${buyer}\nGói: ${planTitle} (${order.period === 'yearly' ? 'Năm' : 'Tháng'})\nSố tiền: ${amtText} ₫\nMã đơn: ${order.code || orderId}\nĐã đính kèm ảnh biên lai. Vui lòng vào trang Admin để duyệt.`,
+          title: `🔔 Đơn chờ duyệt: ${planTitle} (${amtText} ₫)`,
+          message: notifMsg,
           priority: 4,
           tags: ['bell', 'receipt'],
+          click: siteUrl,
+          actions: [
+            {
+              action: 'view',
+              label: 'Mở trang Admin',
+              url: siteUrl
+            }
+          ],
           db
         }).catch(err => console.warn('[Confirm ntfy] Lỗi gửi:', err.message));
       } catch (_) {}
@@ -776,11 +826,30 @@ module.exports = async function handler(req, res) {
       try {
         const tierTitle = tier.toUpperCase();
         const buyer = email || userName || uid;
+        const nowStr = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+        const host = req.headers['x-forwarded-host'] || req.headers.host;
+        const proto = req.headers['x-forwarded-proto'] || 'https';
+        const siteUrl = host ? `${proto}://${host}` : 'https://thuvienhtml.vercel.app';
+
+        const notifMsg = [
+          `🎁 KÍCH HOẠT MÃ REDEEM THÀNH CÔNG`,
+          `─────────────────────────────`,
+          `• Người dùng: ${buyer}`,
+          `• Gói kích hoạt: ${tierTitle} (${days} ngày)`,
+          `• Mã kích hoạt: ${cleanCode}`,
+          `• Hình thức: Redeem Code`,
+          `• Thời gian: ${nowStr}`,
+          `─────────────────────────────`,
+          `✅ Tài khoản đã được kích hoạt và cộng thêm thời hạn sử dụng.`
+        ].join('\n');
+
         sendNtfyNotification({
-          title: `🎟️ Kích hoạt mã Redeem ${tierTitle} thành công`,
-          message: `Người dùng: ${buyer}\nGói: ${tierTitle} (${days} ngày)\nMã kích hoạt: ${cleanCode}\nHình thức: Redeem Code`,
+          title: `🎟️ Kích hoạt Redeem: ${tierTitle} (${days} ngày)`,
+          message: notifMsg,
           priority: 4,
           tags: ['tada', 'ticket'],
+          click: siteUrl,
           db
         }).catch(err => console.warn('[Redeem ntfy] Lỗi gửi:', err.message));
       } catch (_) {}

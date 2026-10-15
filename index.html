@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.5.6',
+        date: '2026-10-15T23:55:00+07:00',
+        title: 'Tái Thiết Kế Thông Báo Đẩy Ntfy: Định Dạng Trực Quan, Chuẩn Mực & Dễ Nhìn',
+        items: [
+          { type: 'fixed', text: 'Khắc phục triệt để lỗi hiển thị tin nhắn dạng chuỗi JSON thô: Điều chỉnh endpoint ntfy gửi chuẩn xác tới root URL kèm topic trong body, giúp ntfy tự động bóc tách tiêu đề, nhãn emoji, độ ưu tiên và nội dung văn bản trực quan.' },
+          { type: 'improved', text: 'Tái thiết kế giao diện thông báo đẩy: Bổ sung bố cục phân nhóm rõ ràng (khách hàng, gói dịch vụ, số tiền, mã đơn, thời gian, trạng thái biên lai), sử dụng đường phân cách tinh tế và icon minh họa sinh động.' },
+          { type: 'feature', text: 'Tích hợp nút hành động tức thì (Action View): Bổ sung liên kết và nút "Mở trang Admin" trực tiếp trên thông báo ntfy để quản trị viên truy cập duyệt đơn ngay bằng một chạm.' }
+        ]
+      },
+      {
         version: 'v5.5.5',
         date: '2026-10-15T23:30:00+07:00',
         title: 'Bổ Sung Nút Hủy Đơn Thanh Toán & Tối Ưu Thông Báo Chờ Kích Hoạt Gói',

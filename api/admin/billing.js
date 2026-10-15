@@ -298,11 +298,34 @@ module.exports = async function handler(req, res) {
         };
       }
 
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      const siteUrl = host ? `${proto}://${host}` : 'https://thuvienhtml.vercel.app';
+      const nowStr = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+      const notifMsg = [
+        `🚀 THỬ NGHIỆM KẾT NỐI NTFY THÀNH CÔNG`,
+        `─────────────────────────────`,
+        `• Hệ thống: Thư viện Sách HTML`,
+        `• Kênh thông báo: Đã kết nối thông suốt`,
+        `• Thời gian: ${nowStr}`,
+        `─────────────────────────────`,
+        `📱 Bạn sẽ nhận được thông báo đẩy chuẩn đẹp như thế này mỗi khi có khách hàng chuyển khoản hoặc nâng cấp gói Plus/Pro.`
+      ].join('\n');
+
       const resNtfy = await sendNtfyNotification({
         title: '🎉 Thử nghiệm ntfy.sh thành công!',
-        message: `Hệ thống "Thư viện Sách HTML" đã kết nối thành công với ntfy.sh lúc ${new Date().toLocaleTimeString('vi-VN')}!\nBạn sẽ nhận được thông báo đẩy tức thì mỗi khi có người nâng cấp gói Plus/Pro.`,
+        message: notifMsg,
         priority: 4,
         tags: ['tada', 'white_check_mark', 'moneybag'],
+        click: siteUrl,
+        actions: [
+          {
+            action: 'view',
+            label: 'Mở trang Admin',
+            url: siteUrl
+          }
+        ],
         config: testConfig,
         db
       });
@@ -671,11 +694,29 @@ module.exports = async function handler(req, res) {
       // Gửi thông báo đẩy về ntfy.sh khi Admin duyệt đơn thủ công
       if (successCount > 0) {
         try {
+          const host = req.headers['x-forwarded-host'] || req.headers.host;
+          const proto = req.headers['x-forwarded-proto'] || 'https';
+          const siteUrl = host ? `${proto}://${host}` : 'https://thuvienhtml.vercel.app';
+          const nowStr = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+          const notifMsg = [
+            `👑 DUYỆT ĐƠN HÀNG THÀNH CÔNG`,
+            `─────────────────────────────`,
+            `• Số lượng: ${successCount} đơn hàng`,
+            `• Gói kích hoạt: ${lastPlanId.toUpperCase()}${lastExpiresAt ? ' (đến ngày ' + new Date(lastExpiresAt).toLocaleDateString('vi-VN') + ')' : ''}`,
+            `• Quản trị viên: ${uid}`,
+            `• Hình thức: Admin duyệt thủ công`,
+            `• Thời gian: ${nowStr}`,
+            `─────────────────────────────`,
+            `✅ Toàn bộ đơn hàng đã được kích hoạt thành công.`
+          ].join('\n');
+
           sendNtfyNotification({
-            title: `✅ Admin đã duyệt ${successCount} đơn hàng`,
-            message: `Quản trị viên (${uid}) vừa duyệt thành công ${successCount} đơn hàng.\nGói kích hoạt: ${lastPlanId.toUpperCase()}${lastExpiresAt ? ' tới ngày ' + new Date(lastExpiresAt).toLocaleDateString('vi-VN') : ''}.\nHình thức: Admin duyệt thủ công`,
+            title: `✅ Đã duyệt ${successCount} đơn hàng`,
+            message: notifMsg,
             priority: 4,
             tags: ['white_check_mark', 'moneybag'],
+            click: siteUrl,
             db
           }).catch(err => console.warn('[Admin Confirm ntfy] Lỗi gửi:', err.message));
         } catch (_) {}
