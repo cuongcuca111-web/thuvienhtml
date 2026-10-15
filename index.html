@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.5.1',
+        date: '2026-10-15T21:00:00+07:00',
+        title: 'Chủ Đề Giáng Sinh: Tuyết Rơi Toàn Diện & Đọng Tuyết Góc Viền Trên Mọi Pop-up',
+        items: [
+          { type: 'feature', text: 'Hiệu ứng tuyết rơi trên tất cả Pop-up & Modal (Dual-Canvas): Tuyết rơi mềm mại, lung linh phủ khắp màn hình trên các pop-up (Menu tài khoản, Nâng cấp gói, Quản lý tài khoản, Cài đặt hiển thị...) mà không chặn bất kỳ thao tác click nào.' },
+          { type: 'feature', text: 'Nghệ thuật đọng tuyết 3 đoạn viền trên & các góc (3-Segment Snow Cap): Thiết kế SVG đọng tuyết uốn lượn tự nhiên ôm trọn vẹn góc bo tròn trái/phải và viền trên toàn bộ các thẻ pop-up kèm ánh sao băng lung linh.' },
+          { type: 'improved', text: 'Bộ chọn Chủ đề Lễ hội tức thì: Dễ dàng chuyển đổi trực tiếp giữa Giáng Sinh (❄️), Tết Đoàn Viên (🌸), Mùa Thu (🍁) và Mặc định (📖) trong Popover Cài đặt hiển thị.' },
+          { type: 'improved', text: 'Bảo toàn tuyệt đối khu vực đọc sách: Chế độ Zero-distraction ngoài nền vẫn phân vùng tuyết rơi 2 bên lề, hoàn toàn không xao nhãng khi người dùng đọc bài.' }
+        ]
+      },
+      {
         version: 'v5.5.0',
         date: '2026-10-15T20:00:00+07:00',
         title: 'Tối Ưu & Dọn Sạch Hoàn Toàn Trạng Thái Đăng Xuất (Logout State Clean)',
@@ -2178,6 +2189,71 @@
       background-color: #161A20;
     }
 
+    /* HIỆU ỨNG VIỀN TRÊN & GÓC ĐỌNG TUYẾT TRÊN TẤT CẢ POPUP & MODAL (TOP & CORNER SNOW CAPS) */
+    .festival-top-snow-cap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 22px;
+      pointer-events: none !important;
+      user-select: none;
+      z-index: 45;
+      overflow: visible;
+      line-height: 0;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08)) drop-shadow(0 1px 2px rgba(186, 230, 253, 0.4));
+      transition: opacity 0.3s ease;
+    }
+    html.dark .festival-top-snow-cap {
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 4px rgba(186, 230, 253, 0.45));
+    }
+    .snow-cap-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-start;
+      border-top-left-radius: inherit;
+      border-top-right-radius: inherit;
+    }
+    .snow-corner {
+      height: 22px;
+      width: 72px;
+      flex-shrink: 0;
+    }
+    .snow-corner-left {
+      border-top-left-radius: inherit;
+    }
+    .snow-corner-right {
+      border-top-right-radius: inherit;
+    }
+    .snow-edge-bridge {
+      flex: 1 1 auto;
+      height: 14px;
+      overflow: hidden;
+      margin-left: -1px;
+      margin-right: -1px;
+    }
+    .snow-edge-bridge svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Hiệu ứng viền phát sáng băng tuyết nhẹ nhàng cho các card khi bật theme Tuyết rơi */
+    body.festival-theme-snow .modal-animated > div:first-child,
+    body.festival-theme-snow #userDropdown,
+    body.festival-theme-snow #displaySettingsPopover,
+    body.festival-theme-snow #aiResultPopover {
+      box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(224, 242, 254, 0.75) !important;
+    }
+    html.dark body.festival-theme-snow .modal-animated > div:first-child,
+    html.dark body.festival-theme-snow #userDropdown,
+    html.dark body.festival-theme-snow #displaySettingsPopover,
+    html.dark body.festival-theme-snow #aiResultPopover {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(56, 189, 248, 0.35), 0 0 20px -5px rgba(56, 189, 248, 0.18) !important;
+    }
+
     /* HIỆU ỨNG GÓC ĐỌNG TUYẾT & HOA TRANG TRÍ (DECOR CAPS) */
     .decor-corner-cap {
       position: absolute;
@@ -2187,7 +2263,8 @@
       line-height: 0;
     }
     @media (prefers-reduced-motion: reduce) {
-      #ambientFestivalCanvas {
+      #ambientFestivalCanvas,
+      #modalFestivalCanvas {
         display: none !important;
       }
     }
@@ -2662,6 +2739,8 @@
 <body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
   <!-- CANVAS HIỆU ỨNG MÙA LỄ HỘI NGOÀI NỀN (AMBIENT FESTIVAL CANVAS - ZERO DISTRACTION) -->
   <canvas id="ambientFestivalCanvas" class="fixed inset-0 pointer-events-none z-[1] hidden transition-opacity duration-700 opacity-0" aria-hidden="true"></canvas>
+  <!-- CANVAS HIỆU ỨNG TUYẾT RƠI TRÊN TẤT CẢ POPUP & MODAL (MODAL FESTIVAL CANVAS) -->
+  <canvas id="modalFestivalCanvas" class="fixed inset-0 pointer-events-none z-[10010] hidden transition-opacity duration-500 opacity-0" aria-hidden="true"></canvas>
   <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
   <svg id="icon-sprite" style="display: none;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>
@@ -3736,6 +3815,32 @@
                     <input type="checkbox" id="toggleFestivalEffects" class="sr-only peer" checked>
                     <div class="w-9 h-5 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
                   </label>
+                </div>
+
+                <!-- Khối: Chọn Chủ đề & Hiệu ứng Lễ hội (Theme Presets) -->
+                <div id="festivalThemeSelectorBox" class="p-2 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-1.5">
+                  <div class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] px-0.5 flex items-center justify-between">
+                    <span>CHỦ ĐỀ LỄ HỘI</span>
+                    <span id="activeThemeBadgeLabel" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold">Mặc định</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-1 text-[11px]">
+                    <button type="button" data-theme-id="christmas" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                      <span>❄️</span>
+                      <span class="truncate">Giáng Sinh</span>
+                    </button>
+                    <button type="button" data-theme-id="tet" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                      <span>🌸</span>
+                      <span class="truncate">Tết Đoàn Viên</span>
+                    </button>
+                    <button type="button" data-theme-id="autumn" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                      <span>🍁</span>
+                      <span class="truncate">Thu Vàng</span>
+                    </button>
+                    <button type="button" data-theme-id="default" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                      <span>📖</span>
+                      <span class="truncate">Mặc định</span>
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Hàng 2: Kiểu hiển thị bài đã học -->
@@ -7724,7 +7829,7 @@
 
   <!-- MODAL: NÂNG CẤP GÓI DỊCH VỤ & THANH TOÁN VIETQR -->
   <div id="upgradeModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" style="z-index: 9999;" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
-    <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[920px] max-h-[94dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
+    <div id="upgradeModalCard" class="relative bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[20px] sm:rounded-[20px] w-full max-w-[920px] max-h-[94dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header Modal: Biên tập, tối giản, không icon tím -->
       <div class="flex items-start justify-between px-6 sm:px-8 pt-6 sm:pt-8 pb-4 shrink-0 border-b border-[#EBE8E1] dark:border-[#232833]">
@@ -8698,7 +8803,7 @@
   <!-- MODAL: TRUNG TÂM QUẢN LÝ TÀI KHOẢN (ACCOUNT CENTER MODAL) -->
   <!-- ========================================================================= -->
   <div id="accountCenterModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[10005] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="accountCenterTitle">
-    <div class="bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[22px] sm:rounded-[22px] w-full max-w-[640px] max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors" role="document">
+    <div id="accountCenterModalCard" class="relative bg-[#FAF9F6] dark:bg-[#15181E] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[22px] sm:rounded-[22px] w-full max-w-[640px] max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors" role="document">
       
       <!-- Header Modal -->
       <div class="flex items-center justify-between px-5 sm:px-6 py-4 shrink-0 border-b border-[#EBE8E1] dark:border-[#232833]">
@@ -9965,7 +10070,7 @@
     }
 
     // =========================================================================
-    // SECTION: THEME STUDIO & HIỆU ỨNG MÙA LỄ HỘI THÔNG MINH (V5.4.0)
+    // SECTION: THEME STUDIO & HIỆU ỨNG MÙA LỄ HỘI THÔNG MINH (V5.5.0)
     // =========================================================================
     const DEFAULT_FESTIVAL_THEME = {
       id: "default",
@@ -9978,23 +10083,74 @@
       showDecorCaps: false
     };
 
+    const FESTIVAL_THEME_PRESETS = [
+      {
+        id: "christmas",
+        name: "Giáng Sinh",
+        effect: "snow",
+        lightAmbientBg: "#F0F7FF",
+        darkAmbientBg: "#0C111C",
+        accentColor: "#0284C7",
+        accentGlow: "#38BDF8",
+        showDecorCaps: true
+      },
+      {
+        id: "tet",
+        name: "Tết Đoàn Viên",
+        effect: "tet_blossom",
+        lightAmbientBg: "#FFF7F2",
+        darkAmbientBg: "#190F12",
+        accentColor: "#E11D48",
+        accentGlow: "#FB7185",
+        showDecorCaps: true
+      },
+      {
+        id: "autumn",
+        name: "Thu Vàng",
+        effect: "autumn_leaves",
+        lightAmbientBg: "#FFFBF2",
+        darkAmbientBg: "#17120C",
+        accentColor: "#D97706",
+        accentGlow: "#FBBF24",
+        showDecorCaps: true
+      },
+      {
+        id: "default",
+        name: "The Codex (Mặc định)",
+        effect: "none",
+        lightAmbientBg: "#FAF9F5",
+        darkAmbientBg: "#111317",
+        accentColor: "#4F46E5",
+        accentGlow: "#818CF8",
+        showDecorCaps: false
+      }
+    ];
+
     let activeFestivalTheme = { ...DEFAULT_FESTIVAL_THEME };
     let currentThemeConfig = null;
     let unsubscribeThemeListener = null;
     let themeScheduleIntervalTimer = null;
     let festivalParticleEngine = null;
+    let popupFestivalObserver = null;
 
-    // Helper kiểm tra Theme hợp lệ theo thời gian thực (Serverless-free Schedule Engine)
+    // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ User Preset Override & Firestore Schedule)
     function resolveActiveTheme(cfg) {
+      // 1. Kiểm tra lựa chọn thủ công của người dùng trên máy (User Preset Override)
+      const userOverrideId = localStorage.getItem('thuvienhtml_festival_theme_override');
+      if (userOverrideId) {
+        const matched = FESTIVAL_THEME_PRESETS.find(p => p.id === userOverrideId);
+        if (matched) return matched;
+      }
+
       if (!cfg) return DEFAULT_FESTIVAL_THEME;
       const now = Date.now();
 
-      // 1. Chế độ Thủ công (Manual Force Override)
+      // 2. Chế độ Thủ công từ Admin (Manual Force Override)
       if (cfg.activeMode === 'manual') {
         return cfg.theme || DEFAULT_FESTIVAL_THEME;
       }
 
-      // 2. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
+      // 3. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
       if (cfg.activeMode === 'schedule' && cfg.schedule && cfg.schedule.enabled) {
         let startMs = cfg.schedule.startTimestamp;
         let endMs = cfg.schedule.endTimestamp;
@@ -10008,11 +10164,160 @@
         }
       }
 
-      // 3. Fallback: Nếu ngoài khung giờ hoặc chưa đến giờ -> Trả về The Codex gốc
+      // 4. Mặc định: The Codex gốc
       return DEFAULT_FESTIVAL_THEME;
     }
 
-    // Áp dụng Theme vào CSS Variables & Body Class
+    // Cập nhật giao diện nút chọn Theme Presets trong Popover Cài Đặt Hiển Thị
+    function updateThemePresetUI(themeId) {
+      const container = document.getElementById('festivalThemeSelectorBox');
+      if (!container) return;
+
+      const currentId = themeId || 'default';
+      const badge = document.getElementById('activeThemeBadgeLabel');
+      const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === currentId) || DEFAULT_FESTIVAL_THEME;
+      if (badge) {
+        badge.textContent = preset.name.split(' ')[0] || preset.name;
+        if (currentId === 'christmas') {
+          badge.textContent = 'Giáng Sinh';
+        }
+      }
+
+      const buttons = container.querySelectorAll('.btn-theme-preset');
+      buttons.forEach(btn => {
+        const bId = btn.getAttribute('data-theme-id');
+        if (bId === currentId) {
+          btn.classList.add('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-400', 'dark:border-indigo-600', 'text-indigo-600', 'dark:text-indigo-300', 'font-semibold');
+          btn.classList.remove('border-transparent');
+        } else {
+          btn.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-400', 'dark:border-indigo-600', 'text-indigo-600', 'dark:text-indigo-300', 'font-semibold');
+          btn.classList.add('border-transparent');
+        }
+      });
+    }
+
+    // Đổi theme qua nút chọn Preset
+    function setFestivalThemeById(themeId) {
+      if (themeId === 'default') {
+        localStorage.removeItem('thuvienhtml_festival_theme_override');
+        const resolved = resolveActiveTheme(currentThemeConfig);
+        applyFestivalTheme(resolved);
+        showToast("Đã khôi phục giao diện Mặc định");
+      } else {
+        localStorage.setItem('thuvienhtml_festival_theme_override', themeId);
+        const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === themeId);
+        if (preset) {
+          applyFestivalTheme(preset);
+          showToast(`Đã kích hoạt chủ đề: ${preset.name}`);
+        }
+      }
+    }
+    window.setFestivalThemeById = setFestivalThemeById;
+
+    // Kiểm tra xem hiện tại có bất kỳ Modal hoặc Popup nào đang mở hay không
+    function isAnyPopupOpen() {
+      // 1. User Dropdown
+      const userDropdown = document.getElementById('userDropdown');
+      if (userDropdown && !userDropdown.classList.contains('hidden')) return true;
+
+      // 2. Upgrade Modal
+      const upgradeModal = document.getElementById('upgradeModal');
+      if (upgradeModal && !upgradeModal.classList.contains('hidden')) return true;
+
+      // 3. Account Center Modal
+      const accountCenterModal = document.getElementById('accountCenterModal');
+      if (accountCenterModal && !accountCenterModal.classList.contains('hidden')) return true;
+
+      // 4. Popovers
+      const dsPopover = document.getElementById('displaySettingsPopover');
+      if (dsPopover && !dsPopover.classList.contains('hidden')) return true;
+
+      const aiPopover = document.getElementById('aiResultPopover');
+      if (aiPopover && !aiPopover.classList.contains('hidden')) return true;
+
+      // 5. Tất cả modal animated
+      const openModalAnimated = document.querySelector('.modal-animated:not(.hidden)');
+      if (openModalAnimated) return true;
+
+      // 6. Role dialog
+      const openDialog = document.querySelector('[role="dialog"]:not(.hidden)');
+      if (openDialog) return true;
+
+      return false;
+    }
+
+    // Danh sách tất cả các thẻ Card/Popup cần trang trí viền tuyết đọng
+    function getPopupCardsList() {
+      const cards = new Set();
+
+      // Các popup/modal quan trọng trực tiếp
+      const specificIds = [
+        'userDropdown',
+        'upgradeModalCard',
+        'accountCenterModalCard',
+        'whatsNewModalCard',
+        'changelogModalCard',
+        'loginModalCard',
+        'displaySettingsPopover',
+        'aiResultPopover'
+      ];
+      specificIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) cards.add(el);
+      });
+
+      // Toàn bộ các modal card trong app (.modal-animated > div:first-child)
+      document.querySelectorAll('.modal-animated > div:first-child').forEach(el => {
+        cards.add(el);
+      });
+
+      // Editorial Header
+      const header = document.querySelector('header.editorial-header');
+      if (header) cards.add(header);
+
+      return Array.from(cards);
+    }
+
+    // Sinh cấu trúc SVG Đọng Tuyết Viền Trên & Các Góc (3-segment Snow Cap)
+    function createTopSnowCap() {
+      const cap = document.createElement('div');
+      cap.className = 'festival-top-snow-cap';
+      cap.setAttribute('aria-hidden', 'true');
+      cap.innerHTML = `
+        <div class="snow-cap-track">
+          <!-- Góc trái: Tuyết đọng bo góc mềm mại và giọt nước đá đọng -->
+          <div class="snow-corner snow-corner-left">
+            <svg viewBox="0 0 72 22" width="72" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0,0 L72,0 C66,6 60,11 50,9 C42,7 37,17 27,18 C19,19 15,10 9,12 C4,13 1,8 0,0 Z" fill="#FFFFFF" fill-opacity="0.96"/>
+              <path d="M2,0 L70,0 C64,4 58,8 49,6 C41,4 37,13 28,14 C20,15 16,8 10,9 C5,10 2,6 2,0 Z" fill="#F0F9FF" fill-opacity="0.6"/>
+              <circle cx="27" cy="20.5" r="1.5" fill="#BAE6FD" fill-opacity="0.9"/>
+              <circle cx="10" cy="14" r="1.2" fill="#E0F2FE" fill-opacity="0.8"/>
+            </svg>
+          </div>
+          <!-- Cầu nối: Đọng tuyết viền trên toàn bộ bề ngang card -->
+          <div class="snow-edge-bridge">
+            <svg viewBox="0 0 100 14" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0,0 L100,0 C92,5 82,9 70,7 C58,5 50,11 38,8 C26,5 14,10 0,0 Z" fill="#FFFFFF" fill-opacity="0.94"/>
+              <path d="M0,0 L100,0 C92,3 82,6 70,4 C58,3 50,7 38,5 C26,3 14,6 0,0 Z" fill="#F0F9FF" fill-opacity="0.5"/>
+            </svg>
+          </div>
+          <!-- Góc phải: Tuyết đọng bo góc kèm ánh sao băng lung linh -->
+          <div class="snow-corner snow-corner-right">
+            <svg viewBox="0 0 72 22" width="72" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M72,0 L0,0 C6,6 12,11 22,9 C30,7 35,17 45,18 C53,19 57,10 63,12 C68,13 71,8 72,0 Z" fill="#FFFFFF" fill-opacity="0.96"/>
+              <path d="M70,0 L2,0 C8,4 14,8 23,6 C31,4 35,13 44,14 C52,15 56,8 62,9 C67,10 70,6 70,0 Z" fill="#F0F9FF" fill-opacity="0.6"/>
+              <circle cx="45" cy="20.5" r="1.5" fill="#BAE6FD" fill-opacity="0.9"/>
+              <!-- Ánh sao tuyết 4 cánh tinh xảo -->
+              <path d="M63,4 L64.5,1 L66,4 L69,5.5 L66,7 L64.5,10 L63,7 L60,5.5 Z" fill="#7DD3FC" fill-opacity="0.9"/>
+              <circle cx="64.5" cy="5.5" r="1" fill="#FFFFFF"/>
+            </svg>
+          </div>
+        </div>
+      `;
+      return cap;
+    }
+
+    // Áp dụng Theme vào CSS Variables, Body Class & Quản lý hiệu ứng
     function applyFestivalTheme(theme) {
       if (!theme) theme = DEFAULT_FESTIVAL_THEME;
       activeFestivalTheme = theme;
@@ -10027,17 +10332,21 @@
       if (theme.accentColor) root.style.setProperty('--festival-accent', theme.accentColor);
       if (theme.accentGlow) root.style.setProperty('--festival-accent-glow', theme.accentGlow);
 
-      // 2. Body Class cho Ambient Background
+      // 2. Body Class cho Ambient Background & Viền phát sáng băng tuyết
       if (!isDefault && !isUserDisabled) {
         document.body.classList.add('festival-theme-active');
       } else {
         document.body.classList.remove('festival-theme-active');
       }
+      document.body.classList.toggle('festival-theme-snow', !isDefault && !isUserDisabled && theme.effect === 'snow');
 
-      // 3. Quản lý Hiệu ứng Đọng tuyết / Hoa ở góc Popup & Header (Decor Caps)
+      // 3. Cập nhật nút chọn giao diện Preset trong Popover
+      updateThemePresetUI(theme.id);
+
+      // 4. Quản lý Hiệu ứng Đọng tuyết / Hoa ở góc và viền trên Popup
       updateThemeDecorCaps(theme.showDecorCaps && !isDefault && !isUserDisabled, theme.effect);
 
-      // 4. Khởi động hoặc Dừng Canvas Hạt rơi (Particle Engine)
+      // 5. Khởi động hoặc Dừng Canvas Hạt rơi (Particle Engine)
       if (festivalParticleEngine) {
         if (!isDefault && !isUserDisabled && theme.effect !== 'none') {
           festivalParticleEngine.start(theme.effect);
@@ -10046,24 +10355,40 @@
         }
       }
     }
+    window.applyFestivalTheme = applyFestivalTheme;
 
     // Quản lý SVG Decor Caps tinh tế ở góc Header & Modals (pointer-events: none)
     function updateThemeDecorCaps(enabled, effectType) {
+      if (!enabled) {
+        document.querySelectorAll('.festival-top-snow-cap, .decor-corner-cap').forEach(el => el.remove());
+        return;
+      }
+
+      // Xử lý hiệu ứng TUYẾT RƠI (Giáng sinh): Viền trên và đọng góc toàn diện
+      if (effectType === 'snow') {
+        document.querySelectorAll('.decor-corner-cap').forEach(el => el.remove());
+
+        const targetContainers = getPopupCardsList();
+        targetContainers.forEach(container => {
+          if (!container) return;
+          if (container.querySelector(':scope > .festival-top-snow-cap')) return;
+
+          const computedStyle = window.getComputedStyle(container);
+          if (computedStyle.position === 'static') {
+            container.style.position = 'relative';
+          }
+
+          container.prepend(createTopSnowCap());
+        });
+        return;
+      }
+
+      // Xử lý hiệu ứng khác (Tết hoặc Mùa Thu): Corner cap truyền thống
+      document.querySelectorAll('.festival-top-snow-cap').forEach(el => el.remove());
       document.querySelectorAll('.decor-corner-cap').forEach(el => el.remove());
-      if (!enabled) return;
 
       let svgContent = '';
-      if (effectType === 'snow') {
-        // Tuyết đọng mềm mại góc trên
-        svgContent = `
-          <svg viewBox="0 0 70 30" width="70" height="30" fill="#FFFFFF" class="drop-shadow-xs" aria-hidden="true">
-            <path d="M0,0 L70,0 C65,12 55,22 45,18 C38,15 35,26 25,24 C15,22 10,14 0,16 Z" opacity="0.92"/>
-            <circle cx="28" cy="27" r="1.5" opacity="0.8"/>
-            <circle cx="48" cy="22" r="1.2" opacity="0.7"/>
-          </svg>
-        `;
-      } else if (effectType === 'tet_blossom') {
-        // Nhánh hoa đào phai & mai vàng ở góc
+      if (effectType === 'tet_blossom') {
         svgContent = `
           <svg viewBox="0 0 65 35" width="65" height="35" aria-hidden="true">
             <g transform="translate(5, 5)">
@@ -10077,7 +10402,6 @@
           </svg>
         `;
       } else if (effectType === 'autumn_leaves') {
-        // Cụm lá phong ở góc
         svgContent = `
           <svg viewBox="0 0 55 30" width="55" height="30" aria-hidden="true">
             <path d="M5,5 Q15,0 25,12 Q15,20 5,5 Z" fill="#EA580C" opacity="0.8"/>
@@ -10107,77 +10431,132 @@
       });
     }
 
-    // ENGINE HẠT CANVAS TỐI ƯU HIỆU NĂNG & ZERO DISTRACTION
+    // ENGINE HẠT CANVAS DUAL-CANVAS TỐI ƯU HIỆU NĂNG & ZERO DISTRACTION
+    // ambientCanvas: z-[1] nằm ngoài nền, bảo vệ vùng đọc sách
+    // modalCanvas: z-[10010] hiển thị tuyết rơi trên toàn màn hình khi mở bất kỳ Popup / Modal nào
     class FestivalParticleEngine {
-      constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
-        this.particles = [];
+      constructor(ambientCanvasId, modalCanvasId) {
+        this.ambientCanvas = document.getElementById(ambientCanvasId);
+        this.ambientCtx = this.ambientCanvas ? this.ambientCanvas.getContext('2d') : null;
+
+        this.modalCanvas = document.getElementById(modalCanvasId);
+        this.modalCtx = this.modalCanvas ? this.modalCanvas.getContext('2d') : null;
+
+        this.ambientParticles = [];
+        this.modalParticles = [];
         this.animFrameId = null;
         this.isRunning = false;
+        this.isModalActive = false;
         this.effect = 'none';
         this.width = window.innerWidth;
         this.height = window.innerHeight;
 
-        if (this.canvas) {
-          this.resize();
-          window.addEventListener('resize', () => this.resize(), { passive: true });
+        this.resize();
+        window.addEventListener('resize', () => this.resize(), { passive: true });
 
-          // Lắng nghe tab ẩn / hiện để pause
-          document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-              this.pause();
-            } else if (this.isRunning) {
-              this.resume();
-            }
-          });
-        }
+        // Lắng nghe tab ẩn / hiện để pause
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            this.pause();
+          } else if (this.isRunning) {
+            this.resume();
+          }
+        });
       }
 
       resize() {
-        if (!this.canvas) return;
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        if (this.ambientCanvas) {
+          this.ambientCanvas.width = this.width;
+          this.ambientCanvas.height = this.height;
+        }
+        if (this.modalCanvas) {
+          this.modalCanvas.width = this.width;
+          this.modalCanvas.height = this.height;
+        }
+      }
+
+      setModalActive(active) {
+        if (this.isModalActive === active) return;
+        this.isModalActive = active;
+
+        if (!this.modalCanvas) return;
+
+        if (active && this.isRunning && this.effect !== 'none') {
+          if (this.modalParticles.length === 0) {
+            this.initModalParticles(this.effect);
+          }
+          this.modalCanvas.classList.remove('hidden');
+          requestAnimationFrame(() => {
+            this.modalCanvas.classList.remove('opacity-0');
+          });
+        } else {
+          this.modalCanvas.classList.add('opacity-0');
+          setTimeout(() => {
+            if (!this.isModalActive && this.modalCanvas) {
+              this.modalCanvas.classList.add('hidden');
+              this.modalCtx?.clearRect(0, 0, this.width, this.height);
+            }
+          }, 500);
+        }
       }
 
       initParticles(effect) {
-        this.particles = [];
         this.effect = effect;
         const isMobile = window.innerWidth < 768;
         const count = isMobile ? 22 : 45;
 
+        this.ambientParticles = [];
         for (let i = 0; i < count; i++) {
-          this.particles.push(this.createParticle(effect, true));
+          this.ambientParticles.push(this.createParticle(effect, true, false));
+        }
+
+        if (this.isModalActive) {
+          this.initModalParticles(effect);
         }
       }
 
-      createParticle(effect, randomY = false) {
+      initModalParticles(effect) {
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? 24 : 42;
+        this.modalParticles = [];
+        for (let i = 0; i < count; i++) {
+          this.modalParticles.push(this.createParticle(effect, true, true));
+        }
+      }
+
+      createParticle(effect, randomY = false, isFullWidth = false) {
         const y = randomY ? Math.random() * this.height : -20;
-        // Phân bổ hạt chủ yếu ở 2 vùng biên lề trái và lề phải (tránh vùng giữa nơi chứa khung đọc sách)
-        const isLeftMargin = Math.random() > 0.5;
         let x = 0;
-        if (window.innerWidth > 900) {
-          x = isLeftMargin ? (Math.random() * (this.width * 0.28)) : (this.width * 0.72 + Math.random() * (this.width * 0.28));
-        } else {
+
+        if (isFullWidth || window.innerWidth <= 900) {
           x = Math.random() * this.width;
+        } else {
+          // Phân bổ hạt chủ yếu ở 2 vùng biên lề trái và phải (tránh vùng giữa nơi chứa khung đọc sách)
+          const isLeftMargin = Math.random() > 0.5;
+          x = isLeftMargin ? (Math.random() * (this.width * 0.28)) : (this.width * 0.72 + Math.random() * (this.width * 0.28));
         }
 
         const base = {
           x: x,
           y: y,
           size: Math.random() * 3 + 2,
-          speedY: Math.random() * 0.9 + 0.4,
+          speedY: Math.random() * 0.85 + 0.45,
           speedX: (Math.random() - 0.5) * 0.6,
-          opacity: Math.random() * 0.6 + 0.3,
+          opacity: Math.random() * 0.55 + 0.35,
           swing: Math.random() * Math.PI * 2,
           swingSpeed: Math.random() * 0.02 + 0.01,
-          type: effect
+          type: effect,
+          isFullWidth: isFullWidth
         };
 
-        if (effect === 'tet_blossom') {
-          base.color = Math.random() > 0.4 ? '#FDA4AF' : '#FDE047'; // Hồng đào hoặc vàng mai
+        if (effect === 'snow') {
+          base.size = Math.random() * 2.8 + (isFullWidth ? 2.0 : 1.6);
+          base.speedY = Math.random() * 0.75 + 0.35;
+          base.color = '#FFFFFF';
+        } else if (effect === 'tet_blossom') {
+          base.color = Math.random() > 0.4 ? '#FDA4AF' : '#FDE047';
           base.rotation = Math.random() * Math.PI * 2;
           base.rotSpeed = (Math.random() - 0.5) * 0.03;
           base.size = Math.random() * 4 + 4;
@@ -10195,23 +10574,31 @@
       }
 
       start(effect) {
-        if (!this.canvas || !this.ctx) return;
-        // Kiểm tra reduced-motion
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           return;
         }
-        // Kiểm tra Focus mode đang bật
         if (typeof state !== 'undefined' && state.focusMode) {
           return;
         }
 
         this.effect = effect;
-        this.initParticles(effect);
         this.isRunning = true;
-        this.canvas.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          this.canvas.classList.remove('opacity-0');
-        });
+        this.isModalActive = isAnyPopupOpen();
+        this.initParticles(effect);
+
+        if (this.ambientCanvas) {
+          this.ambientCanvas.classList.remove('hidden');
+          requestAnimationFrame(() => {
+            this.ambientCanvas.classList.remove('opacity-0');
+          });
+        }
+
+        if (this.isModalActive && this.modalCanvas) {
+          this.modalCanvas.classList.remove('hidden');
+          requestAnimationFrame(() => {
+            this.modalCanvas.classList.remove('opacity-0');
+          });
+        }
 
         if (!this.animFrameId) {
           this.loop();
@@ -10224,14 +10611,23 @@
           cancelAnimationFrame(this.animFrameId);
           this.animFrameId = null;
         }
-        if (this.canvas) {
-          this.canvas.classList.add('opacity-0');
+        if (this.ambientCanvas) {
+          this.ambientCanvas.classList.add('opacity-0');
           setTimeout(() => {
-            if (!this.isRunning && this.canvas) {
-              this.canvas.classList.add('hidden');
-              this.ctx?.clearRect(0, 0, this.width, this.height);
+            if (!this.isRunning && this.ambientCanvas) {
+              this.ambientCanvas.classList.add('hidden');
+              this.ambientCtx?.clearRect(0, 0, this.width, this.height);
             }
           }, 700);
+        }
+        if (this.modalCanvas) {
+          this.modalCanvas.classList.add('opacity-0');
+          setTimeout(() => {
+            if (!this.isRunning && this.modalCanvas) {
+              this.modalCanvas.classList.add('hidden');
+              this.modalCtx?.clearRect(0, 0, this.width, this.height);
+            }
+          }, 500);
         }
       }
 
@@ -10248,82 +10644,179 @@
         }
       }
 
+      drawParticlesList(ctx, list, isFullWidth) {
+        for (let i = 0; i < list.length; i++) {
+          const p = list[i];
+          p.y += p.speedY;
+          p.swing += p.swingSpeed;
+          p.x += Math.sin(p.swing) * 0.65 + p.speedX;
+
+          if (p.y > this.height + 20) {
+            list[i] = this.createParticle(this.effect, false, isFullWidth);
+            continue;
+          }
+
+          ctx.save();
+          if (p.type === 'snow') {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'rgba(186, 230, 253, 0.45)';
+            ctx.fill();
+          } else if (p.type === 'tet_blossom') {
+            p.rotation += p.rotSpeed;
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            ctx.fill();
+          } else if (p.type === 'autumn_leaves') {
+            p.rotation += p.rotSpeed;
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            ctx.beginPath();
+            ctx.moveTo(0, -p.size);
+            ctx.quadraticCurveTo(p.size, 0, 0, p.size);
+            ctx.quadraticCurveTo(-p.size, 0, 0, -p.size);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            ctx.fill();
+          } else if (p.type === 'sparkles') {
+            p.twinkle += 0.05;
+            const currentAlpha = Math.max(0.1, Math.min(1, Math.sin(p.twinkle) * 0.5 + 0.5));
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = currentAlpha * p.opacity;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = p.color;
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
       loop() {
         if (!this.isRunning) return;
-        // Dừng vẽ khi đang Focus mode hoặc tab ẩn
         if (document.hidden || (typeof state !== 'undefined' && state.focusMode)) {
           this.pause();
           return;
         }
 
-        this.ctx.clearRect(0, 0, this.width, this.height);
+        // 1. Vẽ ambient canvas ngoài nền (bảo vệ khu vực đọc)
+        if (this.ambientCtx && this.ambientParticles.length > 0) {
+          this.ambientCtx.clearRect(0, 0, this.width, this.height);
+          this.drawParticlesList(this.ambientCtx, this.ambientParticles, false);
+        }
 
-        for (let i = 0; i < this.particles.length; i++) {
-          const p = this.particles[i];
-          p.y += p.speedY;
-          p.swing += p.swingSpeed;
-          p.x += Math.sin(p.swing) * 0.7 + p.speedX;
-
-          if (p.y > this.height + 20) {
-            this.particles[i] = this.createParticle(this.effect, false);
-            continue;
-          }
-
-          // Vẽ hạt theo từng loại hiệu ứng
-          this.ctx.save();
-          if (p.type === 'snow') {
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
-            this.ctx.fill();
-          } else if (p.type === 'tet_blossom') {
-            p.rotation += p.rotSpeed;
-            this.ctx.translate(p.x, p.y);
-            this.ctx.rotate(p.rotation);
-            this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
-            this.ctx.fillStyle = p.color;
-            this.ctx.globalAlpha = p.opacity;
-            this.ctx.fill();
-          } else if (p.type === 'autumn_leaves') {
-            p.rotation += p.rotSpeed;
-            this.ctx.translate(p.x, p.y);
-            this.ctx.rotate(p.rotation);
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, -p.size);
-            this.ctx.quadraticCurveTo(p.size, 0, 0, p.size);
-            this.ctx.quadraticCurveTo(-p.size, 0, 0, -p.size);
-            this.ctx.fillStyle = p.color;
-            this.ctx.globalAlpha = p.opacity;
-            this.ctx.fill();
-          } else if (p.type === 'sparkles') {
-            p.twinkle += 0.05;
-            const currentAlpha = Math.max(0.1, Math.min(1, Math.sin(p.twinkle) * 0.5 + 0.5));
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
-            this.ctx.fillStyle = p.color;
-            this.ctx.globalAlpha = currentAlpha * p.opacity;
-            this.ctx.shadowBlur = 6;
-            this.ctx.shadowColor = p.color;
-            this.ctx.fill();
-          }
-          this.ctx.restore();
+        // 2. Vẽ modal canvas khi đang có popup mở (phủ tuyết đều toàn màn hình)
+        if (this.isModalActive && this.modalCtx && this.modalParticles.length > 0) {
+          this.modalCtx.clearRect(0, 0, this.width, this.height);
+          this.drawParticlesList(this.modalCtx, this.modalParticles, true);
         }
 
         this.animFrameId = requestAnimationFrame(() => this.loop());
       }
     }
 
+    // Giám sát trạng thái mở/đóng của tất cả Popup & Modals bằng MutationObserver
+    function initPopupFestivalWatcher() {
+      if (popupFestivalObserver) return;
+
+      const checkPopupState = () => {
+        if (!activeFestivalTheme || activeFestivalTheme.effect === 'none') {
+          if (festivalParticleEngine) festivalParticleEngine.setModalActive(false);
+          return;
+        }
+        const isUserDisabled = localStorage.getItem('thuvienhtml_festival_disabled') === 'true';
+        if (isUserDisabled) {
+          if (festivalParticleEngine) festivalParticleEngine.setModalActive(false);
+          return;
+        }
+
+        const open = isAnyPopupOpen();
+        if (festivalParticleEngine) {
+          festivalParticleEngine.setModalActive(open);
+        }
+
+        if (open && activeFestivalTheme.showDecorCaps && activeFestivalTheme.effect === 'snow') {
+          updateThemeDecorCaps(true, 'snow');
+        }
+      };
+
+      popupFestivalObserver = new MutationObserver((mutations) => {
+        let shouldCheck = false;
+        for (const m of mutations) {
+          if (m.type === 'attributes' && (m.attributeName === 'class' || m.attributeName === 'style')) {
+            shouldCheck = true;
+            break;
+          }
+          if (m.type === 'childList' && (m.addedNodes.length > 0 || m.removedNodes.length > 0)) {
+            shouldCheck = true;
+            break;
+          }
+        }
+        if (shouldCheck) {
+          checkPopupState();
+        }
+      });
+
+      popupFestivalObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style'],
+        childList: true,
+        subtree: true
+      });
+
+      // Kiểm tra ngay khi khởi động
+      checkPopupState();
+    }
+
+    // Gắn sự kiện click chọn Theme Presets trong Popover Cài Đặt Hiển Thị
+    function initFestivalThemePresetsUI() {
+      const container = document.getElementById('festivalThemeSelectorBox');
+      if (!container) return;
+
+      const buttons = container.querySelectorAll('.btn-theme-preset');
+      buttons.forEach(btn => {
+        btn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const themeId = btn.getAttribute('data-theme-id');
+          if (themeId) {
+            setFestivalThemeById(themeId);
+          }
+        };
+      });
+    }
+
     // Khởi tạo Đồng bộ Theme từ Firestore & Bộ đếm lịch hẹn 60s
     async function initThemeSettings() {
-      // 1. Khởi tạo Engine Hạt
+      // 1. Khởi tạo Engine Hạt Dual-Canvas
       try {
-        festivalParticleEngine = new FestivalParticleEngine('ambientFestivalCanvas');
+        festivalParticleEngine = new FestivalParticleEngine('ambientFestivalCanvas', 'modalFestivalCanvas');
       } catch (e) {
         console.warn('[FestivalParticleEngine] Lỗi khởi tạo canvas:', e);
       }
 
-      // 2. Nạp từ localStorage trước để render tức thì (Optimistic Render)
+      // 2. Khởi tạo MutationObserver theo dõi popup
+      try {
+        initPopupFestivalWatcher();
+      } catch (e) {
+        console.warn('[initPopupFestivalWatcher] Lỗi:', e);
+      }
+
+      // 3. Khởi tạo bộ chọn Presets UI
+      try {
+        initFestivalThemePresetsUI();
+      } catch (e) {
+        console.warn('[initFestivalThemePresetsUI] Lỗi:', e);
+      }
+
+      // 4. Nạp từ localStorage trước để render tức thì (Optimistic Render)
       try {
         const cachedStr = localStorage.getItem('thuvienhtml_theme_config');
         if (cachedStr) {
@@ -10331,10 +10824,13 @@
           currentThemeConfig = cachedCfg;
           const resolved = resolveActiveTheme(cachedCfg);
           applyFestivalTheme(resolved);
+        } else {
+          const resolved = resolveActiveTheme(null);
+          applyFestivalTheme(resolved);
         }
       } catch (_) {}
 
-      // 3. Đọc dữ liệu mới nhất từ Firestore
+      // 5. Đọc dữ liệu mới nhất từ Firestore
       if (db) {
         try {
           const themeDocRef = doc(db, 'config', 'theme_settings');
@@ -10365,19 +10861,18 @@
         }
       }
 
-      // 4. BỘ ĐẾM KIỂM TRA LỊCH HẸN MỖI 60 GIÂY (Requirement 2: Chuẩn hóa theo thời gian thực)
+      // 6. BỘ ĐẾM KIỂM TRA LỊCH HẸN MỖI 60 GIÂY (Requirement 2: Chuẩn hóa theo thời gian thực)
       if (themeScheduleIntervalTimer) clearInterval(themeScheduleIntervalTimer);
       themeScheduleIntervalTimer = setInterval(() => {
         if (currentThemeConfig) {
           const resolved = resolveActiveTheme(currentThemeConfig);
-          // Chỉ cập nhật nếu theme có sự thay đổi (chuyển giao giữa giờ hẹn hoặc hết giờ hẹn)
           if (resolved.id !== activeFestivalTheme.id || resolved.effect !== activeFestivalTheme.effect) {
             applyFestivalTheme(resolved);
           }
         }
       }, 60000);
 
-      // 5. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị
+      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị
       const toggleBtn = document.getElementById('toggleFestivalEffects');
       if (toggleBtn) {
         toggleBtn.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
@@ -10390,11 +10885,13 @@
           }
           if (currentThemeConfig) {
             applyFestivalTheme(resolveActiveTheme(currentThemeConfig));
+          } else {
+            applyFestivalTheme(resolveActiveTheme(null));
           }
         };
       }
 
-      // 6. Lắng nghe sự kiện xem trước (Preview) từ Admin & cập nhật trực tiếp
+      // 8. Lắng nghe sự kiện xem trước (Preview) từ Admin & cập nhật trực tiếp
       window.addEventListener('preview_theme', (e) => {
         if (e.detail) {
           applyFestivalTheme(e.detail);
