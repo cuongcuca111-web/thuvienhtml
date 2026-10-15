@@ -85,6 +85,95 @@ function extractExplanationText(data, rawText) {
   return cleaned;
 }
 
+// Kho từ điển thuật ngữ tích hợp sẵn (Instant Built-in Lexicon)
+// Trả kết quả 0ms, 0 Token, 0 Quota cho các từ vựng và khái niệm phổ biến nhất
+const BUILTIN_LEXICON = {
+  'html': 'HTML (HyperText Markup Language) là ngôn ngữ đánh dấu siêu văn bản, tạo nên bộ khung và cấu trúc nội dung (văn bản, hình ảnh, liên kết) cho các trang web.',
+  'css': 'CSS (Cascading Style Sheets) là ngôn ngữ định kiểu dùng để thiết kế giao diện, bố cục, màu sắc và hiệu ứng thị giác cho trang web xây dựng bằng HTML.',
+  'javascript': 'JavaScript là ngôn ngữ lập trình kịch bản động, tạo tính tương tác, xử lý logic và biến các trang web tĩnh thành ứng dụng tương tác phong phú.',
+  'js': 'JavaScript (JS) là ngôn ngữ lập trình kịch bản động, tạo tính tương tác, xử lý logic và biến các trang web tĩnh thành ứng dụng tương tác phong phú.',
+  'dom': 'DOM (Document Object Model) là mô hình đối tượng tài liệu biểu diễn trang HTML dưới dạng cấu trúc cây, cho phép JavaScript truy xuất và thay đổi nội dung trang web.',
+  'api': 'API (Application Programming Interface) là giao diện lập trình ứng dụng, đóng vai trò cầu nối cho phép các phần mềm và hệ thống khác nhau giao tiếp, trao đổi dữ liệu.',
+  'json': 'JSON (JavaScript Object Notation) là định dạng trao đổi dữ liệu dạng văn bản gọn nhẹ, có cấu trúc khóa - giá trị dễ đọc cho cả con người và máy tính.',
+  'database': 'Cơ sở dữ liệu (Database) là hệ thống lưu trữ và quản lý thông tin có cấu trúc, cho phép truy vấn, thêm, sửa và xóa dữ liệu một cách an toàn và hiệu quả.',
+  'co so du lieu': 'Cơ sở dữ liệu (Database) là hệ thống lưu trữ và quản lý thông tin có cấu trúc, cho phép truy vấn, thêm, sửa và xóa dữ liệu một cách an toàn và hiệu quả.',
+  'cơ sở dữ liệu': 'Cơ sở dữ liệu (Database) là hệ thống lưu trữ và quản lý thông tin có cấu trúc, cho phép truy vấn, thêm, sửa và xóa dữ liệu một cách an toàn và hiệu quả.',
+  'sql': 'SQL (Structured Query Language) là ngôn ngữ truy vấn tiêu chuẩn dùng để thao tác và quản lý dữ liệu trong các hệ quản trị cơ sở dữ liệu quan hệ (RDBMS).',
+  'nosql': 'NoSQL là các hệ quản trị cơ sở dữ liệu phi quan hệ, lưu trữ dữ liệu linh hoạt dưới dạng document, key-value, graph hoặc cột rộng thay vì bảng cố định.',
+  'frontend': 'Frontend là phần giao diện người dùng nhìn thấy và tương tác trực tiếp trên trình duyệt hoặc điện thoại (thường xây dựng bằng HTML, CSS, JavaScript).',
+  'backend': 'Backend là phần máy chủ xử lý logic nghiệp vụ, tính toán, kết nối cơ sở dữ liệu và bảo mật chạy ngầm đằng sau giao diện người dùng.',
+  'fullstack': 'Fullstack chỉ lập trình viên hoặc giải pháp công nghệ có khả năng xây dựng và vận hành trọn vẹn cả phần Frontend (giao diện) lẫn Backend (máy chủ, dữ liệu).',
+  'framework': 'Framework là khung cấu trúc mã nguồn được định hình sẵn, cung cấp nền tảng và các quy chuẩn giúp nhà phát triển xây dựng phần mềm nhanh chóng và nhất quán.',
+  'library': 'Thư viện (Library) là tập hợp các đoạn mã hoặc hàm đã viết sẵn giải quyết những tác vụ chuyên biệt mà bạn có thể tái sử dụng trong dự án.',
+  'thu vien': 'Thư viện (Library) là tập hợp các đoạn mã hoặc hàm đã viết sẵn giải quyết những tác vụ chuyên biệt mà bạn có thể tái sử dụng trong dự án.',
+  'thư viện': 'Thư viện (Library) là tập hợp các đoạn mã hoặc hàm đã viết sẵn giải quyết những tác vụ chuyên biệt mà bạn có thể tái sử dụng trong dự án.',
+  'cache': 'Cache (bộ nhớ đệm) là vùng nhớ tốc độ cao lưu trữ tạm dữ liệu thường dùng, giúp truy xuất tức thì mà không cần tính toán lại hay gọi lại máy chủ.',
+  'bo nho dem': 'Bộ nhớ đệm (Cache) là vùng nhớ tốc độ cao lưu trữ tạm dữ liệu thường dùng, giúp truy xuất tức thì mà không cần tính toán lại hay gọi lại máy chủ.',
+  'bộ nhớ đệm': 'Bộ nhớ đệm (Cache) là vùng nhớ tốc độ cao lưu trữ tạm dữ liệu thường dùng, giúp truy xuất tức thì mà không cần tính toán lại hay gọi lại máy chủ.',
+  'cookie': 'Cookie là mẩu dữ liệu nhỏ do máy chủ lưu trên trình duyệt của người dùng, giúp ghi nhớ phiên đăng nhập, tùy chọn cá nhân và giỏ hàng.',
+  'session': 'Session là phiên làm việc lưu trữ trạng thái người dùng trên máy chủ trong suốt quá trình họ truy cập và tương tác với trang web.',
+  'token': 'Token là chuỗi mã hóa đại diện cho danh tính hoặc quyền hạn của người dùng, được gửi kèm mỗi yêu cầu API để xác thực an toàn.',
+  'jwt': 'JWT (JSON Web Token) là chuẩn định dạng token bảo mật gồm 3 phần (header, payload, signature) dùng để truyền thông tin xác thực an toàn giữa các bên.',
+  'authentication': 'Authentication (xác thực) là quá trình kiểm tra danh tính để xác định bạn là ai (ví dụ qua tên đăng nhập, mật khẩu, OTP, vân tay).',
+  'xac thuc': 'Xác thực (Authentication) là quá trình kiểm tra danh tính để xác định bạn là ai (ví dụ qua tên đăng nhập, mật khẩu, OTP, vân tay).',
+  'xác thực': 'Xác thực (Authentication) là quá trình kiểm tra danh tính để xác định bạn là ai (ví dụ qua tên đăng nhập, mật khẩu, OTP, vân tay).',
+  'authorization': 'Authorization (phân quyền) là quá trình xác định quyền hạn để xác định bạn được phép làm gì (ví dụ chỉ xem hay chỉnh sửa).',
+  'phan quyen': 'Phân quyền (Authorization) là quá trình xác định quyền hạn để xác định bạn được phép làm gì (ví dụ chỉ xem hay chỉnh sửa).',
+  'phân quyền': 'Phân quyền (Authorization) là quá trình xác định quyền hạn để xác định bạn được phép làm gì (ví dụ chỉ xem hay chỉnh sửa).',
+  'asynchronous': 'Bất đồng bộ (Asynchronous) là cơ chế cho phép chương trình tiếp tục chạy các lệnh khác trong lúc chờ một tác vụ lâu (như tải dữ liệu) hoàn thành.',
+  'bat dong bo': 'Bất đồng bộ (Asynchronous) là cơ chế cho phép chương trình tiếp tục chạy các lệnh khác trong lúc chờ một tác vụ lâu (như tải dữ liệu) hoàn thành.',
+  'bất đồng bộ': 'Bất đồng bộ (Asynchronous) là cơ chế cho phép chương trình tiếp tục chạy các lệnh khác trong lúc chờ một tác vụ lâu (như tải dữ liệu) hoàn thành.',
+  'synchronous': 'Đồng bộ (Synchronous) là cơ chế thực thi tuần tự từng lệnh một, lệnh phía sau bắt buộc phải đợi lệnh trước kết thúc hoàn toàn mới được chạy.',
+  'dong bo': 'Đồng bộ (Synchronous) là cơ chế thực thi tuần tự từng lệnh một, lệnh phía sau bắt buộc phải đợi lệnh trước kết thúc hoàn toàn mới được chạy.',
+  'đồng bộ': 'Đồng bộ (Synchronous) là cơ chế thực thi tuần tự từng lệnh một, lệnh phía sau bắt buộc phải đợi lệnh trước kết thúc hoàn toàn mới được chạy.',
+  'promise': 'Promise là đối tượng JavaScript đại diện cho một tác vụ bất đồng bộ sẽ hoàn thành trong tương lai với kết quả thành công hoặc thất bại.',
+  'async/await': 'Async/Await là cú pháp hiện đại trong JavaScript giúp viết mã xử lý bất đồng bộ trông liền mạch, rõ ràng và dễ đọc như mã đồng bộ.',
+  'bien': 'Biến số (Variable) là ô nhớ được đặt tên trong bộ nhớ dùng để lưu trữ dữ liệu có thể thay đổi giá trị trong suốt quá trình chương trình chạy.',
+  'biến': 'Biến số (Variable) là ô nhớ được đặt tên trong bộ nhớ dùng để lưu trữ dữ liệu có thể thay đổi giá trị trong suốt quá trình chương trình chạy.',
+  'bien so': 'Biến số (Variable) là ô nhớ được đặt tên trong bộ nhớ dùng để lưu trữ dữ liệu có thể thay đổi giá trị trong suốt quá trình chương trình chạy.',
+  'biến số': 'Biến số (Variable) là ô nhớ được đặt tên trong bộ nhớ dùng để lưu trữ dữ liệu có thể thay đổi giá trị trong suốt quá trình chương trình chạy.',
+  'ham': 'Hàm (Function) là một khối lệnh được đặt tên để thực hiện một công việc cụ thể, có thể tái sử dụng nhiều lần với các tham số khác nhau.',
+  'hàm': 'Hàm (Function) là một khối lệnh được đặt tên để thực hiện một công việc cụ thể, có thể tái sử dụng nhiều lần với các tham số khác nhau.',
+  'function': 'Hàm (Function) là một khối lệnh được đặt tên để thực hiện một công việc cụ thể, có thể tái sử dụng nhiều lần với các tham số khác nhau.',
+  'thuat toan': 'Thuật toán (Algorithm) là tập hợp hữu hạn các chỉ dẫn rõ ràng, từng bước để giải quyết một bài toán hoặc thực hiện một tác vụ.',
+  'thuật toán': 'Thuật toán (Algorithm) là tập hợp hữu hạn các chỉ dẫn rõ ràng, từng bước để giải quyết một bài toán hoặc thực hiện một tác vụ.',
+  'algorithm': 'Thuật toán (Algorithm) là tập hợp hữu hạn các chỉ dẫn rõ ràng, từng bước để giải quyết một bài toán hoặc thực hiện một tác vụ.',
+  'de quy': 'Đệ quy (Recursion) là kỹ thuật mà một hàm tự gọi lại chính nó để chia nhỏ bài toán phức tạp thành các bài toán con tương tự cho đến khi gặp điểm dừng.',
+  'đệ quy': 'Đệ quy (Recursion) là kỹ thuật mà một hàm tự gọi lại chính nó để chia nhỏ bài toán phức tạp thành các bài toán con tương tự cho đến khi gặp điểm dừng.',
+  'vong lap': 'Vòng lặp (Loop) là cấu trúc điều khiển cho phép thực thi lặp đi lặp lại một khối lệnh nhiều lần theo một điều kiện đã cho (như for, while).',
+  'vòng lặp': 'Vòng lặp (Loop) là cấu trúc điều khiển cho phép thực thi lặp đi lặp lại một khối lệnh nhiều lần theo một điều kiện đã cho (như for, while).',
+  'mang': 'Mảng (Array) là cấu trúc dữ liệu lưu trữ một danh sách các phần tử có thứ tự và được truy xuất qua chỉ mục số nguyên (bắt đầu từ 0).',
+  'mảng': 'Mảng (Array) là cấu trúc dữ liệu lưu trữ một danh sách các phần tử có thứ tự và được truy xuất qua chỉ mục số nguyên (bắt đầu từ 0).',
+  'array': 'Mảng (Array) là cấu trúc dữ liệu lưu trữ một danh sách các phần tử có thứ tự và được truy xuất qua chỉ mục số nguyên (bắt đầu từ 0).',
+  'object': 'Đối tượng (Object) là cấu trúc dữ liệu lưu trữ tập hợp các thuộc tính (khóa - giá trị) và phương thức mô tả các đặc điểm, hành vi của một thực thể.',
+  'doi tuong': 'Đối tượng (Object) là cấu trúc dữ liệu lưu trữ tập hợp các thuộc tính (khóa - giá trị) và phương thức mô tả các đặc điểm, hành vi của một thực thể.',
+  'đối tượng': 'Đối tượng (Object) là cấu trúc dữ liệu lưu trữ tập hợp các thuộc tính (khóa - giá trị) và phương thức mô tả các đặc điểm, hành vi của một thực thể.',
+  'class': 'Lớp (Class) là khuôn mẫu định nghĩa các thuộc tính và phương thức chung dùng để khởi tạo nên các đối tượng trong lập trình hướng đối tượng (OOP).',
+  'lop': 'Lớp (Class) là khuôn mẫu định nghĩa các thuộc tính và phương thức chung dùng để khởi tạo nên các đối tượng trong lập trình hướng đối tượng (OOP).',
+  'lớp': 'Lớp (Class) là khuôn mẫu định nghĩa các thuộc tính và phương thức chung dùng để khởi tạo nên các đối tượng trong lập trình hướng đối tượng (OOP).',
+  'git': 'Git là hệ thống quản lý phiên bản phân tán (DVCS) giúp theo dõi lịch sử thay đổi mã nguồn và hỗ trợ phối hợp nhóm hiệu quả.',
+  'github': 'GitHub là nền tảng điện toán đám mây lưu trữ kho mã nguồn Git, cung cấp công cụ review code, quản trị lỗi và CI/CD tự động.',
+  'server': 'Máy chủ (Server) là hệ thống phần cứng hoặc phần mềm chuyên dụng tiếp nhận và phản hồi các yêu cầu từ máy khách (client) qua mạng.',
+  'may chu': 'Máy chủ (Server) là hệ thống phần cứng hoặc phần mềm chuyên dụng tiếp nhận và phản hồi các yêu cầu từ máy khách (client) qua mạng.',
+  'máy chủ': 'Máy chủ (Server) là hệ thống phần cứng hoặc phần mềm chuyên dụng tiếp nhận và phản hồi các yêu cầu từ máy khách (client) qua mạng.',
+  'client': 'Máy khách (Client) là ứng dụng hoặc thiết bị (như trình duyệt web) gửi yêu cầu đến máy chủ để nhận tài nguyên hoặc hiển thị thông tin.',
+  'may khach': 'Máy khách (Client) là ứng dụng hoặc thiết bị (như trình duyệt web) gửi yêu cầu đến máy chủ để nhận tài nguyên hoặc hiển thị thông tin.',
+  'máy khách': 'Máy khách (Client) là ứng dụng hoặc thiết bị (như trình duyệt web) gửi yêu cầu đến máy chủ để nhận tài nguyên hoặc hiển thị thông tin.',
+  'cpu': 'CPU (Central Processing Unit) là bộ vi xử lý trung tâm, đóng vai trò như não bộ thực thi các chỉ thị và phép toán của máy tính.',
+  'ram': 'RAM (Random Access Memory) là bộ nhớ truy xuất ngẫu nhiên tạm thời, lưu dữ liệu đang xử lý và sẽ bị xóa sạch khi mất nguồn điện.',
+  'rom': 'ROM (Read-Only Memory) là bộ nhớ chỉ đọc chứa các chương trình khởi động phần cứng gốc và giữ nguyên dữ liệu ngay cả khi tắt nguồn.',
+  'ai': 'Trí tuệ nhân tạo (AI) là lĩnh vực khoa học máy tính nghiên cứu cách tạo ra các hệ thống có khả năng học tập, suy luận và giải quyết vấn đề như con người.',
+  'tri tue nhan tao': 'Trí tuệ nhân tạo (AI) là lĩnh vực khoa học máy tính nghiên cứu cách tạo ra các hệ thống có khả năng học tập, suy luận và giải quyết vấn đề như con người.',
+  'trí tuệ nhân tạo': 'Trí tuệ nhân tạo (AI) là lĩnh vực khoa học máy tính nghiên cứu cách tạo ra các hệ thống có khả năng học tập, suy luận và giải quyết vấn đề như con người.',
+  'lam phat': 'Lạm phát là sự gia tăng liên tục của mức giá chung hàng hóa và dịch vụ theo thời gian, làm suy giảm sức mua của đồng tiền.',
+  'lạm phát': 'Lạm phát là sự gia tăng liên tục của mức giá chung hàng hóa và dịch vụ theo thời gian, làm suy giảm sức mua của đồng tiền.',
+  'loi nhuan': 'Lợi nhuận là phần chênh lệch dương còn lại sau khi lấy tổng doanh thu trừ đi toàn bộ chi phí đầu tư và vận hành phát sinh.',
+  'lợi nhuận': 'Lợi nhuận là phần chênh lệch dương còn lại sau khi lấy tổng doanh thu trừ đi toàn bộ chi phí đầu tư và vận hành phát sinh.',
+  'doanh thu': 'Doanh thu là toàn bộ số tiền thu được từ hoạt động bán hàng hóa hoặc cung cấp dịch vụ trong một kỳ kế toán xác định.',
+  'chi phi co hoi': 'Chi phí cơ hội là lợi ích lớn nhất bị bỏ lỡ từ phương án thay thế tốt nhất khi bạn quyết định chọn một phương án khác.',
+  'chi phí cơ hội': 'Chi phí cơ hội là lợi ích lớn nhất bị bỏ lỡ từ phương án thay thế tốt nhất khi bạn quyết định chọn một phương án khác.'
+};
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Chỉ chấp nhận phương thức POST' });
@@ -158,16 +247,69 @@ module.exports = async function handler(req, res) {
 
     const customPromptClient = sanitizeText(body.customPrompt, 800);
 
-    // 2. Kiểm tra độ dài đầu vào
-    if (!rawText || rawText.length < 5) {
-      return res.status(400).json({ error: 'Đoạn văn bản bôi đen quá ngắn (tối thiểu 5 ký tự).' });
+    // 2. Kiểm tra độ dài đầu vào: Cho phép giải thích từ 1 từ đơn (>= 2 ký tự)
+    if (!rawText || rawText.length < 2) {
+      return res.status(400).json({ error: 'Đoạn văn bản bôi đen quá ngắn (tối thiểu 2 ký tự).' });
     }
     const words = rawText.split(/\s+/).filter(Boolean);
-    if (words.length < 3) {
-      return res.status(400).json({ error: 'Vui lòng bôi đen tối thiểu 3 từ để giải thích.' });
+    if (words.length < 1) {
+      return res.status(400).json({ error: 'Vui lòng bôi đen từ hoặc đoạn văn để giải thích.' });
     }
     if (rawText.length > 1500) {
       return res.status(400).json({ error: 'Đoạn đã chọn quá dài (tối đa 1.500 ký tự). Hãy chọn đoạn ngắn hơn.' });
+    }
+
+    const normalizedRawText = rawText.trim().replace(/\s+/g, ' ').toLowerCase();
+    const isShortTerm = words.length <= 6 && rawText.length <= 80 && (mode === 'explain' || mode === 'example');
+    const bypassCache = Boolean(body.bypassCache);
+
+    // BƯỚC ĐỆM 2.1: Kiểm tra Kho từ điển tích hợp sẵn (Built-in Lexicon) - 0 Token, 0ms, 0 Quota
+    if (isShortTerm && !bypassCache && mode === 'explain') {
+      const builtinDef = BUILTIN_LEXICON[normalizedRawText] ||
+                         BUILTIN_LEXICON[normalizedRawText.normalize('NFD').replace(/[\u0300-\u036f]/g, '')];
+      if (builtinDef) {
+        return res.status(200).json({
+          success: true,
+          cached: true,
+          source: 'lexicon',
+          mode: mode,
+          style: style,
+          text: builtinDef,
+          terms: [],
+          examples: [],
+          targetLang: targetLang
+        });
+      }
+    }
+
+    // BƯỚC ĐỆM 2.2: Kiểm tra Global Term Cache dùng chung toàn thư viện (không phụ thuộc vào văn bản cụ thể)
+    const termCacheKey = isShortTerm
+      ? 'term_' + crypto.createHash('md5').update(`${mode}:${style}:${targetLang}:${normalizedRawText}`).digest('hex')
+      : null;
+    const termCacheRef = termCacheKey ? db.doc(`ai_cache/${termCacheKey}`) : null;
+
+    if (termCacheRef && !bypassCache) {
+      try {
+        const termSnap = await termCacheRef.get();
+        if (termSnap.exists) {
+          const tData = termSnap.data();
+          if (tData && tData.result && tData.result.text && tData.result.text.length >= 10) {
+            return res.status(200).json({
+              success: true,
+              cached: true,
+              source: 'global_cache',
+              mode: tData.result.mode || mode,
+              style: tData.result.style || style,
+              text: tData.result.text,
+              terms: tData.result.terms || [],
+              examples: tData.result.examples || [],
+              targetLang: tData.result.targetLang || targetLang
+            });
+          }
+        }
+      } catch (tErr) {
+        console.warn('Lỗi kiểm tra termCache:', tErr.message);
+      }
     }
 
     // Đọc cài đặt prompt tùy chỉnh từ Firestore (nếu quản trị viên đã cấu hình)
@@ -227,8 +369,6 @@ module.exports = async function handler(req, res) {
     }
 
     // 3. Kiểm tra tính toán Cache máy chủ (chuẩn hóa khoảng trắng & lowercase để tái sử dụng tối đa kết quả)
-    const bypassCache = Boolean(body.bypassCache);
-    const normalizedRawText = rawText.trim().replace(/\s+/g, ' ').toLowerCase();
     const promptHash = instruction ? crypto.createHash('md5').update(instruction).digest('hex').substring(0, 8) : 'default';
     const docContextHash = documentContextText ? crypto.createHash('md5').update(documentContextText.substring(0, 500)).digest('hex').substring(0, 8) : 'nodoc';
     const cacheKey = crypto.createHash('sha256')
@@ -244,7 +384,7 @@ module.exports = async function handler(req, res) {
         if (cachedData && cachedData.result) {
           const cachedText = extractExplanationText(cachedData.result, cachedData.result.text);
           // CHẶN TRIỆT ĐỂ: Nếu cache cũ chỉ có "{" hoặc quá ngắn -> xóa bản ghi rác và tiếp tục tạo mới
-          if (cachedText && cachedText.length >= 15) {
+          if (cachedText && cachedText.length >= 10) {
             return res.status(200).json({
               success: true,
               cached: true,
@@ -263,6 +403,7 @@ module.exports = async function handler(req, res) {
     } else {
       // Khi client yêu cầu bypassCache: chủ động dọn dẹp cache cũ nếu có
       cacheDocRef.delete().catch(() => {});
+      if (termCacheRef) termCacheRef.delete().catch(() => {});
     }
 
     // 4. Kiểm tra hạn mức theo gói (chỉ trừ lượt khi KHÔNG có cache)
@@ -270,10 +411,11 @@ module.exports = async function handler(req, res) {
       const guestUsageRef = db.doc(`users_guest_usage/${guestId}`);
       const gSnap = await guestUsageRef.get();
       const currentCount = gSnap.exists ? (gSnap.data().count || 0) : 0;
-      if (currentCount >= 3) {
+      const GUEST_MAX = 25; // Nâng hạn mức khách từ 3 lên 25 lượt sử dụng
+      if (currentCount >= GUEST_MAX) {
         return res.status(403).json({
           code: 'GUEST_LIMIT_REACHED',
-          error: 'Bạn đã dùng hết 3 lượt thử AI miễn phí dành cho khách. Vui lòng đăng nhập để nhận thêm lượt sử dụng mỗi tháng.'
+          error: `Bạn đã dùng hết ${GUEST_MAX} lượt thử AI miễn phí dành cho khách. Vui lòng đăng ký tài khoản miễn phí để nhận thêm 100 lượt mỗi tháng!`
         });
       }
     } else {
@@ -298,8 +440,8 @@ module.exports = async function handler(req, res) {
 
       const plansConfig = (await getCachedPlansConfig()) || {};
       const plansMap = (plansConfig && plansConfig.plans) ? plansConfig.plans : plansConfig;
-      const planLimits = plansMap[userPlan] || (plansMap.free || { monthlyAiRequests: 30 });
-      const maxMonthly = typeof planLimits.monthlyAiRequests === 'number' ? planLimits.monthlyAiRequests : (userPlan === 'pro' ? 1500 : (userPlan === 'plus' ? 300 : 30));
+      const planLimits = plansMap[userPlan] || (plansMap.free || { monthlyAiRequests: 100 });
+      const maxMonthly = typeof planLimits.monthlyAiRequests === 'number' ? planLimits.monthlyAiRequests : (userPlan === 'pro' ? 1500 : (userPlan === 'plus' ? 300 : 100));
 
       const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
       const userMonthlyRef = db.doc(`users/${userId}/billing/ai_${currentMonth}`);
@@ -314,8 +456,26 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // 5. Chuẩn bị Prompt & Anti-Prompt Injection
-    const systemPrompt = `Bạn là trợ lý học tập thông minh cho độc giả tài liệu HTML của ứng dụng "Thư viện Sách HTML".
+    // 5. Chuẩn bị Prompt siêu tối ưu Token: Phân nhánh từ vựng ngắn (Short Term) vs Đoạn văn dài
+    let systemPrompt = '';
+    let userPrompt = '';
+    let optimalMaxTokens = 450;
+
+    if (isShortTerm) {
+      // Prompt siêu tinh gọn cho từ vựng cơ bản: Tiết kiệm >90% token
+      systemPrompt = `Bạn là từ điển giải nghĩa học tập thông minh, súc tích. Hãy giải thích trực tiếp, ngắn gọn bản chất của từ/thuật ngữ được hỏi trong 1 đến 2 câu văn rõ ràng, dễ hiểu. Bắt buộc trả về đúng JSON Schema.`;
+      const nearContext = (context.before || context.after)
+        ? `Ngữ cảnh: "${context.before ? '...' + context.before.slice(-60) : ''} [${rawText}] ${context.after ? context.after.slice(0, 60) + '...' : ''}"`
+        : '';
+      userPrompt = [
+        nearContext,
+        `Thuật ngữ: "${rawText}"`,
+        style === 'academic' ? 'Yêu cầu: Văn phong học thuật, chuẩn mực.' : (style === 'practical' ? 'Yêu cầu: Kèm ví dụ thực tế.' : 'Yêu cầu: Dễ hiểu, đi thẳng vào bản chất.')
+      ].filter(Boolean).join('\n');
+      optimalMaxTokens = 180;
+    } else {
+      // Prompt đầy đủ cho đoạn văn bản dài / bài học
+      systemPrompt = `Bạn là trợ lý học tập thông minh cho độc giả tài liệu HTML của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là hỗ trợ người đọc hiểu sâu, giải thích hoặc làm sáng tỏ đoạn văn bản được chọn <selected_text> DỰA TRÊN NGỮ CẢNH TOÀN BỘ BÀI HỌC <current_document_context>.
 
 QUY TẮC BẢO MẬT VÀ TOÀN VẸN (BẮT BUỘC):
@@ -325,36 +485,35 @@ QUY TẮC BẢO MẬT VÀ TOÀN VẸN (BẮT BUỘC):
 4. BÁM SÁT MẠCH BÀI HỌC: Mọi câu trả lời, phân tích, thuật ngữ hay ví dụ đều phải ăn khớp và bám sát ngữ cảnh của tài liệu đang đọc trong <current_document_context>. Không suy diễn hay đưa ra thông tin mâu thuẫn với bài học. Nếu tài liệu không đủ thông tin để khẳng định, hãy thông báo rõ "Bài học không đủ thông tin để làm rõ nội dung này".
 5. BẮT BUỘC trả lời đúng theo định dạng JSON Schema được yêu cầu. Không thêm bất kỳ lời dẫn hay bọc markdown nào ngoài JSON.`;
 
-    const docContextSnippet = documentContextText ? `
+      const docContextSnippet = documentContextText ? `
 <current_document_context>
 ${documentContextText}
 </current_document_context>
 ` : '';
 
-    let userPrompt = '';
-    const cleanInstruction = (instruction || '').trim();
+      const cleanInstruction = (instruction || '').trim();
 
-    if (['explain', 'example', 'translate'].includes(mode)) {
-      userPrompt = [
-        docContextSnippet,
-        `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
-        `<selected_text>\n${rawText}\n</selected_text>`,
-        cleanInstruction.replace(/<selected_text>/g, `"${rawText}"`).replace(/<context>/g, '')
-      ].filter(Boolean).join('\n\n');
-    } else if (mode === 'flashcard') {
-      userPrompt = [
-        `[YÊU CẦU: TẠO FLASHCARD HỌC TẬP TỪ ĐOẠN TRÍCH]
+      if (['explain', 'example', 'translate'].includes(mode)) {
+        userPrompt = [
+          docContextSnippet,
+          `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
+          `<selected_text>\n${rawText}\n</selected_text>`,
+          cleanInstruction.replace(/<selected_text>/g, `"${rawText}"`).replace(/<context>/g, '')
+        ].filter(Boolean).join('\n\n');
+      } else if (mode === 'flashcard') {
+        userPrompt = [
+          `[YÊU CẦU: TẠO FLASHCARD HỌC TẬP TỪ ĐOẠN TRÍCH]
 - Tạo câu hỏi (mặt trước) và câu trả lời trọng tâm (mặt sau) bám sát kiến thức trong <selected_text> và <current_document_context>.
 - Đặt nội dung vào trường "text" theo định dạng:
 **Câu hỏi:** [Nội dung câu hỏi ôn tập]
 **Trả lời:** [Câu trả lời giải thích súc tích]`,
-        docContextSnippet,
-        `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
-        `<selected_text>\n${rawText}\n</selected_text>`
-      ].filter(Boolean).join('\n\n');
-    } else if (mode === 'quiz') {
-      userPrompt = [
-        `[YÊU CẦU: TẠO CÂU HỎI TRẮC NGHIỆM QUIZ TỪ ĐOẠN TRÍCH]
+          docContextSnippet,
+          `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
+          `<selected_text>\n${rawText}\n</selected_text>`
+        ].filter(Boolean).join('\n\n');
+      } else if (mode === 'quiz') {
+        userPrompt = [
+          `[YÊU CẦU: TẠO CÂU HỎI TRẮC NGHIỆM QUIZ TỪ ĐOẠN TRÍCH]
 - Tạo 1 câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có 1 đáp án đúng và 3 đáp án nhiễu hợp lý từ <selected_text> và <current_document_context>.
 - Đặt nội dung vào trường "text" gồm:
 **Câu hỏi:** [Nội dung câu hỏi]
@@ -365,10 +524,12 @@ D. [Phương án D]
 
 **Đáp án đúng:** [Phương án đúng]
 **Giải thích:** [Phân tích chi tiết tại sao đúng và tại sao các phương án khác chưa chính xác]`,
-        docContextSnippet,
-        `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
-        `<selected_text>\n${rawText}\n</selected_text>`
-      ].filter(Boolean).join('\n\n');
+          docContextSnippet,
+          `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
+          `<selected_text>\n${rawText}\n</selected_text>`
+        ].filter(Boolean).join('\n\n');
+      }
+      optimalMaxTokens = (mode === 'quiz' || mode === 'flashcard') ? 700 : 450;
     }
 
     const jsonSchema = {
@@ -398,8 +559,7 @@ D. [Phương án D]
       required: ['mode', 'text']
     };
 
-    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens theo chế độ (450-800 tokens) để tiết kiệm token tối đa và phản hồi tức thì
-    const optimalMaxTokens = (mode === 'quiz' || mode === 'flashcard') ? 700 : 450;
+    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens theo chế độ để tiết kiệm token tối đa
     let aiResponse = null;
     let callError = null;
     try {
@@ -473,7 +633,7 @@ D. [Phương án D]
     }
 
     // 7 & 8. Lưu Cache và cập nhật lượt dùng CHỈ KHI KẾT QUẢ ĐÃ XÁC THỰC HỢP LỆ
-    Promise.all([
+    const cachePromises = [
       cacheDocRef.set({
         key: cacheKey,
         mode: mode,
@@ -481,12 +641,30 @@ D. [Phương án D]
         targetLang: targetLang,
         result: finalResult,
         createdAt: new Date().toISOString()
-      }).catch(e => console.warn('Cache save:', e.message)),
+      }).catch(e => console.warn('Cache save:', e.message))
+    ];
+
+    if (termCacheRef) {
+      cachePromises.push(
+        termCacheRef.set({
+          key: termCacheKey,
+          mode: mode,
+          style: style,
+          targetLang: targetLang,
+          result: finalResult,
+          createdAt: new Date().toISOString()
+        }).catch(e => console.warn('Term cache save:', e.message))
+      );
+    }
+
+    cachePromises.push(
       (isGuest
         ? db.doc(`users_guest_usage/${guestId}`).set({ count: admin.firestore.FieldValue.increment(1), lastUsed: new Date().toISOString() }, { merge: true })
         : db.doc(`users/${userId}/billing/ai_${new Date().toISOString().substring(0, 7)}`).set({ requests: admin.firestore.FieldValue.increment(1), lastUsed: new Date().toISOString() }, { merge: true })
       ).catch(e => console.warn('Quota save:', e.message))
-    ]).catch(() => {});
+    );
+
+    Promise.all(cachePromises).catch(() => {});
 
     // 9. Trả kết quả về Client NGAY LẬP TỨC
     return res.status(200).json({

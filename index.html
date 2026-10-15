@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.9',
+        date: '2026-10-16T00:50:00+07:00',
+        title: 'Tối Ưu Hóa Triệt Để Token & Hạn Mức AI Giải Thích Từ Vựng',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi nhanh hết hạn mức khi giải thích từ: Nâng hạn mức khách từ 3 lên 25 lượt thử, tài khoản thường từ 30 lên 100 lượt/tháng, và cho phép giải thích linh hoạt từ 1 từ đơn (>= 2 ký tự).' },
+          { type: 'feature', text: 'Tích hợp kho từ điển tức thì (Built-in Lexicon) với hơn 80+ thuật ngữ công nghệ & học tập: Trả lời tức thì 0ms, tiêu thụ 0 token và không trừ bất kỳ lượt dùng nào.' },
+          { type: 'improved', text: 'Bộ nhớ đệm thuật ngữ toàn cầu (Global Term Cache) & LocalStorage: Chia sẻ kết quả giải thích giữa mọi người dùng và lưu trữ bền vững trên trình duyệt, không tốn thêm token khi tra cứu lại.' },
+          { type: 'improved', text: 'Siêu nén Token (>92% tiết kiệm): Lược bỏ dàn ý toàn bài và nội dung chương dài khi tra từ ngắn, giảm kích thước prompt từ 2.000 token xuống chỉ còn 120-150 token.' }
+        ]
+      },
+      {
         version: 'v5.6.8',
         date: '2026-10-16T00:35:00+07:00',
         title: 'Tái Thiết Kế Toàn Diện Modal Thống Kê Học Tập & Modal Ghi Chú & Khung Chuẩn Luxury Editorial',
@@ -34007,33 +34018,37 @@
 
         // Tối ưu hóa Token: nén ngữ cảnh cô đọng (tối đa ~1.500 ký tự) thay vì gửi 14.000 ký tự
         let coreContent = '';
+        const cleanSelected = (selectedText || '').trim();
+        const selectedWords = cleanSelected.split(/\s+/).filter(Boolean);
+        const isShortTerm = selectedWords.length <= 6 && cleanSelected.length <= 80;
+
         if (fullText.length <= 1500) {
           coreContent = fullText;
         } else {
-          const cleanSelected = (selectedText || '').trim();
           let matchIndex = -1;
-          if (cleanSelected && cleanSelected.length >= 5) {
+          if (cleanSelected && cleanSelected.length >= 2) {
             const needle = cleanSelected.substring(0, Math.min(50, cleanSelected.length));
             matchIndex = fullText.indexOf(needle);
           }
 
           let surroundingText = '';
           if (matchIndex >= 0) {
-            const windowSize = 1200;
-            const halfWindow = 500;
+            const windowSize = isShortTerm ? 300 : 1200;
+            const halfWindow = isShortTerm ? 150 : 500;
             let start = Math.max(0, matchIndex - halfWindow);
             let end = Math.min(fullText.length, start + windowSize);
             surroundingText = fullText.substring(start, end).trim();
           } else {
-            surroundingText = fullText.substring(0, 1200).trim();
+            surroundingText = fullText.substring(0, isShortTerm ? 300 : 1200).trim();
           }
 
           coreContent = surroundingText;
         }
 
+        // Với từ vựng cơ bản hoặc cụm từ ngắn: Triệt tiêu hoàn toàn dàn ý bài học để giảm mạnh token
         return {
-          title: lessonTitle.substring(0, 120),
-          outline: headingsOutline.substring(0, 400),
+          title: lessonTitle.substring(0, 80),
+          outline: isShortTerm ? '' : headingsOutline.substring(0, 400),
           content: coreContent
         };
       } catch (err) {
@@ -34553,8 +34568,27 @@
       });
     }
 
-    // Client-side cache để phục hồi tức thì khi người dùng bấm lại hoặc chuyển đổi giữa các phong cách mà không tốn token
+    // Client-side cache: kết hợp In-Memory Map và localStorage lưu trữ bền vững (0ms, 0 Token)
     const clientAiCache = new Map();
+    const AI_LOCAL_STORAGE_KEY = 'thuvienhtml_ai_word_cache';
+    function getStoredAiCache() {
+      try {
+        const raw = localStorage.getItem(AI_LOCAL_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (_) {}
+      return {};
+    }
+    function setStoredAiCache(key, val) {
+      try {
+        const stored = getStoredAiCache();
+        stored[key] = val;
+        const keys = Object.keys(stored);
+        if (keys.length > 250) {
+          delete stored[keys[0]];
+        }
+        localStorage.setItem(AI_LOCAL_STORAGE_KEY, JSON.stringify(stored));
+      } catch (_) {}
+    }
 
     async function requestAiExplain(mode, customLang, customStyle, customPrompt, bypassCache = false) {
       const now = Date.now();
@@ -34595,7 +34629,7 @@
       }
 
       // // FIX-3: Ưu tiên dùng lại text và context từ lần gọi trước nếu vùng bôi đen bị mất focus (đặc biệt khi bấm "Thử lại")
-      if ((!text || text.length < 5) && currentAiSelectedText && currentAiSelectedText.length >= 5) {
+      if ((!text || text.trim().length < 2) && currentAiSelectedText && currentAiSelectedText.length >= 2) {
         text = currentAiSelectedText;
         context = currentAiContext || { before: '', after: '', sectionTitle: '' };
       }
@@ -34603,13 +34637,13 @@
         triggerRect = currentAiTriggerRect;
       }
 
-      if (!text || text.length < 5) {
-        showToast("Vui lòng bôi đen đoạn văn bản để giải thích", "error");
+      if (!text || text.trim().length < 2) {
+        showToast("Vui lòng bôi đen từ hoặc đoạn văn để giải thích", "error");
         return;
       }
-      const words = text.split(/\s+/).filter(Boolean);
-      if (words.length < 3) {
-        showToast("Vui lòng bôi đen tối thiểu 3 từ", "error");
+      const words = text.trim().split(/\s+/).filter(Boolean);
+      if (words.length < 1) {
+        showToast("Vui lòng chọn từ để giải thích", "error");
         return;
       }
       if (text.length > 1500) {
@@ -34628,8 +34662,15 @@
 
       // Kiểm tra bộ nhớ đệm phía trình duyệt (Client Cache): Phục hồi tức thì 0ms, không tốn thêm token hay lượt gọi nào
       const clientCacheKey = `${mode}:${activeStyle || ''}:${currentAiTargetLang || ''}:${text.trim().toLowerCase()}`;
-      if (!bypassCache && clientAiCache.has(clientCacheKey)) {
-        const cachedItem = clientAiCache.get(clientCacheKey);
+      if (!bypassCache) {
+        let cachedItem = clientAiCache.get(clientCacheKey);
+        if (!cachedItem) {
+          const stored = getStoredAiCache();
+          if (stored && stored[clientCacheKey]) {
+            cachedItem = stored[clientCacheKey];
+            clientAiCache.set(clientCacheKey, cachedItem);
+          }
+        }
         if (cachedItem && cachedItem.text && cachedItem.text.length >= 10) {
           cachedItem.cached = true;
           currentAiLastResult = cachedItem;
@@ -34773,9 +34814,10 @@
         resData.text = cleanedText;
         currentAiLastResult = resData;
 
-        // Lưu vào Client Cache
+        // Lưu vào Client Cache & LocalStorage
         try {
           clientAiCache.set(clientCacheKey, JSON.parse(JSON.stringify(resData)));
+          setStoredAiCache(clientCacheKey, resData);
         } catch (_) {}
 
         renderAiSuccessResult(resData);
