@@ -441,6 +441,9 @@ export function openAdminPanel() {
   closeAdminLogin();
   window.isAdminSessionActive = true;
   window.currentAdminUser = currentAdminUser;
+  try {
+    if (typeof window.updateFestivalThemeAdminUI === 'function') window.updateFestivalThemeAdminUI();
+  } catch (_) {}
   const panel = document.getElementById('adminPanelModal');
   if (panel) {
     if (panel._closeTimer) {
@@ -493,6 +496,9 @@ export async function endAdminSession() {
   window.isAdminSessionActive = false;
   window.currentAdminUser = null;
   currentAdminUser = null;
+  try {
+    if (typeof window.updateFestivalThemeAdminUI === 'function') window.updateFestivalThemeAdminUI();
+  } catch (_) {}
   if (adminSessionTimer) {
     clearInterval(adminSessionTimer);
     adminSessionTimer = null;
