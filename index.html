@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.6',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Tối Ưu Hóa Quota & Token AI, Thiết Kế Icon Độc Bản & Transition Tìm Kiếm Mượt Mà',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi tài khoản Pro vượt mức sử dụng AI: Chuẩn hóa truy xuất cấu hình gói cước từ doc.plans, hỗ trợ hạn mức vô hạn (-1) và sửa lỗi nhận diện sai gói Free.' },
+          { type: 'improved', text: 'Tối ưu hóa token AI siêu tiết kiệm (giảm ~80% token): Rút gọn ngữ cảnh thông minh từ 14.000 xuống 1.200 ký tự, tinh giản câu lệnh prompt và bổ sung bộ nhớ đệm phía client trả về kết quả 0ms.' },
+          { type: 'feature', text: 'Thiết kế icon vector SVG độc bản cho 4 tiếng ồn trắng: Thay thế emoji bằng hệ thống icon Mưa rào, Sóng biển, Quán Cafe và Sóng Alpha thiết kế riêng theo chuẩn Editorial cao cấp.' },
+          { type: 'improved', text: 'Hiệu ứng chuyển động (Transition) nhẹ nhàng, tinh tế: Thêm animation mượt mà khi bấm mở/đóng thanh tìm kiếm toàn cục và Command Palette (Ctrl+K), chống giật hình và phù hợp vibe web.' }
+        ]
+      },
+      {
         version: 'v5.6.5',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Thanh Công Cụ Tập Trung Pomodoro & Tiếng Ồn Trắng Đa Dạng',
@@ -2057,16 +2068,99 @@
       background-color: var(--reading-bg-dark, #111317);
     }
 
+    /* // EDITORIAL FOCUS TOOLBAR & AMBIENT SOUND STYLES */
+    #focusTopBar {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+    .dark #focusTopBar {
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3), 0 2px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .ambient-card {
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .ambient-card:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+    }
+    .dark .ambient-card:hover {
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.25);
+    }
+    .ambient-card:active {
+      transform: translateY(0) scale(0.97);
+    }
     .ambient-card.is-active {
-      background-color: rgba(99, 102, 241, 0.12) !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
       border-color: #6366F1 !important;
       color: #4F46E5 !important;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+      box-shadow: 0 0 0 1.5px rgba(99, 102, 241, 0.3), 0 4px 14px -2px rgba(99, 102, 241, 0.18) !important;
+    }
+    .ambient-card.is-active .ambient-icon-box {
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+    }
+    .ambient-card.is-active .ambient-indicator-dot {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+    .ambient-card.is-active .ambient-label {
+      color: #4338CA !important;
+      font-weight: 600 !important;
     }
     .dark .ambient-card.is-active {
-      background-color: rgba(99, 102, 241, 0.22) !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.15) 100%) !important;
       border-color: #818CF8 !important;
-      color: #A5B4FC !important;
+      color: #C7D2FE !important;
+      box-shadow: 0 0 0 1.5px rgba(129, 140, 248, 0.4), 0 4px 14px -2px rgba(0, 0, 0, 0.4) !important;
+    }
+    .dark .ambient-card.is-active .ambient-icon-box {
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.45);
+    }
+    .dark .ambient-card.is-active .ambient-label {
+      color: #E0E7FF !important;
+      font-weight: 600 !important;
+    }
+
+    /* Tùy biến thanh trượt âm lượng mượt mà chuẩn Editorial */
+    #ambientVolumeSlider {
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+      background: #E7E5DF;
+      transition: background 0.15s ease;
+    }
+    .dark #ambientVolumeSlider {
+      background: #2C3240;
+    }
+    #ambientVolumeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #4F46E5;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    #ambientVolumeSlider::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+      background: #4338CA;
+    }
+    .dark #ambientVolumeSlider::-webkit-slider-thumb {
+      background: #818CF8;
+      border: 2px solid #14161C;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    }
+    .dark #ambientVolumeSlider::-webkit-slider-thumb:hover {
+      background: #A5B4FC;
     }
 
   
@@ -2521,19 +2615,39 @@
       }
     }
 
+    /* Search Button Editorial Transitions */
+    #headerSearchTriggerBtn {
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #headerSearchTriggerBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px -2px rgba(99, 102, 241, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    #headerSearchTriggerBtn:active {
+      transform: translateY(0) scale(0.985);
+    }
+    .dark #headerSearchTriggerBtn:hover {
+      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.45);
+    }
+
     /* Search Palette Container */
     #searchCommandPaletteBackdrop {
       z-index: var(--z-search-backdrop, 9999);
-      background-color: rgba(10, 12, 16, 0.45);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background-color: rgba(10, 12, 16, 0.48);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 1;
+    }
+    #searchCommandPaletteBackdrop.palette-fade-out {
+      opacity: 0 !important;
     }
     #searchCommandPalette {
       z-index: var(--z-search, 10000);
       background-color: var(--search-bg);
       border-color: var(--search-border);
       color: var(--search-text);
-      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--search-border);
+      box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--search-border);
       transform-origin: top center;
     }
     @media (min-width: 901px) {
@@ -2547,17 +2661,30 @@
         border-radius: 16px !important;
       }
       #searchCommandPalette.palette-entering {
-        animation: searchPaletteScaleDown 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteScaleDown 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      #searchCommandPalette.palette-leaving {
+        animation: searchPaletteScaleUpOut 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     }
     @keyframes searchPaletteScaleDown {
       0% {
         opacity: 0;
-        transform: translate(-50%, -8px) scale(0.98);
+        transform: translate(-50%, -10px) scale(0.975);
       }
       100% {
         opacity: 1;
         transform: translate(-50%, 0) scale(1);
+      }
+    }
+    @keyframes searchPaletteScaleUpOut {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -8px) scale(0.98);
       }
     }
 
@@ -2574,20 +2701,36 @@
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
       #searchCommandPalette.palette-entering {
-        animation: searchPaletteSlideUp 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteSlideUp 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      #searchCommandPalette.palette-leaving {
+        animation: searchPaletteSlideDown 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     }
     @keyframes searchPaletteSlideUp {
       0% {
-        transform: translateY(100%);
+        opacity: 0.5;
+        transform: translateY(20px) scale(0.99);
       }
       100% {
-        transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes searchPaletteSlideDown {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.99);
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #searchCommandPalette.palette-entering {
+      #searchCommandPalette.palette-entering,
+      #searchCommandPalette.palette-leaving {
         animation: none !important;
       }
     }
@@ -3884,7 +4027,7 @@
 
       <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (CSS Grid cân bằng chính giữa tuyệt đối trên Desktop) -->
       <div class="header-search-center-slot hidden min-[901px]:flex items-center justify-center w-full min-w-0 px-1 sm:px-2">
-        <button id="headerSearchTriggerBtn" type="button" aria-label="Tìm kiếm bài học, câu hỏi ôn tập (Ctrl K hoặc ⌘ K)" class="w-full h-10 px-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#181B20] hover:border-indigo-500/40 flex items-center justify-between cursor-pointer transition select-none group shadow-2xs">
+        <button id="headerSearchTriggerBtn" type="button" aria-label="Tìm kiếm bài học, câu hỏi ôn tập (Ctrl K hoặc ⌘ K)" class="w-full h-10 px-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#181B20] hover:border-indigo-500/40 active:scale-[0.985] active:brightness-95 flex items-center justify-between cursor-pointer transition select-none group shadow-2xs">
           <div class="flex items-center min-w-0 gap-2.5">
             <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors"><use href="#s-search"></use></svg>
             <span class="text-xs sm:text-sm text-[#6E6B65]/80 dark:text-[#979DA8]/80 font-normal truncate">Tìm kiếm bài học, câu hỏi ôn tập...</span>
@@ -3901,7 +4044,7 @@
       <div class="header-right-cluster flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap ml-auto">
         
         <!-- Nút Tìm kiếm khi màn hình nhỏ (≤ 900px, kích thước 36x36px gọn gàng) -->
-        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[901px]:hidden touch-target h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" title="Tìm kiếm">
+        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[901px]:hidden touch-target h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 active:scale-90 transition shrink-0 cursor-pointer" title="Tìm kiếm">
           <svg class="w-4 h-4 sm:w-5 sm:h-5"><use href="#s-search"></use></svg>
         </button>
 
@@ -7434,27 +7577,52 @@
         <div class="flex items-center gap-1 sm:gap-1.5" role="group" aria-label="Tiếng ồn trắng">
           
           <!-- 1. Mưa rào -->
-          <button id="btnAmbientRain" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="rain" title="Tiếng mưa rào thư thái">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🌧️</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Mưa rào</span>
+          <button id="btnAmbientRain" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] transition cursor-pointer relative" data-ambient="rain" title="Tiếng mưa rào thư thái">
+            <span class="ambient-indicator-dot absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0 scale-50 transition-all shadow-xs ring-2 ring-white dark:ring-[#111317]"></span>
+            <div class="ambient-icon-box w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg flex items-center justify-center transition-all bg-stone-100 dark:bg-stone-800 text-sky-600 dark:text-sky-400 group-hover:scale-105">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 14.5A5.5 5.5 0 0 1 9.2 10a6 6 0 0 1 11.3 2.5A4.5 4.5 0 0 1 19 20H5a4 4 0 0 1-1-5.5Z" fill="currentColor" fill-opacity="0.15"/>
+                <path d="M8 22v-2m4 2v-2m4 2v-2"/>
+              </svg>
+            </div>
+            <span class="ambient-label text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-1 whitespace-nowrap">Mưa rào</span>
           </button>
 
           <!-- 2. Sóng biển -->
-          <button id="btnAmbientOcean" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="ocean" title="Tiếng sóng biển rì rào">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🌊</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Sóng biển</span>
+          <button id="btnAmbientOcean" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] transition cursor-pointer relative" data-ambient="ocean" title="Tiếng sóng biển rì rào">
+            <span class="ambient-indicator-dot absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0 scale-50 transition-all shadow-xs ring-2 ring-white dark:ring-[#111317]"></span>
+            <div class="ambient-icon-box w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg flex items-center justify-center transition-all bg-stone-100 dark:bg-stone-800 text-teal-600 dark:text-teal-400 group-hover:scale-105">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 13c2.4-2.5 5.6-2.5 8 0 2.4 2.5 5.6 2.5 8 0 1.8-1.9 3.8-2.2 4-2.2"/>
+                <path d="M2 18c2.4-2.5 5.6-2.5 8 0 2.4 2.5 5.6 2.5 8 0 1.8-1.9 3.8-2.2 4-2.2" opacity="0.6"/>
+              </svg>
+            </div>
+            <span class="ambient-label text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-1 whitespace-nowrap">Sóng biển</span>
           </button>
 
           <!-- 3. Quán Cafe -->
-          <button id="btnAmbientCafe" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="cafe" title="Không gian quán cafe tập trung">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">☕</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Quán Cafe</span>
+          <button id="btnAmbientCafe" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] transition cursor-pointer relative" data-ambient="cafe" title="Không gian quán cafe tập trung">
+            <span class="ambient-indicator-dot absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0 scale-50 transition-all shadow-xs ring-2 ring-white dark:ring-[#111317]"></span>
+            <div class="ambient-icon-box w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg flex items-center justify-center transition-all bg-stone-100 dark:bg-stone-800 text-amber-600 dark:text-amber-400 group-hover:scale-105">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M17 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M3 8h14v7a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" fill="currentColor" fill-opacity="0.15"/>
+                <path d="M6 2v2m4-2v2m4-2v2"/>
+              </svg>
+            </div>
+            <span class="ambient-label text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-1 whitespace-nowrap">Quán Cafe</span>
           </button>
 
           <!-- 4. Sóng Alpha -->
-          <button id="btnAmbientAlpha" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="alpha" title="Sóng não Alpha 10Hz kích thích tập trung sâu">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🧠</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Sóng Alpha</span>
+          <button id="btnAmbientAlpha" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] transition cursor-pointer relative" data-ambient="alpha" title="Sóng não Alpha 10Hz kích thích tập trung sâu">
+            <span class="ambient-indicator-dot absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0 scale-50 transition-all shadow-xs ring-2 ring-white dark:ring-[#111317]"></span>
+            <div class="ambient-icon-box w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg flex items-center justify-center transition-all bg-stone-100 dark:bg-stone-800 text-violet-600 dark:text-violet-400 group-hover:scale-105">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12h2l3-6 4 12 3-9 2 6 2-3h2"/>
+                <circle cx="12" cy="12" r="9" stroke-dasharray="2 3" opacity="0.4"/>
+              </svg>
+            </div>
+            <span class="ambient-label text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-1 whitespace-nowrap">Sóng Alpha</span>
           </button>
         </div>
 
@@ -15887,13 +16055,13 @@
       for (const line of lines) {
         const vertOverlap = Math.min(line.bottom, r.bottom) - Math.max(line.top, r.top);
         const minHeight = Math.min(line.bottom - line.top, r.height);
-        const isSameLineVert = Math.abs(line.top - r.top) <= 3 || (minHeight > 0 && vertOverlap >= minHeight * 0.45);
+        const isSameLineVert = Math.abs(line.top - r.top) <= 4 || (minHeight > 0 && vertOverlap >= minHeight * 0.4);
 
         if (isSameLineVert) {
           const horizOverlap = Math.min(line.right, r.right) - Math.max(line.left, r.left);
           const horizGap = Math.max(0, Math.max(line.left, r.left) - Math.min(line.right, r.right));
-          // Chỉ gộp khi hai đoạn từ nằm trên cùng một dòng và khoảng cách chữ <= 28px
-          if (horizOverlap > -4 || horizGap <= 28) {
+          // Gộp khi hai đoạn từ nằm trên cùng một dòng và khoảng cách chữ <= 60px (chứa được mũi tên ➔, biểu tượng unicode và khoảng cách)
+          if (horizOverlap > -4 || horizGap <= 60) {
             foundLine = line;
             break;
           }
@@ -16178,7 +16346,17 @@
             const lines = mergeRectsByLine(groupRawRects);
             if (lines.length === 0) return;
 
-            const pathD = buildSteppedPath(lines, 6, 3);
+            let pathD = buildSteppedPath(lines, 6, 3);
+            if (!pathD && lines.length > 0) {
+              // Fallback an toàn: tạo khung chữ nhật bo góc cho từng dòng
+              pathD = lines.map(line => {
+                const w = Math.max(1, line.right - line.left);
+                const h = Math.max(1, line.bottom - line.top);
+                const rad = Math.min(6, w / 2, h / 2);
+                const L = line.left - 2, R = line.right + 2, T = line.top - 2, B = line.bottom + 2;
+                return `M ${(L + rad).toFixed(1)} ${T.toFixed(1)} L ${(R - rad).toFixed(1)} ${T.toFixed(1)} Q ${R.toFixed(1)} ${T.toFixed(1)} ${R.toFixed(1)} ${(T + rad).toFixed(1)} L ${R.toFixed(1)} ${(B - rad).toFixed(1)} Q ${R.toFixed(1)} ${B.toFixed(1)} ${(R - rad).toFixed(1)} ${B.toFixed(1)} L ${(L + rad).toFixed(1)} ${B.toFixed(1)} Q ${L.toFixed(1)} ${B.toFixed(1)} ${L.toFixed(1)} ${(B - rad).toFixed(1)} L ${L.toFixed(1)} ${(T + rad).toFixed(1)} Q ${L.toFixed(1)} ${T.toFixed(1)} ${(L + rad).toFixed(1)} ${T.toFixed(1)} Z`;
+              }).join(' ');
+            }
             if (pathD) {
               allPathSegments.push(pathD);
               allLines.push(...lines);
@@ -16313,8 +16491,13 @@
       NodeFilter.SHOW_TEXT,
       {
         acceptNode(node) {
-          if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
-          if (range.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
+          if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
+          if (node !== startContainer && node !== endContainer && !node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
+          try {
+            if (range.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
+          } catch (_) {
+            return NodeFilter.FILTER_ACCEPT;
+          }
           return NodeFilter.FILTER_REJECT;
         }
       },
@@ -16401,25 +16584,99 @@
     return null;
   }
 
-  function findRangeByText(textQuote, root = document.body) {
+  function findRangeByText(textQuote, root = document.body, prefix = '', suffix = '') {
     if (!textQuote || !root) return null;
-    const quote = textQuote.trim();
-    if (!quote) return null;
+    const rawQuote = textQuote.trim();
+    if (!rawQuote) return null;
 
-    const allTextNodes = [];
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+    let fullDocText = '';
+    const nodeOffsets = [];
+
     while (walker.nextNode()) {
-      if (walker.currentNode.nodeValue) allTextNodes.push(walker.currentNode);
+      const node = walker.currentNode;
+      const val = node.nodeValue || '';
+      if (val) {
+        nodeOffsets.push({ node, start: fullDocText.length, end: fullDocText.length + val.length });
+        fullDocText += val;
+      }
     }
 
-    for (const node of allTextNodes) {
-      const val = node.nodeValue;
-      let pos = val.indexOf(quote);
-      if (pos !== -1) {
+    if (nodeOffsets.length === 0) return null;
+
+    let matchIdx = -1;
+    let matchLen = rawQuote.length;
+
+    // 1. Thử tìm với tiền tố prefix
+    if (prefix && prefix.trim()) {
+      const p = prefix.trim();
+      const combined = p + rawQuote;
+      const pIdx = fullDocText.indexOf(combined);
+      if (pIdx !== -1) {
+        matchIdx = pIdx + p.length;
+      }
+    }
+
+    // 2. Tìm trực tiếp nguyên mẫu
+    if (matchIdx === -1) {
+      matchIdx = fullDocText.indexOf(rawQuote);
+    }
+
+    // 3. Chuẩn hoá khoảng trắng, ký tự xuống dòng và NBSP (\u00a0)
+    if (matchIdx === -1) {
+      const cleanQuote = rawQuote.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
+      let cleanDoc = '';
+      const docIndexMap = [];
+      for (let i = 0; i < fullDocText.length; i++) {
+        const ch = fullDocText[i];
+        if (ch === '\u00a0' || /\s/.test(ch)) {
+          if (cleanDoc.length === 0 || cleanDoc[cleanDoc.length - 1] !== ' ') {
+            docIndexMap.push(i);
+            cleanDoc += ' ';
+          }
+        } else {
+          docIndexMap.push(i);
+          cleanDoc += ch;
+        }
+      }
+
+      const cIdx = cleanDoc.indexOf(cleanQuote);
+      if (cIdx !== -1) {
+        matchIdx = docIndexMap[cIdx];
+        const endCleanIdx = cIdx + cleanQuote.length - 1;
+        const endOrigIdx = (endCleanIdx < docIndexMap.length) ? docIndexMap[endCleanIdx] + 1 : fullDocText.length;
+        matchLen = Math.max(1, endOrigIdx - matchIdx);
+      }
+    }
+
+    if (matchIdx === -1) return null;
+
+    const matchEnd = matchIdx + matchLen;
+    let startNode = null, startOff = 0;
+    let endNode = null, endOff = 0;
+
+    for (let i = 0; i < nodeOffsets.length; i++) {
+      const info = nodeOffsets[i];
+      if (!startNode && info.end > matchIdx) {
+        startNode = info.node;
+        startOff = Math.max(0, matchIdx - info.start);
+      }
+      if (!endNode && info.end >= matchEnd) {
+        endNode = info.node;
+        endOff = Math.min(info.node.nodeValue.length, matchEnd - info.start);
+        break;
+      }
+    }
+
+    if (startNode && endNode) {
+      try {
         const r = document.createRange();
-        r.setStart(node, pos);
-        r.setEnd(node, pos + quote.length);
+        r.setStart(startNode, startOff);
+        r.setEnd(endNode, endOff);
         return r;
+      } catch (e) {
+        console.warn('[findRangeByText] Lỗi setStart/setEnd:', e);
       }
     }
     return null;
@@ -16461,13 +16718,13 @@
         try {
           if (!frame || !frame.id) return;
           let range = null;
-          if (typeof frame.startOffset === 'number' && typeof frame.endOffset === 'number' && frame.endOffset > frame.startOffset) {
+          if (typeof frame.startOffset === 'number' && typeof frame.endOffset === 'number' && frame.endOffset > frame.startOffset && frame.startOffset >= 0) {
             range = createRangeFromOffsets(frame.startOffset, frame.endOffset, document.body);
           }
           if (!range) {
             const quote = (frame.anchor?.exact || frame.text || '').trim();
             if (quote) {
-              range = findRangeByText(quote, document.body);
+              range = findRangeByText(quote, document.body, frame.anchor?.prefix || '', frame.anchor?.suffix || '');
             }
           }
           if (!range) return;
@@ -16680,12 +16937,33 @@
 
       let startOffset = -1, endOffset = -1;
       try {
-        const offsetRange = range.cloneRange();
-        offsetRange.selectNodeContents(document.body);
-        offsetRange.setEnd(range.startContainer, range.startOffset);
-        startOffset = offsetRange.toString().length;
-        endOffset = startOffset + text.length;
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        let currentPos = 0;
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (node === range.startContainer) {
+            startOffset = currentPos + range.startOffset;
+          }
+          if (node === range.endContainer) {
+            endOffset = currentPos + range.endOffset;
+            break;
+          }
+          currentPos += (node.nodeValue ? node.nodeValue.length : 0);
+        }
+        if (startOffset !== -1 && endOffset === -1) {
+          endOffset = startOffset + text.length;
+        }
       } catch (_) {}
+
+      if (startOffset === -1) {
+        try {
+          const offsetRange = range.cloneRange();
+          offsetRange.selectNodeContents(document.body);
+          offsetRange.setEnd(range.startContainer, range.startOffset);
+          startOffset = offsetRange.toString().length;
+          endOffset = startOffset + text.length;
+        } catch (_) {}
+      }
 
       // Kiểm tra chính xác đoạn bôi đen có nằm trong hoặc giao với khung nào không
       let hasIntersectingFrames = false;
@@ -17867,11 +18145,15 @@
         case 'TEXT_DESELECTED': {
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           const mbActionBar = document.getElementById('mobileSelectionActionBar');
+          const hlModal = document.getElementById('highlightDetailModal');
+          const isModalOpen = hlModal && !hlModal.classList.contains('hidden');
           const isInteractingWithToolbar = (hlToolbar && (hlToolbar.matches(':hover') || hlToolbar.contains(document.activeElement))) ||
                                            (mbActionBar && (mbActionBar.matches(':hover') || mbActionBar.contains(document.activeElement)));
           if (!isInteractingWithToolbar) {
             currentSelectionInfoBridge = null;
-            activeHighlightItem = null;
+            if (!isModalOpen) {
+              activeHighlightItem = null;
+            }
             window._lastCapturedSelectionOffsets = null;
             if (typeof updateAiButtonsVisibility === 'function') {
               updateAiButtonsVisibility('');
@@ -25061,13 +25343,15 @@
       }
 
       if (searchCommandPalette && searchCommandPaletteBackdrop) {
+        searchCommandPalette.classList.remove('palette-leaving');
+        searchCommandPaletteBackdrop.classList.remove('palette-fade-out');
         searchCommandPaletteBackdrop.classList.remove('hidden');
         searchCommandPalette.classList.remove('hidden');
         searchCommandPalette.classList.add('flex');
         searchCommandPalette.classList.add('palette-entering');
         setTimeout(() => {
           if (searchCommandPalette) searchCommandPalette.classList.remove('palette-entering');
-        }, 250);
+        }, 260);
       }
 
       const q = initialQuery || (paletteSearchInput ? paletteSearchInput.value : '') || '';
@@ -25092,9 +25376,16 @@
 
     function closeSearchCommandPalette() {
       if (searchCommandPalette && searchCommandPaletteBackdrop) {
-        searchCommandPalette.classList.add('hidden');
-        searchCommandPalette.classList.remove('flex');
-        searchCommandPaletteBackdrop.classList.add('hidden');
+        if (searchCommandPalette.classList.contains('palette-leaving')) return;
+        searchCommandPalette.classList.add('palette-leaving');
+        searchCommandPaletteBackdrop.classList.add('palette-fade-out');
+        setTimeout(() => {
+          searchCommandPalette.classList.add('hidden');
+          searchCommandPalette.classList.remove('flex');
+          searchCommandPalette.classList.remove('palette-leaving');
+          searchCommandPaletteBackdrop.classList.add('hidden');
+          searchCommandPaletteBackdrop.classList.remove('palette-fade-out');
+        }, 180);
       }
       searchActiveIndex = -1;
     }
@@ -32349,7 +32640,7 @@
     function applyFrameSlicing(existingFrames, newFrame, fullText) {
       if (!Array.isArray(existingFrames)) existingFrames = [];
       if (!newFrame) return existingFrames;
-      if (typeof newFrame.startOffset !== 'number' || typeof newFrame.endOffset !== 'number' || newFrame.endOffset <= newFrame.startOffset) {
+      if (typeof newFrame.startOffset !== 'number' || typeof newFrame.endOffset !== 'number' || newFrame.endOffset <= newFrame.startOffset || newFrame.startOffset < 0) {
         if (newFrame.text && newFrame.text.length >= 2) {
           return [...existingFrames, newFrame];
         }
@@ -32672,28 +32963,26 @@
         }
       }
 
-      // 3. Fallback: tìm theo prefix + text hoặc text trong fullText
+      // 3. Fallback: tìm theo prefix + text hoặc text trong fullText (hỗ trợ chuẩn hoá khoảng trắng & NBSP)
       if (startOffset === -1 && fullText && text) {
-        if (prefix) {
-          const combined = prefix + text;
-          const pos = fullText.indexOf(combined);
+        const normFull = fullText.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
+        const normText = text.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
+        const normPrefix = (prefix || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
+        if (normPrefix) {
+          const combined = normPrefix + normText;
+          const pos = normFull.indexOf(combined);
           if (pos !== -1) {
-            startOffset = pos + prefix.length;
-            endOffset = startOffset + text.length;
+            startOffset = pos + normPrefix.length;
+            endOffset = startOffset + normText.length;
           }
         }
         if (startOffset === -1) {
-          startOffset = fullText.indexOf(text);
-          if (startOffset !== -1) {
-            endOffset = startOffset + text.length;
+          const pos = normFull.indexOf(normText);
+          if (pos !== -1) {
+            startOffset = pos;
+            endOffset = startOffset + normText.length;
           }
         }
-      }
-
-      // Đảm bảo không bao giờ để endOffset <= startOffset nếu có text hợp lệ
-      if ((startOffset === -1 || endOffset <= startOffset) && text && text.length > 0) {
-        startOffset = 0;
-        endOffset = text.length;
       }
 
       let rawChosen = colorName || activeFramingColor || DEFAULT_FRAME_COLOR;
@@ -33535,14 +33824,11 @@
           fullText = bridgeReadableChunks.map(c => c.text).filter(Boolean).join('\n\n');
         }
 
-        // Kiểm tra độ dài: nếu <= 14.000 ký tự thì lấy toàn bộ
+        // Tối ưu hóa Token: nén ngữ cảnh cô đọng (tối đa ~1.500 ký tự) thay vì gửi 14.000 ký tự
         let coreContent = '';
-        if (fullText.length <= 14000) {
+        if (fullText.length <= 1500) {
           coreContent = fullText;
         } else {
-          // CHỐNG MÙ NGỮ CẢNH CUỐI BÀI: Giữ 2.000 ký tự đầu + Cửa sổ ~10.000 ký tự xoay quanh đoạn bôi đen
-          const introText = fullText.substring(0, 2000).trim();
-
           const cleanSelected = (selectedText || '').trim();
           let matchIndex = -1;
           if (cleanSelected && cleanSelected.length >= 5) {
@@ -33552,24 +33838,21 @@
 
           let surroundingText = '';
           if (matchIndex >= 0) {
-            const windowSize = 10000;
-            const halfWindow = 4500;
-            let start = Math.max(2000, matchIndex - halfWindow);
+            const windowSize = 1200;
+            const halfWindow = 500;
+            let start = Math.max(0, matchIndex - halfWindow);
             let end = Math.min(fullText.length, start + windowSize);
-            if (end - start < windowSize && start > 2000) {
-              start = Math.max(2000, end - windowSize);
-            }
             surroundingText = fullText.substring(start, end).trim();
           } else {
-            surroundingText = fullText.substring(2000, 12000).trim();
+            surroundingText = fullText.substring(0, 1200).trim();
           }
 
-          coreContent = `[PHẦN MỞ ĐẦU BÀI HỌC]:\n${introText}\n\n[...ĐOẠN TRÍCH ĐANG ĐỌC & NGỮ CẢNH BẢN GỐC...]:\n${surroundingText}`;
+          coreContent = surroundingText;
         }
 
         return {
-          title: lessonTitle,
-          outline: headingsOutline,
+          title: lessonTitle.substring(0, 120),
+          outline: headingsOutline.substring(0, 400),
           content: coreContent
         };
       } catch (err) {
@@ -34089,6 +34372,9 @@
       });
     }
 
+    // Client-side cache để phục hồi tức thì khi người dùng bấm lại hoặc chuyển đổi giữa các phong cách mà không tốn token
+    const clientAiCache = new Map();
+
     async function requestAiExplain(mode, customLang, customStyle, customPrompt, bypassCache = false) {
       const now = Date.now();
       if (now - lastAiRequestTime < 600) return;
@@ -34158,6 +34444,18 @@
       }
 
       showAiResultPopover(mode, triggerRect);
+
+      // Kiểm tra bộ nhớ đệm phía trình duyệt (Client Cache): Phục hồi tức thì 0ms, không tốn thêm token hay lượt gọi nào
+      const clientCacheKey = `${mode}:${activeStyle || ''}:${currentAiTargetLang || ''}:${text.trim().toLowerCase()}`;
+      if (!bypassCache && clientAiCache.has(clientCacheKey)) {
+        const cachedItem = clientAiCache.get(clientCacheKey);
+        if (cachedItem && cachedItem.text && cachedItem.text.length >= 10) {
+          cachedItem.cached = true;
+          currentAiLastResult = cachedItem;
+          renderAiSuccessResult(cachedItem);
+          return;
+        }
+      }
 
       // // FIX-4: Nâng cấp Skeleton UI 2 phần mô phỏng kết quả thực tế, ổn định chiều cao và tự đổi thông điệp sau 3s
       const bodyEl = document.getElementById('aiResultBody');
@@ -34293,6 +34591,12 @@
 
         resData.text = cleanedText;
         currentAiLastResult = resData;
+
+        // Lưu vào Client Cache
+        try {
+          clientAiCache.set(clientCacheKey, JSON.parse(JSON.stringify(resData)));
+        } catch (_) {}
+
         renderAiSuccessResult(resData);
 
       } catch (err) {
@@ -34719,13 +35023,20 @@
 
     function openFrameDetailModal(frameId, triggerRect) {
       if (!state.activeLessonId) return;
-      const list = (state.learningData.frames && state.learningData.frames[state.activeLessonId]) ||
-                   (state.learningData.highlights && state.learningData.highlights[state.activeLessonId]) || [];
-      const item = list.find(h => h.id === frameId);
+      const curLessonId = state.activeLessonId;
+      const fList = (state.learningData.frames && state.learningData.frames[curLessonId]) || [];
+      const hList = (state.learningData.highlights && state.learningData.highlights[curLessonId]) || [];
+      const item = fList.find(h => h.id === frameId) || hList.find(h => h.id === frameId);
       if (!item) return;
 
       activeHighlightItem = item;
+      window._currentEditingFrameItem = item;
       lastFrameTriggerRect = triggerRect || null;
+
+      if (hlDetailModal) {
+        hlDetailModal.dataset.frameId = frameId;
+        hlDetailModal.dataset.lessonId = curLessonId;
+      }
 
       const previewEl = document.getElementById('hlSelectedTextPreview');
       const labelInput = document.getElementById('hlLabelInput');
@@ -34817,31 +35128,32 @@
     }
 
     function persistCurrentFrameData() {
-      if (!activeHighlightItem) return;
+      const target = activeHighlightItem || window._currentEditingFrameItem;
+      if (!target) return;
       const labelInput = document.getElementById('hlLabelInput');
       const noteInput = document.getElementById('hlNoteInput');
       const newLabel = (labelInput ? labelInput.value : '').trim().substring(0, 12);
       const newNote = (noteInput ? noteInput.value : '').trim();
 
-      activeHighlightItem.label = newLabel;
-      activeHighlightItem.note = newNote;
-      activeHighlightItem.updatedAt = Date.now();
+      target.label = newLabel;
+      target.note = newNote;
+      target.updatedAt = Date.now();
       saveLearningData();
 
       // Đồng bộ tới Iframe
       postMessageToLessonIframe({
         type: 'UPDATE_FRAME_NOTE',
-        id: activeHighlightItem.id,
+        id: target.id,
         label: newLabel,
         note: newNote,
-        color: activeHighlightItem.color
+        color: target.color
       });
 
       // Cập nhật DOM trực tiếp nếu iframe cùng origin
       const iframe = document.getElementById('lessonIframe');
       const doc = getSafeIframeDocument(iframe);
       if (doc) {
-        const spans = doc.querySelectorAll(`[data-frame-id="${activeHighlightItem.id}"]`);
+        const spans = doc.querySelectorAll(`[data-frame-id="${target.id}"]`);
         spans.forEach(span => {
           if (newNote) span.title = newNote.substring(0, 120);
           else span.title = 'Nhấp đúp để ghi chú';
@@ -34926,10 +35238,16 @@
     });
 
     // Đóng và lưu khi bấm nút Xong hoặc nút X
+    // Đóng và lưu khi bấm nút Xong hoặc nút X
     function closeAndSaveFrameModal() {
       persistCurrentFrameData();
       hideModalAnimated(hlDetailModal);
       activeHighlightItem = null;
+      window._currentEditingFrameItem = null;
+      if (hlDetailModal) {
+        delete hlDetailModal.dataset.frameId;
+        delete hlDetailModal.dataset.lessonId;
+      }
       const iframe = document.getElementById('lessonIframe');
       if (iframe && iframe.contentWindow) {
         try { iframe.contentWindow.focus(); } catch (_) {}
@@ -34966,30 +35284,57 @@
     // Xóa khung từ trong Modal: Hoàn tác 5 giây
     const btnDeleteHl = document.getElementById('btnDeleteCurrentHighlight');
     if (btnDeleteHl) {
-      btnDeleteHl.addEventListener('click', () => {
-        if (activeHighlightItem && state.activeLessonId) {
-          const targetItem = { ...activeHighlightItem };
-          const targetLessonId = state.activeLessonId;
+      btnDeleteHl.addEventListener('click', (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        const targetFrameId = (activeHighlightItem && activeHighlightItem.id) ||
+                              (hlDetailModal && hlDetailModal.dataset.frameId) ||
+                              (window._currentEditingFrameItem && window._currentEditingFrameItem.id);
+        const targetLessonId = state.activeLessonId ||
+                               (hlDetailModal && hlDetailModal.dataset.lessonId) ||
+                               (window._currentEditingFrameItem && window._currentEditingFrameItem.lessonId);
 
+        if (targetFrameId && targetLessonId) {
           clearTimeout(frameAutoSaveTimer);
 
+          let targetItem = activeHighlightItem || window._currentEditingFrameItem;
+          if (!targetItem && state.learningData.frames && state.learningData.frames[targetLessonId]) {
+            targetItem = state.learningData.frames[targetLessonId].find(h => h.id === targetFrameId);
+          }
+          if (!targetItem && state.learningData.highlights && state.learningData.highlights[targetLessonId]) {
+            targetItem = state.learningData.highlights[targetLessonId].find(h => h.id === targetFrameId);
+          }
+          const savedItemCopy = targetItem ? { ...targetItem } : { id: targetFrameId, lessonId: targetLessonId };
+
           if (state.learningData.frames && state.learningData.frames[targetLessonId]) {
-            state.learningData.frames[targetLessonId] = state.learningData.frames[targetLessonId].filter(h => h.id !== targetItem.id);
+            state.learningData.frames[targetLessonId] = state.learningData.frames[targetLessonId].filter(h => h.id !== targetFrameId);
           }
           if (state.learningData.highlights && state.learningData.highlights[targetLessonId]) {
-            state.learningData.highlights[targetLessonId] = state.learningData.highlights[targetLessonId].filter(h => h.id !== targetItem.id);
+            state.learningData.highlights[targetLessonId] = state.learningData.highlights[targetLessonId].filter(h => h.id !== targetFrameId);
           }
           saveLearningData();
 
           postMessageToLessonIframe({
             type: 'REMOVE_FRAME',
-            id: targetItem.id
+            id: targetFrameId
+          });
+
+          const remainingFrames = (state.learningData.frames && state.learningData.frames[targetLessonId]) || [];
+          const showFramesSetting = localStorage.getItem('setting_show_text_frames') !== 'false';
+          const showBadgesSetting = localStorage.getItem('setting_show_frame_badges') !== 'false';
+          postMessageToLessonIframe({
+            type: 'RESTORE_FRAMES',
+            frames: remainingFrames,
+            showFrames: showFramesSetting,
+            showBadges: showBadgesSetting
           });
 
           const iframe = document.getElementById('lessonIframe');
           const doc = getSafeIframeDocument(iframe);
           if (doc) {
-            removeFrameFromDoc(doc, targetItem.id);
+            removeFrameFromDoc(doc, targetFrameId);
           }
 
           if (typeof renderAllNotesView === 'function') {
@@ -34997,29 +35342,39 @@
           }
 
           hideModalAnimated(hlDetailModal);
+          activeHighlightItem = null;
+          window._currentEditingFrameItem = null;
+          if (hlDetailModal) {
+            delete hlDetailModal.dataset.frameId;
+            delete hlDetailModal.dataset.lessonId;
+          }
 
           // Thông báo Hoàn tác 5 giây
           showActionToast("Đã xóa khung", "Hoàn tác", () => {
             if (!state.learningData.frames) state.learningData.frames = {};
             if (!state.learningData.frames[targetLessonId]) state.learningData.frames[targetLessonId] = [];
-            state.learningData.frames[targetLessonId].push(targetItem);
+            state.learningData.frames[targetLessonId].push(savedItemCopy);
 
             if (!state.learningData.highlights) state.learningData.highlights = {};
             if (!state.learningData.highlights[targetLessonId]) state.learningData.highlights[targetLessonId] = [];
-            state.learningData.highlights[targetLessonId].push(targetItem);
+            state.learningData.highlights[targetLessonId].push(savedItemCopy);
 
             saveLearningData();
 
             postMessageToLessonIframe({
-              type: 'APPLY_FRAME',
-              frame: targetItem
+              type: 'RESTORE_FRAMES',
+              frames: state.learningData.frames[targetLessonId],
+              showFrames: showFramesSetting,
+              showBadges: showBadgesSetting
             });
 
             if (typeof renderAllNotesView === 'function') {
               renderAllNotesView();
             }
             showToast("Đã hoàn tác xóa khung");
-          });
+          }, { key: 'delete-frame-action', duration: 5000 });
+        } else {
+          hideModalAnimated(hlDetailModal);
         }
       });
     }
@@ -36915,9 +37270,31 @@
       if (timeDisplay) timeDisplay.innerText = timeStr;
 
       if (modeLabel) {
-        if (state.pomodoro.mode === 'work') modeLabel.innerText = "🍅 Tập trung";
-        else if (state.pomodoro.mode === 'shortBreak') modeLabel.innerText = "☕ Nghỉ ngắn";
-        else modeLabel.innerText = "🍃 Nghỉ dài";
+        if (state.pomodoro.mode === 'work') {
+          modeLabel.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 font-bold tracking-wider uppercase text-[10px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+              <span>Tập trung</span>
+            </span>
+          `;
+          modeLabel.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-900/50 flex items-center shadow-2xs';
+        } else if (state.pomodoro.mode === 'shortBreak') {
+          modeLabel.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 font-bold tracking-wider uppercase text-[10px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+              <span>Nghỉ ngắn</span>
+            </span>
+          `;
+          modeLabel.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900/50 flex items-center shadow-2xs';
+        } else {
+          modeLabel.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 font-bold tracking-wider uppercase text-[10px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Nghỉ dài</span>
+            </span>
+          `;
+          modeLabel.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900/50 flex items-center shadow-2xs';
+        }
       }
 
       if (cycleText) {

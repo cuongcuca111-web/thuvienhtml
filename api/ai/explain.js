@@ -140,23 +140,23 @@ module.exports = async function handler(req, res) {
       sectionTitle: sanitizeText(rawContext.sectionTitle, 120)
     };
 
-    // Xử lý Smart Document Context (dàn ý H1-H3 + nội dung xoay quanh vùng chọn - tối ưu dung lượng siêu tốc)
+    // Xử lý Smart Document Context: nén ngữ cảnh cô đọng (dàn ý tiêu đề + trích đoạn liên quan nhất) để giảm mạnh token đầu vào
     const rawDocContext = body.documentContext;
     let documentContextText = '';
     if (typeof rawDocContext === 'string') {
-      documentContextText = sanitizeText(rawDocContext, 3500);
+      documentContextText = sanitizeText(rawDocContext, 1200);
     } else if (rawDocContext && typeof rawDocContext === 'object') {
-      const docTitle = sanitizeText(rawDocContext.title, 200);
-      const docOutline = sanitizeText(rawDocContext.outline, 1000);
-      const docContent = sanitizeText(rawDocContext.content, 2500);
+      const docTitle = sanitizeText(rawDocContext.title, 150);
+      const docOutline = sanitizeText(rawDocContext.outline, 400);
+      const docContent = sanitizeText(rawDocContext.content, 900);
       documentContextText = [
-        docTitle ? `Tiêu đề bài học: ${docTitle}` : '',
-        docOutline ? `[Dàn ý các mục tiêu đề]:\n${docOutline}` : '',
-        docContent ? `[Ngữ cảnh xung quanh bài học]:\n${docContent}` : ''
-      ].filter(Boolean).join('\n\n');
+        docTitle ? `Bài học: ${docTitle}` : '',
+        docOutline ? `[Dàn ý]:\n${docOutline}` : '',
+        docContent ? `[Ngữ cảnh]:\n${docContent}` : ''
+      ].filter(Boolean).join('\n');
     }
 
-    const customPromptClient = sanitizeText(body.customPrompt, 1500);
+    const customPromptClient = sanitizeText(body.customPrompt, 800);
 
     // 2. Kiểm tra độ dài đầu vào
     if (!rawText || rawText.length < 5) {
@@ -183,39 +183,32 @@ module.exports = async function handler(req, res) {
 
     const STYLE_PROMPTS = {
       casual: `[PHONG CÁCH: DỄ HIỂU - ĐỜI THƯỜNG]
-- Dùng ngôn từ bình dân, gần gũi, dễ hiểu, đi thẳng vào trọng tâm: 'Ý của đoạn này là gì?', 'Vì sao lại như vậy?'.
-- Dùng các liên hệ, ẩn dụ đời sống thực tế để giải thích trực quan nhất.
-- Tuyệt đối không dùng biệt ngữ phức tạp khó hiểu khi không cần thiết.`,
+- Dùng ngôn từ bình dân, gần gũi, đi thẳng vào bản chất câu hỏi: 'Ý của đoạn này là gì?'.
+- Dùng liên hệ thực tế ngắn gọn, không giải thích vòng vo.`,
 
       academic: `[PHONG CÁCH: HỌC THUẬT - CHUYÊN SÂU]
-- Dùng văn phong chuẩn mực học thuật, đào sâu bản chất khái niệm, cơ chế hoạt động và nguyên lý nền tảng.
-- Định nghĩa chính xác thuật ngữ chuyên ngành, lập luận chặt chẽ, khách quan và khoa học.`,
+- Dùng văn phong chuẩn mực học thuật, nêu rõ định nghĩa và cơ chế nền tảng.
+- Lập luận cô đọng, chính xác thuật ngữ.`,
 
       concise: `[PHONG CÁCH: TÓM TẮT - CÔ ĐỌNG]
-- Trực diện, siêu cô đọng, trình bày các ý cốt lõi dưới dạng 2-3 gạch đầu dòng súc tích.
-- Không mở đầu hay kết luận rườm rà, tập trung nắm bắt bản chất chỉ trong 10-15 giây đọc.`,
+- Trực diện, siêu súc tích dạng 2-3 gạch đầu dòng ngắn. Nắm bắt ý nghĩa trong 10 giây.`,
 
       practical: `[PHONG CÁCH: VÍ DỤ - THỰC TẾ]
-- Tập trung minh họa và phân tích qua 1-2 ví dụ thực tiễn hoặc tình huống đời thực sinh động tại Việt Nam.
-- Nếu là công thức/thuật toán hay quy tắc, hãy minh họa bằng một ví dụ số liệu hoặc trường hợp áp dụng cụ thể.`
+- Minh họa bằng 1 ví dụ cụ thể, sinh động, dễ liên hệ trong thực tế.`
     };
 
     const DEFAULT_PROMPTS = {
       explain: `[YÊU CẦU: GIẢI THÍCH TRỰC TIẾP, BÁM SÁT BÀI HỌC]
-- Người đọc đang cần làm rõ đoạn trích <selected_text> trong bài học.
-- Hãy giải thích trực tiếp, ngắn gọn bản chất ý nghĩa của đoạn trích (từ 2 đến 4 câu văn).
-- Tuyệt đối không tách riêng các thuật ngữ (mục 'terms' để mảng rỗng []). Hãy tập trung toàn bộ lời giải thích vào mục 'text'.`,
+- Giải thích trực tiếp, ngắn gọn bản chất ý nghĩa của đoạn trích <selected_text> (trong 2 đến 3 câu văn).
+- Mục 'terms' để mảng rỗng []. Tập trung toàn bộ lời giải thích vào mục 'text'.`,
 
       example: `[YÊU CẦU: CHO VÍ DỤ MINH HỌA]
-- Đưa ra 1 đến 2 ví dụ thực tế bám sát kiến thức trong <selected_text>.
-- Ưu tiên bối cảnh quen thuộc, đời sống thực tế tại Việt Nam.
-- Mỗi ví dụ súc tích, dễ liên hệ (tối đa 2-3 câu).
-- Nếu đoạn trích là công thức, thuật toán hay khái niệm định lượng, hãy minh họa bằng một ví dụ số liệu đơn giản, cụ thể.`,
+- Đưa ra 1 ví dụ thực tế súc tích (1-2 câu) bám sát kiến thức trong <selected_text>.
+- Ưu tiên ví dụ cụ thể, dễ hiểu.`,
 
       translate: `[YÊU CẦU: DỊCH THUẬT CHÍNH XÁC]
 - Dịch trung thực đoạn trích <selected_text> sang ngôn ngữ: "{targetLang}".
-- Giữ nguyên các thuật ngữ chuyên ngành chuẩn xác (kèm thuật ngữ gốc trong ngoặc đơn ở lần xuất hiện đầu tiên nếu cần thiết).
-- Dịch tự nhiên, đúng văn phong học thuật, không thêm thắt giải thích ngoài lề.`
+- Giữ nguyên thuật ngữ chuyên ngành chuẩn xác. Dịch tự nhiên, không thêm giải thích ngoài lề.`
     };
 
     let instruction = '';
@@ -233,12 +226,13 @@ module.exports = async function handler(req, res) {
       instruction = `${instruction}\n\n${STYLE_PROMPTS[style]}`;
     }
 
-    // 3. Kiểm tra tính toán Cache máy chủ (kèm style, hash của documentContext và prompt để không lẫn cache)
+    // 3. Kiểm tra tính toán Cache máy chủ (chuẩn hóa khoảng trắng & lowercase để tái sử dụng tối đa kết quả)
     const bypassCache = Boolean(body.bypassCache);
+    const normalizedRawText = rawText.trim().replace(/\s+/g, ' ').toLowerCase();
     const promptHash = instruction ? crypto.createHash('md5').update(instruction).digest('hex').substring(0, 8) : 'default';
-    const docContextHash = documentContextText ? crypto.createHash('md5').update(documentContextText).digest('hex').substring(0, 8) : 'nodoc';
+    const docContextHash = documentContextText ? crypto.createHash('md5').update(documentContextText.substring(0, 500)).digest('hex').substring(0, 8) : 'nodoc';
     const cacheKey = crypto.createHash('sha256')
-      .update(`${mode}:${style}:${targetLang}:${promptHash}:${docContextHash}:${rawText.toLowerCase()}`)
+      .update(`${mode}:${style}:${targetLang}:${promptHash}:${docContextHash}:${normalizedRawText}`)
       .digest('hex');
 
     const cacheDocRef = db.doc(`ai_cache/${cacheKey}`);
@@ -303,15 +297,16 @@ module.exports = async function handler(req, res) {
       }
 
       const plansConfig = (await getCachedPlansConfig()) || {};
-      const planLimits = plansConfig[userPlan] || (plansConfig.free || { monthlyAiRequests: 30 });
-      const maxMonthly = typeof planLimits.monthlyAiRequests === 'number' ? planLimits.monthlyAiRequests : 30;
+      const plansMap = (plansConfig && plansConfig.plans) ? plansConfig.plans : plansConfig;
+      const planLimits = plansMap[userPlan] || (plansMap.free || { monthlyAiRequests: 30 });
+      const maxMonthly = typeof planLimits.monthlyAiRequests === 'number' ? planLimits.monthlyAiRequests : (userPlan === 'pro' ? 1500 : (userPlan === 'plus' ? 300 : 30));
 
       const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
       const userMonthlyRef = db.doc(`users/${userId}/billing/ai_${currentMonth}`);
       const mSnap = await userMonthlyRef.get();
       const currentReqs = mSnap.exists ? (mSnap.data().requests || 0) : 0;
 
-      if (currentReqs >= maxMonthly) {
+      if (maxMonthly !== -1 && maxMonthly !== Infinity && currentReqs >= maxMonthly) {
         return res.status(403).json({
           code: 'QUOTA_EXCEEDED',
           error: `Bạn đã sử dụng hết hạn mức ${maxMonthly} lượt AI trong tháng này (Gói ${userPlan.toUpperCase()}). Nâng cấp gói Plus hoặc Pro để tiếp tục.`
@@ -403,7 +398,8 @@ D. [Phương án D]
       required: ['mode', 'text']
     };
 
-    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens = 1200 để phản hồi tức thì
+    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens theo chế độ (450-800 tokens) để tiết kiệm token tối đa và phản hồi tức thì
+    const optimalMaxTokens = (mode === 'quiz' || mode === 'flashcard') ? 700 : 450;
     let aiResponse = null;
     let callError = null;
     try {
@@ -413,7 +409,7 @@ D. [Phương án D]
         schema: jsonSchema,
         modelType: 'fast',
         taskType: 'fast',
-        maxTokens: 1200,
+        maxTokens: optimalMaxTokens,
         purpose: mode
       });
     } catch (callErr) {
@@ -433,7 +429,7 @@ D. [Phương án D]
           schema: false,
           modelType: 'fast',
           taskType: 'fast',
-          maxTokens: 1200,
+          maxTokens: optimalMaxTokens,
           purpose: mode
         });
         const fallbackText = extractExplanationText(fallbackRes?.data, fallbackRes?.rawText || fallbackRes?.text);
