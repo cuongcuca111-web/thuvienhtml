@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.4',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Khắc Phục Lỗi Đóng Khung Trong Bảng & Tối Ưu Nhận Diện Khối Đa Dòng',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi đóng khung văn bản trong bảng: Tách bạch tính toán tọa độ theo từng ô bảng (td/th), loại bỏ hoàn toàn hiện tượng đường kẻ cắt ngang qua dòng chữ và các ô khung rỗng tràn xuống dưới do trộn lẫn tọa độ các cột.' },
+          { type: 'improved', text: 'Thuật toán gom khối (Component Partitioning) thông minh: Phân tách các khối liên tục trước khi nới biên tọa độ, chỉ kết nối các dòng chữ thực sự nằm trong cùng một khối ngữ cảnh dọc (vertGap ≤ 14px), ngăn chặn việc méo mó đường vẽ SVG.' },
+          { type: 'improved', text: 'Giao diện đóng khung đa ô thẩm mỹ: Khi bôi đen đoạn văn bản trải qua nhiều ô trong bảng, mỗi ô đều sở hữu khung bo góc mềm mại, ôm khít từng dòng chữ và phản hồi click/double-click đồng bộ.' }
+        ]
+      },
+      {
         version: 'v5.6.3',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Tối Ưu Siêu Tốc AI Giải Thích & Chuẩn Hóa Bộ Icon Thanh Phong Cách',
@@ -4493,7 +4503,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.3 • build 15/10/2026 23:59</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.4 • build 15/10/2026 23:59</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -5228,7 +5238,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.3 • build 15/10/2026 23:59</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.4 • build 15/10/2026 23:59</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -15770,22 +15780,26 @@
     return rawRects;
   }
 
-  // 2. Gộp rect theo dòng: cùng dòng khi |top chênh| <= 2px và giao/liền nhau theo chiều ngang
+  // 2. Gộp rect theo dòng: cùng dòng khi độ lệch top nhỏ hoặc giao nhau theo chiều dọc, và liền nhau theo chiều ngang
   function mergeRectsByLine(rects) {
     if (!rects || rects.length === 0) return [];
-    // Sắp xếp theo top, cùng dòng (chênh <= 2px) thì sắp xếp theo left
-    const sorted = [...rects].sort((a, b) => (Math.abs(a.top - b.top) <= 2) ? (a.left - b.left) : (a.top - b.top));
+    // Sắp xếp theo top, cùng dòng (chênh <= 3px) thì sắp xếp theo left
+    const sorted = [...rects].sort((a, b) => (Math.abs(a.top - b.top) <= 3) ? (a.left - b.left) : (a.top - b.top));
     const lines = [];
 
     for (const r of sorted) {
       if (r.width < 1 || r.height < 1) continue;
       let foundLine = null;
       for (const line of lines) {
-        // Cùng dòng khi |top chênh| <= 2px và giao/liền nhau theo chiều ngang
-        if (Math.abs(line.top - r.top) <= 2) {
+        const vertOverlap = Math.min(line.bottom, r.bottom) - Math.max(line.top, r.top);
+        const minHeight = Math.min(line.bottom - line.top, r.height);
+        const isSameLineVert = Math.abs(line.top - r.top) <= 3 || (minHeight > 0 && vertOverlap >= minHeight * 0.45);
+
+        if (isSameLineVert) {
           const horizOverlap = Math.min(line.right, r.right) - Math.max(line.left, r.left);
           const horizGap = Math.max(0, Math.max(line.left, r.left) - Math.min(line.right, r.right));
-          if (horizOverlap > 0 || horizGap <= 30) {
+          // Chỉ gộp khi hai đoạn từ nằm trên cùng một dòng và khoảng cách chữ <= 28px
+          if (horizOverlap > -4 || horizGap <= 28) {
             foundLine = line;
             break;
           }
@@ -15793,7 +15807,7 @@
       }
 
       if (foundLine) {
-        // Hợp left-right CHỈ trong phạm vi các rect chữ của dòng đó, không lấy min/max của các dòng khác
+        // Hợp left-right CHỈ trong phạm vi các rect chữ của dòng đó
         foundLine.left = Math.min(foundLine.left, r.left);
         foundLine.right = Math.max(foundLine.right, r.right);
         foundLine.top = Math.min(foundLine.top, r.top);
@@ -15803,45 +15817,65 @@
       }
     }
 
-    lines.sort((a, b) => a.top - b.top);
+    lines.sort((a, b) => (Math.abs(a.top - b.top) <= 3) ? (a.left - b.left) : (a.top - b.top));
     return lines;
   }
 
   function buildSteppedPath(rawLines, radius = 6, pad = 3) {
     if (!rawLines || rawLines.length === 0) return '';
-    const lines = rawLines.map(r => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }));
+    // Sắp xếp các dòng theo thứ tự từ trên xuống dưới
+    const lines = rawLines
+      .map(r => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }))
+      .sort((a, b) => (Math.abs(a.top - b.top) <= 3) ? (a.left - b.left) : (a.top - b.top));
 
-    // Nới top/bottom của các dòng liên tiếp để chạm nhau, tránh khe hở
-    for (let i = 0; i < lines.length - 1; i++) {
-      const mid = (lines[i].bottom + lines[i + 1].top) / 2.0;
-      lines[i].bottom = mid + 1;
-      lines[i + 1].top = mid - 1;
-    }
-
-    // Padding ngoài 3px so với chữ
-    lines[0].top -= pad;
-    lines[lines.length - 1].bottom += pad;
-    for (let i = 0; i < lines.length; i++) {
-      lines[i].left -= pad;
-      lines[i].right += pad;
-    }
-
-    // Phân tách thành các khối liên tục (components) nếu hai dòng liên tiếp không giao nhau theo chiều ngang
+    // BƯỚC 1: Phân tách thành các khối liên tục (components) TRƯỚC KHI chỉnh sửa toạ độ
+    // Hai dòng chỉ thuộc cùng một khối liên tục nếu:
+    // 1) Dòng sau nằm ngay dưới dòng trước (vertGap <= 14px, không phải cách đoạn hay cách ô)
+    // 2) Có giao nhau hoặc thẳng hàng theo chiều ngang (horizOverlap >= -8px)
     const components = [];
     let curr = [lines[0]];
+
     for (let i = 1; i < lines.length; i++) {
       const prev = curr[curr.length - 1];
-      const c = lines[i];
-      if (Math.max(prev.left, c.left) < Math.min(prev.right, c.right)) {
-        curr.push(c);
+      const next = lines[i];
+
+      const horizOverlap = Math.min(prev.right, next.right) - Math.max(prev.left, next.left);
+      const vertGap = next.top - prev.bottom;
+
+      if (horizOverlap >= -8 && vertGap >= -6 && vertGap <= 14) {
+        curr.push(next);
       } else {
         components.push(curr);
-        curr = [c];
+        curr = [next];
       }
     }
-    components.push(curr);
+    if (curr.length > 0) {
+      components.push(curr);
+    }
 
-    return components.map(comp => buildSingleComponentPath(comp, radius)).filter(Boolean).join(' ');
+    // BƯỚC 2: Xử lý và nối toạ độ riêng cho từng khối (component)
+    return components.map(comp => {
+      if (!comp || comp.length === 0) return '';
+
+      const cLines = comp.map(r => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }));
+
+      // Nới top/bottom của các dòng liên tiếp TRONG CÙNG MỘT KHỐI để chạm nhau, triệt tiêu khe hở
+      for (let i = 0; i < cLines.length - 1; i++) {
+        const mid = (cLines[i].bottom + cLines[i + 1].top) / 2.0;
+        cLines[i].bottom = mid + 1;
+        cLines[i + 1].top = mid - 1;
+      }
+
+      // Thêm padding cho các mép ngoài của khối
+      cLines[0].top -= pad;
+      cLines[cLines.length - 1].bottom += pad;
+      for (let i = 0; i < cLines.length; i++) {
+        cLines[i].left -= pad;
+        cLines[i].right += pad;
+      }
+
+      return buildSingleComponentPath(cLines, radius);
+    }).filter(Boolean).join(' ');
   }
 
   function buildSingleComponentPath(lines, radius) {
@@ -15921,7 +15955,21 @@
     }
 
     const m = simplified.length;
-    if (m < 3) return '';
+    if (m < 3) {
+      let minL = Infinity, maxR = -Infinity, minT = Infinity, maxB = -Infinity;
+      for (const line of lines) {
+        if (line.left < minL) minL = line.left;
+        if (line.right > maxR) maxR = line.right;
+        if (line.top < minT) minT = line.top;
+        if (line.bottom > maxB) maxB = line.bottom;
+      }
+      if (minL < maxR && minT < maxB) {
+        const w = maxR - minL, h = maxB - minT;
+        const rad = Math.min(radius, w / 2.0, h / 2.0);
+        return 'M ' + (minL + rad).toFixed(1) + ' ' + minT.toFixed(1) + ' L ' + (maxR - rad).toFixed(1) + ' ' + minT.toFixed(1) + ' Q ' + maxR.toFixed(1) + ' ' + minT.toFixed(1) + ' ' + maxR.toFixed(1) + ' ' + (minT + rad).toFixed(1) + ' L ' + maxR.toFixed(1) + ' ' + (maxB - rad).toFixed(1) + ' Q ' + maxR.toFixed(1) + ' ' + maxB.toFixed(1) + ' ' + (maxR - rad).toFixed(1) + ' ' + maxB.toFixed(1) + ' L ' + (minL + rad).toFixed(1) + ' ' + maxB.toFixed(1) + ' Q ' + minL.toFixed(1) + ' ' + maxB.toFixed(1) + ' ' + minL.toFixed(1) + ' ' + (maxB - rad).toFixed(1) + ' L ' + minL.toFixed(1) + ' ' + (minT + rad).toFixed(1) + ' Q ' + minL.toFixed(1) + ' ' + minT.toFixed(1) + ' ' + (minL + rad).toFixed(1) + ' ' + minT.toFixed(1) + ' Z';
+      }
+      return '';
+    }
 
     // Bo tròn tất cả các góc bằng cung Q (Quadratic Bezier)
     const rads = [];
@@ -15961,6 +16009,29 @@
     return cmds.join(' ');
   }
 
+  // Xác định khối phần tử chứa (đặc biệt tách bạch từng ô bảng td/th riêng biệt)
+  function getFrameContainerBlock(el) {
+    if (!el) return document.body;
+    // 1. Ô bảng: td, th hoặc ARIA cell / gridcell - tuyệt đối không ghép chung các ô bảng khác nhau
+    const tableCell = el.closest('td, th, [role="cell"], [role="gridcell"]');
+    if (tableCell) return tableCell;
+
+    // 2. Mục danh sách li
+    const listItem = el.closest('li, [role="listitem"]');
+    if (listItem) return listItem;
+
+    // 3. Tiêu đề, trích dẫn, khối code, chú thích
+    const blockHead = el.closest('h1, h2, h3, h4, h5, h6, blockquote, pre, caption, figcaption');
+    if (blockHead) return blockHead;
+
+    // 4. Đoạn văn p
+    const p = el.closest('p');
+    if (p) return p;
+
+    // 5. Thẻ khối gần nhất
+    return el.closest('div, section, article, tr') || el.parentElement || el;
+  }
+
   function updateAllFramePositions() {
     if (isUpdatingPositions) return;
     isUpdatingPositions = true;
@@ -15984,26 +16055,46 @@
       const measurements = [];
       idMap.forEach((elements, fId) => {
         try {
-          const rawRects = [];
+          // Nhóm các phần tử .text-frame theo khối cấu trúc chứa chúng (đặc biệt từng ô bảng td/th là một nhóm riêng)
+          const containerGroups = new Map();
           elements.forEach(el => {
-            const elRange = document.createRange();
-            elRange.selectNodeContents(el);
-            const rects = getTextRects(elRange, layerRect, scale);
-            for (let i = 0; i < rects.length; i++) {
-              rawRects.push(rects[i]);
+            const container = getFrameContainerBlock(el);
+            if (!containerGroups.has(container)) {
+              containerGroups.set(container, []);
+            }
+            containerGroups.get(container).push(el);
+          });
+
+          const allPathSegments = [];
+          const allLines = [];
+
+          containerGroups.forEach((groupEls) => {
+            const groupRawRects = [];
+            groupEls.forEach(el => {
+              const elRange = document.createRange();
+              elRange.selectNodeContents(el);
+              const rects = getTextRects(elRange, layerRect, scale);
+              for (let i = 0; i < rects.length; i++) {
+                groupRawRects.push(rects[i]);
+              }
+            });
+
+            if (groupRawRects.length === 0) return;
+
+            const lines = mergeRectsByLine(groupRawRects);
+            if (lines.length === 0) return;
+
+            const pathD = buildSteppedPath(lines, 6, 3);
+            if (pathD) {
+              allPathSegments.push(pathD);
+              allLines.push(...lines);
             }
           });
 
-          if (rawRects.length === 0) {
-            console.warn('[updateAllFramePositions] getTextRects rỗng, bỏ qua khung:', fId);
+          if (allPathSegments.length === 0) {
+            console.warn('[updateAllFramePositions] Không có path hợp lệ, bỏ qua khung:', fId);
             return;
           }
-
-          const lines = mergeRectsByLine(rawRects);
-          if (lines.length === 0) return;
-
-          const pathD = buildSteppedPath(lines, 6, 3);
-          if (!pathD) return;
 
           const first = elements[0];
           measurements.push({
@@ -16011,8 +16102,8 @@
             colorName: first.getAttribute('data-color') || 'yellow',
             customHex: first.getAttribute('data-custom-color') || null,
             noteText: first.getAttribute('data-note') || '',
-            pathD: pathD,
-            lines: lines
+            pathD: allPathSegments.join(' '),
+            lines: allLines
           });
         } catch (err) {
           console.warn('[updateAllFramePositions] Lỗi tính rects cho khung:', fId, err);
