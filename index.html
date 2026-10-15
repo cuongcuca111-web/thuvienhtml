@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.3',
+        date: '2026-10-15T16:00:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Bấm Đóng Khung Văn Bản & Bảo Vệ Vùng Chọn Bridge',
+        items: [
+          { type: 'fix', text: 'Sửa dứt điểm lỗi bấm "Đóng khung" không hoạt động: Trích xuất chính xác startOffset và endOffset từ Bridge Message của Iframe sang applyFramingToCurrentSelection, bổ sung cơ chế fallback fullText thông minh khi Iframe chạy chế độ sandbox.' },
+          { type: 'fix', text: 'Bảo vệ vùng chọn chống mất ngữ cảnh khi click: Bổ sung preventDefault cho các sự kiện pointerdown/mousedown/touchstart trên nút Đóng khung và Thêm ghi chú (cả Desktop và Mobile Toolbar), ngăn chặn sự kiện blur ngoài ý muốn.' },
+          { type: 'fix', text: 'Cải tiến bộ lọc lát cắt khung applyFrameSlicing: Bảo vệ tối đa dữ liệu khung hợp lệ không bao giờ bị loại bỏ ngầm khi bôi đen văn bản trong bài học.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.4.3 trên toàn bộ ứng dụng (index.html, package.json, sw.js).' }
+        ]
+      },
+      {
         version: 'v5.4.2',
         date: '2026-10-15T15:30:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Cắt Cụt JSON Trợ Lý AI (Ký Tự "{") & Chuẩn Hóa v5.4.2',
@@ -4068,7 +4079,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 15:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.3 • build 15/10/2026 16:00</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4793,7 +4804,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 15:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.3 • build 15/10/2026 16:00</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -15370,6 +15381,15 @@
         } catch (_) {}
       }
 
+      let startOffset = -1, endOffset = -1;
+      try {
+        const offsetRange = range.cloneRange();
+        offsetRange.selectNodeContents(document.body);
+        offsetRange.setEnd(range.startContainer, range.startOffset);
+        startOffset = offsetRange.toString().length;
+        endOffset = startOffset + text.length;
+      } catch (_) {}
+
       const rect = range.getBoundingClientRect();
       let prefix = '', suffix = '', before = '', after = '', sectionTitle = '';
       try {
@@ -15419,6 +15439,8 @@
         after: after,
         sectionTitle: sectionTitle,
         quoteFont: quoteFont,
+        startOffset: startOffset,
+        endOffset: endOffset,
         rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
     } catch (err) {
@@ -16352,8 +16374,11 @@
             suffix: msg.suffix || '',
             before: msg.before || '',
             after: msg.after || '',
-            sectionTitle: msg.sectionTitle || ''
+            sectionTitle: msg.sectionTitle || '',
+            startOffset: msg.startOffset,
+            endOffset: msg.endOffset
           };
+          window._lastValidSelectionBridge = { ...currentSelectionInfoBridge };
           if (typeof updateAiButtonsVisibility === 'function') {
             updateAiButtonsVisibility(msg.text);
           }
@@ -16363,11 +16388,17 @@
         }
 
         case 'TEXT_DESELECTED': {
-          currentSelectionInfoBridge = null;
-          if (typeof updateAiButtonsVisibility === 'function') {
-            updateAiButtonsVisibility('');
+          const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+          const mbActionBar = document.getElementById('mobileSelectionActionBar');
+          const isInteractingWithToolbar = (hlToolbar && (hlToolbar.matches(':hover') || hlToolbar.contains(document.activeElement))) ||
+                                           (mbActionBar && (mbActionBar.matches(':hover') || mbActionBar.contains(document.activeElement)));
+          if (!isInteractingWithToolbar) {
+            currentSelectionInfoBridge = null;
+            if (typeof updateAiButtonsVisibility === 'function') {
+              updateAiButtonsVisibility('');
+            }
+            hideSelectionToolbar();
           }
-          hideSelectionToolbar();
           break;
         }
 
@@ -30651,7 +30682,11 @@
 
     function applyFrameSlicing(existingFrames, newFrame, fullText) {
       if (!Array.isArray(existingFrames)) existingFrames = [];
-      if (!newFrame || typeof newFrame.startOffset !== 'number' || typeof newFrame.endOffset !== 'number' || newFrame.endOffset <= newFrame.startOffset) {
+      if (!newFrame) return existingFrames;
+      if (typeof newFrame.startOffset !== 'number' || typeof newFrame.endOffset !== 'number' || newFrame.endOffset <= newFrame.startOffset) {
+        if (newFrame.text && newFrame.text.length >= 2) {
+          return [...existingFrames, newFrame];
+        }
         return existingFrames;
       }
 
@@ -30921,8 +30956,8 @@
         }
       }
 
+      const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge || window._lastValidSelectionBridge;
       if (!text || text.length < 2) {
-        const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
         if (bridgeInfo && bridgeInfo.text) {
           text = bridgeInfo.text;
           prefix = bridgeInfo.prefix || '';
@@ -30938,22 +30973,61 @@
         return null;
       }
 
-      const fullText = (doc && doc.body) ? doc.body.textContent : '';
+      let fullText = (doc && doc.body) ? (doc.body.textContent || '') : '';
+      if (!fullText) {
+        const curLesson = (state && Array.isArray(state.lessons)) ? state.lessons.find(l => l.id === state.activeLessonId) : null;
+        if (curLesson) {
+          fullText = curLesson._plainTextCache || '';
+          if (!fullText && curLesson.htmlContent) {
+            try {
+              fullText = new DOMParser().parseFromString(curLesson.htmlContent, 'text/html').body.textContent || '';
+              curLesson._plainTextCache = fullText;
+            } catch (_) {}
+          }
+        }
+      }
+
       let startOffset = -1;
       let endOffset = -1;
 
-      if (range && doc?.body) {
+      // 1. Ưu tiên lấy từ bridgeInfo (đo trực tiếp từ DOM Range của iframe)
+      if (bridgeInfo && typeof bridgeInfo.startOffset === 'number' && bridgeInfo.startOffset >= 0 &&
+          typeof bridgeInfo.endOffset === 'number' && bridgeInfo.endOffset > bridgeInfo.startOffset) {
+        startOffset = bridgeInfo.startOffset;
+        endOffset = bridgeInfo.endOffset;
+      }
+
+      // 2. Nếu có range trong same-origin doc
+      if (startOffset === -1 && range && doc?.body) {
         const offsets = getRangeOffsets(range, doc.body);
         if (offsets && offsets.end > offsets.start) {
           startOffset = offsets.start;
           endOffset = offsets.end;
         }
       }
+
+      // 3. Fallback: tìm theo prefix + text hoặc text trong fullText
       if (startOffset === -1 && fullText && text) {
-        startOffset = fullText.indexOf(text);
-        if (startOffset !== -1) {
-          endOffset = startOffset + text.length;
+        if (prefix) {
+          const combined = prefix + text;
+          const pos = fullText.indexOf(combined);
+          if (pos !== -1) {
+            startOffset = pos + prefix.length;
+            endOffset = startOffset + text.length;
+          }
         }
+        if (startOffset === -1) {
+          startOffset = fullText.indexOf(text);
+          if (startOffset !== -1) {
+            endOffset = startOffset + text.length;
+          }
+        }
+      }
+
+      // Đảm bảo không bao giờ để endOffset <= startOffset nếu có text hợp lệ
+      if ((startOffset === -1 || endOffset <= startOffset) && text && text.length > 0) {
+        startOffset = 0;
+        endOffset = text.length;
       }
 
       let rawChosen = colorName || activeFramingColor || DEFAULT_FRAME_COLOR;
@@ -31276,7 +31350,13 @@
     // Gắn sự kiện các nút trên Floating Toolbar
     const btnApplyFraming = document.getElementById('btnApplyFraming');
     if (btnApplyFraming) {
-      btnApplyFraming.addEventListener('click', () => {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+        btnApplyFraming.addEventListener(evt, (e) => {
+          e.preventDefault();
+        }, { passive: false });
+      });
+      btnApplyFraming.addEventListener('click', (e) => {
+        if (e) e.preventDefault();
         try {
           const hasColorPerm = typeof canUseFrameColors === 'function' ? canUseFrameColors() : false;
           let colorToUse = (typeof normalizeFrameColor === 'function') ? normalizeFrameColor(activeFramingColor) : (activeFramingColor || 'yellow');
@@ -31400,7 +31480,13 @@
     // Nút Thêm Ghi Chú trên Toolbar
     const btnHlAddNote = document.getElementById('btnHlAddNote');
     if (btnHlAddNote) {
-      btnHlAddNote.addEventListener('click', () => {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+        btnHlAddNote.addEventListener(evt, (e) => {
+          e.preventDefault();
+        }, { passive: false });
+      });
+      btnHlAddNote.addEventListener('click', (e) => {
+        if (e) e.preventDefault();
         if (currentSelectionInfoBridge || currentSelectionInfo) {
           const item = applyFramingToCurrentSelection(activeFramingColor, '', '', activeCustomColor);
           if (item) {
@@ -31524,6 +31610,11 @@
     // Nút Đóng khung trên mobile
     const mbBtnApplyFraming = document.getElementById('mbBtnApplyFraming');
     if (mbBtnApplyFraming) {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+        mbBtnApplyFraming.addEventListener(evt, (e) => {
+          e.preventDefault();
+        }, { passive: false });
+      });
       mbBtnApplyFraming.addEventListener('click', (e) => {
         try {
           if (e) e.preventDefault();
@@ -31557,8 +31648,13 @@
     // Nút Ghi chú trên mobile
     const mbBtnAddNote = document.getElementById('mbBtnAddNote');
     if (mbBtnAddNote) {
+      ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+        mbBtnAddNote.addEventListener(evt, (e) => {
+          e.preventDefault();
+        }, { passive: false });
+      });
       mbBtnAddNote.addEventListener('click', (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (currentSelectionInfoBridge || currentSelectionInfo) {
           const item = applyFramingToCurrentSelection(activeFramingColor, '', '', (activeFramingColor === 'custom' ? activeCustomColor : null));
           clearAllSelectionContexts();
