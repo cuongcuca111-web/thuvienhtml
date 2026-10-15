@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.4',
+        date: '2026-10-15T16:30:00+07:00',
+        title: 'Đồng Bộ Trạng Thái Nút Trợ Lý AI Với Cài Đặt Hiển Thị & Quyền Tài Khoản Pro',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi nút Trợ lý AI (Giải thích, Ví dụ, Dịch) vẫn hiện lên khi tính năng đang bị tắt trong Cài đặt: Xây dựng hàm kiểm tra quyền & trạng thái isAiAssistantActive() chuẩn xác 100% giữa switch Cài đặt và thanh công cụ nổi.' },
+          { type: 'fix', text: 'Đồng bộ ẩn/hiện tức thì trên cả Desktop (#hlAiButtonsGroup) và Di động (#mbAiDropdownWrapper): Tự động ép ẩn triệt để khi tính năng tắt hoặc tài khoản không có quyền Pro, chỉ hiển thị khi tính năng được bật bởi tài khoản Pro.' },
+          { type: 'improved', text: 'Đồng bộ tức thì trạng thái switch AI khi mở popover Cài đặt hiển thị và khi cập nhật quyền hạn người dùng (updateUserUI).' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.4.4 trên toàn bộ ứng dụng (index.html, package.json, sw.js).' }
+        ]
+      },
+      {
         version: 'v5.4.3',
         date: '2026-10-15T16:00:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Bấm Đóng Khung Văn Bản & Bảo Vệ Vùng Chọn Bridge',
@@ -4079,7 +4090,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.3 • build 15/10/2026 16:00</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.4 • build 15/10/2026 16:30</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4554,7 +4565,7 @@
     </button>
 
     <!-- Nút AI (mở menu AI) -->
-    <div class="relative shrink-0">
+    <div id="mbAiDropdownWrapper" class="relative shrink-0" style="display: none;">
       <button id="mbBtnAiDropdown" type="button" class="min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer" aria-label="Tác vụ AI">
         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
         <span class="whitespace-nowrap">AI ▾</span>
@@ -4804,7 +4815,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.3 • build 15/10/2026 16:00</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.4 • build 15/10/2026 16:30</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -5011,7 +5022,7 @@
     </button>
 
     <!-- Nhóm Nút AI Hỗ Trợ Đọc (A: Giải thích tại chỗ) -->
-    <div id="hlAiButtonsGroup" class="hidden flex items-center gap-1 border-l border-white/20 dark:border-black/20 pl-1.5 ml-0.5">
+    <div id="hlAiButtonsGroup" class="hidden flex items-center gap-1 border-l border-white/20 dark:border-black/20 pl-1.5 ml-0.5" style="display: none;">
       <!-- Màn hình lớn (>= 640px) -->
       <div class="hidden sm:flex items-center gap-1">
         <button id="btnAiExplain" type="button" class="touch-target px-2 py-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg flex items-center gap-1 text-indigo-300 dark:text-indigo-600 hover:text-white dark:hover:text-black font-medium transition cursor-pointer" title="Giải thích đơn giản đoạn đã chọn">
@@ -16250,6 +16261,9 @@
         if (typeof updateToolbarColorIndicators === 'function') {
           updateToolbarColorIndicators();
         }
+        if (typeof updateAiButtonsVisibility === 'function') {
+          updateAiButtonsVisibility();
+        }
       } else {
         // Desktop hoặc màn hình lớn (kể cả laptop cảm ứng / Surface): Hiện thanh nổi floating trực tiếp
         if (mbActionBar) mbActionBar.classList.add('hidden');
@@ -16275,6 +16289,9 @@
           }
           if (typeof updateToolbarEraserState === 'function') {
             updateToolbarEraserState(hasIntersectingFrames);
+          }
+          if (typeof updateAiButtonsVisibility === 'function') {
+            updateAiButtonsVisibility();
           }
         }
       }
@@ -18552,6 +18569,9 @@
             } else if (typeof window.tierBadge === 'function') {
               aiReqBadge.innerHTML = window.tierBadge('pro', { size: 'sm', variant: 'requires' });
             }
+          }
+          if (typeof window.syncAiToggleState === 'function') {
+            window.syncAiToggleState();
           }
         } catch (errK3) {
           console.warn("[updateUserUI] Lỗi khối 3 (Tier badges):", errK3);
@@ -29764,6 +29784,9 @@
         if (!displaySettingsPopover.classList.contains('hidden')) {
           positionDisplaySettingsPopover();
           refreshIcons(displaySettingsPopover);
+          if (typeof window.syncAiToggleState === 'function') {
+            window.syncAiToggleState();
+          }
         }
       });
       if (btnCloseDisplaySettings) {
@@ -31909,21 +31932,69 @@
         .replace(/`/g, '&#x60;');
     }
 
+    function isAiAssistantActive() {
+      try {
+        const isPro = Boolean((typeof state !== 'undefined' && state && (state.userTier === 'pro' || state.isAdmin)));
+        const toggleAi = document.getElementById('toggleAiFeatures');
+        if (!isPro) {
+          if (toggleAi && toggleAi.checked) toggleAi.checked = false;
+          return false;
+        }
+        if (toggleAi) {
+          return Boolean(toggleAi.checked);
+        }
+        return localStorage.getItem('setting_ai_enabled') !== 'false';
+      } catch (_) {
+        return false;
+      }
+    }
+    window.isAiAssistantActive = isAiAssistantActive;
+
     function updateAiButtonsVisibility(text) {
       try {
         const group = document.getElementById('hlAiButtonsGroup');
-        if (!group) return;
-        const aiEnabled = (localStorage.getItem('setting_ai_enabled') !== 'false');
-        if (!aiEnabled) {
-          group.classList.add('hidden');
+        const mbWrapper = document.getElementById('mbAiDropdownWrapper');
+        const isActive = isAiAssistantActive();
+
+        if (!isActive) {
+          if (group) {
+            group.classList.add('hidden');
+            group.style.setProperty('display', 'none', 'important');
+          }
+          if (mbWrapper) {
+            mbWrapper.classList.add('hidden');
+            mbWrapper.style.setProperty('display', 'none', 'important');
+          }
           return;
         }
-        const clean = (text || '').trim();
+
+        const rawText = (typeof text === 'string' && text)
+          ? text
+          : ((typeof currentSelectionInfoBridge !== 'undefined' && currentSelectionInfoBridge && currentSelectionInfoBridge.text)
+             || (typeof currentSelectionInfo !== 'undefined' && currentSelectionInfo && currentSelectionInfo.text)
+             || '');
+        const clean = rawText.trim();
         const words = clean ? clean.split(/\s+/).filter(Boolean) : [];
-        if (words.length >= 1 && clean.length <= 2000) {
-          group.classList.remove('hidden');
-        } else {
-          group.classList.add('hidden');
+        const isValid = words.length >= 1 && clean.length <= 2000;
+
+        if (group) {
+          if (isValid) {
+            group.classList.remove('hidden');
+            group.style.removeProperty('display');
+          } else {
+            group.classList.add('hidden');
+            group.style.setProperty('display', 'none', 'important');
+          }
+        }
+
+        if (mbWrapper) {
+          if (isValid) {
+            mbWrapper.classList.remove('hidden');
+            mbWrapper.style.removeProperty('display');
+          } else {
+            mbWrapper.classList.add('hidden');
+            mbWrapper.style.setProperty('display', 'none', 'important');
+          }
         }
       } catch (_) {}
     }
@@ -32739,8 +32810,12 @@
         const isPro = checkAiProPermission();
         if (!isPro) {
           toggleAi.checked = false;
+          try { localStorage.setItem('setting_ai_enabled', 'false'); } catch (_) {}
         } else {
           toggleAi.checked = localStorage.getItem('setting_ai_enabled') !== 'false';
+        }
+        if (typeof updateAiButtonsVisibility === 'function') {
+          updateAiButtonsVisibility();
         }
       }
       window.syncAiToggleState = syncAiToggleState;
@@ -32754,6 +32829,10 @@
             e.preventDefault();
             e.stopPropagation();
             toggleAi.checked = false;
+            try { localStorage.setItem('setting_ai_enabled', 'false'); } catch (_) {}
+            if (typeof updateAiButtonsVisibility === 'function') {
+              updateAiButtonsVisibility();
+            }
             if (typeof showToast === 'function') {
               showToast("Tính năng 'Trợ lý AI đọc bài' chỉ dành cho phiên bản PRO. Vui lòng nâng cấp gói!", "warning");
             }
@@ -32780,6 +32859,10 @@
           if (!isPro) {
             e.preventDefault();
             toggleAi.checked = false;
+            try { localStorage.setItem('setting_ai_enabled', 'false'); } catch (_) {}
+            if (typeof updateAiButtonsVisibility === 'function') {
+              updateAiButtonsVisibility();
+            }
             if (typeof showToast === 'function') {
               showToast("Tính năng 'Trợ lý AI đọc bài' chỉ dành cho phiên bản PRO. Vui lòng nâng cấp gói!", "warning");
             }
