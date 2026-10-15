@@ -3640,14 +3640,41 @@ function buildBillingTabDOM(container, cachedData) {
                     <input type="url" id="cfgNtfyServerUrl" value="${esc(ntfyCfg.serverUrl || 'https://ntfy.sh')}" placeholder="https://ntfy.sh" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
                   </div>
                   <div>
-                    <label class="block text-gray-600 dark:text-gray-400 font-semibold mb-1">ntfy Topic ${ntfyCfg.maskedTopic ? `(${esc(ntfyCfg.maskedTopic)})` : ''}:</label>
-                    <input type="text" id="cfgNtfyTopic" placeholder="Nhập topic bí mật..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
+                    <div class="flex items-center justify-between mb-1">
+                      <label class="block text-gray-600 dark:text-gray-400 font-semibold">ntfy Topic ${ntfyCfg.maskedTopic ? `(${esc(ntfyCfg.maskedTopic)})` : ''}:</label>
+                      <button type="button" id="btnGenRandomTopic" class="text-[10px] text-violet-600 dark:text-violet-400 hover:underline font-semibold cursor-pointer">🎲 Tạo Topic ngẫu nhiên</button>
+                    </div>
+                    <input type="text" id="cfgNtfyTopic" value="${esc(ntfyCfg.rawTopic || '')}" placeholder="Ví dụ: thuvienhtml_order_wait_9d8e7a2b" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
                   </div>
                   <div>
                     <label class="block text-gray-600 dark:text-gray-400 font-semibold mb-1">Access Token ${ntfyCfg.hasToken ? '(Đã lưu)' : '(Tùy chọn)'}:</label>
                     <input type="password" id="cfgNtfyToken" placeholder="Nhập token nếu có..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
                   </div>
                 </div>
+
+                <!-- KHỐI QUÉT MÃ QR NTFY TRỰC TIẾP -->
+                <div id="ntfyQrBox" class="p-3 bg-white dark:bg-[#161920] rounded-xl border border-violet-200 dark:border-violet-900/50 flex flex-col sm:flex-row items-center gap-3.5 shadow-2xs">
+                  <div class="bg-white p-1.5 rounded-lg border border-gray-200 shadow-2xs shrink-0 flex items-center justify-center">
+                    <img id="ntfyQrImg" src="" alt="ntfy QR Code" class="w-28 h-28 object-contain" />
+                  </div>
+                  <div class="text-xs space-y-1.5 flex-1">
+                    <div class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-violet-600 dark:text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                      <span>Quét mã QR để nhận chuông trên điện thoại</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                      Mở Camera điện thoại hoặc app <strong>ntfy</strong> quét mã QR này để đăng ký nhận chuông báo tức thì mỗi khi có khách bấm <em>"Tôi đã chuyển khoản"</em> và đang chờ bạn duyệt!
+                    </p>
+                    <div class="pt-1 flex flex-wrap items-center gap-2">
+                      <a id="ntfyDirectLink" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-violet-100 dark:bg-violet-950/70 text-violet-700 dark:text-violet-300 font-semibold text-[11px] hover:bg-violet-200 transition">
+                        <span>Mở topic trên ntfy.sh</span>
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      </a>
+                      <span id="ntfyTopicDisplay" class="font-mono text-[11px] text-gray-600 dark:text-gray-300 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700"></span>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="flex items-center justify-end pt-1">
                   <button type="button" id="btnTestNtfy" class="px-3 py-1.5 rounded-xl border border-violet-500 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-950/40 font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -4126,6 +4153,55 @@ function bindBillingTabEvents(container, initialOrders) {
       }
     };
   }
+
+  // Quản lý hiển thị QR Code và cập nhật Topic ntfy.sh trực tiếp
+  const inputNtfyTopic = document.getElementById('cfgNtfyTopic');
+  const inputNtfyServerUrl = document.getElementById('cfgNtfyServerUrl');
+  const ntfyQrImg = document.getElementById('ntfyQrImg');
+  const ntfyDirectLink = document.getElementById('ntfyDirectLink');
+  const ntfyTopicDisplay = document.getElementById('ntfyTopicDisplay');
+  const btnGenRandomTopic = document.getElementById('btnGenRandomTopic');
+
+  function updateNtfyQrPreview() {
+    let sUrl = (inputNtfyServerUrl ? inputNtfyServerUrl.value.trim() : '') || 'https://ntfy.sh';
+    sUrl = sUrl.replace(/\/+$/, '');
+    let topic = (inputNtfyTopic ? inputNtfyTopic.value.trim() : '');
+    if (!topic) {
+      topic = 'thuvienhtml_order_wait_9d8e7a2b';
+    }
+    const fullUrl = `${sUrl}/${topic}`;
+    if (ntfyQrImg) {
+      ntfyQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(fullUrl)}`;
+    }
+    if (ntfyDirectLink) {
+      ntfyDirectLink.href = fullUrl;
+    }
+    if (ntfyTopicDisplay) {
+      ntfyTopicDisplay.textContent = topic;
+    }
+  }
+
+  if (inputNtfyTopic) {
+    inputNtfyTopic.addEventListener('input', updateNtfyQrPreview);
+  }
+  if (inputNtfyServerUrl) {
+    inputNtfyServerUrl.addEventListener('input', updateNtfyQrPreview);
+  }
+  if (btnGenRandomTopic) {
+    btnGenRandomTopic.onclick = () => {
+      const randHex = Array.from(crypto.getRandomValues(new Uint8Array(4)))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+      const newTopic = `thuvienhtml_order_wait_${randHex}`;
+      if (inputNtfyTopic) {
+        inputNtfyTopic.value = newTopic;
+        updateNtfyQrPreview();
+        toast('Đã tạo topic ngẫu nhiên: ' + newTopic);
+      }
+    };
+  }
+
+  // Khởi tạo preview QR ntfy ngay khi mở tab
+  updateNtfyQrPreview();
 
   // Khai báo các phần tử bộ lọc và thao tác hàng loạt
   const searchInput = container.querySelector('#billingSearchOrderInput');

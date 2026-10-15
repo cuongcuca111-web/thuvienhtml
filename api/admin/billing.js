@@ -160,6 +160,7 @@ module.exports = async function handler(req, res) {
           isConfigured: Boolean(rawNtfyTopic),
           serverUrl: rawNtfyServerUrl || 'https://ntfy.sh',
           maskedTopic: rawNtfyTopic ? maskApiKey(rawNtfyTopic) : '',
+          rawTopic: rawNtfyTopic || '',
           hasToken: Boolean(rawNtfyToken)
         }
       });

@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.8',
+        date: '2026-10-15T19:00:00+07:00',
+        title: 'Tích Hợp Topic & Mã QR ntfy.sh Chuyên Biệt Nhận Thông Báo Đơn Nâng Cấp Gói Chờ Duyệt',
+        items: [
+          { type: 'feature', text: 'Tạo mã QR ntfy.sh trực quan: Cung cấp mã QR và đường link riêng biệt kết nối tức thì tới topic ntfy.sh trên điện thoại hoặc trình duyệt để nhận chuông báo đẩy mỗi khi có khách hàng bấm "Tôi đã chuyển khoản" và đang chờ duyệt đơn.' },
+          { type: 'feature', text: 'Tự động tạo topic bí mật & Live QR trong Quản trị: Bổ sung nút tạo topic bảo mật ngẫu nhiên và khung hiển thị mã QR thời gian thực ngay trong tab Cấu hình Thanh toán của trang Quản trị.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.4.8 trên toàn bộ hệ thống (index.html, package.json, sw.js, admin.js, api/admin/billing.js).' }
+        ]
+      },
+      {
         version: 'v5.4.7',
         date: '2026-10-15T18:00:00+07:00',
         title: 'Tối Ưu Tiếp Nhận Đơn Nâng Cấp Gói, Bộ Đếm Ngược 15 Phút & Tự Động Làm Mới Mã QR',
@@ -4123,7 +4133,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.7 • build 15/10/2026 18:00</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.8 • build 15/10/2026 19:00</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4848,7 +4858,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.7 • build 15/10/2026 18:00</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.8 • build 15/10/2026 19:00</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
