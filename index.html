@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.5',
+        date: '2026-10-15T17:00:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Mô Hình AI Bị Quá Tải Hoặc Phản Hồi Bị Ngắt Quãng',
+        items: [
+          { type: 'fix', text: 'Tối ưu hóa cấu trúc Adapter Gemini trên backend (lib/call-ai.js): Ưu tiên tuyệt đối endpoint v1beta đầy đủ tính năng, loại bỏ model không tồn tại và chuẩn hóa payload GenerationConfig.' },
+          { type: 'fix', text: 'Cơ chế Fallback & Tự phục hồi đa tầng: Tự động chuyển đổi giữa các model Gemini (gemini-1.5-flash, gemini-2.0-flash, gemini-1.5-pro) khi gặp sự cố, tự động loại bỏ responseSchema chuyển sang responseMimeType nếu gặp lỗi cú pháp.' },
+          { type: 'fix', text: 'Tái cấu trúc Prompt giải thích (api/ai/explain.js): Đưa ngữ cảnh bài học ra khối độc lập, không nhét dàn ý bài học vào giữa câu văn gây hiểu nhầm ngữ cảnh.' },
+          { type: 'improved', text: 'Hạ ngưỡng lọc độ dài tối thiểu kết quả hợp lệ xuống 5 ký tự và đồng bộ hóa phiên bản v5.4.5 toàn hệ thống.' }
+        ]
+      },
+      {
         version: 'v5.4.4',
         date: '2026-10-15T16:30:00+07:00',
         title: 'Đồng Bộ Trạng Thái Nút Trợ Lý AI Với Cài Đặt Hiển Thị & Quyền Tài Khoản Pro',
@@ -4090,7 +4101,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.4 • build 15/10/2026 16:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.5 • build 15/10/2026 17:00</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4815,7 +4826,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.4 • build 15/10/2026 16:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.5 • build 15/10/2026 17:00</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">

@@ -30,7 +30,7 @@ function extractExplanationText(data, rawText) {
   // 1. Kiểm tra từ object parsed
   if (data && typeof data === 'object') {
     const candidate = data.text || data.explanation || data.summary || data.content;
-    if (typeof candidate === 'string' && candidate.trim().length >= 15 && candidate.trim() !== '{' && candidate.trim() !== '{}') {
+    if (typeof candidate === 'string' && candidate.trim().length >= 5 && candidate.trim() !== '{' && candidate.trim() !== '{}') {
       return candidate.trim();
     }
   }
@@ -48,7 +48,7 @@ function extractExplanationText(data, rawText) {
     const parsed = JSON.parse(trimmed);
     if (parsed && typeof parsed === 'object') {
       const candidate = parsed.text || parsed.explanation || parsed.summary || parsed.content;
-      if (typeof candidate === 'string' && candidate.trim().length >= 15 && candidate.trim() !== '{' && candidate.trim() !== '{}') {
+      if (typeof candidate === 'string' && candidate.trim().length >= 5 && candidate.trim() !== '{' && candidate.trim() !== '{}') {
         return candidate.trim();
       }
     }
@@ -60,12 +60,12 @@ function extractExplanationText(data, rawText) {
   if (match && match[1]) {
     try {
       const unescaped = JSON.parse(`"${match[1]}"`);
-      if (unescaped.trim().length >= 15) {
+      if (unescaped.trim().length >= 5) {
         return unescaped.trim();
       }
     } catch (_) {
       const clean = match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-      if (clean.trim().length >= 15) {
+      if (clean.trim().length >= 5) {
         return clean.trim();
       }
     }
@@ -77,8 +77,8 @@ function extractExplanationText(data, rawText) {
     .replace(/[\s{}"`]+$/, '')
     .trim();
 
-  // Nếu chuỗi còn lại chỉ là {, {}, rỗng hoặc ngắn dưới 15 ký tự -> không hợp lệ
-  if (!cleaned || cleaned === '{' || cleaned === '{}' || cleaned.length < 15) {
+  // Nếu chuỗi còn lại chỉ là {, {}, rỗng hoặc ngắn dưới 5 ký tự -> không hợp lệ
+  if (!cleaned || cleaned === '{' || cleaned === '{}' || cleaned.length < 5) {
     return '';
   }
 
@@ -337,46 +337,29 @@ ${documentContextText}
 ` : '';
 
     let userPrompt = '';
+    const cleanInstruction = (instruction || '').trim();
+
     if (['explain', 'example', 'translate'].includes(mode)) {
-      if (instruction.includes('<selected_text>')) {
-        userPrompt = instruction
-          .replace('<selected_text>', `${docContextSnippet}\n<selected_text>\n${rawText}\n</selected_text>`)
-          .replace('<context>', `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`);
-      } else {
-        userPrompt = `${instruction}
-
-${docContextSnippet}
-
-<context>
-Tiêu đề mục: ${context.sectionTitle || 'Không có'}
-Đoạn trước: ${context.before || 'Không có'}
-Đoạn sau: ${context.after || 'Không có'}
-</context>
-
-<selected_text>
-${rawText}
-</selected_text>`;
-      }
+      userPrompt = [
+        docContextSnippet,
+        `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
+        `<selected_text>\n${rawText}\n</selected_text>`,
+        cleanInstruction.replace(/<selected_text>/g, `"${rawText}"`).replace(/<context>/g, '')
+      ].filter(Boolean).join('\n\n');
     } else if (mode === 'flashcard') {
-      userPrompt = `[YÊU CẦU: TẠO FLASHCARD HỌC TẬP TỪ ĐOẠN TRÍCH]
+      userPrompt = [
+        `[YÊU CẦU: TẠO FLASHCARD HỌC TẬP TỪ ĐOẠN TRÍCH]
 - Tạo câu hỏi (mặt trước) và câu trả lời trọng tâm (mặt sau) bám sát kiến thức trong <selected_text> và <current_document_context>.
 - Đặt nội dung vào trường "text" theo định dạng:
 **Câu hỏi:** [Nội dung câu hỏi ôn tập]
-**Trả lời:** [Câu trả lời giải thích súc tích]
-
-${docContextSnippet}
-
-<context>
-Tiêu đề mục: ${context.sectionTitle || 'Không có'}
-Đoạn trước: ${context.before || 'Không có'}
-Đoạn sau: ${context.after || 'Không có'}
-</context>
-
-<selected_text>
-${rawText}
-</selected_text>`;
+**Trả lời:** [Câu trả lời giải thích súc tích]`,
+        docContextSnippet,
+        `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
+        `<selected_text>\n${rawText}\n</selected_text>`
+      ].filter(Boolean).join('\n\n');
     } else if (mode === 'quiz') {
-      userPrompt = `[YÊU CẦU: TẠO CÂU HỎI TRẮC NGHIỆM QUIZ TỪ ĐOẠN TRÍCH]
+      userPrompt = [
+        `[YÊU CẦU: TẠO CÂU HỎI TRẮC NGHIỆM QUIZ TỪ ĐOẠN TRÍCH]
 - Tạo 1 câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có 1 đáp án đúng và 3 đáp án nhiễu hợp lý từ <selected_text> và <current_document_context>.
 - Đặt nội dung vào trường "text" gồm:
 **Câu hỏi:** [Nội dung câu hỏi]
@@ -386,19 +369,11 @@ C. [Phương án C]
 D. [Phương án D]
 
 **Đáp án đúng:** [Phương án đúng]
-**Giải thích:** [Phân tích chi tiết tại sao đúng và tại sao các phương án khác chưa chính xác]
-
-${docContextSnippet}
-
-<context>
-Tiêu đề mục: ${context.sectionTitle || 'Không có'}
-Đoạn trước: ${context.before || 'Không có'}
-Đoạn sau: ${context.after || 'Không có'}
-</context>
-
-<selected_text>
-${rawText}
-</selected_text>`;
+**Giải thích:** [Phân tích chi tiết tại sao đúng và tại sao các phương án khác chưa chính xác]`,
+        docContextSnippet,
+        `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
+        `<selected_text>\n${rawText}\n</selected_text>`
+      ].filter(Boolean).join('\n\n');
     }
 
     const jsonSchema = {
@@ -435,6 +410,7 @@ ${rawText}
         system: systemPrompt,
         prompt: userPrompt,
         schema: jsonSchema,
+        modelType: 'fast',
         taskType: 'fast',
         maxTokens: 3072,
         purpose: mode
@@ -446,19 +422,20 @@ ${rawText}
     let extractedExplanation = extractExplanationText(aiResponse?.data, aiResponse?.rawText || aiResponse?.text);
 
     // Tự động gọi fallback nếu lần 1 thất bại, bị cắt cụt JSON hoặc trả chuỗi rác
-    if (!extractedExplanation || extractedExplanation.length < 15) {
+    if (!extractedExplanation || extractedExplanation.length < 5) {
       console.warn('Kết quả AI lần 1 bị cắt cụt JSON hoặc không hợp lệ. Đang tự động gọi fallback plain-text...');
       try {
         const fallbackRes = await callAI({
           system: systemPrompt,
           prompt: userPrompt + '\n\n[BẮT BUỘC]: Trả về nội dung giải thích trực tiếp dạng văn bản thường, KHÔNG dùng cấu trúc JSON hay bọc mã markdown.',
           schema: false,
+          modelType: 'fast',
           taskType: 'fast',
           maxTokens: 3072,
           purpose: mode
         });
         const fallbackText = extractExplanationText(fallbackRes?.data, fallbackRes?.rawText || fallbackRes?.text);
-        if (fallbackText && fallbackText.length >= 15) {
+        if (fallbackText && fallbackText.length >= 5) {
           extractedExplanation = fallbackText;
           aiResponse = fallbackRes;
         }
@@ -468,7 +445,7 @@ ${rawText}
     }
 
     // TUYỆT ĐỐI KHÔNG lưu vào cache, KHÔNG trừ lượt dùng và KHÔNG bao giờ trả chữ "{" về giao diện
-    if (!extractedExplanation || extractedExplanation === '{' || extractedExplanation === '{}' || extractedExplanation.length < 15) {
+    if (!extractedExplanation || extractedExplanation === '{' || extractedExplanation === '{}' || extractedExplanation.length < 5) {
       return res.status(502).json({
         code: 'AI_RESPONSE_TRUNCATED',
         error: 'Mô hình AI bị quá tải hoặc phản hồi bị ngắt quãng. Vui lòng bấm "Thử lại" hoặc đổi sang phong cách giải thích khác.'

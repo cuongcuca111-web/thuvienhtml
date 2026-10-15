@@ -46,6 +46,8 @@ def main():
 
     # Chỉ đẩy các tệp thay đổi trong bản vá v5.4.2 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
     files_to_push = [
+        "lib/call-ai.js",
+        "api/ai/explain.js",
         "index.html",
         "package.json",
         "sw.js",
@@ -83,7 +85,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "fix(v5.4.4): dong bo an hien nut tro ly ai theo dung trang thai cai dat va quyen pro"
+    commit_message = "fix(v5.4.5): sua triet de loi giai thich ai va toi uu adapter gemini v1beta"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
