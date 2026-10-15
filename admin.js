@@ -15,8 +15,7 @@ import {
   inMemoryPersistence,
   reauthenticateWithCredential,
   EmailAuthProvider
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 const ADMIN_LOGIN_DOMAIN = window.__ADMIN_LOGIN_DOMAIN || 'admin.thuvienhtml.app';
 
@@ -76,13 +75,13 @@ export function getAdminDb() {
     const existingApp = getApps().find(a => a.name === 'admin-session');
     if (existingApp) adminApp = existingApp;
   }
-  if (!adminApp) return null;
+  if (!adminApp) return (adminContext && adminContext.state && adminContext.state.db) || null;
   try {
     adminDb = getFirestore(adminApp);
   } catch (e) {
     console.warn('[Admin] Lỗi getFirestore(adminApp):', e);
   }
-  return adminDb;
+  return adminDb || (adminContext && adminContext.state && adminContext.state.db) || null;
 }
 
 // Kiểm tra phiên còn tươi (<15 phút) cho các thao tác nhạy cảm, yêu cầu nhập lại mật khẩu nếu quá hạn
@@ -273,6 +272,10 @@ function ensureAdminModalsInDOM() {
           <button data-tab="prompts" class="admin-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
             <svg class="w-3.5 h-3.5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
             <span>Thư viện Prompt</span>
+          </button>
+          <button data-tab="theme" class="admin-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <svg class="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
+            <span>Theme Studio</span>
           </button>
         </nav>
 
@@ -677,6 +680,9 @@ function loadTabData(tabName) {
       break;
     case 'prompts':
       renderPromptsTab(container);
+      break;
+    case 'theme':
+      renderThemeTab(container);
       break;
   }
 }
@@ -3391,6 +3397,7 @@ function buildBillingTabDOM(container, cachedData) {
   const banksRes = (cachedData && cachedData.banksRes) || {};
   const bankTransfer = cfgRes.bankTransfer || {};
   const secrets = cfgRes.vietqrSecrets || {};
+  const ntfyCfg = cfgRes.ntfyConfig || {};
   const orders = sortOrdersByPriority(ordersRes.orders || []);
   const counts = ordersRes.counts || {};
 
@@ -3610,6 +3617,40 @@ function buildBillingTabDOM(container, cachedData) {
                     <label class="block text-gray-500 mb-1">API Key ${secrets.maskedApiKey ? `(${esc(secrets.maskedApiKey)})` : ''}</label>
                     <input type="password" id="cfgVietqrApiKey" placeholder="Nhập API Key mới..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs" />
                   </div>
+                </div>
+              </div>
+
+              <!-- CẤU HÌNH THÔNG BÁO ĐẨY QUA NTFY.SH -->
+              <div class="p-4 rounded-xl bg-violet-50/60 dark:bg-[#14171C] border border-violet-200 dark:border-violet-900/40 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-1.5 font-bold text-violet-700 dark:text-violet-300">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span>Cấu hình Thông báo đẩy qua ntfy.sh</span>
+                  </div>
+                  <span>${ntfyCfg.isConfigured ? '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">Đã kích hoạt</span>' : '<span class="px-2 py-0.5 rounded text-[10px] bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Chưa cấu hình Topic</span>'}</span>
+                </div>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                  Nhận chuông báo đẩy tức thì trên điện thoại (qua app <strong>ntfy</strong>) hoặc trình duyệt mỗi khi có người nâng cấp Plus/Pro thành công (Webhook / Redeem / Duyệt đơn) hoặc khi có yêu cầu chuyển khoản mới.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <label class="block text-gray-600 dark:text-gray-400 font-semibold mb-1">Server URL:</label>
+                    <input type="url" id="cfgNtfyServerUrl" value="${esc(ntfyCfg.serverUrl || 'https://ntfy.sh')}" placeholder="https://ntfy.sh" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
+                  </div>
+                  <div>
+                    <label class="block text-gray-600 dark:text-gray-400 font-semibold mb-1">ntfy Topic ${ntfyCfg.maskedTopic ? `(${esc(ntfyCfg.maskedTopic)})` : ''}:</label>
+                    <input type="text" id="cfgNtfyTopic" placeholder="Nhập topic bí mật..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
+                  </div>
+                  <div>
+                    <label class="block text-gray-600 dark:text-gray-400 font-semibold mb-1">Access Token ${ntfyCfg.hasToken ? '(Đã lưu)' : '(Tùy chọn)'}:</label>
+                    <input type="password" id="cfgNtfyToken" placeholder="Nhập token nếu có..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D23] font-mono text-xs text-gray-800 dark:text-gray-200" />
+                  </div>
+                </div>
+                <div class="flex items-center justify-end pt-1">
+                  <button type="button" id="btnTestNtfy" class="px-3 py-1.5 rounded-xl border border-violet-500 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-950/40 font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span id="btnTestNtfyText">Gửi thông báo thử nghiệm (Test ntfy)</span>
+                  </button>
                 </div>
               </div>
 
@@ -4028,20 +4069,53 @@ function bindBillingTabEvents(container, initialOrders) {
             qrMode: document.getElementById('cfgQrMode').value
           },
           vietqrClientId: document.getElementById('cfgVietqrClientId') ? document.getElementById('cfgVietqrClientId').value.trim() : '',
-          vietqrApiKey: document.getElementById('cfgVietqrApiKey') ? document.getElementById('cfgVietqrApiKey').value.trim() : ''
+          vietqrApiKey: document.getElementById('cfgVietqrApiKey') ? document.getElementById('cfgVietqrApiKey').value.trim() : '',
+          ntfyServerUrl: document.getElementById('cfgNtfyServerUrl') ? document.getElementById('cfgNtfyServerUrl').value.trim() : '',
+          ntfyTopic: document.getElementById('cfgNtfyTopic') ? document.getElementById('cfgNtfyTopic').value.trim() : '',
+          ntfyToken: document.getElementById('cfgNtfyToken') ? document.getElementById('cfgNtfyToken').value.trim() : ''
         };
 
         await callAdminApi('/api/admin/billing/config', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        toast('Đã lưu cấu hình tài khoản nhận tiền VietQR thành công!');
+        toast('Đã lưu cấu hình tài khoản VietQR và ntfy.sh thành công!');
         renderBillingTab(container);
       } catch (err) {
         alert('Lỗi lưu cấu hình: ' + err.message);
       } finally {
         btnSaveConfig.disabled = false;
         btnSaveConfig.innerText = 'Lưu cấu hình thanh toán';
+      }
+    };
+  }
+
+  // Sự kiện gửi thử nghiệm ntfy.sh
+  const btnTestNtfy = document.getElementById('btnTestNtfy');
+  if (btnTestNtfy) {
+    btnTestNtfy.onclick = async () => {
+      const btnText = document.getElementById('btnTestNtfyText');
+      const sUrl = document.getElementById('cfgNtfyServerUrl') ? document.getElementById('cfgNtfyServerUrl').value.trim() : '';
+      const topic = document.getElementById('cfgNtfyTopic') ? document.getElementById('cfgNtfyTopic').value.trim() : '';
+      const token = document.getElementById('cfgNtfyToken') ? document.getElementById('cfgNtfyToken').value.trim() : '';
+
+      btnTestNtfy.disabled = true;
+      if (btnText) btnText.textContent = 'Đang gửi...';
+      try {
+        const res = await callAdminApi('/api/admin/billing?action=test-ntfy', {
+          method: 'POST',
+          body: JSON.stringify({
+            ntfyServerUrl: sUrl,
+            ntfyTopic: topic,
+            ntfyToken: token
+          })
+        });
+        toast(res.message || 'Đã gửi thông báo thử nghiệm thành công tới ntfy.sh!');
+      } catch (err) {
+        alert('Lỗi thử nghiệm ntfy: ' + err.message);
+      } finally {
+        btnTestNtfy.disabled = false;
+        if (btnText) btnText.textContent = 'Gửi thông báo thử nghiệm (Test ntfy)';
       }
     };
   }
@@ -4714,6 +4788,13 @@ function saveAdminPromptLibrary(items) {
     } catch (e) {
       console.warn('[Admin] Lỗi lưu Thư viện Prompt:', e);
     }
+  }
+
+  // Tự động đồng bộ lên Firestore (config/prompts) ngầm cho Admin
+  if (typeof savePromptsToCloud === 'function') {
+    savePromptsToCloud(safeItems, true).catch(err => {
+      console.warn('[Admin] Lỗi auto-sync prompts to cloud:', err.message);
+    });
   }
 }
 
@@ -5439,4 +5520,747 @@ if (typeof window !== 'undefined' && !window._adminPromptsListenerBound) {
     }
   });
 }
+
+// =========================================================================
+// 3.9 MỤC 9: THEME STUDIO & QUẢN LÝ HIỆU ỨNG LỄ HỘI (THEME STUDIO TAB)
+// =========================================================================
+
+export const THEME_PRESETS = [
+  {
+    id: "default",
+    name: "The Codex (Mặc định)",
+    desc: "Giao diện cổ điển giấy ấm sang trọng, tối giản, tập trung tối đa cho việc đọc sách",
+    effect: "none",
+    lightAmbientBg: "#FAF9F5",
+    darkAmbientBg: "#111317",
+    accentColor: "#4F46E5",
+    accentGlow: "#818CF8",
+    showDecorCaps: false,
+    icon: "📖"
+  },
+  {
+    id: "christmas",
+    name: "Giáng Sinh An Lành",
+    desc: "Tuyết trắng rơi nhẹ ngoài viền nền, điểm xuyết nón tuyết đọng tinh tế ở góc Header & Popup",
+    effect: "snow",
+    lightAmbientBg: "#F0F4F8",
+    darkAmbientBg: "#0B1320",
+    accentColor: "#DC2626",
+    accentGlow: "#F87171",
+    showDecorCaps: true,
+    icon: "❄️"
+  },
+  {
+    id: "tet",
+    name: "Tết Đoàn Viên",
+    desc: "Cánh hoa đào hồng phai và hoa mai vàng rơi phất phơ ngoài nền, sắc đỏ may mắn đầu năm",
+    effect: "tet_blossom",
+    lightAmbientBg: "#FFF1F2",
+    darkAmbientBg: "#1F0A0E",
+    accentColor: "#E11D48",
+    accentGlow: "#FB7185",
+    showDecorCaps: true,
+    icon: "🌸"
+  },
+  {
+    id: "autumn",
+    name: "Thu Vàng Lãng Mạn",
+    desc: "Lá phong đỏ và vàng chao liệng ngoài lề, gam màu hổ phách dịu êm cho những buổi đọc thư thái",
+    effect: "autumn_leaves",
+    lightAmbientBg: "#FFFBEB",
+    darkAmbientBg: "#1C1308",
+    accentColor: "#D97706",
+    accentGlow: "#FBBF24",
+    showDecorCaps: true,
+    icon: "🍁"
+  },
+  {
+    id: "focus_exam",
+    name: "Mùa Thi Tập Trung",
+    desc: "Ánh đom đóm & tinh tú lấp lánh nhẹ nhàng trong đêm, truyền cảm hứng bứt phá điểm số",
+    effect: "sparkles",
+    lightAmbientBg: "#F8FAFC",
+    darkAmbientBg: "#090D16",
+    accentColor: "#06B6D4",
+    accentGlow: "#38BDF8",
+    showDecorCaps: false,
+    icon: "✨"
+  }
+];
+
+let adminThemeConfigCache = null;
+let adminThemeEditingState = null;
+
+function formatTimestampToLocalInput(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function parseLocalInputToIsoAndTs(val) {
+  if (!val) return null;
+  const d = new Date(val);
+  const ts = d.getTime();
+  if (isNaN(ts)) return null;
+  return {
+    iso: d.toISOString(),
+    timestamp: ts
+  };
+}
+
+async function fetchThemeSettingsFromFirestore() {
+  const db = getAdminDb();
+  if (!db) throw new Error("Chưa khởi tạo Firestore hoặc thiếu quyền truy cập");
+  const themeDocRef = doc(db, 'config', 'theme_settings');
+  const snap = await getDoc(themeDocRef);
+  if (snap.exists()) {
+    return snap.data();
+  }
+  return {
+    activeMode: 'manual',
+    activeThemeId: 'default',
+    theme: { ...THEME_PRESETS[0] },
+    schedule: {
+      enabled: false,
+      startTime: '',
+      startTimestamp: 0,
+      endTime: '',
+      endTimestamp: 0,
+      scheduledTheme: { ...THEME_PRESETS[1] }
+    },
+    savedThemes: [],
+    updatedAt: new Date().toISOString()
+  };
+}
+
+async function writeThemeSettingsToFirestore(payload) {
+  const db = getAdminDb();
+  if (!db) throw new Error("Chưa kết nối được cơ sở dữ liệu");
+  const themeDocRef = doc(db, 'config', 'theme_settings');
+  const user = currentAdminUser || (adminAuth && adminAuth.currentUser);
+  const dataToSave = {
+    ...payload,
+    updatedAt: new Date().toISOString(),
+    updatedBy: user ? user.uid : 'admin'
+  };
+  await setDoc(themeDocRef, dataToSave, { merge: false });
+  adminThemeConfigCache = dataToSave;
+  try {
+    localStorage.setItem('thuvienhtml_theme_config', JSON.stringify(dataToSave));
+  } catch (_) {}
+  // Thông báo tới hệ thống toàn cục nếu cùng tab
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('theme_settings_updated', { detail: dataToSave }));
+  }
+  return dataToSave;
+}
+
+export async function renderThemeTab(container) {
+  if (!container) return;
+
+  // 1. Loading UI State
+  container.innerHTML = `
+    <div class="flex flex-col items-center justify-center p-12 text-center space-y-3">
+      <div class="w-8 h-8 border-3 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Đang nạp dữ liệu Theme Studio từ hệ thống đám mây...</p>
+    </div>
+  `;
+
+  let cfg = adminThemeConfigCache;
+  if (!cfg) {
+    try {
+      cfg = await fetchThemeSettingsFromFirestore();
+      adminThemeConfigCache = cfg;
+    } catch (err) {
+      console.error('[ThemeStudio] Lỗi tải cấu hình:', err);
+      container.innerHTML = `
+        <div class="p-6 rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 text-rose-800 dark:text-rose-300 space-y-3">
+          <div class="flex items-center gap-2 font-bold text-sm">
+            <svg class="w-5 h-5 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Không thể nạp dữ liệu Theme Studio</span>
+          </div>
+          <p class="text-xs text-rose-700 dark:text-rose-400">${esc(err.message)}</p>
+          <button id="btnRetryLoadThemeTab" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs transition">
+            Thử lại
+          </button>
+        </div>
+      `;
+      const btnRetry = document.getElementById('btnRetryLoadThemeTab');
+      if (btnRetry) btnRetry.onclick = () => renderThemeTab(container);
+      return;
+    }
+  }
+
+  // Khởi tạo editing theme nếu chưa có
+  if (!adminThemeEditingState) {
+    adminThemeEditingState = cfg.theme ? { ...cfg.theme } : { ...THEME_PRESETS[0] };
+  }
+
+  const activeTheme = cfg.theme || THEME_PRESETS[0];
+  const isScheduleActive = cfg.activeMode === 'schedule' && cfg.schedule && cfg.schedule.enabled;
+  const isDefaultTheme = activeTheme.id === 'default' && cfg.activeMode === 'manual';
+
+  // Hiển thị trạng thái phát sóng
+  let broadcastStatusHtml = '';
+  if (cfg.activeMode === 'manual') {
+    broadcastStatusHtml = `
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${isDefaultTheme ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300' : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'}">
+        <span class="w-2 h-2 rounded-full ${isDefaultTheme ? 'bg-stone-400' : 'bg-amber-500 animate-ping'}"></span>
+        <span>Phát sóng Thủ công: <strong>${esc(activeTheme.name || 'Theme')}</strong></span>
+      </div>
+    `;
+  } else if (isScheduleActive) {
+    const now = Date.now();
+    const inRange = now >= (cfg.schedule.startTimestamp || 0) && now <= (cfg.schedule.endTimestamp || 0);
+    broadcastStatusHtml = `
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${inRange ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700'}">
+        <span class="w-2 h-2 rounded-full ${inRange ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'}"></span>
+        <span>${inRange ? '🟢 Đang trong khung giờ hẹn:' : '⏳ Lịch hẹn đang chờ:'} <strong>${esc(cfg.schedule.scheduledTheme?.name || 'Theme')}</strong></span>
+      </div>
+    `;
+  } else {
+    broadcastStatusHtml = `
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+        <span class="w-2 h-2 rounded-full bg-stone-400"></span>
+        <span>Chế độ mặc định: The Codex HTML</span>
+      </div>
+    `;
+  }
+
+  // Danh sách Preset mẫu HTML
+  const presetsHtml = THEME_PRESETS.map(p => {
+    const isCurrentEditing = adminThemeEditingState && adminThemeEditingState.id === p.id;
+    return `
+      <button type="button" data-preset-id="${p.id}" class="btn-theme-preset text-left p-3 rounded-2xl border transition relative overflow-hidden flex flex-col justify-between group cursor-pointer ${isCurrentEditing ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-950/20 ring-1 ring-amber-500/50' : 'border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:border-amber-400/70'}">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">${p.icon}</span>
+            <div>
+              <div class="text-xs font-bold text-gray-900 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">${esc(p.name)}</div>
+              <div class="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">${esc(p.desc)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2.5 pt-2 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between text-[10px]">
+          <span class="text-gray-500 dark:text-gray-400">Hiệu ứng: <strong>${p.effect === 'none' ? 'Không' : p.effect}</strong></span>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.lightAmbientBg}" title="Màu nền sáng"></span>
+            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.darkAmbientBg}" title="Màu nền tối"></span>
+            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.accentColor}" title="Màu nhấn"></span>
+          </div>
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  // Danh sách Theme đã lưu HTML
+  const savedThemes = Array.isArray(cfg.savedThemes) ? cfg.savedThemes : [];
+  let savedThemesHtml = '';
+  if (savedThemes.length === 0) {
+    savedThemesHtml = `
+      <div class="col-span-full py-8 px-4 text-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+        <div class="text-2xl mb-1.5">🎨</div>
+        <div class="text-xs font-bold text-gray-700 dark:text-gray-300">Chưa có theme tùy chỉnh nào được lưu trong kho</div>
+        <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
+          Tự do phối màu nền Ambient &amp; hiệu ứng ở bảng bên cạnh, sau đó nhấn "Lưu vào Kho Theme" để tái sử dụng bất cứ lúc nào.
+        </p>
+      </div>
+    `;
+  } else {
+    savedThemesHtml = savedThemes.map((st, idx) => `
+      <div class="p-3.5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181B20] flex flex-col justify-between gap-3 shadow-2xs">
+        <div>
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-bold text-xs text-gray-900 dark:text-gray-100 truncate">${esc(st.name || 'Theme')}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-mono">${st.effect || 'none'}</span>
+          </div>
+          <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">${esc(st.desc || 'Không có mô tả')}</p>
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800 text-[10px]">
+          <div class="flex items-center gap-1">
+            <span class="w-3 h-3 rounded-full border border-black/10" style="background-color: ${st.lightAmbientBg || '#fff'}"></span>
+            <span class="w-3 h-3 rounded-full border border-black/10" style="background-color: ${st.darkAmbientBg || '#000'}"></span>
+            <span class="w-3 h-3 rounded-full border border-black/10" style="background-color: ${st.accentColor || '#4F46E5'}"></span>
+          </div>
+          <div class="flex items-center gap-1">
+            <button type="button" data-apply-saved-idx="${idx}" class="btn-apply-saved px-2 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-semibold transition cursor-pointer">
+              Áp dụng
+            </button>
+            <button type="button" data-edit-saved-idx="${idx}" class="btn-edit-saved px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium transition cursor-pointer">
+              Sửa
+            </button>
+            <button type="button" data-del-saved-idx="${idx}" class="btn-del-saved p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 transition cursor-pointer" title="Xóa">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Khởi tạo giá trị form
+  const curName = adminThemeEditingState.name || '';
+  const curEffect = adminThemeEditingState.effect || 'none';
+  const curLightBg = adminThemeEditingState.lightAmbientBg || '#FAF9F5';
+  const curDarkBg = adminThemeEditingState.darkAmbientBg || '#111317';
+  const curAccent = adminThemeEditingState.accentColor || '#4F46E5';
+  const curAccentGlow = adminThemeEditingState.accentGlow || '#818CF8';
+  const curCaps = adminThemeEditingState.showDecorCaps === true;
+
+  const schedStart = formatTimestampToLocalInput(cfg.schedule?.startTimestamp);
+  const schedEnd = formatTimestampToLocalInput(cfg.schedule?.endTimestamp);
+  const schedEnabled = cfg.schedule?.enabled === true;
+
+  container.innerHTML = `
+    <div class="space-y-6 max-w-6xl mx-auto">
+      <!-- HEADER & STATUS -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+            <h2 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              Theme Studio &amp; Hiệu ứng Lễ hội
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-800">
+                v5.4.0
+              </span>
+            </h2>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-2xl leading-relaxed">
+            Tùy biến màu nền Ambient ngoài khung đọc, hiệu ứng hạt rơi theo mùa sự kiện và thiết lập lịch hẹn tự động không cần máy chủ (Zero-distraction reading &amp; Serverless-free Schedule).
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap shrink-0">
+          ${broadcastStatusHtml}
+          <button id="btnResetToCodexDefault" type="button" class="touch-target min-h-[38px] px-3.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#181B20] hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-300 transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Khôi phục ngay lập tức về giao diện gốc The Codex HTML">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>Về The Codex Mặc định</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KHU VỰC CHÍNH: 2 CỘT (PRESETS + BẢNG THIẾT KẾ & HẸN LỊCH) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- CỘT TRÁI (5 CỘT): MẪU PRESET SẴN CÓ & KHO LƯU -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Card Presets mẫu -->
+          <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-[#14161C]/70 backdrop-blur-sm space-y-3 shadow-2xs">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
+                <span>🌟</span> Preset Lễ Hội Sẵn Có (5 Mẫu)
+              </span>
+              <span class="text-[10px] text-gray-400">Bấm để nạp thông số</span>
+            </div>
+            <div class="grid grid-cols-1 gap-2.5">
+              ${presetsHtml}
+            </div>
+          </div>
+
+          <!-- Card Kho Theme Đã Lưu -->
+          <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-[#14161C]/70 backdrop-blur-sm space-y-3 shadow-2xs">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
+                <span>🗄️</span> Kho Theme Đã Lưu (${savedThemes.length})
+              </span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
+              ${savedThemesHtml}
+            </div>
+          </div>
+        </div>
+
+        <!-- CỘT PHẢI (7 CỘT): BẢNG TÙY BIẾN THEME & HẸN GIỜ -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- BẢNG TÙY BIẾN GIAO DIỆN HIỆN TẠI -->
+          <div class="p-5 sm:p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181B20] space-y-5 shadow-2xs">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                <h3 class="font-bold text-sm text-gray-900 dark:text-gray-100">Bảng Thiết Kế Giao Diện &amp; Hiệu Ứng</h3>
+              </div>
+              <button id="btnPreviewThemeCurrent" type="button" class="touch-target min-h-[36px] px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-xs font-bold transition flex items-center gap-1 cursor-pointer" title="Áp dụng hiệu ứng ngay trên màn hình hiện tại để xem trước">
+                <span>👁️</span> Xem Thử (Preview)
+              </button>
+            </div>
+
+            <!-- Form Tùy biến -->
+            <div class="space-y-4 text-xs">
+              <div>
+                <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Tên Theme:</label>
+                <input type="text" id="themeInputName" value="${esc(curName)}" placeholder="Nhập tên giao diện (vd: Tết Giáp Thìn 2027)..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#111317] font-medium text-gray-800 dark:text-gray-200 focus:border-amber-500 focus:bg-white" />
+              </div>
+
+              <!-- Chọn Hiệu ứng Hạt -->
+              <div>
+                <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Hiệu ứng Hạt Rơi Ngoài Viền (Ambient Particle Effect):</label>
+                <select id="themeSelectEffect" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#111317] font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">
+                  <option value="none" ${curEffect === 'none' ? 'selected' : ''}>🚫 Không hiệu ứng (Tối giản / Tập trung)</option>
+                  <option value="snow" ${curEffect === 'snow' ? 'selected' : ''}>❄️ Tuyết rơi nhẹ mùa đông (Christmas Snow)</option>
+                  <option value="tet_blossom" ${curEffect === 'tet_blossom' ? 'selected' : ''}>🌸 Hoa đào &amp; hoa mai rơi (Tết Nguyên Đán)</option>
+                  <option value="autumn_leaves" ${curEffect === 'autumn_leaves' ? 'selected' : ''}>🍁 Lá phong mùa thu chao nghiêng (Golden Autumn)</option>
+                  <option value="sparkles" ${curEffect === 'sparkles' ? 'selected' : ''}>✨ Tinh tú &amp; đom đóm lấp lánh (Mùa thi bứt phá)</option>
+                </select>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                  🔒 Ràng buộc Zero-distraction: Hạt chỉ hoạt động ngoài viền nền và góc popup, tuyệt đối không bay đè lên bài học (#lessonIframe).
+                </p>
+              </div>
+
+              <!-- Bộ chọn Màu sắc (Ambient & Accent) -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Màu nền Sáng:</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="themeColorLightBg" value="${curLightBg}" class="w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-700 cursor-pointer p-0.5 bg-transparent" />
+                    <input type="text" id="themeTextLightBg" value="${curLightBg}" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 font-mono text-xs uppercase" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Màu nền Tối:</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="themeColorDarkBg" value="${curDarkBg}" class="w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-700 cursor-pointer p-0.5 bg-transparent" />
+                    <input type="text" id="themeTextDarkBg" value="${curDarkBg}" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 font-mono text-xs uppercase" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Màu nhấn (Accent):</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="themeColorAccent" value="${curAccent}" class="w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-700 cursor-pointer p-0.5 bg-transparent" />
+                    <input type="text" id="themeTextAccent" value="${curAccent}" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 font-mono text-xs uppercase" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Checkbox Tuyết đọng / hoa góc popup -->
+              <div class="pt-2">
+                <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input type="checkbox" id="themeCheckDecorCaps" ${curCaps ? 'checked' : ''} class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 mt-0.5" />
+                  <div>
+                    <span class="font-bold text-gray-800 dark:text-gray-200">Hiển thị đồ họa đọng tuyết / hoa ở góc Header &amp; Popups</span>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400">Được thiết kế tinh tế bằng SVG trong suốt, pointer-events: none, không cản trở thao tác bấm nút.</p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Hàng Nút Hành Động Cho Theme Đang Thiết Kế -->
+              <div class="flex items-center gap-2 pt-3 flex-wrap">
+                <button id="btnSaveToVault" type="button" class="touch-target min-h-[44px] px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                  <span>💾</span> Lưu vào Kho Theme
+                </button>
+                <button id="btnApplyManualNow" type="button" class="touch-target min-h-[44px] px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95">
+                  <span>⚡</span> Kích Hoạt Thủ Công Ngay (Toàn Hệ Thống)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD THIẾT LẬP HẸN LỊCH TỰ ĐỘNG (SCHEDULE ENGINE) -->
+          <div class="p-5 sm:p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181B20] space-y-4 shadow-2xs">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <h3 class="font-bold text-sm text-gray-900 dark:text-gray-100">Cơ Chế Hẹn Lịch Tự Động (Serverless-free Auto Schedule)</h3>
+              </div>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-semibold border border-emerald-300 dark:border-emerald-800">
+                Chuẩn hóa Múi giờ tuyệt đối
+              </span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+              <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                <input type="checkbox" id="themeCheckScheduleEnabled" ${schedEnabled ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+                <span class="font-bold text-gray-800 dark:text-gray-200">Kích hoạt chế độ Hẹn lịch tự động cho Theme sự kiện</span>
+              </label>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Thời gian BẮT ĐẦU (startTime):</label>
+                  <input type="datetime-local" id="themeScheduleStart" value="${schedStart}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#111317] font-mono text-xs text-gray-800 dark:text-gray-200 cursor-pointer" />
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Thời gian KẾT THÚC (endTime):</label>
+                  <input type="datetime-local" id="themeScheduleEnd" value="${schedEnd}" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#111317] font-mono text-xs text-gray-800 dark:text-gray-200 cursor-pointer" />
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-900 dark:text-amber-200 space-y-1">
+                <p><strong>Cơ chế tự kích hoạt theo thời gian thực:</strong></p>
+                <p>Hệ thống tự động lưu kèm cả Unix Timestamp (mili-giây) và chuỗi ISO có offset múi giờ. Khi người dùng mở sách hoặc đang đọc, client sẽ đối chiếu với Date.now() để tự bật hiệu ứng đúng thời điểm giao thừa/giờ vàng và tự động trả về The Codex khi hết giờ hẹn mà không cần can thiệp từ máy chủ.</p>
+              </div>
+
+              <div class="flex items-center justify-end gap-2 pt-2">
+                <button id="btnSaveScheduleToCloud" type="button" class="touch-target min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span>Lưu Lịch Hẹn Lên Hệ Thống Đám Mây</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+
+  // GẮN SỰ KIỆN TƯƠNG TÁC
+  // 1. Đồng bộ Color Pickers & Hex Text
+  const linkColorInput = (pickerId, textId) => {
+    const picker = document.getElementById(pickerId);
+    const text = document.getElementById(textId);
+    if (picker && text) {
+      picker.oninput = () => { text.value = picker.value.toUpperCase(); };
+      text.oninput = () => {
+        if (/^#[0-9A-Fa-f]{6}$/.test(text.value.trim())) {
+          picker.value = text.value.trim();
+        }
+      };
+    }
+  };
+  linkColorInput('themeColorLightBg', 'themeTextLightBg');
+  linkColorInput('themeColorDarkBg', 'themeTextDarkBg');
+  linkColorInput('themeColorAccent', 'themeTextAccent');
+
+  // Helper gom dữ liệu form thành đối tượng theme
+  const getThemeFromForm = () => {
+    return {
+      id: adminThemeEditingState.id || ('theme_' + Date.now()),
+      name: (document.getElementById('themeInputName')?.value || 'Theme mới').trim(),
+      effect: document.getElementById('themeSelectEffect')?.value || 'none',
+      lightAmbientBg: document.getElementById('themeTextLightBg')?.value || '#FAF9F5',
+      darkAmbientBg: document.getElementById('themeTextDarkBg')?.value || '#111317',
+      accentColor: document.getElementById('themeTextAccent')?.value || '#4F46E5',
+      accentGlow: '#818CF8',
+      showDecorCaps: document.getElementById('themeCheckDecorCaps')?.checked === true,
+      desc: adminThemeEditingState.desc || ''
+    };
+  };
+
+  // 2. Nút Chọn Preset Mẫu
+  container.querySelectorAll('.btn-theme-preset').forEach(btn => {
+    btn.onclick = () => {
+      const presetId = btn.getAttribute('data-preset-id');
+      const found = THEME_PRESETS.find(p => p.id === presetId);
+      if (found) {
+        adminThemeEditingState = { ...found };
+        renderThemeTab(container);
+        toast(`Đã nạp thông số Preset "${found.name}"!`);
+      }
+    };
+  });
+
+  // 3. Nút Xem Thử (Preview) trên máy Admin
+  const btnPreview = document.getElementById('btnPreviewThemeCurrent');
+  if (btnPreview) {
+    btnPreview.onclick = () => {
+      const t = getThemeFromForm();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('preview_theme', { detail: t }));
+        toast(`Đang hiển thị xem trước Theme "${t.name}"!`);
+      }
+    };
+  }
+
+  // 4. Nút Khôi phục về Mặc định The Codex
+  const btnReset = document.getElementById('btnResetToCodexDefault');
+  if (btnReset) {
+    btnReset.onclick = async () => {
+      if (!confirm("Bạn có chắc chắn muốn khôi phục về giao diện gốc The Codex và tắt toàn bộ hiệu ứng lễ hội trên hệ thống?")) return;
+      btnReset.disabled = true;
+      btnReset.innerHTML = `<span>⏳ Đang xử lý...</span>`;
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: 'manual',
+          activeThemeId: 'default',
+          theme: { ...THEME_PRESETS[0] },
+          schedule: {
+            ...(cfg.schedule || {}),
+            enabled: false
+          }
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast("Đã khôi phục hoàn toàn về The Codex HTML mặc định!");
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi khi khôi phục theme: " + e.message);
+        renderThemeTab(container);
+      }
+    };
+  }
+
+  // 5. Nút Lưu vào Kho Theme
+  const btnSaveVault = document.getElementById('btnSaveToVault');
+  if (btnSaveVault) {
+    btnSaveVault.onclick = async () => {
+      const t = getThemeFromForm();
+      const list = Array.isArray(cfg.savedThemes) ? [...cfg.savedThemes] : [];
+      const existingIdx = list.findIndex(item => item.id === t.id);
+      if (existingIdx >= 0) {
+        list[existingIdx] = t;
+      } else {
+        list.push(t);
+      }
+      btnSaveVault.disabled = true;
+      btnSaveVault.innerHTML = `<span>⏳ Đang lưu...</span>`;
+      try {
+        const payload = { ...cfg, savedThemes: list };
+        await writeThemeSettingsToFirestore(payload);
+        toast(`Đã lưu "${t.name}" vào Kho Theme!`);
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi lưu Kho Theme: " + e.message);
+        renderThemeTab(container);
+      }
+    };
+  }
+
+  // 6. Nút Kích Hoạt Thủ Công Ngay
+  const btnApplyManual = document.getElementById('btnApplyManualNow');
+  if (btnApplyManual) {
+    btnApplyManual.onclick = async () => {
+      const t = getThemeFromForm();
+      if (!confirm(`Bạn có chắc muốn kích hoạt Theme "${t.name}" ngay lập tức cho toàn bộ người dùng?`)) return;
+      btnApplyManual.disabled = true;
+      btnApplyManual.innerHTML = `<span>⏳ Đang phát sóng...</span>`;
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: 'manual',
+          activeThemeId: t.id,
+          theme: t
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast(`Đã phát sóng Theme "${t.name}" thành công tới mọi độc giả!`);
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi phát sóng: " + e.message);
+        renderThemeTab(container);
+      }
+    };
+  }
+
+  // 7. Nút Lưu Lịch Hẹn Tự Động (Schedule)
+  const btnSaveSchedule = document.getElementById('btnSaveScheduleToCloud');
+  if (btnSaveSchedule) {
+    btnSaveSchedule.onclick = async () => {
+      const isEnabled = document.getElementById('themeCheckScheduleEnabled')?.checked === true;
+      const startVal = document.getElementById('themeScheduleStart')?.value;
+      const endVal = document.getElementById('themeScheduleEnd')?.value;
+
+      let startParsed = null;
+      let endParsed = null;
+
+      if (isEnabled) {
+        if (!startVal || !endVal) {
+          alert("Vui lòng chọn đầy đủ cả Thời gian bắt đầu và Thời gian kết thúc khi bật Hẹn lịch!");
+          return;
+        }
+        startParsed = parseLocalInputToIsoAndTs(startVal);
+        endParsed = parseLocalInputToIsoAndTs(endVal);
+
+        if (!startParsed || !endParsed) {
+          alert("Thời gian nhập không hợp lệ!");
+          return;
+        }
+        if (endParsed.timestamp <= startParsed.timestamp) {
+          alert("Thời gian kết thúc phải lớn hơn thời gian bắt đầu!");
+          return;
+        }
+      } else {
+        startParsed = parseLocalInputToIsoAndTs(startVal);
+        endParsed = parseLocalInputToIsoAndTs(endVal);
+      }
+
+      const scheduledTheme = getThemeFromForm();
+
+      btnSaveSchedule.disabled = true;
+      btnSaveSchedule.innerHTML = `<span>⏳ Đang lưu lịch hẹn...</span>`;
+
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: isEnabled ? 'schedule' : 'manual',
+          schedule: {
+            enabled: isEnabled,
+            startTime: startParsed ? startParsed.iso : '',
+            startTimestamp: startParsed ? startParsed.timestamp : 0,
+            endTime: endParsed ? endParsed.iso : '',
+            endTimestamp: endParsed ? endParsed.timestamp : 0,
+            scheduledTheme: scheduledTheme
+          }
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast("Đã lưu thiết lập Lịch hẹn tự động lên đám mây!");
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi lưu lịch hẹn: " + e.message);
+        renderThemeTab(container);
+      }
+    };
+  }
+
+  // 8. Tương tác Kho Theme Đã Lưu: Áp dụng, Sửa, Xóa
+  container.querySelectorAll('.btn-apply-saved').forEach(btn => {
+    btn.onclick = async () => {
+      const idx = parseInt(btn.getAttribute('data-apply-saved-idx'), 10);
+      const targetTheme = savedThemes[idx];
+      if (!targetTheme) return;
+      if (!confirm(`Áp dụng ngay Theme "${targetTheme.name}" cho toàn bộ hệ thống?`)) return;
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: 'manual',
+          activeThemeId: targetTheme.id,
+          theme: targetTheme
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast(`Đã phát sóng "${targetTheme.name}"!`);
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
+    };
+  });
+
+  container.querySelectorAll('.btn-edit-saved').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.getAttribute('data-edit-saved-idx'), 10);
+      const targetTheme = savedThemes[idx];
+      if (targetTheme) {
+        adminThemeEditingState = { ...targetTheme };
+        renderThemeTab(container);
+        toast(`Đang chỉnh sửa "${targetTheme.name}" ở bảng thiết kế.`);
+      }
+    };
+  });
+
+  container.querySelectorAll('.btn-del-saved').forEach(btn => {
+    btn.onclick = async () => {
+      const idx = parseInt(btn.getAttribute('data-del-saved-idx'), 10);
+      const targetTheme = savedThemes[idx];
+      if (!targetTheme) return;
+      if (!confirm(`Bạn có chắc muốn xóa Theme "${targetTheme.name}" khỏi kho?`)) return;
+      const updated = savedThemes.filter((_, i) => i !== idx);
+      try {
+        const payload = { ...cfg, savedThemes: updated };
+        await writeThemeSettingsToFirestore(payload);
+        toast(`Đã xóa "${targetTheme.name}".`);
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi xóa: " + e.message);
+      }
+    };
+  });
+}
+
 

@@ -3,6 +3,13 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // 1. Cấu hình hệ thống & hạn mức các gói:
+    // Cấu hình giao diện và hiệu ứng lễ hội:
+    // Đọc công khai để mọi người dùng tải giao diện; chỉ Admin mới có quyền ghi.
+    match /config/theme_settings {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+
     // Mọi người dùng (kể cả Khách vãng lai) được ĐỌC công khai để hiển thị tính năng và hạn mức.
     // TUYỆT ĐỐI CẤM GHI từ client - Mọi chỉnh sửa chỉ thực hiện qua Firebase Admin SDK trên Server.
     match /config/{document=**} {

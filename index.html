@@ -85,6 +85,18 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.0',
+        date: '2026-10-15T12:00:00+07:00',
+        title: 'Hệ Thống Theme Studio Lễ Hội Thông Minh, Smart AI Context & Thông Báo Đẩy ntfy.sh',
+        items: [
+          { type: 'feature', text: 'Theme Studio & Hiệu ứng Lễ hội Thông minh (Đợt 2): Tùy biến màu nền Ambient, hiệu ứng hạt rơi theo mùa (Tuyết rơi, Hoa đào mai Tết, Lá phong thu, Tinh tú mùa thi) với cơ chế cách ly Zero-distraction bảo vệ 100% vùng đọc sách (#lessonIframe).' },
+          { type: 'feature', text: 'Cơ chế Tự động Hẹn lịch Đa múi giờ (Serverless-free Schedule): Tự động đối chiếu Date.now() với lịch hẹn Firestore theo giây, tự động kích hoạt hiệu ứng khi đến giờ và hoàn trả The Codex khi kết thúc mà không cần máy chủ.' },
+          { type: 'feature', text: 'Trợ lý AI Smart Context & 4 Phong cách Giải thích (Đợt 1): Tự động nhận diện ngữ cảnh bài học hiện tại, cung cấp 4 phong cách phản hồi chuyên sâu (Dễ hiểu, Học thuật, Tóm tắt, Thực tế) và tối ưu hóa bộ nhớ đệm prompt.' },
+          { type: 'feature', text: 'Hệ thống Thông báo Đẩy ntfy.sh (Đợt 1): Tích hợp webhook thông báo tức thì về điện thoại và máy tính quản trị viên mỗi khi có giao dịch thanh toán hoặc kích hoạt gói cước.' },
+          { type: 'improved', text: 'Tôn trọng tuyệt đối trải nghiệm đọc sách: Tự động tạm dừng hiệu ứng hạt khi ẩn tab (document.hidden), khi ở chế độ Tập trung (Focus/Zen Mode) hoặc khi chọn mắt đọc Sepia/OLED. Hỗ trợ nút bật/tắt cá nhân và chuẩn tiếp cận giảm chuyển động (prefers-reduced-motion).' }
+        ]
+      },
+      {
         version: 'v5.3.9',
         date: '2026-10-15T11:15:00+07:00',
         title: 'Nâng Cấp Bảo Mật Toàn Diện, Tối Ưu Hóa Luồng AI, PWA & Trải Nghiệm Tiếp Cận (A11y)',
@@ -2009,6 +2021,68 @@
       }
     }
 
+    /* =========================================================================
+       // THEME STUDIO & HIỆU ỨNG LỄ HỘI (V5.4.0)
+       ========================================================================= */
+    :root {
+      --ambient-bg-light: #FAF9F5;
+      --ambient-bg-dark: #111317;
+      --festival-accent: #4F46E5;
+      --festival-accent-glow: #818CF8;
+    }
+    body.festival-theme-active {
+      background-color: var(--ambient-bg-light) !important;
+      transition: background-color 0.5s ease;
+    }
+    html.dark body.festival-theme-active,
+    body.dark.festival-theme-active {
+      background-color: var(--ambient-bg-dark) !important;
+    }
+
+    /* ĐẢM BẢO CHẾ ĐỘ MẮT ĐỌC SEPIA & OLED / WARM PAPER GIỮ NGUYÊN NỀN BÀI ĐỌC */
+    body.theme-sepia #iframeOuterContainer,
+    body.theme-sepia #lessonIframe,
+    body[data-reading-theme="sepia"] #iframeOuterContainer,
+    body[data-reading-theme="sepia"] #lessonIframe {
+      background-color: #FBF0D9 !important;
+    }
+    body.theme-oled #iframeOuterContainer,
+    body.theme-oled #lessonIframe,
+    body[data-reading-theme="oled"] #iframeOuterContainer,
+    body[data-reading-theme="oled"] #lessonIframe {
+      background-color: #000000 !important;
+    }
+    body.theme-warm-paper #iframeOuterContainer,
+    body.theme-warm-paper #lessonIframe,
+    body[data-reading-theme="warm"] #iframeOuterContainer,
+    body[data-reading-theme="warm"] #lessonIframe {
+      background-color: #FAF9F5 !important;
+    }
+    
+    /* VÙNG ĐỌC SÁCH CÁCH LY TUYỆT ĐỐI KHỎI CANVAS HẠT RƠI (ZERO-DISTRACTION) */
+    #iframeOuterContainer {
+      position: relative;
+      z-index: 2;
+      background-color: var(--bg-card, #FFFFFF);
+    }
+    html.dark #iframeOuterContainer {
+      background-color: #161A20;
+    }
+
+    /* HIỆU ỨNG GÓC ĐỌNG TUYẾT & HOA TRANG TRÍ (DECOR CAPS) */
+    .decor-corner-cap {
+      position: absolute;
+      pointer-events: none !important;
+      user-select: none;
+      z-index: 40;
+      line-height: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #ambientFestivalCanvas {
+        display: none !important;
+      }
+    }
+
     /* Header CSS Grid: Giữ ô search chính giữa hoàn hảo */
     @media (min-width: 901px) {
       .editorial-header {
@@ -2477,6 +2551,8 @@
   <link rel="manifest" href="./manifest.json">
 </head>
 <body class="h-[100dvh] flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
+  <!-- CANVAS HIỆU ỨNG MÙA LỄ HỘI NGOÀI NỀN (AMBIENT FESTIVAL CANVAS - ZERO DISTRACTION) -->
+  <canvas id="ambientFestivalCanvas" class="fixed inset-0 pointer-events-none z-[1] hidden transition-opacity duration-700 opacity-0" aria-hidden="true"></canvas>
   <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
   <svg id="icon-sprite" style="display: none;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>
@@ -3534,6 +3610,23 @@
                     <svg class="w-4 h-4 dark:hidden"><use href="#icon-moon"></use></svg>
                     <svg class="w-4 h-4 hidden dark:block"><use href="#icon-sun"></use></svg>
                   </button>
+                </div>
+
+                <!-- Hàng: Hiệu ứng mùa lễ hội (Festival Effects Toggle) -->
+                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                    <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                      <span class="text-sm">❄️</span>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Hiệu ứng mùa lễ hội</div>
+                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tuyết rơi, hoa đào, lá phong ngoài nền</div>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input type="checkbox" id="toggleFestivalEffects" class="sr-only peer" checked>
+                    <div class="w-9 h-5 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
                 </div>
 
                 <!-- Hàng 2: Kiểu hiển thị bài đã học -->
@@ -4986,6 +5079,25 @@
     <div class="px-4 pt-2.5 pb-1 shrink-0">
       <div id="aiSelectedSnippet" class="bg-[#FAF9F5] dark:bg-[#14161C] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1.5 text-xs text-[#57534E] dark:text-[#9AA3B2] italic truncate line-clamp-2">
         "..."
+      </div>
+    </div>
+
+    <!-- Bộ chọn Phong cách Giải thích (Prompt Styles) -->
+    <div id="aiPromptStyleBar" class="px-4 pt-1 pb-1.5 flex items-center justify-between gap-1 shrink-0 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60 bg-[#FAF9F5]/40 dark:bg-[#14161C]/40">
+      <div class="text-[10px] uppercase font-bold tracking-wider text-[#78716C] dark:text-[#A8A29E] shrink-0 mr-1 hidden sm:inline">Phong cách:</div>
+      <div class="grid grid-cols-4 gap-1 w-full text-[11px]" role="tablist" aria-label="Phong cách giải thích">
+        <button type="button" data-ai-style="casual" class="ai-style-pill-btn px-1.5 py-1 rounded-lg text-center transition flex items-center justify-center gap-1 cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-bold" title="Dễ hiểu (Đời thường)">
+          <span>🍃</span><span class="truncate">Dễ hiểu</span>
+        </button>
+        <button type="button" data-ai-style="academic" class="ai-style-pill-btn px-1.5 py-1 rounded-lg text-center transition flex items-center justify-center gap-1 cursor-pointer text-[#57534E] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 border border-transparent font-medium" title="Học thuật (Chuyên sâu)">
+          <span>🎓</span><span class="truncate">Học thuật</span>
+        </button>
+        <button type="button" data-ai-style="concise" class="ai-style-pill-btn px-1.5 py-1 rounded-lg text-center transition flex items-center justify-center gap-1 cursor-pointer text-[#57534E] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 border border-transparent font-medium" title="Tóm tắt cô đọng">
+          <span>⚡</span><span class="truncate">Tóm tắt</span>
+        </button>
+        <button type="button" data-ai-style="practical" class="ai-style-pill-btn px-1.5 py-1 rounded-lg text-center transition flex items-center justify-center gap-1 cursor-pointer text-[#57534E] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 border border-transparent font-medium" title="Ví dụ thực tế">
+          <span>💡</span><span class="truncate">Ví dụ</span>
+        </button>
       </div>
     </div>
 
@@ -9725,6 +9837,450 @@
     }
 
     // =========================================================================
+    // SECTION: THEME STUDIO & HIỆU ỨNG MÙA LỄ HỘI THÔNG MINH (V5.4.0)
+    // =========================================================================
+    const DEFAULT_FESTIVAL_THEME = {
+      id: "default",
+      name: "The Codex (Mặc định)",
+      effect: "none",
+      lightAmbientBg: "#FAF9F5",
+      darkAmbientBg: "#111317",
+      accentColor: "#4F46E5",
+      accentGlow: "#818CF8",
+      showDecorCaps: false
+    };
+
+    let activeFestivalTheme = { ...DEFAULT_FESTIVAL_THEME };
+    let currentThemeConfig = null;
+    let unsubscribeThemeListener = null;
+    let themeScheduleIntervalTimer = null;
+    let festivalParticleEngine = null;
+
+    // Helper kiểm tra Theme hợp lệ theo thời gian thực (Serverless-free Schedule Engine)
+    function resolveActiveTheme(cfg) {
+      if (!cfg) return DEFAULT_FESTIVAL_THEME;
+      const now = Date.now();
+
+      // 1. Chế độ Thủ công (Manual Force Override)
+      if (cfg.activeMode === 'manual') {
+        return cfg.theme || DEFAULT_FESTIVAL_THEME;
+      }
+
+      // 2. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
+      if (cfg.activeMode === 'schedule' && cfg.schedule && cfg.schedule.enabled) {
+        let startMs = cfg.schedule.startTimestamp;
+        let endMs = cfg.schedule.endTimestamp;
+
+        // Fallback phân tích nếu chỉ có chuỗi ISO
+        if (!startMs && cfg.schedule.startTime) startMs = new Date(cfg.schedule.startTime).getTime();
+        if (!endMs && cfg.schedule.endTime) endMs = new Date(cfg.schedule.endTime).getTime();
+
+        if (startMs && endMs && now >= startMs && now <= endMs) {
+          return cfg.schedule.scheduledTheme || cfg.theme || DEFAULT_FESTIVAL_THEME;
+        }
+      }
+
+      // 3. Fallback: Nếu ngoài khung giờ hoặc chưa đến giờ -> Trả về The Codex gốc
+      return DEFAULT_FESTIVAL_THEME;
+    }
+
+    // Áp dụng Theme vào CSS Variables & Body Class
+    function applyFestivalTheme(theme) {
+      if (!theme) theme = DEFAULT_FESTIVAL_THEME;
+      activeFestivalTheme = theme;
+
+      const isUserDisabled = localStorage.getItem('thuvienhtml_festival_disabled') === 'true';
+      const isDefault = theme.id === 'default' && theme.effect === 'none';
+
+      // 1. Cập nhật CSS Variables
+      const root = document.documentElement;
+      if (theme.lightAmbientBg) root.style.setProperty('--ambient-bg-light', theme.lightAmbientBg);
+      if (theme.darkAmbientBg) root.style.setProperty('--ambient-bg-dark', theme.darkAmbientBg);
+      if (theme.accentColor) root.style.setProperty('--festival-accent', theme.accentColor);
+      if (theme.accentGlow) root.style.setProperty('--festival-accent-glow', theme.accentGlow);
+
+      // 2. Body Class cho Ambient Background
+      if (!isDefault && !isUserDisabled) {
+        document.body.classList.add('festival-theme-active');
+      } else {
+        document.body.classList.remove('festival-theme-active');
+      }
+
+      // 3. Quản lý Hiệu ứng Đọng tuyết / Hoa ở góc Popup & Header (Decor Caps)
+      updateThemeDecorCaps(theme.showDecorCaps && !isDefault && !isUserDisabled, theme.effect);
+
+      // 4. Khởi động hoặc Dừng Canvas Hạt rơi (Particle Engine)
+      if (festivalParticleEngine) {
+        if (!isDefault && !isUserDisabled && theme.effect !== 'none') {
+          festivalParticleEngine.start(theme.effect);
+        } else {
+          festivalParticleEngine.stop();
+        }
+      }
+    }
+
+    // Quản lý SVG Decor Caps tinh tế ở góc Header & Modals (pointer-events: none)
+    function updateThemeDecorCaps(enabled, effectType) {
+      document.querySelectorAll('.decor-corner-cap').forEach(el => el.remove());
+      if (!enabled) return;
+
+      let svgContent = '';
+      if (effectType === 'snow') {
+        // Tuyết đọng mềm mại góc trên
+        svgContent = `
+          <svg viewBox="0 0 70 30" width="70" height="30" fill="#FFFFFF" class="drop-shadow-xs" aria-hidden="true">
+            <path d="M0,0 L70,0 C65,12 55,22 45,18 C38,15 35,26 25,24 C15,22 10,14 0,16 Z" opacity="0.92"/>
+            <circle cx="28" cy="27" r="1.5" opacity="0.8"/>
+            <circle cx="48" cy="22" r="1.2" opacity="0.7"/>
+          </svg>
+        `;
+      } else if (effectType === 'tet_blossom') {
+        // Nhánh hoa đào phai & mai vàng ở góc
+        svgContent = `
+          <svg viewBox="0 0 65 35" width="65" height="35" aria-hidden="true">
+            <g transform="translate(5, 5)">
+              <circle cx="12" cy="12" r="6" fill="#FB7185" opacity="0.85" />
+              <circle cx="12" cy="12" r="2.5" fill="#FDE047" />
+              <circle cx="26" cy="16" r="5" fill="#FBBF24" opacity="0.85" />
+              <circle cx="26" cy="16" r="2" fill="#F59E0B" />
+              <circle cx="42" cy="10" r="6.5" fill="#FDA4AF" opacity="0.9" />
+              <circle cx="42" cy="10" r="2.5" fill="#FDE047" />
+            </g>
+          </svg>
+        `;
+      } else if (effectType === 'autumn_leaves') {
+        // Cụm lá phong ở góc
+        svgContent = `
+          <svg viewBox="0 0 55 30" width="55" height="30" aria-hidden="true">
+            <path d="M5,5 Q15,0 25,12 Q15,20 5,5 Z" fill="#EA580C" opacity="0.8"/>
+            <path d="M22,6 Q32,2 40,15 Q28,22 22,6 Z" fill="#D97706" opacity="0.85"/>
+          </svg>
+        `;
+      }
+
+      if (!svgContent) return;
+
+      const targetContainers = [
+        document.querySelector('header.editorial-header'),
+        document.getElementById('aiResultPopover'),
+        document.getElementById('whatsNewModalCard'),
+        document.getElementById('changelogModalCard'),
+        document.getElementById('loginModalCard'),
+        document.getElementById('upgradeModalCard')
+      ];
+
+      targetContainers.forEach(container => {
+        if (!container) return;
+        const cap = document.createElement('div');
+        cap.className = 'decor-corner-cap top-0 right-3 sm:right-6';
+        cap.innerHTML = svgContent;
+        container.style.position = container.style.position || 'relative';
+        container.appendChild(cap);
+      });
+    }
+
+    // ENGINE HẠT CANVAS TỐI ƯU HIỆU NĂNG & ZERO DISTRACTION
+    class FestivalParticleEngine {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+        this.particles = [];
+        this.animFrameId = null;
+        this.isRunning = false;
+        this.effect = 'none';
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+
+        if (this.canvas) {
+          this.resize();
+          window.addEventListener('resize', () => this.resize(), { passive: true });
+
+          // Lắng nghe tab ẩn / hiện để pause
+          document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+              this.pause();
+            } else if (this.isRunning) {
+              this.resume();
+            }
+          });
+        }
+      }
+
+      resize() {
+        if (!this.canvas) return;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+      }
+
+      initParticles(effect) {
+        this.particles = [];
+        this.effect = effect;
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? 22 : 45;
+
+        for (let i = 0; i < count; i++) {
+          this.particles.push(this.createParticle(effect, true));
+        }
+      }
+
+      createParticle(effect, randomY = false) {
+        const y = randomY ? Math.random() * this.height : -20;
+        // Phân bổ hạt chủ yếu ở 2 vùng biên lề trái và lề phải (tránh vùng giữa nơi chứa khung đọc sách)
+        const isLeftMargin = Math.random() > 0.5;
+        let x = 0;
+        if (window.innerWidth > 900) {
+          x = isLeftMargin ? (Math.random() * (this.width * 0.28)) : (this.width * 0.72 + Math.random() * (this.width * 0.28));
+        } else {
+          x = Math.random() * this.width;
+        }
+
+        const base = {
+          x: x,
+          y: y,
+          size: Math.random() * 3 + 2,
+          speedY: Math.random() * 0.9 + 0.4,
+          speedX: (Math.random() - 0.5) * 0.6,
+          opacity: Math.random() * 0.6 + 0.3,
+          swing: Math.random() * Math.PI * 2,
+          swingSpeed: Math.random() * 0.02 + 0.01,
+          type: effect
+        };
+
+        if (effect === 'tet_blossom') {
+          base.color = Math.random() > 0.4 ? '#FDA4AF' : '#FDE047'; // Hồng đào hoặc vàng mai
+          base.rotation = Math.random() * Math.PI * 2;
+          base.rotSpeed = (Math.random() - 0.5) * 0.03;
+          base.size = Math.random() * 4 + 4;
+        } else if (effect === 'autumn_leaves') {
+          base.color = Math.random() > 0.5 ? '#EA580C' : '#D97706';
+          base.rotation = Math.random() * Math.PI * 2;
+          base.rotSpeed = (Math.random() - 0.5) * 0.02;
+          base.size = Math.random() * 5 + 4;
+        } else if (effect === 'sparkles') {
+          base.color = Math.random() > 0.5 ? '#38BDF8' : '#FCD34D';
+          base.twinkle = Math.random() * Math.PI * 2;
+        }
+
+        return base;
+      }
+
+      start(effect) {
+        if (!this.canvas || !this.ctx) return;
+        // Kiểm tra reduced-motion
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          return;
+        }
+        // Kiểm tra Focus mode đang bật
+        if (typeof state !== 'undefined' && state.focusMode) {
+          return;
+        }
+
+        this.effect = effect;
+        this.initParticles(effect);
+        this.isRunning = true;
+        this.canvas.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          this.canvas.classList.remove('opacity-0');
+        });
+
+        if (!this.animFrameId) {
+          this.loop();
+        }
+      }
+
+      stop() {
+        this.isRunning = false;
+        if (this.animFrameId) {
+          cancelAnimationFrame(this.animFrameId);
+          this.animFrameId = null;
+        }
+        if (this.canvas) {
+          this.canvas.classList.add('opacity-0');
+          setTimeout(() => {
+            if (!this.isRunning && this.canvas) {
+              this.canvas.classList.add('hidden');
+              this.ctx?.clearRect(0, 0, this.width, this.height);
+            }
+          }, 700);
+        }
+      }
+
+      pause() {
+        if (this.animFrameId) {
+          cancelAnimationFrame(this.animFrameId);
+          this.animFrameId = null;
+        }
+      }
+
+      resume() {
+        if (this.isRunning && !this.animFrameId) {
+          this.loop();
+        }
+      }
+
+      loop() {
+        if (!this.isRunning) return;
+        // Dừng vẽ khi đang Focus mode hoặc tab ẩn
+        if (document.hidden || (typeof state !== 'undefined' && state.focusMode)) {
+          this.pause();
+          return;
+        }
+
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        for (let i = 0; i < this.particles.length; i++) {
+          const p = this.particles[i];
+          p.y += p.speedY;
+          p.swing += p.swingSpeed;
+          p.x += Math.sin(p.swing) * 0.7 + p.speedX;
+
+          if (p.y > this.height + 20) {
+            this.particles[i] = this.createParticle(this.effect, false);
+            continue;
+          }
+
+          // Vẽ hạt theo từng loại hiệu ứng
+          this.ctx.save();
+          if (p.type === 'snow') {
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+            this.ctx.fill();
+          } else if (p.type === 'tet_blossom') {
+            p.rotation += p.rotSpeed;
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate(p.rotation);
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.globalAlpha = p.opacity;
+            this.ctx.fill();
+          } else if (p.type === 'autumn_leaves') {
+            p.rotation += p.rotSpeed;
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate(p.rotation);
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, -p.size);
+            this.ctx.quadraticCurveTo(p.size, 0, 0, p.size);
+            this.ctx.quadraticCurveTo(-p.size, 0, 0, -p.size);
+            this.ctx.fillStyle = p.color;
+            this.ctx.globalAlpha = p.opacity;
+            this.ctx.fill();
+          } else if (p.type === 'sparkles') {
+            p.twinkle += 0.05;
+            const currentAlpha = Math.max(0.1, Math.min(1, Math.sin(p.twinkle) * 0.5 + 0.5));
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.globalAlpha = currentAlpha * p.opacity;
+            this.ctx.shadowBlur = 6;
+            this.ctx.shadowColor = p.color;
+            this.ctx.fill();
+          }
+          this.ctx.restore();
+        }
+
+        this.animFrameId = requestAnimationFrame(() => this.loop());
+      }
+    }
+
+    // Khởi tạo Đồng bộ Theme từ Firestore & Bộ đếm lịch hẹn 60s
+    async function initThemeSettings() {
+      // 1. Khởi tạo Engine Hạt
+      try {
+        festivalParticleEngine = new FestivalParticleEngine('ambientFestivalCanvas');
+      } catch (e) {
+        console.warn('[FestivalParticleEngine] Lỗi khởi tạo canvas:', e);
+      }
+
+      // 2. Nạp từ localStorage trước để render tức thì (Optimistic Render)
+      try {
+        const cachedStr = localStorage.getItem('thuvienhtml_theme_config');
+        if (cachedStr) {
+          const cachedCfg = JSON.parse(cachedStr);
+          currentThemeConfig = cachedCfg;
+          const resolved = resolveActiveTheme(cachedCfg);
+          applyFestivalTheme(resolved);
+        }
+      } catch (_) {}
+
+      // 3. Đọc dữ liệu mới nhất từ Firestore
+      if (db) {
+        try {
+          const themeDocRef = doc(db, 'config', 'theme_settings');
+          const snap = await getDoc(themeDocRef);
+          if (snap.exists()) {
+            const data = snap.data();
+            currentThemeConfig = data;
+            try { localStorage.setItem('thuvienhtml_theme_config', JSON.stringify(data)); } catch(_) {}
+            const resolved = resolveActiveTheme(data);
+            applyFestivalTheme(resolved);
+          }
+
+          // Lắng nghe realtime qua onSnapshot
+          if (unsubscribeThemeListener) unsubscribeThemeListener();
+          unsubscribeThemeListener = onSnapshot(themeDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              currentThemeConfig = data;
+              try { localStorage.setItem('thuvienhtml_theme_config', JSON.stringify(data)); } catch(_) {}
+              const resolved = resolveActiveTheme(data);
+              applyFestivalTheme(resolved);
+            }
+          }, (err) => {
+            console.warn('[ThemeSettings] onSnapshot error:', err.message);
+          });
+        } catch (err) {
+          console.warn('[ThemeSettings] Firestore load error:', err.message);
+        }
+      }
+
+      // 4. BỘ ĐẾM KIỂM TRA LỊCH HẸN MỖI 60 GIÂY (Requirement 2: Chuẩn hóa theo thời gian thực)
+      if (themeScheduleIntervalTimer) clearInterval(themeScheduleIntervalTimer);
+      themeScheduleIntervalTimer = setInterval(() => {
+        if (currentThemeConfig) {
+          const resolved = resolveActiveTheme(currentThemeConfig);
+          // Chỉ cập nhật nếu theme có sự thay đổi (chuyển giao giữa giờ hẹn hoặc hết giờ hẹn)
+          if (resolved.id !== activeFestivalTheme.id || resolved.effect !== activeFestivalTheme.effect) {
+            applyFestivalTheme(resolved);
+          }
+        }
+      }, 60000);
+
+      // 5. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị
+      const toggleBtn = document.getElementById('toggleFestivalEffects');
+      if (toggleBtn) {
+        toggleBtn.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
+        toggleBtn.onchange = () => {
+          const disabled = !toggleBtn.checked;
+          if (disabled) {
+            localStorage.setItem('thuvienhtml_festival_disabled', 'true');
+          } else {
+            localStorage.removeItem('thuvienhtml_festival_disabled');
+          }
+          if (currentThemeConfig) {
+            applyFestivalTheme(resolveActiveTheme(currentThemeConfig));
+          }
+        };
+      }
+
+      // 6. Lắng nghe sự kiện xem trước (Preview) từ Admin & cập nhật trực tiếp
+      window.addEventListener('preview_theme', (e) => {
+        if (e.detail) {
+          applyFestivalTheme(e.detail);
+        }
+      });
+      window.addEventListener('theme_settings_updated', (e) => {
+        if (e.detail) {
+          currentThemeConfig = e.detail;
+          applyFestivalTheme(resolveActiveTheme(e.detail));
+        }
+      });
+    }
+
+    // =========================================================================
     // ĐIỀU KHIỂN HỘP THOẠI NÂNG CẤP GÓI & THANH TOÁN VIETQR
     // =========================================================================
     let upgradeModalState = {
@@ -13562,6 +14118,12 @@
         document.documentElement.classList.remove('dark');
         document.body.classList.remove('dark');
       }
+
+      document.body.classList.remove('theme-warm-paper', 'theme-sepia', 'theme-oled');
+      if (effective.theme === 'warm') document.body.classList.add('theme-warm-paper');
+      if (effective.theme === 'sepia') document.body.classList.add('theme-sepia');
+      if (effective.theme === 'oled') document.body.classList.add('theme-oled');
+      document.body.setAttribute('data-reading-theme', effective.theme || 'light');
 
       if (metaThemeLight) metaThemeLight.setAttribute('content', themeHex);
       if (metaThemeDark) metaThemeDark.setAttribute('content', isDarkApp ? themeHex : '#111317');
@@ -18611,6 +19173,11 @@
             state.sortOrder = cfg.sortOrder;
             localStorage.setItem('local_sort_order', cfg.sortOrder);
           }
+          if (cfg.aiPreferredStyle) {
+            currentAiPreferredStyle = cfg.aiPreferredStyle;
+            localStorage.setItem('ai_preferred_explain_style', cfg.aiPreferredStyle);
+            if (typeof updateAiStylePills === 'function') updateAiStylePills(cfg.aiPreferredStyle);
+          }
 
           // Nạp learning_bundle (frames & notes) từ Firestore
           try {
@@ -18672,6 +19239,7 @@
         preserveOriginalTheme: state.preserveOriginalTheme,
         readingWidth: state.readingWidth,
         desktopSidebarOpen: state.desktopSidebarOpen,
+        aiPreferredStyle: currentAiPreferredStyle || localStorage.getItem('ai_preferred_explain_style') || 'casual',
         updatedAt: new Date().toISOString()
       };
 
@@ -31065,10 +31633,137 @@
     let lastAiRequestTime = 0;
     let currentAiActiveMode = 'explain';
     let currentAiTargetLang = localStorage.getItem('ai_translate_target_lang') || 'Tiếng Việt';
+    let currentAiPreferredStyle = localStorage.getItem('ai_preferred_explain_style') || 'casual';
     let currentAiSelectedText = '';
     let currentAiContext = { before: '', after: '', sectionTitle: '' };
     let currentAiTriggerRect = null;
     let currentAiLastResult = null;
+
+    // Trích xuất Ngữ cảnh thông minh toàn bài học (chống mù ngữ cảnh cuối bài)
+    function extractSmartDocumentContext(selectedText = '') {
+      try {
+        const curLesson = (state && Array.isArray(state.lessons)) ? state.lessons.find(l => l.id === state.activeLessonId) : null;
+        let rawHtml = curLesson?.htmlContent || '';
+
+        let fullText = '';
+        let headingsOutline = '';
+        const lessonTitle = curLesson?.title || (document.getElementById('currentLessonTitle') ? document.getElementById('currentLessonTitle').textContent.trim() : '');
+
+        if (rawHtml) {
+          try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(rawHtml, 'text/html');
+
+            // 1. Dàn ý tiêu đề H1-H3 toàn bài
+            const headingElements = doc.querySelectorAll('h1, h2, h3');
+            const outlineLines = [];
+            headingElements.forEach(h => {
+              const tag = h.tagName.toLowerCase();
+              const hText = (h.innerText || h.textContent || '').trim();
+              if (!hText) return;
+              const indent = tag === 'h1' ? '' : (tag === 'h2' ? '  ' : '    ');
+              outlineLines.push(`${indent}- [${tag.toUpperCase()}] ${hText}`);
+            });
+            if (outlineLines.length > 0) {
+              headingsOutline = outlineLines.join('\n');
+            }
+
+            // 2. Làm sạch thẻ không mang nội dung đọc
+            doc.querySelectorAll('script, style, noscript, svg, iframe, nav, button, .hidden').forEach(el => el.remove());
+            fullText = (doc.body ? (doc.body.innerText || doc.body.textContent) : '').replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+          } catch (domErr) {
+            console.warn('[SmartContext] Lỗi parse DOMParser:', domErr);
+          }
+        }
+
+        // Fallback thứ cấp: Đọc từ bridgeReadableChunks nếu không có rawHtml
+        if (!fullText && Array.isArray(bridgeReadableChunks) && bridgeReadableChunks.length > 0) {
+          fullText = bridgeReadableChunks.map(c => c.text).filter(Boolean).join('\n\n');
+        }
+
+        // Kiểm tra độ dài: nếu <= 14.000 ký tự thì lấy toàn bộ
+        let coreContent = '';
+        if (fullText.length <= 14000) {
+          coreContent = fullText;
+        } else {
+          // CHỐNG MÙ NGỮ CẢNH CUỐI BÀI: Giữ 2.000 ký tự đầu + Cửa sổ ~10.000 ký tự xoay quanh đoạn bôi đen
+          const introText = fullText.substring(0, 2000).trim();
+
+          const cleanSelected = (selectedText || '').trim();
+          let matchIndex = -1;
+          if (cleanSelected && cleanSelected.length >= 5) {
+            const needle = cleanSelected.substring(0, Math.min(50, cleanSelected.length));
+            matchIndex = fullText.indexOf(needle);
+          }
+
+          let surroundingText = '';
+          if (matchIndex >= 0) {
+            const windowSize = 10000;
+            const halfWindow = 4500;
+            let start = Math.max(2000, matchIndex - halfWindow);
+            let end = Math.min(fullText.length, start + windowSize);
+            if (end - start < windowSize && start > 2000) {
+              start = Math.max(2000, end - windowSize);
+            }
+            surroundingText = fullText.substring(start, end).trim();
+          } else {
+            surroundingText = fullText.substring(2000, 12000).trim();
+          }
+
+          coreContent = `[PHẦN MỞ ĐẦU BÀI HỌC]:\n${introText}\n\n[...ĐOẠN TRÍCH ĐANG ĐỌC & NGỮ CẢNH BẢN GỐC...]:\n${surroundingText}`;
+        }
+
+        return {
+          title: lessonTitle,
+          outline: headingsOutline,
+          content: coreContent
+        };
+      } catch (err) {
+        console.warn('[SmartContext] Lỗi trích xuất ngữ cảnh:', err);
+        return null;
+      }
+    }
+    window.extractSmartDocumentContext = extractSmartDocumentContext;
+
+    function updateAiStylePills(activeStyle) {
+      currentAiPreferredStyle = activeStyle || 'casual';
+      document.querySelectorAll('.ai-style-pill-btn').forEach(btn => {
+        const s = btn.getAttribute('data-ai-style');
+        if (s === currentAiPreferredStyle) {
+          btn.className = 'ai-style-pill-btn px-1.5 py-1 rounded-lg text-center transition flex items-center justify-center gap-1 cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-bold';
+        } else {
+          btn.className = 'ai-style-pill-btn px-1.5 py-1 rounded-lg text-center transition flex items-center justify-center gap-1 cursor-pointer text-[#57534E] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 border border-transparent font-medium';
+        }
+      });
+    }
+
+    async function syncUserPersonalAiSettings(style) {
+      if (!style) return;
+      try {
+        localStorage.setItem('ai_preferred_explain_style', style);
+        if (!state || !state.userId || state.useLocalFallback || typeof db === 'undefined' || !db) return;
+        const updateData = {
+          aiPreferredStyle: style,
+          updatedAt: new Date().toISOString()
+        };
+        // Đồng bộ an toàn vào settings cá nhân của người dùng, không bao giờ gọi endpoint admin để tránh 403
+        try {
+          if (typeof appId !== 'undefined' && appId && typeof doc === 'function' && typeof setDoc === 'function') {
+            const refArtifact = doc(db, 'artifacts', appId, 'users', state.userId, 'settings', 'config');
+            setDoc(refArtifact, updateData, { merge: true }).catch(() => {});
+          }
+        } catch (_) {}
+        try {
+          if (typeof doc === 'function' && typeof setDoc === 'function') {
+            const refUser = doc(db, 'users', state.userId, 'settings', 'config');
+            setDoc(refUser, updateData, { merge: true }).catch(() => {});
+          }
+        } catch (_) {}
+      } catch (err) {
+        console.warn('[AI] Lỗi đồng bộ cấu hình AI cá nhân:', err);
+      }
+    }
+    window.syncUserPersonalAiSettings = syncUserPersonalAiSettings;
 
     function escapeAiHtml(str) {
       if (!str || typeof str !== 'string') return '';
@@ -31116,6 +31811,16 @@
 
       currentAiActiveMode = mode;
       currentAiTriggerRect = triggerRect;
+
+      const styleBar = document.getElementById('aiPromptStyleBar');
+      if (styleBar) {
+        if (mode === 'explain') {
+          styleBar.classList.remove('hidden');
+          updateAiStylePills(currentAiPreferredStyle);
+        } else {
+          styleBar.classList.add('hidden');
+        }
+      }
 
       const titleEl = document.getElementById('aiHeaderTitle');
       const iconEl = document.getElementById('aiHeaderIcon');
@@ -31282,7 +31987,7 @@
       const retryBtn = document.getElementById('btnAiRetry');
       if (retryBtn) {
         retryBtn.addEventListener('click', () => {
-          requestAiExplain(currentAiActiveMode, currentAiTargetLang);
+          requestAiExplain(currentAiActiveMode, currentAiTargetLang, currentAiPreferredStyle);
         });
       }
     }
@@ -31359,17 +32064,20 @@
           el.removeAttribute('aria-busy');
         }
       });
-      document.querySelectorAll('.ai-switch-mode-btn, .ai-lang-choice').forEach(el => {
+      document.querySelectorAll('.ai-switch-mode-btn, .ai-lang-choice, .ai-style-pill-btn').forEach(el => {
         el.disabled = isLoading;
         if (isLoading) el.classList.add('pointer-events-none', 'opacity-50');
         else el.classList.remove('pointer-events-none', 'opacity-50');
       });
     }
 
-    async function requestAiExplain(mode, customLang) {
+    async function requestAiExplain(mode, customLang, customStyle, customPrompt) {
       const now = Date.now();
       if (now - lastAiRequestTime < 600) return;
       lastAiRequestTime = now;
+
+      const activeStyle = (mode === 'explain') ? (customStyle || currentAiPreferredStyle || 'casual') : null;
+      if (activeStyle) currentAiPreferredStyle = activeStyle;
 
       const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
       const localInfo = currentSelectionInfo;
@@ -31436,6 +32144,9 @@
       // // FIX-4: Nâng cấp Skeleton UI 2 phần mô phỏng kết quả thực tế, ổn định chiều cao và tự đổi thông điệp sau 3s
       const bodyEl = document.getElementById('aiResultBody');
       if (bodyEl) {
+        const styleLabels = { casual: 'đời thường', academic: 'học thuật', concise: 'cô đọng', practical: 'ví dụ thực tế' };
+        const styleSuffix = (mode === 'explain' && styleLabels[activeStyle]) ? ` (${styleLabels[activeStyle]})` : '';
+
         bodyEl.innerHTML = `
           <div class="space-y-3 py-2 min-h-[140px] flex flex-col justify-between select-none">
             <!-- Phần 1: Mô phỏng đoạn văn giải thích -->
@@ -31453,7 +32164,7 @@
             <div class="flex items-center justify-between pt-1 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60">
               <div class="flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-spin shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
-                <span id="aiLoadingStatusText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] italic transition-opacity duration-300">Đang phân tích bài học...</span>
+                <span id="aiLoadingStatusText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] italic transition-opacity duration-300">Đang phân tích bài học${styleSuffix}...</span>
               </div>
               <button id="btnCancelAiRequest" type="button" class="touch-target text-xs text-rose-500 hover:text-rose-600 hover:underline cursor-pointer font-medium">Hủy</button>
             </div>
@@ -31507,12 +32218,22 @@
           } catch (_) {}
         }
 
+        let smartDocContext = '';
+        try {
+          smartDocContext = extractSmartDocumentContext(text);
+        } catch (ctxErr) {
+          console.warn('[AI] Lỗi trích xuất ngữ cảnh văn bản:', ctxErr);
+        }
+
         const payload = {
           text: text,
           context: context,
           mode: mode,
           targetLang: currentAiTargetLang,
-          lessonId: state.activeLessonId || ''
+          lessonId: (state && state.activeLessonId) || '',
+          style: activeStyle || undefined,
+          documentContext: smartDocContext || undefined,
+          customPrompt: customPrompt || undefined
         };
 
         const response = await fetch('/api/ai/explain', {
@@ -31633,6 +32354,22 @@
           requestAiExplain('translate');
         });
       }
+
+      // Xử lý chọn Phong cách giải thích (Prompt Styles)
+      document.querySelectorAll('.ai-style-pill-btn').forEach(pillBtn => {
+        pillBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const targetStyle = pillBtn.getAttribute('data-ai-style');
+          if (!targetStyle || targetStyle === currentAiPreferredStyle) return;
+          currentAiPreferredStyle = targetStyle;
+          updateAiStylePills(targetStyle);
+          syncUserPersonalAiSettings(targetStyle);
+          if (currentAiSelectedText) {
+            requestAiExplain('explain', null, targetStyle);
+          }
+        });
+      });
 
       if (btnLangToggle && langMenu) {
         btnLangToggle.addEventListener('click', (e) => {
@@ -33633,9 +34370,15 @@
         document.body.classList.add('is-focus-mode');
         showToast("Đã bật Chế độ tập trung (Nhấn Esc để thoát)");
         if (state.pomodoro.isRunning) requestScreenWakeLock();
+        if (typeof festivalParticleEngine !== 'undefined' && festivalParticleEngine) {
+          festivalParticleEngine.pause();
+        }
       } else {
         document.body.classList.remove('is-focus-mode');
         releaseScreenWakeLock();
+        if (typeof festivalParticleEngine !== 'undefined' && festivalParticleEngine) {
+          festivalParticleEngine.resume();
+        }
       }
 
       // Cập nhật thanh tiến độ đọc mỏng trong Focus Mode
@@ -35895,6 +36638,11 @@
         checkAdminRoute();
       });
 
+      // Nạp cấu hình Theme Studio & Khởi chạy hiệu ứng lễ hội theo lịch
+      safeRun('initThemeSettings', async () => {
+        await initThemeSettings();
+      });
+
       safeRun('loadRecentLessons', () => {
         if (typeof loadRecentLessons === 'function') loadRecentLessons();
       });
@@ -37257,7 +38005,7 @@ QUY TẮC:
             hideModalAnimated('adminPromptEditorModal');
           }
 
-          // Tự động đồng bộ lên máy chủ nếu hàm savePromptsToCloud khả dụng
+          // Tự động đồng bộ lên máy chủ nếu là Quản trị viên
           if (typeof window.savePromptsToCloud === 'function') {
             window.savePromptsToCloud(allPrompts, false).then(() => {
               if (typeof showToast === 'function') {
@@ -37268,9 +38016,38 @@ QUY TẮC:
                 showToast('Đã lưu tạm trên máy. Hãy bấm nút "Lưu kho Prompt lên hệ thống" trên thanh công cụ để cập nhật cho mọi người!', 'warning');
               }
             });
+          } else if (isPromptAdminAuthorized()) {
+            (async () => {
+              try {
+                let idToken = '';
+                if (typeof auth !== 'undefined' && auth && auth.currentUser) {
+                  idToken = await auth.currentUser.getIdToken();
+                }
+                const res = await fetch('/api/admin/prompts/save', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    ...(idToken ? { 'Authorization': 'Bearer ' + idToken } : {})
+                  },
+                  body: JSON.stringify({ prompts: allPrompts })
+                });
+                if (res.ok) {
+                  if (typeof showToast === 'function') {
+                    showToast('Đã lưu và đồng bộ prompt lên hệ thống thành công!', 'success');
+                  }
+                } else {
+                  throw new Error('HTTP ' + res.status);
+                }
+              } catch (cloudErr) {
+                console.warn('[PromptLibrary] Lỗi đồng bộ API admin:', cloudErr);
+                if (typeof showToast === 'function') {
+                  showToast('Đã lưu trên máy. Bạn có thể mở mục Quản trị để đồng bộ lên máy chủ cho mọi người!', 'warning');
+                }
+              }
+            })();
           } else {
             if (typeof showToast === 'function') {
-              showToast('Đã lưu prompt thành công! Bạn có thể bấm nút "Lưu kho Prompt lên hệ thống" trong mục Quản trị để đồng bộ cho mọi người.', 'success');
+              showToast('Đã lưu prompt thành công!', 'success');
             }
           }
         });

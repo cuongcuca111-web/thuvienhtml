@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const { initAdmin } = require('../lib/admin-auth');
 const { decryptKey } = require('../lib/crypto');
+const { sendNtfyNotification } = require('../lib/ntfy');
 
 function resolveAction(req) {
   if (req.query && req.query.action) return String(req.query.action).toLowerCase();
@@ -194,6 +195,21 @@ module.exports = async function handler(req, res) {
           console.warn('[Webhook] Lỗi cập nhật custom claims:', claimErr.message);
         }
 
+        // Gửi thông báo đẩy về ntfy.sh (Non-blocking, bọc try-catch an toàn)
+        try {
+          const planTitle = (planId || 'pro').toUpperCase();
+          const periodText = period === 'yearly' ? 'Năm' : 'Tháng';
+          const paidAmt = (transferAmount || order.amount || 0).toLocaleString('vi-VN');
+          const buyerEmail = order.userEmail || order.email || targetUid;
+          sendNtfyNotification({
+            title: `🎉 Nâng cấp ${planTitle} thành công (Webhook)`,
+            message: `Người mua: ${buyerEmail}\nGói: ${planTitle} (${periodText})\nSố tiền: ${paidAmt} ₫\nMã đơn: ${orderCode}\nHình thức: Webhook tự động`,
+            priority: 4,
+            tags: ['tada', 'moneybag'],
+            db
+          }).catch(err => console.warn('[Webhook ntfy] Lỗi gửi:', err.message));
+        } catch (_) {}
+
         results.push({
           code: orderCode,
           orderId,
@@ -219,7 +235,7 @@ module.exports = async function handler(req, res) {
   const auth = await verifyUserAuth(req, res);
   if (!auth) return;
 
-  const { db, uid, email } = auth;
+  const { adminApp, db, uid, email } = auth;
 
   // 1. TẠO ĐƠN HÀNG MỚI (POST /api/billing/create-order)
   if (action === 'create-order') {
@@ -533,6 +549,20 @@ module.exports = async function handler(req, res) {
 
       await docRef.update(updateData);
 
+      // Gửi thông báo đẩy về ntfy.sh để Admin biết vào duyệt đơn ngay
+      try {
+        const planTitle = (order.planId || 'plus').toUpperCase();
+        const amtText = (order.amount || 0).toLocaleString('vi-VN');
+        const buyer = email || order.userEmail || uid;
+        sendNtfyNotification({
+          title: `🔔 Yêu cầu duyệt chuyển khoản mới!`,
+          message: `Người mua: ${buyer}\nGói: ${planTitle} (${order.period === 'yearly' ? 'Năm' : 'Tháng'})\nSố tiền: ${amtText} ₫\nMã đơn: ${order.code || orderId}\nĐã đính kèm ảnh biên lai. Vui lòng vào trang Admin để duyệt.`,
+          priority: 4,
+          tags: ['bell', 'receipt'],
+          db
+        }).catch(err => console.warn('[Confirm ntfy] Lỗi gửi:', err.message));
+      } catch (_) {}
+
       return res.status(200).json({
         success: true,
         status: 'user_confirmed',
@@ -741,6 +771,19 @@ module.exports = async function handler(req, res) {
       } catch (claimErr) {
         console.warn('[Redeem Code] Lỗi cập nhật custom claims:', claimErr.message);
       }
+
+      // Gửi thông báo đẩy về ntfy.sh khi kích hoạt mã thành công
+      try {
+        const tierTitle = tier.toUpperCase();
+        const buyer = email || userName || uid;
+        sendNtfyNotification({
+          title: `🎟️ Kích hoạt mã Redeem ${tierTitle} thành công`,
+          message: `Người dùng: ${buyer}\nGói: ${tierTitle} (${days} ngày)\nMã kích hoạt: ${cleanCode}\nHình thức: Redeem Code`,
+          priority: 4,
+          tags: ['tada', 'ticket'],
+          db
+        }).catch(err => console.warn('[Redeem ntfy] Lỗi gửi:', err.message));
+      } catch (_) {}
 
       return res.status(200).json({
         success: true,

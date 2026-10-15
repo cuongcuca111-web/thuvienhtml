@@ -31,3 +31,8 @@ perfect_ai_backend.js
 temp_script_0.js
 test_snippet.js
 toolbar_*.html
+
+# Agent Skills & Local Backups
+.agent/
+index-backup.html
+

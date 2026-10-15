@@ -2,6 +2,7 @@
 // Quản trị thanh toán VietQR: Cấu hình, thử nghiệm mã QR, quản lý danh sách đơn hàng và duyệt thủ công
 const { verifyAdmin, recordAuditLog } = require('../../lib/admin-auth');
 const { encryptKey, decryptKey, maskApiKey } = require('../../lib/crypto');
+const { sendNtfyNotification, getNtfyConfig } = require('../../lib/ntfy');
 
 // Bộ nhớ đệm danh sách ngân hàng VietQR (24 giờ TTL)
 let _cachedBanks = null;
@@ -118,6 +119,9 @@ module.exports = async function handler(req, res) {
       let maskedClientId = '';
       let maskedApiKey = '';
       let isConfigured = false;
+      let rawNtfyTopic = '';
+      let rawNtfyServerUrl = 'https://ntfy.sh';
+      let rawNtfyToken = '';
 
       if (secDoc.exists) {
         const sec = secDoc.data();
@@ -130,6 +134,19 @@ module.exports = async function handler(req, res) {
             isConfigured = true;
           } catch(e){}
         }
+        if (sec.ntfyTopic) {
+          try {
+            rawNtfyTopic = typeof sec.ntfyTopic === 'object' ? decryptKey(sec.ntfyTopic) : sec.ntfyTopic;
+          } catch(e){}
+        }
+        if (sec.ntfyServerUrl && typeof sec.ntfyServerUrl === 'string') {
+          rawNtfyServerUrl = sec.ntfyServerUrl.trim();
+        }
+        if (sec.ntfyToken) {
+          try {
+            rawNtfyToken = typeof sec.ntfyToken === 'object' ? decryptKey(sec.ntfyToken) : sec.ntfyToken;
+          } catch(e){}
+        }
       }
 
       return res.status(200).json({
@@ -138,6 +155,12 @@ module.exports = async function handler(req, res) {
           isConfigured,
           maskedClientId,
           maskedApiKey
+        },
+        ntfyConfig: {
+          isConfigured: Boolean(rawNtfyTopic),
+          serverUrl: rawNtfyServerUrl || 'https://ntfy.sh',
+          maskedTopic: rawNtfyTopic ? maskApiKey(rawNtfyTopic) : '',
+          hasToken: Boolean(rawNtfyToken)
         }
       });
     } catch (err) {
@@ -147,7 +170,7 @@ module.exports = async function handler(req, res) {
 
   // 2. LƯU CẤU HÌNH THANH TOÁN (POST /api/admin/billing/config)
   if (action === 'config' && req.method === 'POST') {
-    const { bankTransfer, bank, vietqrClientId, vietqrApiKey } = req.body || {};
+    const { bankTransfer, bank, vietqrClientId, vietqrApiKey, ntfyTopic, ntfyServerUrl, ntfyToken } = req.body || {};
     const inputTransfer = bankTransfer || {};
 
     // Chuẩn bị dữ liệu tài khoản
@@ -216,8 +239,8 @@ module.exports = async function handler(req, res) {
         updatedBy: uid
       }, { merge: true });
 
-      // Lưu khóa bí mật VietQR vào admin_secrets/payment nếu được cung cấp
-      if (vietqrClientId || vietqrApiKey) {
+      // Lưu khóa bí mật VietQR và ntfy.sh vào admin_secrets/payment
+      if (vietqrClientId || vietqrApiKey || ntfyTopic !== undefined || ntfyServerUrl !== undefined || ntfyToken !== undefined) {
         const secRef = db.doc('admin_secrets/payment');
         const secSnap = await secRef.get();
         const oldSec = secSnap.exists ? secSnap.data() : {};
@@ -228,6 +251,21 @@ module.exports = async function handler(req, res) {
         }
         if (vietqrApiKey && vietqrApiKey.trim()) {
           updateSec.vietqrApiKey = encryptKey(vietqrApiKey.trim());
+        }
+        if (typeof ntfyTopic === 'string') {
+          const cleanTopic = ntfyTopic.trim();
+          if (cleanTopic && !cleanTopic.startsWith('••••')) {
+            updateSec.ntfyTopic = encryptKey(cleanTopic);
+          }
+        }
+        if (typeof ntfyServerUrl === 'string') {
+          updateSec.ntfyServerUrl = ntfyServerUrl.trim();
+        }
+        if (typeof ntfyToken === 'string') {
+          const cleanTok = ntfyToken.trim();
+          if (cleanTok && !cleanTok.startsWith('••••')) {
+            updateSec.ntfyToken = encryptKey(cleanTok);
+          }
         }
         updateSec.updatedAt = new Date().toISOString();
         await secRef.set(updateSec, { merge: true });
@@ -243,6 +281,48 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Đã lưu cấu hình thanh toán thành công', bankTransfer: sanitizedBankTransfer });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi lưu cấu hình: ' + err.message });
+    }
+  }
+
+  // 2.5. GỬI THÔNG BÁO THỬ NGHIỆM NTFY.SH (POST /api/admin/billing/test-ntfy)
+  if ((action === 'test-ntfy' || action === 'ntfy-test') && req.method === 'POST') {
+    const { ntfyTopic, ntfyServerUrl, ntfyToken } = req.body || {};
+    try {
+      let testConfig = null;
+      if (ntfyTopic && typeof ntfyTopic === 'string' && !ntfyTopic.startsWith('••••')) {
+        testConfig = {
+          topic: ntfyTopic.trim(),
+          serverUrl: (ntfyServerUrl || 'https://ntfy.sh').trim(),
+          token: (ntfyToken && !ntfyToken.startsWith('••••')) ? ntfyToken.trim() : ''
+        };
+      }
+
+      const resNtfy = await sendNtfyNotification({
+        title: '🎉 Thử nghiệm ntfy.sh thành công!',
+        message: `Hệ thống "Thư viện Sách HTML" đã kết nối thành công với ntfy.sh lúc ${new Date().toLocaleTimeString('vi-VN')}!\nBạn sẽ nhận được thông báo đẩy tức thì mỗi khi có người nâng cấp gói Plus/Pro.`,
+        priority: 4,
+        tags: ['tada', 'white_check_mark', 'moneybag'],
+        config: testConfig,
+        db
+      });
+
+      if (resNtfy.success) {
+        await recordAuditLog(db, {
+          uid,
+          action: 'TEST_NTFY_NOTIFICATION',
+          details: 'Gửi thành công thông báo thử nghiệm tới ntfy.sh'
+        });
+        return res.status(200).json({
+          success: true,
+          message: 'Đã gửi thông báo thử nghiệm thành công tới ntfy.sh! Vui lòng kiểm tra ứng dụng ntfy trên điện thoại.'
+        });
+      } else {
+        return res.status(400).json({
+          error: resNtfy.error || (resNtfy.reason === 'not_configured' ? 'Chưa cấu hình Topic ntfy.sh. Hãy nhập Topic và lưu lại trước.' : 'Không thể gửi thông báo tới ntfy.sh')
+        });
+      }
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi kiểm tra ntfy: ' + err.message });
     }
   }
 
@@ -579,6 +659,19 @@ module.exports = async function handler(req, res) {
         action: ids.length > 1 ? 'CONFIRM_ORDERS_BATCH' : 'CONFIRM_ORDER_MANUAL',
         details: `Duyệt thành công ${successCount}/${ids.length} đơn hàng`
       });
+
+      // Gửi thông báo đẩy về ntfy.sh khi Admin duyệt đơn thủ công
+      if (successCount > 0) {
+        try {
+          sendNtfyNotification({
+            title: `✅ Admin đã duyệt ${successCount} đơn hàng`,
+            message: `Quản trị viên (${uid}) vừa duyệt thành công ${successCount} đơn hàng.\nGói kích hoạt: ${lastPlanId.toUpperCase()}${lastExpiresAt ? ' tới ngày ' + new Date(lastExpiresAt).toLocaleDateString('vi-VN') : ''}.\nHình thức: Admin duyệt thủ công`,
+            priority: 4,
+            tags: ['white_check_mark', 'moneybag'],
+            db
+          }).catch(err => console.warn('[Admin Confirm ntfy] Lỗi gửi:', err.message));
+        } catch (_) {}
+      }
 
       const message = ids.length > 1
         ? `Đã duyệt thành công ${successCount} đơn hàng!`
