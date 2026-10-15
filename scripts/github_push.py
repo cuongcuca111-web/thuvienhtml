@@ -83,7 +83,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "feat(v5.7.3): minimalist note color filter pills with symmetrical active borders and side-by-side analytics cards"
+    commit_message = "fix(v5.7.4): resolve split-screen layout shift when activating AI simple explanation popover"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
