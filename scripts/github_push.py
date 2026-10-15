@@ -44,10 +44,8 @@ def main():
     base_tree_sha = latest_commit["tree"]["sha"]
     print(f"   Base Tree SHA: {base_tree_sha}")
 
-    # Chỉ đẩy các tệp thay đổi trong bản vá v5.6.6 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
+    # Chỉ đẩy các tệp thay đổi trong bản vá v5.6.7 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
     files_to_push = [
-        "api/ai/explain.js",
-        "lib/call-ai.js",
         "index.html",
         "package.json",
         "sw.js",
@@ -85,7 +83,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "feat(v5.6.6): fix AI quota/token optimization, custom SVG ambient icons & smooth search transition"
+    commit_message = "fix(v5.6.7): fix boot SyntaxError crash, redesign notes & analytics modals to luxury editorial style"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
