@@ -85,6 +85,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.1',
+        date: '2026-10-16T01:10:00+07:00',
+        title: 'Tinh Chỉnh Typography & Cân Bằng Thị Giác Thống Kê & Bộ Lọc Ghi Chú',
+        items: [
+          { type: 'improved', text: 'Đồng bộ typography bộ lọc màu ghi chú: Chuyển đổi toàn bộ bộ đếm số ghi chú/highlight sang font sans-serif tinh tế và tabular-nums đồng nhất với phong cách The Codex, loại bỏ font monospace gạch chéo số không.' },
+          { type: 'improved', text: 'Cân đối kích thước và font thẻ Thống kê (Streak & Mục tiêu hôm nay): Chuẩn hóa kích cỡ số lớn và nhãn chữ giữa 2 thẻ, phân tách rõ ràng số bài hoàn thành/chỉ tiêu và số phút đọc, mang lại sự cân xứng hài hòa tuyệt đối.' }
+        ]
+      },
+      {
         version: 'v5.7.0',
         date: '2026-10-16T00:58:00+07:00',
         title: 'Tính Năng Tắt / Mở Chủ Đề Công Khai (Public Theme Toggle) & Phân Quyền Bảo Mật Theme',
@@ -6092,30 +6101,30 @@
             <option value="current">Bài đang đọc</option>
           </select>
           <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 shrink-0"></div>
-          <div class="flex items-center gap-2 shrink-0" role="group" aria-label="Lọc theo màu khung">
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-semibold bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 cursor-pointer shrink-0 shadow-xs flex items-center gap-1.5 transition-all" data-color="all">
+          <div class="flex items-center gap-2 shrink-0 font-sans" role="group" aria-label="Lọc theo màu khung">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 cursor-pointer shrink-0 shadow-xs flex items-center gap-1.5 transition-all font-sans" data-color="all">
               <span>Tất cả</span>
-              <span id="chipCountAll" class="opacity-90 text-[11px] font-mono">(0)</span>
+              <span id="chipCountAll" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="yellow">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="yellow">
               <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
               <span>Vàng</span>
-              <span id="chipCountYellow" class="opacity-90 text-[11px] font-mono">(0)</span>
+              <span id="chipCountYellow" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-emerald-900 dark:text-emerald-200 border border-emerald-300/80 dark:border-emerald-700/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="green">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-emerald-900 dark:text-emerald-200 border border-emerald-300/80 dark:border-emerald-700/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="green">
               <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
               <span>Xanh</span>
-              <span id="chipCountGreen" class="opacity-90 text-[11px] font-mono">(0)</span>
+              <span id="chipCountGreen" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-rose-900 dark:text-rose-200 border border-rose-300/80 dark:border-rose-700/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="pink">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-rose-900 dark:text-rose-200 border border-rose-300/80 dark:border-rose-700/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="pink">
               <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
               <span>Hồng</span>
-              <span id="chipCountPink" class="opacity-90 text-[11px] font-mono">(0)</span>
+              <span id="chipCountPink" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-purple-900 dark:text-purple-200 border border-purple-300/80 dark:border-purple-700/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="purple">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-purple-900 dark:text-purple-200 border border-purple-300/80 dark:border-purple-700/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="purple">
               <span class="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>
               <span>Tím</span>
-              <span id="chipCountPurple" class="opacity-90 text-[11px] font-mono">(0)</span>
+              <span id="chipCountPurple" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
             </button>
           </div>
         </div>
@@ -6129,7 +6138,7 @@
             <input type="checkbox" id="batchSelectAllNotesCheckbox" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer" />
             <span>Chọn tất cả</span>
           </label>
-          <span id="batchSelectedCountLabel" class="text-[#6E6B65] dark:text-[#979DA8] font-mono text-[11px]">(Đã chọn 0 mục)</span>
+          <span id="batchSelectedCountLabel" class="text-[#6E6B65] dark:text-[#979DA8] font-sans font-medium tabular-nums text-[11px]">(Đã chọn 0 mục)</span>
         </div>
         <div class="flex items-center gap-2">
           <button id="btnDeleteSelectedBatchNotes" class="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white font-medium text-xs flex items-center gap-1 transition shadow-xs disabled:opacity-50 disabled:pointer-events-none" disabled>
@@ -6247,21 +6256,21 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <!-- Streak Card -->
           <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-white/70 dark:from-amber-950/40 dark:via-orange-950/20 dark:to-[#161A22] border border-amber-300/50 dark:border-amber-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-widest flex items-center gap-1.5 font-mono">
+            <div class="flex items-center justify-between mb-3 font-sans">
+              <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5 font-sans">
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                 Chuỗi liên tiếp
               </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300/40 dark:border-amber-800/50 font-mono">KỶ LUẬT</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300/40 dark:border-amber-800/50 font-sans tracking-wide">KỶ LUẬT</span>
             </div>
             <div class="flex items-center gap-3.5">
               <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
                 <svg class="w-6 h-6"><use href="#icon-flame"></use></svg>
               </div>
-              <div>
+              <div class="min-w-0 flex-1">
                 <div class="flex items-baseline gap-2">
-                  <span id="analyticsStreakCount" class="font-serif text-3xl sm:text-4xl font-black text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
-                  <span class="text-xs font-semibold text-[#6E6B65] dark:text-[#9AA3B2]">ngày liên tục</span>
+                  <span id="analyticsStreakCount" class="font-sans text-2xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
+                  <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2]">ngày liên tục</span>
                 </div>
                 <p class="text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5">Duy trì nhịp đọc hàng ngày</p>
               </div>
@@ -6270,19 +6279,25 @@
 
           <!-- Daily Goal Card -->
           <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-white/70 dark:from-indigo-950/40 dark:via-violet-950/20 dark:to-[#161A22] border border-indigo-300/50 dark:border-indigo-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-widest flex items-center gap-1.5 font-mono">
+            <div class="flex items-center justify-between mb-3 font-sans">
+              <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1.5 font-sans">
                 <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                 Mục tiêu hôm nay
               </span>
-              <span id="analyticsGoalPercent" class="text-[10px] font-bold font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-950/80 px-2 py-0.5 rounded-full border border-indigo-300/40 dark:border-indigo-800/50 tabular-nums">0%</span>
+              <span id="analyticsGoalPercent" class="text-[10px] font-bold font-sans text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-950/80 px-2 py-0.5 rounded-full border border-indigo-300/40 dark:border-indigo-800/50 tabular-nums">0%</span>
             </div>
             <div class="flex items-center gap-3.5 mb-2.5">
               <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
                 <svg class="w-6 h-6"><use href="#icon-book-open"></use></svg>
               </div>
               <div class="min-w-0 flex-1">
-                <div id="analyticsTodayGoalText" class="text-xs sm:text-sm font-bold text-[#1C1917] dark:text-[#EDECE8] truncate font-mono">0 / 2 bài (0p)</div>
+                <div id="analyticsTodayGoalText" class="flex items-baseline gap-1.5 flex-wrap">
+                  <span id="analyticsGoalDoneNum" class="font-sans text-2xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
+                  <span class="text-base sm:text-lg font-normal text-stone-400 dark:text-stone-500 mx-0.5">/</span>
+                  <span id="analyticsGoalTargetNum" class="text-base sm:text-lg font-semibold text-stone-600 dark:text-stone-300 tabular-nums">2</span>
+                  <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2] ml-0.5">bài</span>
+                  <span id="analyticsGoalTimeBadge" class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 tabular-nums ml-1">(0p)</span>
+                </div>
                 <p class="text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5">Tiến độ bài học &amp; Pomodoro</p>
               </div>
             </div>
@@ -6299,7 +6314,7 @@
               <div class="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
               <span class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8]">Thời gian học 7 ngày qua</span>
             </div>
-            <span class="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-lg bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8]">Đơn vị: phút</span>
+            <span class="text-[11px] font-sans font-medium px-2.5 py-0.5 rounded-lg bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8]">Đơn vị: phút</span>
           </div>
           <!-- Khung biểu đồ -->
           <div id="analyticsChartWrapper" class="w-full h-44 flex items-end justify-between gap-1.5 sm:gap-3 pt-2 px-1"></div>
@@ -6312,7 +6327,7 @@
               <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/40 flex items-center justify-center">
                 <svg class="w-4 h-4"><use href="#icon-clock"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">TỔNG</span>
+              <span class="text-[9px] font-sans font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">TỔNG</span>
             </div>
             <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Thời gian đọc</span>
             <span id="analyticsTotalReadTime" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0 phút</span>
@@ -6323,7 +6338,7 @@
               <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200/50 dark:border-sky-800/40 flex items-center justify-center">
                 <svg class="w-4 h-4"><use href="#icon-check-circle-2"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">TIẾN ĐỘ</span>
+              <span class="text-[9px] font-sans font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">TIẾN ĐỘ</span>
             </div>
             <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Bài đã học</span>
             <span id="analyticsCompletedLessons" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0</span>
@@ -6334,7 +6349,7 @@
               <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-800/40 flex items-center justify-center">
                 <svg class="w-4 h-4"><use href="#icon-edit-3"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">TRI THỨC</span>
+              <span class="text-[9px] font-sans font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">TRI THỨC</span>
             </div>
             <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Ghi chú &amp; Khung</span>
             <span id="analyticsTotalHighlights" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0</span>
@@ -6345,7 +6360,7 @@
               <div class="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 border border-violet-200/50 dark:border-violet-800/40 flex items-center justify-center">
                 <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">ÔN TẬP</span>
+              <span class="text-[9px] font-sans font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">ÔN TẬP</span>
             </div>
             <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Flashcard</span>
             <span id="analyticsTotalFlashcards" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0</span>
@@ -36948,11 +36963,27 @@
       const todayMinutes = todayAct.minutes || 0;
 
       const pctLessons = Math.min(100, Math.round((todayAct.lessonsCompleted / goal.lessons) * 100));
+      const goalDoneNum = document.getElementById('analyticsGoalDoneNum');
+      const goalTargetNum = document.getElementById('analyticsGoalTargetNum');
+      const goalTimeBadge = document.getElementById('analyticsGoalTimeBadge');
       const goalTextEl = document.getElementById('analyticsTodayGoalText');
       const goalPctEl = document.getElementById('analyticsGoalPercent');
       const goalBarEl = document.getElementById('analyticsGoalBar');
+      const pCount = todayAct.pomodoroSessions || 0;
 
-      if (goalTextEl) { const pCount = todayAct.pomodoroSessions || 0; goalTextEl.innerText = `${todayAct.lessonsCompleted || 0} / ${goal.lessons} bài (${todayMinutes}p${pCount > 0 ? ` • ${pCount} Pomodoro` : ''})`; }
+      if (goalDoneNum && goalTargetNum && goalTimeBadge) {
+        goalDoneNum.textContent = todayAct.lessonsCompleted || 0;
+        goalTargetNum.textContent = goal.lessons || 2;
+        goalTimeBadge.textContent = `(${todayMinutes}p${pCount > 0 ? ` • ${pCount} Pomodoro` : ''})`;
+      } else if (goalTextEl) {
+        goalTextEl.innerHTML = `
+          <span class="font-sans text-2xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">${todayAct.lessonsCompleted || 0}</span>
+          <span class="text-base sm:text-lg font-normal text-stone-400 dark:text-stone-500 mx-0.5">/</span>
+          <span class="text-base sm:text-lg font-semibold text-stone-600 dark:text-stone-300 tabular-nums">${goal.lessons || 2}</span>
+          <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2] ml-0.5">bài</span>
+          <span class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 tabular-nums ml-1">(${todayMinutes}p${pCount > 0 ? ` • ${pCount} Pomodoro` : ''})</span>
+        `;
+      }
       if (goalPctEl) goalPctEl.innerText = `${pctLessons}%`;
       if (goalBarEl) goalBarEl.style.width = `${pctLessons}%`;
 
@@ -36990,11 +37021,11 @@
             : (item.minutes > 0 ? "bg-gradient-to-t from-indigo-600 via-indigo-500 to-violet-400 shadow-sm shadow-indigo-500/20" : "bg-stone-200/60 dark:bg-stone-800/40");
 
           const labelHtml = item.isToday
-            ? '<span class="text-[11px] font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap flex items-center justify-center gap-1 font-mono tracking-tight"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Nay</span>'
-            : `<span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] whitespace-nowrap font-mono">${item.label}</span>`;
+            ? '<span class="text-[11px] font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap flex items-center justify-center gap-1 font-sans tracking-tight"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Nay</span>'
+            : `<span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] whitespace-nowrap font-sans">${item.label}</span>`;
 
           colEl.innerHTML = `
-            <div class="opacity-0 group-hover:opacity-100 transition-all pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 text-[10px] font-mono font-bold shadow-xl z-20 whitespace-nowrap border border-white/10 dark:border-black/10 scale-95 group-hover:scale-100 duration-150">
+            <div class="opacity-0 group-hover:opacity-100 transition-all pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 text-[10px] font-sans font-bold tabular-nums shadow-xl z-20 whitespace-nowrap border border-white/10 dark:border-black/10 scale-95 group-hover:scale-100 duration-150">
               ${item.minutes} phút
             </div>
             <div class="w-full max-w-[38px] sm:max-w-[44px] h-[124px] ${trackClass} rounded-2xl flex items-end justify-center p-1 relative overflow-hidden transition-all duration-300 group-hover:scale-105 shadow-2xs">

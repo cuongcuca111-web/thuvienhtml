@@ -44,7 +44,7 @@ def main():
     base_tree_sha = latest_commit["tree"]["sha"]
     print(f"   Base Tree SHA: {base_tree_sha}")
 
-    # Chỉ đẩy các tệp thay đổi trong bản vá v5.7.0 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
+    # Chỉ đẩy các tệp thay đổi trong bản vá v5.7.1 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
     files_to_push = [
         "index.html",
         "admin.js",
@@ -84,7 +84,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "feat(v5.7.0): public theme toggle for readers, strict theme customization permissions, and 1-click admin broadcast control"
+    commit_message = "style(v5.7.1): harmonize fonts and balance text-number scale in notes filters and analytics cards"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
