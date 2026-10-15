@@ -85,14 +85,23 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.8',
+        date: '2026-10-16T00:35:00+07:00',
+        title: 'Tái Thiết Kế Toàn Diện Modal Thống Kê Học Tập & Modal Ghi Chú & Khung Chuẩn Luxury Editorial',
+        items: [
+          { type: 'improved', text: 'Tái thiết kế Modal Thống kê Học tập (max-w-2xl): Nâng cấp thẻ Chuỗi liên tiếp & Mục tiêu với hiệu ứng gradient đa lớp, biểu đồ 7 ngày cột trụ Pillar Bars sang trọng có rãnh bo góc mềm rounded-2xl, tooltip định vị động chuẩn xác và 4 thẻ chỉ số thư viện kèm số đo Serif cỡ lớn tabular-nums.' },
+          { type: 'improved', text: 'Tái thiết kế Modal Tất cả Ghi chú & Khung: Mở rộng không gian rộng rãi (max-w-4xl) ngăn chặn hoàn toàn hiện tượng cắt cụt tiêu đề, nâng cấp cụm thao tác chọn nhiều, thanh tìm kiếm toàn văn và chip lọc màu có hiệu ứng xúc giác mượt mà.' },
+          { type: 'improved', text: 'Minh họa rỗng (Empty State) phong cách Tạp chí cao cấp: Thay thế ô rỗng nét đứt cũ bằng squircle vector đa lớp phát sáng dịu nhẹ và huy hiệu hướng dẫn mẹo bôi đen văn bản trực quan.' },
+          { type: 'improved', text: 'Chuyển động (Transition) nhẹ nhàng & tinh tế: Tối ưu chuyển động mở/đóng modal, hover thẻ thống kê và hiệu ứng chuyển đổi chip lọc màu đồng bộ tuyệt đối với vibe web.' }
+        ]
+      },
+      {
         version: 'v5.6.7',
         date: '2026-10-16T00:15:00+07:00',
         title: 'Khắc Phục Lỗi Khởi Động & Tái Thiết Kế Thanh Pomodoro, Ghi Chú & Thống Kê Chuẩn Luxury Editorial',
         items: [
           { type: 'fix', text: 'Khắc phục triệt để lỗi SyntaxError gây đóng băng web khi khởi động: Sửa lỗi thoát chuỗi template string trong hàm bridge sandbox JavaScript.' },
-          { type: 'improved', text: 'Tái thiết kế thanh Pomodoro & Tiếng ồn trắng chuẩn Editorial cao cấp: Thay thế emoji bằng huy hiệu Zen focus tinh giản, thiết kế riêng bộ 4 icon vector SVG độc bản cho âm thanh (Mưa rào, Sóng biển, Quán Cafe, Sóng Alpha), nâng cấp thẻ xúc giác và bộ đếm giờ mono tabular siêu sắc nét.' },
-          { type: 'improved', text: 'Tái thiết kế Modal Tất cả Ghi chú & Khung: Nâng cấp header luxury, chống cắt chữ, bố trí bộ lọc màu trực quan và tranh minh họa rỗng phong cách Editorial.' },
-          { type: 'improved', text: 'Tái thiết kế Modal Thống kê Học tập: Nâng cấp thẻ Chuỗi liên tiếp & Mục tiêu với hiệu ứng gradient đa lớp, biểu đồ 7 ngày cột trụ thanh lịch có trạng thái Hôm nay và thẻ chỉ số kèm icon chủ đề tinh tế.' }
+          { type: 'improved', text: 'Tái thiết kế thanh Pomodoro & Tiếng ồn trắng chuẩn Editorial cao cấp: Thay thế emoji bằng huy hiệu Zen focus tinh giản, thiết kế riêng bộ 4 icon vector SVG độc bản cho âm thanh (Mưa rào, Sóng biển, Quán Cafe, Sóng Alpha), nâng cấp thẻ xúc giác và bộ đếm giờ mono tabular siêu sắc nét.' }
         ]
       },
       {
@@ -5940,38 +5949,38 @@
 
   <!-- // FEATURE-2: Modal Tất Cả Ghi Chú & Khung Toàn Thư Viện (VIỆC 4) -->
   <div id="allNotesModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4" style="--frames-fs: 16px;">
-    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl overflow-hidden relative">
+    <div class="bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-3xl w-full max-w-4xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden relative">
       <!-- Header modal -->
-      <div class="p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 gap-2">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 dark:from-indigo-950/60 dark:to-purple-950/60 border border-indigo-200/60 dark:border-indigo-800/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 shadow-2xs">
-            <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="p-4 sm:p-5 border-b border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] flex items-center justify-between shrink-0 gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/15 via-indigo-500/10 to-rose-500/15 dark:from-amber-950/50 dark:to-indigo-950/50 border border-amber-300/40 dark:border-amber-700/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-2xs">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" fill-opacity="0.15"/>
             </svg>
           </div>
           <div class="min-w-0">
-            <h3 class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-tight whitespace-nowrap">Tất cả Ghi chú &amp; Khung</h3>
-            <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate" id="allNotesCountLabel">0 khung &amp; ghi chú trong thư viện</p>
+            <h3 class="font-serif font-bold text-lg sm:text-xl text-[#1C1917] dark:text-[#EDECE8] leading-tight whitespace-nowrap">Tất cả Ghi chú &amp; Khung</h3>
+            <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] truncate mt-0.5" id="allNotesCountLabel">0 khung &amp; ghi chú trong thư viện</p>
           </div>
         </div>
         
         <!-- Hàng nút thao tác header -->
-        <div class="flex items-center gap-1.5 shrink-0">
+        <div class="flex items-center gap-2 shrink-0">
           <!-- Nút Aa (Tăng/giảm cỡ chữ & font) -->
-          <button id="btnNotesFontSize" class="touch-target w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl border border-stone-200 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#202530] text-stone-700 dark:text-stone-300 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95" title="Cỡ chữ và font trích dẫn" aria-label="Cỡ chữ và font">
+          <button id="btnNotesFontSize" class="touch-target w-9 h-9 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#202530] text-stone-700 dark:text-stone-300 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95" title="Cỡ chữ và font trích dẫn" aria-label="Cỡ chữ và font">
             <svg class="w-4.5 h-4.5"><use href="#textsize-glyph"></use></svg>
           </button>
           
           <!-- Các nút thao tác desktop -->
-          <button id="btnToggleBatchNotes" class="hidden sm:flex touch-target px-2.5 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#202530] text-xs font-medium text-stone-700 dark:text-stone-300 items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95" title="Chọn nhiều để xóa hàng loạt">
+          <button id="btnToggleBatchNotes" class="hidden sm:flex touch-target px-3 py-1.5 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#202530] text-xs font-semibold text-stone-700 dark:text-stone-300 items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95" title="Chọn nhiều để xóa hàng loạt">
             <svg class="w-3.5 h-3.5"><use href="#icon-check-square"></use></svg>
             <span>Chọn nhiều</span>
           </button>
-          <button id="btnExportNotesMarkdown" class="hidden sm:flex touch-target px-2.5 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#202530] text-xs font-medium text-stone-700 dark:text-stone-300 items-center gap-1.5 cursor-pointer transition-all shadow-2xs active:scale-95" title="Xuất toàn bộ ghi chú ra file Markdown (.md)">
+          <button id="btnExportNotesMarkdown" class="hidden sm:flex touch-target px-3 py-1.5 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#202530] text-xs font-semibold text-stone-700 dark:text-stone-300 items-center gap-1.5 cursor-pointer transition-all shadow-2xs active:scale-95" title="Xuất toàn bộ ghi chú ra file Markdown (.md)">
             <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
             <span>Xuất .md</span>
           </button>
-          <button id="btnClearAllLibraryNotes" class="hidden sm:flex touch-target px-2.5 py-1.5 rounded-xl border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100/80 dark:hover:bg-rose-900/60 text-xs font-medium text-rose-600 dark:text-rose-400 items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95" title="Xóa tất cả khung toàn thư viện">
+          <button id="btnClearAllLibraryNotes" class="hidden sm:flex touch-target px-3 py-1.5 rounded-xl border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100/80 text-xs font-semibold text-rose-600 dark:text-rose-400 items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95" title="Xóa tất cả khung toàn thư viện">
             <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
             <span>Xóa toàn bộ</span>
           </button>
@@ -5998,7 +6007,7 @@
           </div>
 
           <!-- Nút đóng ✕ -->
-          <button id="btnCloseAllNotesModal" type="button" class="w-8.5 h-8.5 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng ghi chú" title="Đóng">
+          <button id="btnCloseAllNotesModal" type="button" class="w-9 h-9 flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng ghi chú" title="Đóng">
             <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
           </button>
         </div>
@@ -6047,42 +6056,42 @@
         </div>
       </div>
 
-      <!-- Hàng 1: Ô tìm kiếm full width (không bao giờ bị cắt chữ) | Hàng 2: Phạm vi + Nhóm chip màu -->
-      <div class="p-3 sm:p-3.5 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] flex flex-col gap-2.5 shrink-0">
+      <!-- Hàng 1: Ô tìm kiếm full width | Hàng 2: Phạm vi + Nhóm chip màu -->
+      <div class="p-3.5 sm:p-4 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#12151B] flex flex-col gap-3 shrink-0">
         <!-- Hàng 1: Ô tìm kiếm full width -->
         <div class="relative w-full">
-          <svg class="w-4 h-4 absolute left-3.5 top-3 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
-          <input id="searchNotesInput" type="text" placeholder="Tìm kiếm ghi chú, trích dẫn trong bài học..." class="w-full text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl bg-white dark:bg-[#181B20] border border-stone-200 dark:border-stone-800 text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/70 shadow-2xs transition-all" />
+          <svg class="w-4 h-4 absolute left-3.5 top-3.5 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
+          <input id="searchNotesInput" type="text" placeholder="Tìm kiếm ghi chú, trích dẫn trong bài học..." class="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/70 shadow-2xs transition-all" />
         </div>
         <!-- Hàng 2: Phạm vi hiển thị + Color chips cuộn ngang -->
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
-          <select id="notesLessonFilterSelect" class="text-xs px-3 py-1.5 rounded-xl bg-white dark:bg-[#181B20] border border-stone-200 dark:border-stone-800 text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0 shadow-2xs cursor-pointer font-medium" title="Phạm vi hiển thị">
+        <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-0.5">
+          <select id="notesLessonFilterSelect" class="text-xs px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0 shadow-2xs cursor-pointer font-medium" title="Phạm vi hiển thị">
             <option value="all">Toàn thư viện</option>
             <option value="category">Mục hiện tại</option>
             <option value="current">Bài đang đọc</option>
           </select>
-          <div class="h-4 w-px bg-stone-200 dark:bg-stone-800 shrink-0"></div>
-          <div class="flex items-center gap-1.5 shrink-0" role="group" aria-label="Lọc theo màu khung">
-            <button class="notes-color-filter px-2.5 py-1 text-xs rounded-xl font-medium bg-indigo-600 text-white cursor-pointer shrink-0 shadow-xs flex items-center gap-1 transition-all" data-color="all">
+          <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 shrink-0"></div>
+          <div class="flex items-center gap-2 shrink-0" role="group" aria-label="Lọc theo màu khung">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-semibold bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 cursor-pointer shrink-0 shadow-xs flex items-center gap-1.5 transition-all" data-color="all">
               <span>Tất cả</span>
               <span id="chipCountAll" class="opacity-90 text-[11px] font-mono">(0)</span>
             </button>
-            <button class="notes-color-filter px-2.5 py-1 text-xs rounded-xl font-medium bg-amber-500/10 text-amber-900 dark:text-amber-200 border border-amber-300/60 dark:border-amber-700/50 hover:bg-amber-500/20 cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="yellow">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="yellow">
               <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
               <span>Vàng</span>
               <span id="chipCountYellow" class="opacity-90 text-[11px] font-mono">(0)</span>
             </button>
-            <button class="notes-color-filter px-2.5 py-1 text-xs rounded-xl font-medium bg-emerald-500/10 text-emerald-900 dark:text-emerald-200 border border-emerald-300/60 dark:border-emerald-700/50 hover:bg-emerald-500/20 cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="green">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-emerald-900 dark:text-emerald-200 border border-emerald-300/80 dark:border-emerald-700/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="green">
               <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
               <span>Xanh</span>
               <span id="chipCountGreen" class="opacity-90 text-[11px] font-mono">(0)</span>
             </button>
-            <button class="notes-color-filter px-2.5 py-1 text-xs rounded-xl font-medium bg-rose-500/10 text-rose-900 dark:text-rose-200 border border-rose-300/60 dark:border-rose-700/50 hover:bg-rose-500/20 cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="pink">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-rose-900 dark:text-rose-200 border border-rose-300/80 dark:border-rose-700/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="pink">
               <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
               <span>Hồng</span>
               <span id="chipCountPink" class="opacity-90 text-[11px] font-mono">(0)</span>
             </button>
-            <button class="notes-color-filter px-2.5 py-1 text-xs rounded-xl font-medium bg-purple-500/10 text-purple-900 dark:text-purple-200 border border-purple-300/60 dark:border-purple-700/50 hover:bg-purple-500/20 cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="purple">
+            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-purple-900 dark:text-purple-200 border border-purple-300/80 dark:border-purple-700/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all" data-color="purple">
               <span class="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>
               <span>Tím</span>
               <span id="chipCountPurple" class="opacity-90 text-[11px] font-mono">(0)</span>
@@ -6193,16 +6202,16 @@
 
   <!-- // FEATURE-5: Modal Thống Kê Học Tập -->
   <div id="analyticsModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-3xl w-full max-w-xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div class="bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-3xl w-full max-w-2xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       <!-- Header -->
       <div class="p-4 sm:p-5 border-b border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-amber-500/10 to-indigo-500/20 dark:from-indigo-950/60 dark:to-amber-950/40 border border-indigo-200/50 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs shrink-0">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-amber-500/15 dark:from-indigo-950/60 dark:to-purple-950/40 border border-indigo-200/60 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs shrink-0">
             <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-bar-chart"></use></svg>
           </div>
           <div>
-            <h3 class="font-serif font-bold text-lg text-[#1C1917] dark:text-[#EDECE8] tracking-tight">Thống kê Học tập</h3>
-            <p class="text-xs text-[#57534E] dark:text-[#9AA3B2]">Hành trình tích lũy tri thức &amp; kỷ luật đọc của bạn</p>
+            <h3 class="font-serif font-bold text-xl text-[#1C1917] dark:text-[#EDECE8] tracking-tight">Thống kê Học tập</h3>
+            <p class="text-xs text-[#6E6B65] dark:text-[#9AA3B2] mt-0.5">Hành trình tích lũy tri thức &amp; kỷ luật đọc của bạn</p>
           </div>
         </div>
         <button id="btnCloseAnalyticsModal" type="button" class="touch-target w-9 h-9 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng thống kê" title="Đóng">
@@ -6214,24 +6223,24 @@
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4">
 
         <!-- Hàng 1: Chuỗi ngày học liên tiếp & Mục tiêu hôm nay -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <!-- Streak Card -->
-          <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-white/60 dark:from-amber-950/40 dark:via-orange-950/20 dark:to-[#161A22] border border-amber-300/40 dark:border-amber-700/30 shadow-xs relative overflow-hidden group flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-widest flex items-center gap-1.5">
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-white/70 dark:from-amber-950/40 dark:via-orange-950/20 dark:to-[#161A22] border border-amber-300/50 dark:border-amber-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-widest flex items-center gap-1.5 font-mono">
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                 Chuỗi liên tiếp
               </span>
-              <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-100/70 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300/30 dark:border-amber-800/40">Kỷ luật</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300/40 dark:border-amber-800/50 font-mono">KỶ LUẬT</span>
             </div>
             <div class="flex items-center gap-3.5">
-              <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
                 <svg class="w-6 h-6"><use href="#icon-flame"></use></svg>
               </div>
               <div>
-                <div class="flex items-baseline gap-1.5">
-                  <span id="analyticsStreakCount" class="font-serif text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight">0</span>
-                  <span class="text-xs font-medium text-[#6E6B65] dark:text-[#9AA3B2]">ngày liên tục</span>
+                <div class="flex items-baseline gap-2">
+                  <span id="analyticsStreakCount" class="font-serif text-3xl sm:text-4xl font-black text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
+                  <span class="text-xs font-semibold text-[#6E6B65] dark:text-[#9AA3B2]">ngày liên tục</span>
                 </div>
                 <p class="text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5">Duy trì nhịp đọc hàng ngày</p>
               </div>
@@ -6239,86 +6248,86 @@
           </div>
 
           <!-- Daily Goal Card -->
-          <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-white/60 dark:from-indigo-950/40 dark:via-violet-950/20 dark:to-[#161A22] border border-indigo-300/40 dark:border-indigo-700/30 shadow-xs relative overflow-hidden group flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-widest flex items-center gap-1.5">
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-white/70 dark:from-indigo-950/40 dark:via-violet-950/20 dark:to-[#161A22] border border-indigo-300/50 dark:border-indigo-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-widest flex items-center gap-1.5 font-mono">
                 <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                 Mục tiêu hôm nay
               </span>
-              <span id="analyticsGoalPercent" class="text-[10px] font-bold font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-950/70 px-2 py-0.5 rounded-full border border-indigo-300/30 dark:border-indigo-800/40">0%</span>
+              <span id="analyticsGoalPercent" class="text-[10px] font-bold font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-950/80 px-2 py-0.5 rounded-full border border-indigo-300/40 dark:border-indigo-800/50 tabular-nums">0%</span>
             </div>
-            <div class="flex items-center gap-3.5 mb-2">
-              <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
+            <div class="flex items-center gap-3.5 mb-2.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
                 <svg class="w-6 h-6"><use href="#icon-book-open"></use></svg>
               </div>
               <div class="min-w-0 flex-1">
-                <div id="analyticsTodayGoalText" class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] truncate">0 / 2 bài (0p)</div>
+                <div id="analyticsTodayGoalText" class="text-xs sm:text-sm font-bold text-[#1C1917] dark:text-[#EDECE8] truncate font-mono">0 / 2 bài (0p)</div>
                 <p class="text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5">Tiến độ bài học &amp; Pomodoro</p>
               </div>
             </div>
-            <div class="w-full h-2 rounded-full bg-indigo-100 dark:bg-indigo-950/80 overflow-hidden border border-indigo-200/40 dark:border-indigo-800/30">
-              <div id="analyticsGoalBar" class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500 shadow-xs" style="width: 0%"></div>
+            <div class="w-full h-2.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 overflow-hidden border border-indigo-200/50 dark:border-indigo-800/40 p-0.5">
+              <div id="analyticsGoalBar" class="h-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 rounded-full transition-all duration-700 shadow-sm" style="width: 0%"></div>
             </div>
           </div>
         </div>
 
         <!-- Hàng 2: Biểu đồ cột SVG 7 ngày gần nhất -->
-        <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs">
-          <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+        <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs">
+          <div class="flex items-center justify-between mb-4 pb-2.5 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60">
             <div class="flex items-center gap-2">
-              <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
-              <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Thời gian học 7 ngày qua</span>
+              <div class="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
+              <span class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8]">Thời gian học 7 ngày qua</span>
             </div>
-            <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8]">Đơn vị: phút</span>
+            <span class="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-lg bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8]">Đơn vị: phút</span>
           </div>
           <!-- Khung biểu đồ -->
-          <div id="analyticsChartWrapper" class="w-full h-44 flex items-end justify-between gap-1.5 sm:gap-2.5 pt-2 px-1"></div>
+          <div id="analyticsChartWrapper" class="w-full h-44 flex items-end justify-between gap-1.5 sm:gap-3 pt-2 px-1"></div>
         </div>
 
         <!-- Hàng 3: 4 Chỉ số Tổng quan Thư viện -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <div class="p-3.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-emerald-300 dark:hover:border-emerald-800/60 transition-all group">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-emerald-300 dark:hover:border-emerald-800/60 hover:shadow-md transition-all group">
             <div class="flex items-center justify-between">
-              <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5"><use href="#icon-clock"></use></svg>
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/40 flex items-center justify-center">
+                <svg class="w-4 h-4"><use href="#icon-clock"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase">TỔNG</span>
+              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">TỔNG</span>
             </div>
-            <span class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mt-2">Thời gian đọc</span>
-            <span id="analyticsTotalReadTime" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] block mt-0.5">0 phút</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Thời gian đọc</span>
+            <span id="analyticsTotalReadTime" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0 phút</span>
           </div>
 
-          <div class="p-3.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-sky-300 dark:hover:border-sky-800/60 transition-all group">
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-sky-300 dark:hover:border-sky-800/60 hover:shadow-md transition-all group">
             <div class="flex items-center justify-between">
-              <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5"><use href="#icon-check-circle-2"></use></svg>
+              <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200/50 dark:border-sky-800/40 flex items-center justify-center">
+                <svg class="w-4 h-4"><use href="#icon-check-circle-2"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase">TIẾN ĐỘ</span>
+              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">TIẾN ĐỘ</span>
             </div>
-            <span class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mt-2">Bài đã học</span>
-            <span id="analyticsCompletedLessons" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] block mt-0.5">0</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Bài đã học</span>
+            <span id="analyticsCompletedLessons" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0</span>
           </div>
 
-          <div class="p-3.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-amber-300 dark:hover:border-amber-800/60 transition-all group">
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-amber-300 dark:hover:border-amber-800/60 hover:shadow-md transition-all group">
             <div class="flex items-center justify-between">
-              <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5"><use href="#icon-edit-3"></use></svg>
+              <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-800/40 flex items-center justify-center">
+                <svg class="w-4 h-4"><use href="#icon-edit-3"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase">TRI THỨC</span>
+              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">TRI THỨC</span>
             </div>
-            <span class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mt-2">Ghi chú &amp; Khung</span>
-            <span id="analyticsTotalHighlights" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] block mt-0.5">0</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Ghi chú &amp; Khung</span>
+            <span id="analyticsTotalHighlights" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0</span>
           </div>
 
-          <div class="p-3.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-violet-300 dark:hover:border-violet-800/60 transition-all group">
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs hover:border-violet-300 dark:hover:border-violet-800/60 hover:shadow-md transition-all group">
             <div class="flex items-center justify-between">
-              <div class="w-7 h-7 rounded-lg bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5"><use href="#icon-cards"></use></svg>
+              <div class="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 border border-violet-200/50 dark:border-violet-800/40 flex items-center justify-center">
+                <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
               </div>
-              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase">ÔN TẬP</span>
+              <span class="text-[9px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">ÔN TẬP</span>
             </div>
-            <span class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider block mt-2">Flashcard</span>
-            <span id="analyticsTotalFlashcards" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] block mt-0.5">0</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] uppercase tracking-wider block mt-2.5">Flashcard</span>
+            <span id="analyticsTotalFlashcards" class="font-serif font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] block mt-1 tracking-tight tabular-nums">0</span>
           </div>
         </div>
       </div>
@@ -35784,17 +35793,26 @@
 
       if (allEntries.length === 0) {
         container.innerHTML = `
-          <div class="text-center py-16 px-4 select-none">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center mx-auto mb-3 shadow-xs">
-              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" fill-opacity="0.12"/>
-                <path d="M9 10h6m-6 4h4"/>
-              </svg>
+          <div class="text-center py-16 px-6 select-none max-w-md mx-auto animate-in fade-in zoom-in-95 duration-200">
+            <div class="relative w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+              <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-amber-500/20 via-indigo-500/15 to-purple-500/20 blur-xl opacity-70"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-[#FAF9F5] dark:bg-[#1A1E26] border border-[#E7E5DF] dark:border-[#2E3542] shadow-sm flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  <path d="M12 6v6"/>
+                  <path d="M9 9h6"/>
+                </svg>
+              </div>
             </div>
-            <h4 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] mb-1.5">Chưa có khung hay ghi chú nào phù hợp</h4>
-            <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] max-w-sm mx-auto leading-relaxed">
-              Bôi đen đoạn văn bản trong bài học để đóng khung kiến thức quan trọng hoặc gắn ghi chú cá nhân của bạn.
+            <h4 class="font-serif font-bold text-lg text-[#1C1917] dark:text-[#EDECE8] mb-1.5 tracking-tight">Chưa có khung hay ghi chú nào</h4>
+            <p class="text-xs text-[#6E6B65] dark:text-[#9AA3B2] leading-relaxed mb-4">
+              Bôi đen bất kỳ đoạn văn bản nào trong bài học để đóng khung trích dẫn trọng tâm hoặc đính kèm suy ngẫm cá nhân của bạn.
             </p>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 dark:bg-[#1A1E26] border border-stone-200/80 dark:border-stone-800 text-[11px] font-medium text-stone-600 dark:text-stone-300 shadow-2xs">
+              <svg class="w-3.5 h-3.5 text-amber-500"><use href="#icon-edit-3"></use></svg>
+              <span>Mẹo: Nhấn đúp chuột hoặc bôi đen văn bản để đóng khung</span>
+            </div>
           </div>
         `;
         updateBatchActionBarUI();
@@ -36115,9 +36133,11 @@
       btn.addEventListener('click', () => {
         notesActiveColorFilter = btn.getAttribute('data-color') || 'all';
         document.querySelectorAll('.notes-color-filter').forEach(b => {
-          b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-1');
+          b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-1', 'scale-[1.03]', 'shadow-sm');
+          b.classList.add('opacity-80');
         });
-        btn.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-1');
+        btn.classList.remove('opacity-80');
+        btn.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-1', 'scale-[1.03]', 'shadow-sm');
         renderAllNotesView();
       });
     });
@@ -36801,28 +36821,28 @@
         }
 
         for (const item of last7Days) {
-          const colHeight = Math.max(item.minutes > 0 ? 8 : 4, Math.round((item.minutes / maxMin) * 112));
+          const colHeight = item.minutes > 0 ? Math.max(10, Math.round((item.minutes / maxMin) * 114)) : 4;
           const colEl = document.createElement('div');
           colEl.className = "flex-1 flex flex-col items-center justify-end h-full gap-2 group relative";
 
           const trackClass = item.isToday
-            ? "bg-amber-500/10 dark:bg-amber-950/30 border border-amber-300/40 dark:border-amber-700/40"
+            ? "bg-amber-500/10 dark:bg-amber-950/30 border border-amber-300/50 dark:border-amber-700/40"
             : "bg-stone-100 dark:bg-[#1E232C] border border-stone-200/60 dark:border-stone-800/60";
 
           const barGradient = item.isToday
-            ? (item.minutes > 0 ? "bg-gradient-to-t from-amber-500 via-amber-400 to-orange-400 shadow-xs" : "bg-amber-300/40 dark:bg-amber-600/30")
-            : (item.minutes > 0 ? "bg-gradient-to-t from-indigo-600 via-indigo-500 to-violet-400 shadow-xs" : "bg-stone-200/70 dark:bg-stone-800/50");
+            ? (item.minutes > 0 ? "bg-gradient-to-t from-amber-500 via-amber-400 to-amber-300 shadow-sm shadow-amber-500/20" : "bg-amber-300/30 dark:bg-amber-700/30")
+            : (item.minutes > 0 ? "bg-gradient-to-t from-indigo-600 via-indigo-500 to-violet-400 shadow-sm shadow-indigo-500/20" : "bg-stone-200/60 dark:bg-stone-800/40");
 
           const labelHtml = item.isToday
-            ? '<span class="text-[11px] font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Nay</span>'
-            : `<span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#979DA8] whitespace-nowrap">${item.label}</span>`;
+            ? '<span class="text-[11px] font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap flex items-center justify-center gap-1 font-mono tracking-tight"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Nay</span>'
+            : `<span class="text-[11px] font-medium text-[#6E6B65] dark:text-[#9AA3B2] whitespace-nowrap font-mono">${item.label}</span>`;
 
           colEl.innerHTML = `
-            <div class="opacity-0 group-hover:opacity-100 transition-all pointer-events-none absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 text-[10px] font-mono shadow-md z-10 whitespace-nowrap">
+            <div class="opacity-0 group-hover:opacity-100 transition-all pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 text-[10px] font-mono font-bold shadow-xl z-20 whitespace-nowrap border border-white/10 dark:border-black/10 scale-95 group-hover:scale-100 duration-150">
               ${item.minutes} phút
             </div>
-            <div class="w-full max-w-[34px] h-[120px] ${trackClass} rounded-xl flex items-end justify-center p-1 relative overflow-hidden transition-all duration-200 group-hover:scale-105">
-              <div class="w-full ${barGradient} rounded-lg transition-all duration-500" style="height: ${colHeight}px"></div>
+            <div class="w-full max-w-[38px] sm:max-w-[44px] h-[124px] ${trackClass} rounded-2xl flex items-end justify-center p-1 relative overflow-hidden transition-all duration-300 group-hover:scale-105 shadow-2xs">
+              <div class="w-full ${barGradient} rounded-xl transition-all duration-500" style="height: ${colHeight}px"></div>
             </div>
             ${labelHtml}
           `;
