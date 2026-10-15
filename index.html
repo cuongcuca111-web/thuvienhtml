@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.8',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Hiệu Ứng Chuyển Động Mượt Mà Cho Bảng Tìm Kiếm Toàn Cục (Command Palette)',
+        items: [
+          { type: 'improved', text: 'Chuyển động mượt mà từ Ô tìm kiếm sang Bảng điều khiển: Bấm vào nút Tìm kiếm trên thanh Header sẽ mở ra Command Palette với chuyển động phóng nở từ trên xuống (top-down zoom & blur transition) vô cùng êm ái, mô phỏng cảm giác ô tìm kiếm mở rộng thành bảng tra cứu.' },
+          { type: 'improved', text: 'Hiệu ứng đóng êm dịu & Backdrop làm mờ tinh xảo: Lớp nền tối mờ 8px (frosted glass) xuất hiện và thu gọn nhịp nhàng; đóng bằng phím Esc hoặc bấm ra ngoài đều có animation thu về vị trí cũ.' },
+          { type: 'improved', text: 'Hiệu ứng phản hồi xúc giác (Micro-interaction) cho nút tìm kiếm: Tối ưu độ nảy khi nhấp chuột cùng luồng xuất hiện so le (staggered cascade) cho các khối nội dung bên trong modal.' }
+        ]
+      },
+      {
         version: 'v5.6.7',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Tái Thiết Kế Sổ Tay Ghi Chú & Khung Trích Dẫn Và Bảng Thống Kê Học Tập Chuẩn The Codex',
@@ -2543,16 +2553,24 @@
     #searchCommandPaletteBackdrop {
       z-index: var(--z-search-backdrop, 9999);
       background-color: rgba(10, 12, 16, 0.45);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 280ms ease, -webkit-backdrop-filter 280ms ease;
+    }
+    #searchCommandPaletteBackdrop.palette-backdrop-active {
+      opacity: 1;
+      pointer-events: auto;
     }
     #searchCommandPalette {
       z-index: var(--z-search, 10000);
       background-color: var(--search-bg);
       border-color: var(--search-border);
       color: var(--search-text);
-      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--search-border);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.32), 0 0 0 1px var(--search-border);
       transform-origin: top center;
+      will-change: transform, opacity, filter;
     }
     @media (min-width: 901px) {
       #searchCommandPalette {
@@ -2565,17 +2583,47 @@
         border-radius: 16px !important;
       }
       #searchCommandPalette.palette-entering {
-        animation: searchPaletteScaleDown 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteOpenDesktop 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      #searchCommandPalette.palette-leaving {
+        animation: searchPaletteCloseDesktop 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      #searchCommandPalette.palette-entering .search-palette-body-stagger {
+        animation: searchPaletteBodyEnter 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     }
-    @keyframes searchPaletteScaleDown {
+    @keyframes searchPaletteOpenDesktop {
       0% {
         opacity: 0;
-        transform: translate(-50%, -8px) scale(0.98);
+        transform: translate(-50%, -24px) scale(0.96);
+        filter: blur(4px);
       }
       100% {
         opacity: 1;
         transform: translate(-50%, 0) scale(1);
+        filter: blur(0px);
+      }
+    }
+    @keyframes searchPaletteCloseDesktop {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -16px) scale(0.97);
+        filter: blur(2px);
+      }
+    }
+    @keyframes searchPaletteBodyEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
@@ -2590,23 +2638,44 @@
         border: none !important;
         padding-top: env(safe-area-inset-top, 0px);
         padding-bottom: env(safe-area-inset-bottom, 0px);
+        transform-origin: bottom center;
       }
       #searchCommandPalette.palette-entering {
-        animation: searchPaletteSlideUp 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteOpenMobile 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      #searchCommandPalette.palette-leaving {
+        animation: searchPaletteCloseMobile 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
     }
-    @keyframes searchPaletteSlideUp {
+    @keyframes searchPaletteOpenMobile {
       0% {
-        transform: translateY(100%);
+        opacity: 0;
+        transform: translateY(28px) scale(0.98);
       }
       100% {
-        transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes searchPaletteCloseMobile {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(28px) scale(0.98);
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #searchCommandPalette.palette-entering {
+      #searchCommandPalette.palette-entering,
+      #searchCommandPalette.palette-leaving,
+      #searchCommandPalette.palette-entering .search-palette-body-stagger {
         animation: none !important;
+      }
+      #searchCommandPaletteBackdrop {
+        transition: none !important;
       }
     }
 
@@ -3902,7 +3971,7 @@
 
       <!-- CỤM GIỮA: Ô Tìm Kiếm Toàn Cục (CSS Grid cân bằng chính giữa tuyệt đối trên Desktop) -->
       <div class="header-search-center-slot hidden min-[901px]:flex items-center justify-center w-full min-w-0 px-1 sm:px-2">
-        <button id="headerSearchTriggerBtn" type="button" aria-label="Tìm kiếm bài học, câu hỏi ôn tập (Ctrl K hoặc ⌘ K)" class="w-full h-10 px-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#181B20] hover:border-indigo-500/40 flex items-center justify-between cursor-pointer transition select-none group shadow-2xs">
+        <button id="headerSearchTriggerBtn" type="button" aria-label="Tìm kiếm bài học, câu hỏi ôn tập (Ctrl K hoặc ⌘ K)" class="w-full h-10 px-3.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#181B20] hover:border-indigo-500/40 active:scale-[0.985] flex items-center justify-between cursor-pointer transition-all duration-200 select-none group shadow-2xs">
           <div class="flex items-center min-w-0 gap-2.5">
             <svg class="w-4 h-4 text-[#6E6B65] dark:text-[#979DA8] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors"><use href="#s-search"></use></svg>
             <span class="text-xs sm:text-sm text-[#6E6B65]/80 dark:text-[#979DA8]/80 font-normal truncate">Tìm kiếm bài học, câu hỏi ôn tập...</span>
@@ -4507,7 +4576,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.7 • build 15/10/2026 23:59</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.8 • build 15/10/2026 23:59</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -5242,7 +5311,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.7 • build 15/10/2026 23:59</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.8 • build 15/10/2026 23:59</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -7223,7 +7292,7 @@
     </div>
 
     <!-- 2. Hàng phạm vi (Scope Pills: Thư viện | Bài này) & Bộ đếm kết quả (Sticky Bar) -->
-    <div class="px-3 sm:px-4 py-2 border-b border-[#E7E5DF]/70 dark:border-[#272C38]/70 flex items-center justify-between bg-[var(--search-bg)] shrink-0">
+    <div class="search-palette-body-stagger px-3 sm:px-4 py-2 border-b border-[#E7E5DF]/70 dark:border-[#272C38]/70 flex items-center justify-between bg-[var(--search-bg)] shrink-0">
       <div class="inline-flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-medium">
         <button type="button" id="paletteScopeLibrary" class="palette-scope-tab px-3 py-1 rounded-md transition font-semibold bg-white dark:bg-[#202531] shadow-xs text-indigo-600 dark:text-indigo-400 cursor-pointer flex items-center gap-1.5" data-scope="library">
           <span>Thư viện</span>
@@ -7237,12 +7306,12 @@
     </div>
 
     <!-- 3. Danh sách kết quả cuộn được -->
-    <div id="paletteSearchResultsList" class="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 text-sm select-none">
+    <div id="paletteSearchResultsList" class="search-palette-body-stagger flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2 text-sm select-none">
       <!-- Mặc định được sinh ra qua JS (Empty State hoặc Results) -->
     </div>
 
     <!-- 4. Chân Palette 40px (Footer) với gợi ý phím tắt -->
-    <div class="h-10 min-h-[40px] max-h-[40px] hidden min-[901px]:flex items-center justify-between px-4 border-t border-[#E7E5DF] dark:border-[#272C38] bg-[var(--search-input-bg)] text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0">
+    <div class="search-palette-body-stagger h-10 min-h-[40px] max-h-[40px] hidden min-[901px]:flex items-center justify-between px-4 border-t border-[#E7E5DF] dark:border-[#272C38] bg-[var(--search-input-bg)] text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0">
       <div class="flex items-center gap-3">
         <span class="flex items-center gap-1">
           <kbd class="px-1 py-0.5 rounded bg-white dark:bg-[#202531] border border-[#E7E5DF] dark:border-[#272C38] font-mono text-[10px] inline-flex items-center justify-center"><svg class="w-3 h-3"><use href="#s-arrow-up"></use></svg></kbd>
@@ -25083,6 +25152,9 @@
     }
     window.requestFrameColor = requestFrameColor;
 
+    let paletteAnimationTimeout = null;
+    let isPaletteClosing = false;
+
     function openSearchCommandPalette(initialQuery = '') {
       if (!canUseFullTextSearch()) {
         if (typeof showToast === 'function') {
@@ -25103,14 +25175,26 @@
         state.mobileSidebarOpen = false;
       }
 
+      if (paletteAnimationTimeout) {
+        clearTimeout(paletteAnimationTimeout);
+        paletteAnimationTimeout = null;
+      }
+      isPaletteClosing = false;
+
       if (searchCommandPalette && searchCommandPaletteBackdrop) {
-        searchCommandPaletteBackdrop.classList.remove('hidden');
+        searchCommandPalette.classList.remove('palette-leaving');
         searchCommandPalette.classList.remove('hidden');
         searchCommandPalette.classList.add('flex');
         searchCommandPalette.classList.add('palette-entering');
-        setTimeout(() => {
+
+        searchCommandPaletteBackdrop.classList.remove('hidden');
+        // Kích hoạt browser reflow để backdrop fade-in mượt mà
+        void searchCommandPaletteBackdrop.offsetWidth;
+        searchCommandPaletteBackdrop.classList.add('palette-backdrop-active');
+
+        paletteAnimationTimeout = setTimeout(() => {
           if (searchCommandPalette) searchCommandPalette.classList.remove('palette-entering');
-        }, 250);
+        }, 290);
       }
 
       const q = initialQuery || (paletteSearchInput ? paletteSearchInput.value : '') || '';
@@ -25120,7 +25204,7 @@
         setTimeout(() => {
           paletteSearchInput.focus();
           paletteSearchInput.select();
-        }, 40);
+        }, 50);
       }
 
       updateFullTextSearchBadges();
@@ -25134,11 +25218,27 @@
     }
 
     function closeSearchCommandPalette() {
-      if (searchCommandPalette && searchCommandPaletteBackdrop) {
-        searchCommandPalette.classList.add('hidden');
-        searchCommandPalette.classList.remove('flex');
-        searchCommandPaletteBackdrop.classList.add('hidden');
+      if (!searchCommandPalette || !searchCommandPaletteBackdrop) return;
+      if (searchCommandPalette.classList.contains('hidden') || isPaletteClosing) return;
+
+      isPaletteClosing = true;
+      if (paletteAnimationTimeout) {
+        clearTimeout(paletteAnimationTimeout);
+        paletteAnimationTimeout = null;
       }
+
+      searchCommandPalette.classList.remove('palette-entering');
+      searchCommandPalette.classList.add('palette-leaving');
+      searchCommandPaletteBackdrop.classList.remove('palette-backdrop-active');
+
+      paletteAnimationTimeout = setTimeout(() => {
+        searchCommandPalette.classList.remove('palette-leaving');
+        searchCommandPalette.classList.remove('flex');
+        searchCommandPalette.classList.add('hidden');
+        searchCommandPaletteBackdrop.classList.add('hidden');
+        isPaletteClosing = false;
+      }, 200);
+
       searchActiveIndex = -1;
     }
 
@@ -25374,11 +25474,13 @@
       });
     }
 
-    // Bắt phím tắt toàn cục Ctrl+K / ⌘K
+    // Bắt phím tắt toàn cục Ctrl+K / ⌘K và Escape
     window.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         openSearchCommandPalette();
+      } else if (e.key === 'Escape' && searchCommandPalette && !searchCommandPalette.classList.contains('hidden')) {
+        closeSearchCommandPalette();
       }
     });
 
