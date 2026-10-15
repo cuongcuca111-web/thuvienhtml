@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.5.5',
+        date: '2026-10-15T23:30:00+07:00',
+        title: 'Bổ Sung Nút Hủy Đơn Thanh Toán & Tối Ưu Thông Báo Chờ Kích Hoạt Gói',
+        items: [
+          { type: 'feature', text: 'Thêm nút "Hủy đơn này" trực tiếp trong pop-up thanh toán VietQR: Cho phép người dùng chủ động hủy đơn hàng đang chờ (ở cả thanh điều hướng trên cùng và bên cạnh nút xác nhận chuyển khoản), tự động giải phóng phiên quét mã và làm mới lịch sử giao dịch.' },
+          { type: 'improved', text: 'Cập nhật thông điệp chờ duyệt gói trong Lịch sử mua hàng: Chuẩn hóa tiêu đề thành "Đang chờ hệ thống kích hoạt gói", ngắn gọn, tinh tế và chuyên nghiệp.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.5.5 trên toàn hệ thống (index.html, package.json, sw.js).' }
+        ]
+      },
+      {
         version: 'v5.5.4',
         date: '2026-10-15T23:00:00+07:00',
         title: 'Sửa Lỗi Nút "Xóa Khung" Xuất Hiện Khi Chưa Đóng Khung Văn Bản',
@@ -8242,10 +8252,16 @@
           
           <!-- Thanh điều hướng và thời hạn đơn -->
           <div class="flex items-center justify-between pb-3 border-b border-[#EBE8E1] dark:border-[#232833] text-xs gap-2 flex-wrap">
-            <button type="button" id="btnBackToStep1" class="px-2.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:border-indigo-500 text-[#78756D] hover:text-indigo-600 dark:text-[#9AA3B2] dark:hover:text-indigo-400 font-medium flex items-center gap-1.5 transition cursor-pointer">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-              <span>Đổi gói khác</span>
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btnBackToStep1" class="px-2.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:border-indigo-500 text-[#78756D] hover:text-indigo-600 dark:text-[#9AA3B2] dark:hover:text-indigo-400 font-medium flex items-center gap-1.5 transition cursor-pointer">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Đổi gói khác</span>
+              </button>
+              <button type="button" id="btnTopCancelActiveOrder" class="px-2.5 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1.5 transition cursor-pointer" title="Hủy đơn hàng này">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span>Hủy đơn này</span>
+              </button>
+            </div>
 
             <!-- Đếm ngược thời gian thanh toán 15 phút (chạy nền thời gian thực) -->
             <div id="qrCountdownWrapper" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800/60 text-xs font-medium shadow-2xs">
@@ -8527,9 +8543,13 @@
                 Đang chờ bạn thanh toán. Gói sẽ tự động kích hoạt ngay sau khi nhận được tiền.
               </p>
               
-              <!-- Nút báo đã chuyển khoản -->
-              <div>
-                <button type="button" id="btnUserConfirmTransfer" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition active:scale-[0.98] cursor-pointer inline-flex items-center gap-2">
+              <!-- Nút báo đã chuyển khoản & Hủy đơn -->
+              <div class="flex items-center justify-center gap-3 flex-wrap pt-1">
+                <button type="button" id="btnCancelActiveOrder" class="touch-target px-4 py-2.5 rounded-xl border border-rose-300 dark:border-rose-800/70 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold transition active:scale-[0.98] cursor-pointer inline-flex items-center gap-1.5" title="Hủy đơn hàng này">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <span>Hủy đơn này</span>
+                </button>
+                <button type="button" id="btnUserConfirmTransfer" class="touch-target px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition active:scale-[0.98] cursor-pointer inline-flex items-center gap-2">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   <span>Tôi đã chuyển khoản</span>
                 </button>
@@ -8725,13 +8745,10 @@
       </div>
 
       <!-- Banner thông báo khi vừa gửi chuyển khoản -->
-      <div id="billingHistoryPendingBanner" class="hidden mx-6 sm:mx-7 mt-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 flex items-start gap-3 text-xs leading-relaxed">
-        <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[11px]">!</span>
+      <div id="billingHistoryPendingBanner" class="hidden mx-6 sm:mx-7 mt-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 flex items-center gap-3 text-xs leading-relaxed">
+        <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 font-bold text-[11px]">!</span>
         <div class="flex-1">
-          <p class="font-bold">Đang chờ xác nhận từ phía admin</p>
-          <p class="text-[11px] text-amber-800/90 dark:text-amber-300/80 mt-0.5">
-            Hệ thống đã ghi nhận thông báo chuyển khoản của bạn. Admin đang đối chiếu giao dịch và sẽ duyệt đơn để kích hoạt gói trong ít phút.
-          </p>
+          <p class="font-bold text-sm text-amber-900 dark:text-amber-200">Đang chờ hệ thống kích hoạt gói</p>
         </div>
       </div>
 
@@ -11738,6 +11755,18 @@
         btnUserConfirm.classList.remove('opacity-60', 'cursor-not-allowed');
       }
 
+      const btnCancelOrder = document.getElementById('btnCancelActiveOrder');
+      if (btnCancelOrder) {
+        btnCancelOrder.disabled = false;
+        btnCancelOrder.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> <span>Hủy đơn này</span>';
+        btnCancelOrder.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
+
+      const btnTopCancel = document.getElementById('btnTopCancelActiveOrder');
+      if (btnTopCancel) {
+        btnTopCancel.disabled = false;
+      }
+
       const waitingText = document.getElementById('qrStatusWaitingText');
       if (waitingText) {
         waitingText.innerText = "Đang chờ bạn thanh toán. Gói sẽ tự động kích hoạt ngay sau khi nhận được tiền.";
@@ -11753,6 +11782,7 @@
       const displayEl = document.getElementById('qrCountdownDisplay');
       const overlayEl = document.getElementById('qrExpiredOverlay');
       const btnConfirm = document.getElementById('btnUserConfirmTransfer');
+      const btnCancel = document.getElementById('btnCancelActiveOrder');
 
       const updateTimer = () => {
         const now = Date.now();
@@ -11781,6 +11811,10 @@
           if (btnConfirm) {
             btnConfirm.disabled = true;
             btnConfirm.classList.add('opacity-50', 'cursor-not-allowed');
+          }
+          if (btnCancel) {
+            btnCancel.disabled = true;
+            btnCancel.classList.add('opacity-50', 'cursor-not-allowed');
           }
           showToast("Mã QR đã hết hạn (sau 15 phút). Vui lòng tạo mã mới để tiếp tục.", "warning");
         }
@@ -12195,7 +12229,7 @@
         const json = await res.json();
         if (res.ok) {
           clearActiveQrSession();
-          showToast("Đã gửi thông báo chuyển khoản! Đang chờ xác nhận từ phía Admin.");
+          showToast("Đã gửi thông báo chuyển khoản! Đang chờ hệ thống kích hoạt gói.");
           closeUpgradeModal();
           openBillingHistoryModal(true);
         } else {
@@ -12211,6 +12245,77 @@
           btn.disabled = false;
           btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Tôi đã chuyển khoản</span>';
         }
+      }
+    }
+
+    async function handleCancelCurrentOrder() {
+      const activeSession = getActiveQrSession();
+      const orderId = upgradeModalState.currentOrderId || (activeSession && activeSession.orderId);
+      if (!orderId) {
+        showToast("Không tìm thấy thông tin đơn hàng hiện tại.");
+        return;
+      }
+      if (!auth || !auth.currentUser) {
+        showToast("Vui lòng đăng nhập để thực hiện thao tác này.");
+        return;
+      }
+
+      if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
+        return;
+      }
+
+      const btnBottom = document.getElementById('btnCancelActiveOrder');
+      const btnTop = document.getElementById('btnTopCancelActiveOrder');
+      const setBtnLoading = (loading) => {
+        if (btnBottom) {
+          btnBottom.disabled = loading;
+          if (loading) {
+            btnBottom.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg> <span>Đang hủy...</span>';
+          } else {
+            btnBottom.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> <span>Hủy đơn này</span>';
+          }
+        }
+        if (btnTop) {
+          btnTop.disabled = loading;
+        }
+      };
+
+      setBtnLoading(true);
+
+      try {
+        const token = await auth.currentUser.getIdToken(false);
+        const res = await fetch('/api/billing/cancel-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ orderId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          clearActiveQrSession();
+          stopOrderVerificationPolling();
+          if (upgradeModalState.countdownTimer) {
+            clearInterval(upgradeModalState.countdownTimer);
+            upgradeModalState.countdownTimer = null;
+          }
+          if (upgradeModalState.unsubscribeOrderListener) {
+            try { upgradeModalState.unsubscribeOrderListener(); } catch (e) {}
+            upgradeModalState.unsubscribeOrderListener = null;
+          }
+          upgradeModalState.currentOrderId = null;
+
+          showToast("Đã hủy đơn hàng thành công.");
+          closeUpgradeModal();
+          openBillingHistoryModal(false);
+        } else {
+          showToast(data.error || "Không thể hủy đơn hàng.");
+          setBtnLoading(false);
+        }
+      } catch (err) {
+        showToast("Lỗi khi hủy đơn hàng: " + err.message);
+        setBtnLoading(false);
       }
     }
 
@@ -12235,14 +12340,11 @@
 
       const banner = document.getElementById('billingHistoryPendingBanner');
       if (banner) {
-        banner.className = 'mx-6 sm:mx-7 mt-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 flex items-start gap-3 text-xs leading-relaxed';
+        banner.className = 'mx-6 sm:mx-7 mt-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 flex items-center gap-3 text-xs leading-relaxed';
         banner.innerHTML = `
-          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[11px]">!</span>
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 font-bold text-[11px]">!</span>
           <div class="flex-1">
-            <p class="font-bold">Đang chờ xác nhận từ phía admin</p>
-            <p class="text-[11px] text-amber-800/90 dark:text-amber-300/80 mt-0.5">
-              Hệ thống đã ghi nhận thông báo chuyển khoản của bạn. Admin đang đối chiếu giao dịch và sẽ duyệt đơn để kích hoạt gói trong ít phút.
-            </p>
+            <p class="font-bold text-sm text-amber-900 dark:text-amber-200">Đang chờ hệ thống kích hoạt gói</p>
           </div>
         `;
         banner.classList.toggle('hidden', !showPendingBanner);
@@ -12568,6 +12670,16 @@
     const btnUserConfirmTransfer = document.getElementById('btnUserConfirmTransfer');
     if (btnUserConfirmTransfer) {
       btnUserConfirmTransfer.addEventListener('click', handleUserConfirmTransfer);
+    }
+
+    const btnCancelActiveOrder = document.getElementById('btnCancelActiveOrder');
+    if (btnCancelActiveOrder) {
+      btnCancelActiveOrder.addEventListener('click', handleCancelCurrentOrder);
+    }
+
+    const btnTopCancelActiveOrder = document.getElementById('btnTopCancelActiveOrder');
+    if (btnTopCancelActiveOrder) {
+      btnTopCancelActiveOrder.addEventListener('click', handleCancelCurrentOrder);
     }
 
     const btnManualCheckNow = document.getElementById('btnManualCheckNow');
