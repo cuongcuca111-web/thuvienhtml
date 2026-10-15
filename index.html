@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.2',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Khắc Phục Lỗi Cache Deadlock, Thoát Kẹt Tải Trang & Tối Ưu Tải Tĩnh GitHub Pages',
+        items: [
+          { type: 'fixed', text: 'Khắc phục triệt để lỗi cú pháp template string bên trong bridgeJs: Thoát ký tự ${ giúp toàn bộ mã nguồn JavaScript nạp và khởi tạo thành công 100%, không còn bị crash script hay đơ giao diện.' },
+          { type: 'improved', text: 'Bảo vệ Service Worker Stale-While-Revalidate: Ngăn chặn triệt để trả về null trong respondWith giúp trình duyệt không bị treo con trỏ mạng (vòng quay tải trang).' },
+          { type: 'improved', text: 'Tối ưu tĩnh cho GitHub Pages: Bỏ qua các yêu cầu API serverless không tồn tại trên môi trường tĩnh (/api/prompts) và bổ sung AbortController timeout 4s an toàn.' }
+        ]
+      },
+      {
         version: 'v5.7.1',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Nâng Cấp Toàn Diện Thanh Công Cụ Tập Trung (Focus Mode) & Tiếng Ồn Trắng Editorial',
@@ -40634,8 +40644,13 @@ QUY TẮC:
 
     // Nạp dự phòng từ API công khai /api/prompts
     async function fetchPromptsFromApiFallback() {
+      // Trên GitHub Pages (môi trường tĩnh), API serverless /api/prompts không tồn tại
+      if (window.location.hostname.endsWith('github.io')) return null;
       try {
-        const res = await fetch('/api/prompts');
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 4000);
+        const res = await fetch('/api/prompts', { signal: ctrl.signal });
+        clearTimeout(tid);
         if (res.ok) {
           const data = await res.json();
           if (data && data.success && Array.isArray(data.items) && data.items.length > 0) {
