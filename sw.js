@@ -1,10 +1,10 @@
-// Service Worker cho Ứng dụng Sách HTML (PWA v5.7.3)
-// - Đồng bộ phiên bản APP_VERSION v5.7.3 với index.html
+// Service Worker cho Ứng dụng Sách HTML (PWA v5.6.5)
+// - Đồng bộ phiên bản APP_VERSION v5.6.5 với index.html
 // - Tự động dọn sạch cache cũ và skipWaiting để người dùng luôn nhận bản cập nhật mới nhất
 // - Network-First thuần túy cho điều hướng HTML (không truyền options gây lỗi TypeError trên navigate request)
 
 // Tự động nhận diện APP_VERSION trực tiếp từ query param của registration URL (?v=...), triệt tiêu lỗi lệch pha cache
-const APP_VERSION = new URL(self.location.href).searchParams.get('v') || 'v5.7.3';
+const APP_VERSION = new URL(self.location.href).searchParams.get('v') || 'v5.6.5';
 const CACHE_NAME = 'thuvienhtml-cache-' + APP_VERSION;
 
 const PRECACHE_ASSETS = [
@@ -82,27 +82,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Đối với tài nguyên tĩnh khác (hình ảnh, manifest...): Stale-While-Revalidate an toàn
+  // Đối với tài nguyên tĩnh khác (hình ảnh, manifest...): Stale-While-Revalidate
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Có sẵn trong cache: Trả về ngay lập tức và nạp ngầm bản mới nhất
-        fetch(req).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, networkResponse));
-          }
-        }).catch(() => {});
-        return cachedResponse;
-      }
-
-      // Chưa có trong cache: Nạp trực tiếp từ mạng và lưu vào cache
-      return fetch(req).then((networkResponse) => {
+      const fetchPromise = fetch(req).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
         return networkResponse;
-      });
+      }).catch(() => null);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });
