@@ -85,6 +85,37 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.1',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Nâng Cấp Toàn Diện Thanh Công Cụ Tập Trung (Focus Mode) & Tiếng Ồn Trắng Editorial',
+        items: [
+          { type: 'improved', text: 'Thiết kế biểu tượng độc bản (Bespoke SVGs 1.75px): Thay thế hoàn toàn emoji hệ thống bằng bộ icon vector đồng điệu tinh tế theo phong cách sách cổ điển The Codex (Mưa rào, Sóng biển, Quán Cafe, Sóng Alpha và Tâm điểm Focus).' },
+          { type: 'improved', text: 'Đồng hồ số JetBrains Mono & Huy hiệu trạng thái động: Tích hợp font tabular digits giúp số hiển thị đều đặn, không giật lắc khung hình; bổ sung đèn tín hiệu (pulsing beacon dot) chỉ báo trực quan từng trạng thái Tập trung / Nghỉ ngắn / Nghỉ dài.' },
+          { type: 'improved', text: 'Hiệu ứng Equalizer sóng âm chuyển động theo thời gian thực: Thẻ tiếng ồn trắng hiển thị 3 cột sóng âm nhấp nhô nhịp nhàng khi âm thanh đang phát, kết hợp viền sáng vi diệu và thanh trượt âm lượng cao cấp bo tròn.' }
+        ]
+      },
+      {
+        version: 'v5.7.0',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Tối Ưu Hóa Token AI Toàn Diện & Khắc Phục Triệt Để Hạn Mức Gói Pro/Plus',
+        items: [
+          { type: 'fixed', text: 'Khắc phục triệt để lỗi tài khoản Pro/Plus bị giới hạn nhầm 30 lượt AI: Xử lý đúng cấu trúc Firestore config/plans.plans, bổ sung cơ chế fallback chuẩn cho các gói (Pro: 2.500 lượt, Plus: 500 lượt, Admin: Không giới hạn) và chặn mọi trường hợp gán nhầm quota gói Free.' },
+          { type: 'improved', text: 'Giảm hơn 80% Token ngữ cảnh đầu vào (Input Tokens): Rút gọn thuật toán trích xuất văn bản bài học từ 14.000 ký tự xuống cửa sổ thông minh cục bộ ~600 ký tự xoay quanh từ được bôi đen và tinh gọn dàn ý tiêu đề.' },
+          { type: 'improved', text: 'Giảm 70% Token sinh lời giải (Output Tokens): Phân bổ ngân sách maxTokens chặt chẽ theo từng tác vụ (explain: 350, example: 400, translate: 450) thay vì mức cố định 1.200 token.' },
+          { type: 'improved', text: 'Bộ nhớ đệm Client & Server Cache tối ưu: Bổ sung Session Cache phía Client giúp tra cứu lại và chuyển đổi phong cách (đời thường, học thuật, cô đọng, ví dụ) tức thì (0ms, 0 token, không tốn quota). Chuẩn hóa server cache key để tăng tối đa tỉ lệ cache hit.' }
+        ]
+      },
+      {
+        version: 'v5.6.9',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Khắc Phục Lỗi Xóa Khung Trong Modal & Đóng Khung Văn Bản Trải Rộng (Emoji, Ký Hiệu Mũi Tên, Ngắt Dòng)',
+        items: [
+          { type: 'fixed', text: 'Khắc phục triệt để nút "Xóa khung" trong modal không hoạt động: Bảo vệ trạng thái activeHighlightItem không bị xóa khi mất tiêu điểm iframe, đồng thời bổ sung cơ chế truy xuất an toàn theo dataset (data-frame-id/data-lesson-id) và state.learningData.frames để nút xóa luôn hoạt động ổn định và hỗ trợ Hoàn tác 5 giây.' },
+          { type: 'fixed', text: 'Đóng khung văn bản trải dài nhiều thẻ HTML, emoji và ký hiệu đặc biệt: Nâng cấp thuật toán findRangeAcrossNodes tìm kiếm và ánh xạ Range chính xác xuyên qua các text node liền kề (ký hiệu ➔, emoji 🎯, định dạng đậm/nghiêng, thẻ span và ngắt dòng), loại bỏ hoàn toàn hiện tượng lệch chỉ mục ký tự.' },
+          { type: 'improved', text: 'Bảo vệ đường vẽ khung SVG an toàn (NaN Safety): Ngăn ngừa chia cho 0 trong tính toán vector góc bo tròn SVG (buildSingleComponentPath), đảm bảo khung luôn hiển thị sắc nét, bo góc mượt mà và không bao giờ bị biến mất.' }
+        ]
+      },
+      {
         version: 'v5.6.8',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Hiệu Ứng Chuyển Động Mượt Mà Cho Bảng Tìm Kiếm Toàn Cục (Command Palette)',
@@ -1145,7 +1176,7 @@
   <!-- // REDESIGN: Phông chữ Google Fonts chuẩn Editorial: Source Serif 4 (Tiêu đề sách), Newsreader, Inter (Thân bài) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN (Đã gỡ bỏ Lucide Icons theo yêu cầu) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -2085,16 +2116,96 @@
       background-color: var(--reading-bg-dark, #111317);
     }
 
+    .font-timer {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-feature-settings: "tnum" 1, "zero" 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ambient-card {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
     .ambient-card.is-active {
-      background-color: rgba(99, 102, 241, 0.12) !important;
-      border-color: #6366F1 !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.12) 100%) !important;
+      border-color: rgba(99, 102, 241, 0.5) !important;
       color: #4F46E5 !important;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+      box-shadow: 0 0 0 1.5px rgba(99, 102, 241, 0.3), 0 2px 8px -2px rgba(99, 102, 241, 0.25) !important;
+    }
+    .ambient-card.is-active .ambient-icon-wrapper {
+      color: #4F46E5 !important;
+      transform: scale(1.08);
+    }
+    .ambient-card.is-active .ambient-eq-bars {
+      display: inline-flex !important;
     }
     .dark .ambient-card.is-active {
-      background-color: rgba(99, 102, 241, 0.22) !important;
-      border-color: #818CF8 !important;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.22) 100%) !important;
+      border-color: rgba(129, 140, 248, 0.6) !important;
+      color: #C7D2FE !important;
+      box-shadow: 0 0 0 1.5px rgba(129, 140, 248, 0.35), 0 2px 10px -2px rgba(99, 102, 241, 0.4) !important;
+    }
+    .dark .ambient-card.is-active .ambient-icon-wrapper {
       color: #A5B4FC !important;
+      transform: scale(1.08);
+    }
+
+    @keyframes pomoEqWave1 {
+      0%, 100% { height: 2px; }
+      50% { height: 8px; }
+    }
+    @keyframes pomoEqWave2 {
+      0%, 100% { height: 7px; }
+      50% { height: 3px; }
+    }
+    @keyframes pomoEqWave3 {
+      0%, 100% { height: 4px; }
+      50% { height: 9px; }
+    }
+    .animate-pomo-eq-1 { animation: pomoEqWave1 0.8s ease-in-out infinite; }
+    .animate-pomo-eq-2 { animation: pomoEqWave2 0.7s ease-in-out infinite 0.15s; }
+    .animate-pomo-eq-3 { animation: pomoEqWave3 0.9s ease-in-out infinite 0.3s; }
+
+    /* Custom range slider cho thanh âm lượng Focus Mode */
+    .ambient-range-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 9999px;
+      outline: none;
+      background: #E5E2DC;
+      transition: background 0.2s ease;
+    }
+    .dark .ambient-range-slider {
+      background: #2D3340;
+    }
+    .ambient-range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #6366F1;
+      cursor: pointer;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .ambient-range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #4F46E5;
+    }
+    .ambient-range-slider::-webkit-slider-thumb:active {
+      transform: scale(1.28);
+      background: #4338CA;
+    }
+    .ambient-range-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #6366F1;
+      cursor: pointer;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
 
   
@@ -3533,6 +3644,44 @@
       <path d="M4 17H7M11 17H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
       <circle cx="9" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
     </symbol>
+
+    <!-- // BESPOKE AMBIENT SOUND ICONS (CHẾ TÁC ĐỘC BẢN THEO CHUẨN EDITORIAL 24X24, STROKE 1.75PX) -->
+    <symbol id="icon-ambient-rain" viewBox="0 0 24 24">
+      <path d="M4 14.2C3 13.5 2.5 12.3 2.5 11C2.5 8.8 4.3 7 6.5 7C7 7 7.5 7.1 7.9 7.3C8.7 4.8 11.1 3 13.9 3C17.3 3 20.1 5.6 20.4 9C21.4 9.5 22 10.5 22 11.7C22 13.3 20.7 14.8 19 14.8H5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 18L6.5 21" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M12.5 18L11 21" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M17 18L15.5 21" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="icon-ambient-ocean" viewBox="0 0 24 24">
+      <path d="M2 11C4.8 8.8 7.8 8.8 10.5 11C13.2 13.2 16.2 13.2 19 11C20.3 10 21.3 10 22 10.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 16.5C4.8 14.3 7.8 14.3 10.5 16.5C13.2 18.7 16.2 18.7 19 16.5C20.3 15.5 21.3 15.5 22 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="8" cy="5.5" r="1" fill="currentColor"/>
+      <circle cx="15.5" cy="6.5" r="0.8" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="icon-ambient-cafe" viewBox="0 0 24 24">
+      <path d="M4 11V14.5C4 17.5 6.5 20 9.5 20H13.5C16.5 20 19 17.5 19 14.5V11H4Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19 12H20C21.1 12 22 12.9 22 14C22 15.1 21.1 16 20 16H18.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M2.5 20.5H21" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M8.5 4C8 5.2 8 6.2 8.5 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M14 3.5C13.5 4.8 13.5 6 14 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="icon-ambient-alpha" viewBox="0 0 24 24">
+      <path d="M12 4.5C9.5 4.5 7.5 6 7.5 8C7.5 8.8 7.8 9.5 8.3 10.1C6.4 10.7 5 12.3 5 14.2C5 16.5 6.8 18.5 9.2 18.8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 4.5C14.5 4.5 16.5 6 16.5 8C16.5 8.8 16.2 9.5 15.7 10.1C17.6 10.7 19 12.3 19 14.2C19 16.5 17.2 18.5 14.8 18.8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 4.5V19.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M2.5 12C3.8 9.5 5.2 9.5 6.5 12C7.8 14.5 9.2 14.5 10.5 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M13.5 12C14.8 9.5 16.2 9.5 17.5 12C18.8 14.5 20.2 14.5 21.5 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="icon-pomo-focus" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M12 2V5M12 19V22M2 12H5M19 12H22" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+
     <symbol id="icon-book-open" viewBox="0 0 24 24">
       <path d="M2 4.5C4.5 4 8 3.5 12 5C16 3.5 19.5 4 22 4.5V19.5C19.5 19 16 18.5 12 20C8 18.5 4.5 19 2 19.5V4.5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M12 5V20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
@@ -7454,44 +7603,48 @@
   </aside>
 
   <!-- // FEATURE-FOCUS-TOOLBAR: Thanh công cụ Pomodoro & Tiếng ồn trắng đỉnh màn hình khi ở Chế độ tập trung -->
-  <header id="focusTopBar" class="hidden fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#14161C]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] shadow-xs select-none">
+  <header id="focusTopBar" class="hidden fixed top-0 left-0 right-0 z-50 bg-[#FCFBF9]/95 dark:bg-[#12151B]/95 backdrop-blur-xl border-b border-[#EAE7DF] dark:border-[#222834] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_25px_-4px_rgba(0,0,0,0.4)] select-none transition-colors duration-200">
     <div class="max-w-[1440px] mx-auto px-3 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
       
       <!-- CỤM 1: ĐỒNG HỒ POMODORO & CÁC CHẾ ĐỘ GIỜ -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <!-- Huy hiệu chế độ & Đồng hồ số to rõ -->
-        <div class="flex items-center gap-2 bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1">
-          <span id="pomoModeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
-            🍅 Tập trung
+        <div class="flex items-center gap-2.5 bg-[#FAF9F5] dark:bg-[#181C24] border border-[#EAE7DF] dark:border-[#262C38] rounded-xl px-2.5 py-1 shadow-2xs">
+          <span id="pomoModeBadge" class="inline-flex items-center gap-1.5 text-[10.5px] font-semibold tracking-wide px-2 py-0.5 rounded-lg bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span id="pomoModeBadgeDot" class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+            </span>
+            <span id="pomoModeBadgeText">Tập trung</span>
           </span>
-          <div id="pomoTimeDisplay" class="font-mono font-black text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums min-w-[62px]">
+          <div id="pomoTimeDisplay" class="font-timer font-bold text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums min-w-[66px] leading-none select-none">
             25:00
           </div>
         </div>
 
         <!-- Các nút điều khiển: Play/Pause, Reset, Skip -->
         <div class="flex items-center gap-1">
-          <button id="btnPomoTogglePlay" type="button" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white flex items-center justify-center transition shadow-xs cursor-pointer" title="Bắt đầu / Tạm dừng">
+          <button id="btnPomoTogglePlay" type="button" class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 active:scale-95 text-white flex items-center justify-center transition shadow-xs cursor-pointer" title="Bắt đầu / Tạm dừng">
             <svg id="pomoPlayIcon" class="w-4 h-4 fill-white"><use href="#icon-play"></use></svg>
           </button>
-          <button id="btnPomoReset" type="button" class="w-8 h-8 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" title="Đặt lại (Reset)">
+          <button id="btnPomoReset" type="button" class="w-8 h-8 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 flex items-center justify-center transition cursor-pointer" title="Đặt lại (Reset)">
             <svg class="w-4 h-4"><use href="#icon-rotate-ccw"></use></svg>
           </button>
-          <button id="btnPomoSkip" type="button" class="w-8 h-8 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" title="Bỏ qua / Chuyển phiên">
+          <button id="btnPomoSkip" type="button" class="w-8 h-8 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 flex items-center justify-center transition cursor-pointer" title="Bỏ qua / Chuyển phiên">
             <svg class="w-4 h-4"><use href="#icon-skip-forward"></use></svg>
           </button>
         </div>
 
         <!-- Bộ nút chọn chế độ giờ nhanh: 25p, 5p, Tùy chỉnh giờ -->
-        <div class="flex items-center bg-[#FAF9F5] dark:bg-[#1A1D24] p-0.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-xs">
+        <div class="flex items-center bg-[#F4F1EA] dark:bg-[#181C24] p-0.5 rounded-xl border border-[#E5E0D5] dark:border-[#262C38] text-xs">
           <button id="btnPomoMode25" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-[#232732] shadow-2xs transition cursor-pointer" data-mins="25" title="Chế độ tập trung 25 phút">
             25p
           </button>
-          <button id="btnPomoMode5" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white transition cursor-pointer" data-mins="5" title="Chế độ nghỉ ngắn 5 phút">
+          <button id="btnPomoMode5" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition cursor-pointer" data-mins="5" title="Chế độ nghỉ ngắn 5 phút">
             5p
           </button>
           <div class="relative">
-            <button id="btnPomoModeCustom" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white transition cursor-pointer flex items-center gap-1" title="Tùy chỉnh thời gian">
+            <button id="btnPomoModeCustom" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1" title="Tùy chỉnh thời gian">
               <span id="pomoCustomLabel">Tùy chỉnh</span>
               <svg class="w-3 h-3 opacity-60"><use href="#icon-chevron-down"></use></svg>
             </button>
@@ -7505,7 +7658,7 @@
                 <button type="button" class="pomo-quick-chip py-1 text-center font-medium rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 transition cursor-pointer" data-mins="60">60p</button>
               </div>
               <div class="flex items-center gap-1.5 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
-                <input id="pomoCustomInputMins" type="number" min="1" max="180" value="45" class="w-16 px-2 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-mono font-bold text-center text-xs focus:border-indigo-500 focus:outline-none" />
+                <input id="pomoCustomInputMins" type="number" min="1" max="180" value="45" class="w-16 px-2 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-timer font-bold text-center text-xs focus:border-indigo-500 focus:outline-none" />
                 <span class="text-stone-500 text-[11px]">phút</span>
                 <button id="btnApplyPomoCustom" type="button" class="flex-1 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-center transition cursor-pointer shadow-xs">
                   Đặt
@@ -7516,55 +7669,93 @@
         </div>
       </div>
 
-      <!-- CỤM 2: TIẾNG ỒN TRẮNG ĐA DẠNG (NHƯ ẢNH 3) & THANH ÂM LƯỢNG -->
+      <!-- CỤM 2: TIẾNG ỒN TRẮNG ĐA DẠNG & THANH ÂM LƯỢNG (CHẾ TÁC ICON & GIAO DIỆN EDITORIAL) -->
       <div class="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
         <!-- 4 Card Tiếng Ồn Trắng: Mưa rào, Sóng biển, Quán Cafe, Sóng Alpha -->
-        <div class="flex items-center gap-1 sm:gap-1.5" role="group" aria-label="Tiếng ồn trắng">
+        <div class="flex items-center gap-1.5 sm:gap-2" role="group" aria-label="Tiếng ồn trắng">
           
           <!-- 1. Mưa rào -->
-          <button id="btnAmbientRain" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="rain" title="Tiếng mưa rào thư thái">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🌧️</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Mưa rào</span>
+          <button id="btnAmbientRain" type="button" class="ambient-card group relative px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#EAE7DF] dark:border-[#262C38] bg-[#FAF9F5] dark:bg-[#181C24] hover:bg-white dark:hover:bg-[#202530] hover:border-indigo-200 dark:hover:border-indigo-800/60 flex flex-col items-center justify-center min-w-[58px] sm:min-w-[66px] transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95" data-ambient="rain" title="Tiếng mưa rào thư thái">
+            <div class="ambient-icon-wrapper w-6 h-6 rounded-lg flex items-center justify-center text-stone-500 dark:text-stone-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              <svg class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"><use href="#icon-ambient-rain"></use></svg>
+            </div>
+            <div class="flex items-center gap-1 mt-0.5">
+              <span class="text-[10.5px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight whitespace-nowrap group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">Mưa rào</span>
+              <div class="ambient-eq-bars hidden items-end gap-[1.5px] h-2 pb-0.5">
+                <span class="w-[1.5px] bg-indigo-600 dark:bg-indigo-400 rounded-full animate-pomo-eq-1"></span>
+                <span class="w-[1.5px] bg-indigo-600 dark:bg-indigo-400 rounded-full animate-pomo-eq-2"></span>
+                <span class="w-[1.5px] bg-indigo-600 dark:bg-indigo-400 rounded-full animate-pomo-eq-3"></span>
+              </div>
+            </div>
           </button>
 
           <!-- 2. Sóng biển -->
-          <button id="btnAmbientOcean" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="ocean" title="Tiếng sóng biển rì rào">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🌊</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Sóng biển</span>
+          <button id="btnAmbientOcean" type="button" class="ambient-card group relative px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#EAE7DF] dark:border-[#262C38] bg-[#FAF9F5] dark:bg-[#181C24] hover:bg-white dark:hover:bg-[#202530] hover:border-cyan-200 dark:hover:border-cyan-800/60 flex flex-col items-center justify-center min-w-[58px] sm:min-w-[66px] transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95" data-ambient="ocean" title="Tiếng sóng biển rì rào">
+            <div class="ambient-icon-wrapper w-6 h-6 rounded-lg flex items-center justify-center text-stone-500 dark:text-stone-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+              <svg class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"><use href="#icon-ambient-ocean"></use></svg>
+            </div>
+            <div class="flex items-center gap-1 mt-0.5">
+              <span class="text-[10.5px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight whitespace-nowrap group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">Sóng biển</span>
+              <div class="ambient-eq-bars hidden items-end gap-[1.5px] h-2 pb-0.5">
+                <span class="w-[1.5px] bg-cyan-600 dark:bg-cyan-400 rounded-full animate-pomo-eq-1"></span>
+                <span class="w-[1.5px] bg-cyan-600 dark:bg-cyan-400 rounded-full animate-pomo-eq-2"></span>
+                <span class="w-[1.5px] bg-cyan-600 dark:bg-cyan-400 rounded-full animate-pomo-eq-3"></span>
+              </div>
+            </div>
           </button>
 
           <!-- 3. Quán Cafe -->
-          <button id="btnAmbientCafe" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="cafe" title="Không gian quán cafe tập trung">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">☕</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Quán Cafe</span>
+          <button id="btnAmbientCafe" type="button" class="ambient-card group relative px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#EAE7DF] dark:border-[#262C38] bg-[#FAF9F5] dark:bg-[#181C24] hover:bg-white dark:hover:bg-[#202530] hover:border-amber-200 dark:hover:border-amber-800/60 flex flex-col items-center justify-center min-w-[58px] sm:min-w-[66px] transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95" data-ambient="cafe" title="Không gian quán cafe tập trung">
+            <div class="ambient-icon-wrapper w-6 h-6 rounded-lg flex items-center justify-center text-stone-500 dark:text-stone-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+              <svg class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"><use href="#icon-ambient-cafe"></use></svg>
+            </div>
+            <div class="flex items-center gap-1 mt-0.5">
+              <span class="text-[10.5px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight whitespace-nowrap group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">Quán Cafe</span>
+              <div class="ambient-eq-bars hidden items-end gap-[1.5px] h-2 pb-0.5">
+                <span class="w-[1.5px] bg-amber-600 dark:bg-amber-400 rounded-full animate-pomo-eq-1"></span>
+                <span class="w-[1.5px] bg-amber-600 dark:bg-amber-400 rounded-full animate-pomo-eq-2"></span>
+                <span class="w-[1.5px] bg-amber-600 dark:bg-amber-400 rounded-full animate-pomo-eq-3"></span>
+              </div>
+            </div>
           </button>
 
           <!-- 4. Sóng Alpha -->
-          <button id="btnAmbientAlpha" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="alpha" title="Sóng não Alpha 10Hz kích thích tập trung sâu">
-            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🧠</span>
-            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Sóng Alpha</span>
+          <button id="btnAmbientAlpha" type="button" class="ambient-card group relative px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#EAE7DF] dark:border-[#262C38] bg-[#FAF9F5] dark:bg-[#181C24] hover:bg-white dark:hover:bg-[#202530] hover:border-purple-200 dark:hover:border-purple-800/60 flex flex-col items-center justify-center min-w-[58px] sm:min-w-[66px] transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95" data-ambient="alpha" title="Sóng não Alpha 10Hz kích thích tập trung sâu">
+            <div class="ambient-icon-wrapper w-6 h-6 rounded-lg flex items-center justify-center text-stone-500 dark:text-stone-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              <svg class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"><use href="#icon-ambient-alpha"></use></svg>
+            </div>
+            <div class="flex items-center gap-1 mt-0.5">
+              <span class="text-[10.5px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight whitespace-nowrap group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">Sóng Alpha</span>
+              <div class="ambient-eq-bars hidden items-end gap-[1.5px] h-2 pb-0.5">
+                <span class="w-[1.5px] bg-purple-600 dark:bg-purple-400 rounded-full animate-pomo-eq-1"></span>
+                <span class="w-[1.5px] bg-purple-600 dark:bg-purple-400 rounded-full animate-pomo-eq-2"></span>
+                <span class="w-[1.5px] bg-purple-600 dark:bg-purple-400 rounded-full animate-pomo-eq-3"></span>
+              </div>
+            </div>
           </button>
         </div>
 
         <!-- Tùy chỉnh âm lượng nhạc nền -->
-        <div class="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1.5">
-          <button id="btnAmbientMuteToggle" type="button" class="text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer" title="Bật/Tắt âm lượng">
+        <div class="flex items-center gap-2 bg-[#FAF9F5] dark:bg-[#181C24] border border-[#EAE7DF] dark:border-[#262C38] rounded-xl px-2.5 py-1.5 shadow-2xs">
+          <button id="btnAmbientMuteToggle" type="button" class="w-6 h-6 flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer" title="Bật/Tắt âm lượng">
             <svg id="ambientVolIcon" class="w-4 h-4"><use href="#icon-volume-2"></use></svg>
           </button>
-          <input id="ambientVolumeSlider" type="range" min="0" max="100" value="50" class="w-16 sm:w-20 h-1.5 accent-indigo-600 bg-stone-200 dark:bg-stone-700 rounded-lg cursor-pointer" title="Âm lượng tiếng ồn trắng" />
-          <span id="ambientVolumeLabel" class="text-[10px] font-mono text-stone-500 dark:text-stone-400 w-6 text-right">50%</span>
+          <div class="relative flex items-center">
+            <input id="ambientVolumeSlider" type="range" min="0" max="100" value="50" class="ambient-range-slider w-16 sm:w-20 h-1.5 accent-indigo-600 dark:accent-indigo-500 cursor-pointer" title="Âm lượng tiếng ồn trắng" />
+          </div>
+          <span id="ambientVolumeLabel" class="font-timer text-[11px] font-semibold text-stone-600 dark:text-stone-300 w-7 text-right tabular-nums select-none">50%</span>
         </div>
       </div>
 
       <!-- CỤM 3: CÀI ĐẶT & NÚT THOÁT FOCUS MODE -->
       <div class="flex items-center gap-1.5 shrink-0">
-        <button id="btnPomoSettingsTop" type="button" class="p-2 rounded-xl text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Cài đặt Pomodoro">
+        <button id="btnPomoSettingsTop" type="button" class="w-8 h-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 flex items-center justify-center transition cursor-pointer" title="Cài đặt Pomodoro & Tiếng ồn trắng">
           <svg class="w-4 h-4"><use href="#icon-sliders"></use></svg>
         </button>
-        <button id="btnExitFocusModeTop" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-[#1E232B] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-600 dark:text-stone-300 hover:text-rose-600 dark:hover:text-rose-400 border border-stone-200 dark:border-stone-700/80 transition text-xs font-semibold cursor-pointer" title="Thoát chế độ tập trung (Esc)">
-          <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
-          <span>Thoát</span>
-          <kbd class="hidden sm:inline-block px-1 py-0.2 bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded text-[9px] font-mono">Esc</kbd>
+        <button id="btnExitFocusModeTop" type="button" class="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100/90 dark:bg-[#1C2028] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-600 dark:text-stone-300 hover:text-rose-600 dark:hover:text-rose-400 border border-stone-200/80 dark:border-stone-700/60 hover:border-rose-300 dark:hover:border-rose-900/60 transition-all text-xs font-semibold cursor-pointer shadow-2xs active:scale-95" title="Thoát chế độ tập trung (Esc)">
+          <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-90"><use href="#icon-x"></use></svg>
+          <span class="tracking-tight">Thoát</span>
+          <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 bg-white dark:bg-[#252B36] border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 rounded-md text-[10px] font-mono shadow-2xs leading-none">Esc</kbd>
         </button>
       </div>
 
@@ -16185,7 +16376,7 @@
       const next = simplified[(i + 1) % m];
       const lIn = Math.hypot(curr.x - prev.x, curr.y - prev.y);
       const lOut = Math.hypot(next.x - curr.x, next.y - curr.y);
-      rads.push(Math.min(radius, lIn / 2.0, lOut / 2.0));
+      rads.push(Math.min(radius, lIn > 0.001 ? lIn / 2.0 : 0, lOut > 0.001 ? lOut / 2.0 : 0));
     }
 
     const cmds = [];
@@ -16196,19 +16387,25 @@
       const r = rads[i];
 
       const lIn = Math.hypot(curr.x - prev.x, curr.y - prev.y);
-      const uxIn = (curr.x - prev.x) / lIn, uyIn = (curr.y - prev.y) / lIn;
-      const startX = curr.x - r * uxIn, startY = curr.y - r * uyIn;
+      const uxIn = lIn > 0.001 ? (curr.x - prev.x) / lIn : 0;
+      const uyIn = lIn > 0.001 ? (curr.y - prev.y) / lIn : 0;
+      const startX = curr.x - r * uxIn;
+      const startY = curr.y - r * uyIn;
 
       const lOut = Math.hypot(next.x - curr.x, next.y - curr.y);
-      const uxOut = (next.x - curr.x) / lOut, uyOut = (next.y - curr.y) / lOut;
-      const endX = curr.x + r * uxOut, endY = curr.y + r * uyOut;
+      const uxOut = lOut > 0.001 ? (next.x - curr.x) / lOut : 0;
+      const uyOut = lOut > 0.001 ? (next.y - curr.y) / lOut : 0;
+      const endX = curr.x + r * uxOut;
+      const endY = curr.y + r * uyOut;
 
-      if (i === 0) {
-        cmds.push('M ' + startX.toFixed(1) + ' ' + startY.toFixed(1));
-      } else {
-        cmds.push('L ' + startX.toFixed(1) + ' ' + startY.toFixed(1));
+      if (!isNaN(startX) && !isNaN(startY) && !isNaN(endX) && !isNaN(endY)) {
+        if (cmds.length === 0) {
+          cmds.push('M ' + startX.toFixed(1) + ' ' + startY.toFixed(1));
+        } else {
+          cmds.push('L ' + startX.toFixed(1) + ' ' + startY.toFixed(1));
+        }
+        cmds.push('Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + endX.toFixed(1) + ' ' + endY.toFixed(1));
       }
-      cmds.push('Q ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + endX.toFixed(1) + ' ' + endY.toFixed(1));
     }
 
     cmds.push('Z');
@@ -16396,10 +16593,48 @@
       return span;
     };
 
-    const startContainer = range.startContainer;
-    const startOffset = range.startOffset;
-    const endContainer = range.endContainer;
-    const endOffset = range.endOffset;
+    function normalizeRangeToTextNodes(r) {
+      if (!r) return null;
+      try {
+        const cloned = r.cloneRange();
+        if (cloned.startContainer.nodeType !== Node.TEXT_NODE) {
+          const walker = document.createTreeWalker(cloned.startContainer, NodeFilter.SHOW_TEXT, null, false);
+          let found = null;
+          while (walker.nextNode()) {
+            if (cloned.intersectsNode(walker.currentNode)) {
+              found = walker.currentNode;
+              break;
+            }
+          }
+          if (found) cloned.setStart(found, 0);
+        }
+        if (cloned.endContainer.nodeType !== Node.TEXT_NODE) {
+          const walker = document.createTreeWalker(cloned.endContainer, NodeFilter.SHOW_TEXT, null, false);
+          let last = null;
+          while (walker.nextNode()) {
+            if (cloned.intersectsNode(walker.currentNode)) {
+              last = walker.currentNode;
+            }
+          }
+          if (last) cloned.setEnd(last, last.nodeValue.length);
+        }
+        return cloned;
+      } catch (_) {
+        return r;
+      }
+    }
+
+    let workingRange = range;
+    try {
+      if (range.startContainer.nodeType !== Node.TEXT_NODE || range.endContainer.nodeType !== Node.TEXT_NODE) {
+        workingRange = normalizeRangeToTextNodes(range) || range;
+      }
+    } catch (_) {}
+
+    const startContainer = workingRange.startContainer;
+    const startOffset = workingRange.startOffset;
+    const endContainer = workingRange.endContainer;
+    const endOffset = workingRange.endOffset;
 
     // Trường hợp 1 text node duy nhất
     if (startContainer === endContainer && startContainer.nodeType === Node.TEXT_NODE) {
@@ -16410,6 +16645,7 @@
       if (startOffset > 0) {
         targetNode = targetNode.splitText(startOffset);
       }
+      if (!targetNode.nodeValue || !targetNode.nodeValue.trim()) return [];
       const span = createFrameSpan();
       styleFrameElement(span, null, colorName, customHex, labelText, noteText);
       targetNode.parentNode.insertBefore(span, targetNode);
@@ -16420,13 +16656,16 @@
 
     // Trường hợp trải rộng qua nhiều text nodes
     const textNodes = [];
+    const ancestor = workingRange.commonAncestorContainer;
+    const walkerRoot = (ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentNode : ancestor) || document.body;
     const walker = document.createTreeWalker(
-      range.commonAncestorContainer,
+      walkerRoot,
       NodeFilter.SHOW_TEXT,
       {
         acceptNode(node) {
-          if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
-          if (range.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
+          if (!node.nodeValue) return NodeFilter.FILTER_SKIP;
+          if (!node.nodeValue.trim() && node !== startContainer && node !== endContainer) return NodeFilter.FILTER_SKIP;
+          if (workingRange.intersectsNode(node)) return NodeFilter.FILTER_ACCEPT;
           return NodeFilter.FILTER_REJECT;
         }
       },
@@ -16438,11 +16677,13 @@
     const created = [];
     for (let i = 0; i < textNodes.length; i++) {
       let tNode = textNodes[i];
+      if (!tNode || !tNode.parentNode) continue;
       let start = (tNode === startContainer) ? startOffset : 0;
       let end = (tNode === endContainer) ? endOffset : tNode.nodeValue.length;
       if (start >= end) continue;
       if (end < tNode.nodeValue.length) tNode.splitText(end);
       if (start > 0) tNode = tNode.splitText(start);
+      if (!tNode.nodeValue || !tNode.nodeValue.trim()) continue;
 
       const span = createFrameSpan();
       styleFrameElement(span, null, colorName, customHex, labelText, noteText);
@@ -16489,7 +16730,21 @@
     let startNode = null, startOff = 0;
     let endNode = null, endOff = 0;
 
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node.nodeValue) return NodeFilter.FILTER_SKIP;
+          const parent = node.parentElement;
+          if (parent && (parent.closest('script, style, template, #ann-layer') || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      },
+      false
+    );
     while (walker.nextNode()) {
       const node = walker.currentNode;
       const len = node.nodeValue.length;
@@ -16506,10 +16761,131 @@
     }
 
     if (startNode && endNode) {
-      range.setStart(startNode, startOff);
-      range.setEnd(endNode, endOff);
-      return range;
+      try {
+        range.setStart(startNode, Math.min(startOff, startNode.nodeValue.length));
+        range.setEnd(endNode, Math.min(endOff, endNode.nodeValue.length));
+        return range;
+      } catch (_) {}
     }
+    return null;
+  }
+
+  // Khớp Range chính xác ngay cả khi văn bản trải rộng qua nhiều thẻ HTML, emoji, mũi tên hoặc xuống dòng
+  function findRangeAcrossNodes(textQuote, root = document.body, prefix = '') {
+    if (!textQuote || !root) return null;
+    const quote = textQuote.trim();
+    if (!quote) return null;
+
+    const nodeMaps = [];
+    let fullText = '';
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node.nodeValue) return NodeFilter.FILTER_SKIP;
+          const parent = node.parentElement;
+          if (parent && (parent.closest('script, style, template, #ann-layer') || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      },
+      false
+    );
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const val = node.nodeValue;
+      const startIdx = fullText.length;
+      fullText += val;
+      const endIdx = fullText.length;
+      nodeMaps.push({ node, startIdx, endIdx });
+    }
+
+    if (nodeMaps.length === 0 || !fullText) return null;
+
+    let matchStart = -1;
+    let matchEnd = -1;
+
+    // 1. Thử khớp chính xác kèm prefix nếu có
+    if (prefix && prefix.trim()) {
+      const cleanPrefix = prefix.trim();
+      const combined = cleanPrefix + quote;
+      let pos = fullText.indexOf(combined);
+      if (pos !== -1) {
+        matchStart = pos + cleanPrefix.length;
+        matchEnd = matchStart + quote.length;
+      }
+    }
+
+    // 2. Thử khớp chính xác quote
+    if (matchStart === -1) {
+      let pos = fullText.indexOf(quote);
+      if (pos !== -1) {
+        matchStart = pos;
+        matchEnd = pos + quote.length;
+      }
+    }
+
+    // 3. Khớp mềm dẻo khoảng trắng và ngắt dòng (Flexible whitespace match)
+    if (matchStart === -1) {
+      try {
+        const escaped = quote
+          .replace(/[.*+?^\${}()|[\]\\]/g, '\\$&')
+          .replace(/\s+/g, '[\\s\\u00A0\\u200B\\r\\n]+');
+        const regex = new RegExp(escaped, 'i');
+        const m = regex.exec(fullText);
+        if (m) {
+          matchStart = m.index;
+          matchEnd = m.index + m[0].length;
+        }
+      } catch (_) {}
+    }
+
+    // 4. Khớp sau khi chuẩn hóa Unicode (NFC)
+    if (matchStart === -1 && typeof fullText.normalize === 'function') {
+      try {
+        const normFull = fullText.normalize('NFC');
+        const normQuote = quote.normalize('NFC');
+        let pos = normFull.indexOf(normQuote);
+        if (pos !== -1) {
+          matchStart = pos;
+          matchEnd = pos + normQuote.length;
+        }
+      } catch (_) {}
+    }
+
+    if (matchStart === -1 || matchEnd <= matchStart) return null;
+
+    // Ánh xạ matchStart và matchEnd về các TextNode trong DOM
+    let startNode = null, startOffset = 0;
+    let endNode = null, endOffset = 0;
+
+    for (let i = 0; i < nodeMaps.length; i++) {
+      const item = nodeMaps[i];
+      if (!startNode && matchStart >= item.startIdx && matchStart <= item.endIdx) {
+        startNode = item.node;
+        startOffset = matchStart - item.startIdx;
+      }
+      if (matchEnd >= item.startIdx && matchEnd <= item.endIdx) {
+        endNode = item.node;
+        endOffset = matchEnd - item.startIdx;
+        break;
+      }
+    }
+
+    if (startNode && endNode) {
+      try {
+        const range = document.createRange();
+        range.setStart(startNode, Math.min(startOffset, startNode.nodeValue.length));
+        range.setEnd(endNode, Math.min(endOffset, endNode.nodeValue.length));
+        return range;
+      } catch (e) {
+        console.warn('[findRangeAcrossNodes] Lỗi tạo range:', e);
+      }
+    }
+
     return null;
   }
 
@@ -16573,15 +16949,24 @@
         try {
           if (!frame || !frame.id) return;
           let range = null;
-          if (typeof frame.startOffset === 'number' && typeof frame.endOffset === 'number' && frame.endOffset > frame.startOffset) {
+          const quote = (frame.anchor?.exact || frame.text || '').trim();
+          const prefix = frame.anchor?.prefix || '';
+
+          // Ưu tiên 1: Tìm Range chính xác theo nội dung văn bản qua các node (findRangeAcrossNodes)
+          if (quote) {
+            range = findRangeAcrossNodes(quote, document.body, prefix);
+          }
+
+          // Ưu tiên 2: Fallback tạo từ ký tự startOffset / endOffset
+          if (!range && typeof frame.startOffset === 'number' && typeof frame.endOffset === 'number' && frame.endOffset > frame.startOffset) {
             range = createRangeFromOffsets(frame.startOffset, frame.endOffset, document.body);
           }
-          if (!range) {
-            const quote = (frame.anchor?.exact || frame.text || '').trim();
-            if (quote) {
-              range = findRangeByText(quote, document.body);
-            }
+
+          // Ưu tiên 3: Fallback tìm trong 1 node đơn
+          if (!range && quote) {
+            range = findRangeByText(quote, document.body);
           }
+
           if (!range) return;
 
           wrapRangeInternal(range, frame, false);
@@ -16792,12 +17177,43 @@
 
       let startOffset = -1, endOffset = -1;
       try {
-        const offsetRange = range.cloneRange();
-        offsetRange.selectNodeContents(document.body);
-        offsetRange.setEnd(range.startContainer, range.startOffset);
-        startOffset = offsetRange.toString().length;
-        endOffset = startOffset + text.length;
+        let currentPos = 0;
+        const walker = document.createTreeWalker(
+          document.body,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode(node) {
+              if (!node.nodeValue) return NodeFilter.FILTER_SKIP;
+              const parent = node.parentElement;
+              if (parent && (parent.closest('script, style, template, #ann-layer') || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+                return NodeFilter.FILTER_REJECT;
+              }
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          },
+          false
+        );
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (startOffset === -1 && node === range.startContainer) {
+            startOffset = currentPos + range.startOffset;
+          }
+          if (node === range.endContainer) {
+            endOffset = currentPos + range.endOffset;
+            break;
+          }
+          currentPos += node.nodeValue.length;
+        }
       } catch (_) {}
+      if (startOffset === -1 || endOffset <= startOffset) {
+        try {
+          const offsetRange = range.cloneRange();
+          offsetRange.selectNodeContents(document.body);
+          offsetRange.setEnd(range.startContainer, range.startOffset);
+          startOffset = offsetRange.toString().length;
+          endOffset = startOffset + text.length;
+        } catch (_) {}
+      }
 
       // Kiểm tra chính xác đoạn bôi đen có nằm trong hoặc giao với khung nào không
       let hasIntersectingFrames = false;
@@ -17840,7 +18256,11 @@
           updateToolbarEraserState(false);
         }
       }
-      activeHighlightItem = null;
+      const hlModal = document.getElementById('highlightDetailModal');
+      const isModalOpen = hlModal && !hlModal.classList.contains('hidden');
+      if (!isModalOpen) {
+        activeHighlightItem = null;
+      }
     }
 
     function clearAllSelectionContexts() {
@@ -17979,11 +18399,15 @@
         case 'TEXT_DESELECTED': {
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           const mbActionBar = document.getElementById('mobileSelectionActionBar');
+          const hlModal = document.getElementById('highlightDetailModal');
+          const isModalOpen = hlModal && !hlModal.classList.contains('hidden');
           const isInteractingWithToolbar = (hlToolbar && (hlToolbar.matches(':hover') || hlToolbar.contains(document.activeElement))) ||
                                            (mbActionBar && (mbActionBar.matches(':hover') || mbActionBar.contains(document.activeElement)));
           if (!isInteractingWithToolbar) {
             currentSelectionInfoBridge = null;
-            activeHighlightItem = null;
+            if (!isModalOpen) {
+              activeHighlightItem = null;
+            }
             window._lastCapturedSelectionOffsets = null;
             if (typeof updateAiButtonsVisibility === 'function') {
               updateAiButtonsVisibility('');
@@ -32546,7 +32970,14 @@
 
       newFrame.startOffset = s;
       newFrame.endOffset = e;
-      newFrame.text = fullText ? fullText.substring(s, e) : (newFrame.text || '');
+      if (!newFrame.text || (s < newFrame.startOffset || e > newFrame.endOffset)) {
+        if (fullText) newFrame.text = fullText.substring(s, e);
+      }
+      if (!newFrame.anchor) {
+        newFrame.anchor = { exact: newFrame.text || '', prefix: '', suffix: '' };
+      } else if (!newFrame.anchor.exact) {
+        newFrame.anchor.exact = newFrame.text || '';
+      }
       if (mergedNote) newFrame.note = mergedNote;
       if (mergedLabel) newFrame.label = mergedLabel;
 
@@ -32832,6 +33263,18 @@
           if (startOffset !== -1) {
             endOffset = startOffset + text.length;
           }
+        }
+        if (startOffset === -1) {
+          try {
+            const escaped = text.trim()
+              .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+              .replace(/\s+/g, '[\\s\\u00A0\\u200B\\r\\n]+');
+            const m = new RegExp(escaped, 'i').exec(fullText);
+            if (m) {
+              startOffset = m.index;
+              endOffset = m.index + m[0].length;
+            }
+          } catch (_) {}
         }
       }
 
@@ -33637,6 +34080,7 @@
     let currentAiContext = { before: '', after: '', sectionTitle: '' };
     let currentAiTriggerRect = null;
     let currentAiLastResult = null;
+    const aiClientSessionCache = new Map();
 
     // Trích xuất Ngữ cảnh thông minh toàn bài học (chống mù ngữ cảnh cuối bài)
     function extractSmartDocumentContext(selectedText = '') {
@@ -33680,41 +34124,35 @@
           fullText = bridgeReadableChunks.map(c => c.text).filter(Boolean).join('\n\n');
         }
 
-        // Kiểm tra độ dài: nếu <= 14.000 ký tự thì lấy toàn bộ
+        // TỐI ƯU SIÊU TIẾT KIỆM TOKEN: Cửa sổ trích xuất tinh gọn quanh đoạn bôi đen (~600 ký tự)
         let coreContent = '';
-        if (fullText.length <= 14000) {
+        const cleanSelected = (selectedText || '').trim();
+
+        if (!fullText) {
+          coreContent = '';
+        } else if (fullText.length <= 600) {
           coreContent = fullText;
         } else {
-          // CHỐNG MÙ NGỮ CẢNH CUỐI BÀI: Giữ 2.000 ký tự đầu + Cửa sổ ~10.000 ký tự xoay quanh đoạn bôi đen
-          const introText = fullText.substring(0, 2000).trim();
-
-          const cleanSelected = (selectedText || '').trim();
           let matchIndex = -1;
-          if (cleanSelected && cleanSelected.length >= 5) {
-            const needle = cleanSelected.substring(0, Math.min(50, cleanSelected.length));
-            matchIndex = fullText.indexOf(needle);
+          if (cleanSelected && cleanSelected.length >= 3) {
+            const needle = cleanSelected.substring(0, Math.min(40, cleanSelected.length)).toLowerCase();
+            matchIndex = fullText.toLowerCase().indexOf(needle);
           }
 
-          let surroundingText = '';
           if (matchIndex >= 0) {
-            const windowSize = 10000;
-            const halfWindow = 4500;
-            let start = Math.max(2000, matchIndex - halfWindow);
-            let end = Math.min(fullText.length, start + windowSize);
-            if (end - start < windowSize && start > 2000) {
-              start = Math.max(2000, end - windowSize);
-            }
-            surroundingText = fullText.substring(start, end).trim();
+            // Lấy ~250 ký tự trước và ~350 ký tự sau đoạn bôi đen
+            const start = Math.max(0, matchIndex - 250);
+            const end = Math.min(fullText.length, matchIndex + cleanSelected.length + 350);
+            coreContent = (start > 0 ? '...' : '') + fullText.substring(start, end).trim() + (end < fullText.length ? '...' : '');
           } else {
-            surroundingText = fullText.substring(2000, 12000).trim();
+            // Nếu không tìm thấy vị trí trùng khớp chính xác, lấy 500 ký tự đầu tiên
+            coreContent = fullText.substring(0, 500).trim() + '...';
           }
-
-          coreContent = `[PHẦN MỞ ĐẦU BÀI HỌC]:\n${introText}\n\n[...ĐOẠN TRÍCH ĐANG ĐỌC & NGỮ CẢNH BẢN GỐC...]:\n${surroundingText}`;
         }
 
         return {
-          title: lessonTitle,
-          outline: headingsOutline,
+          title: (lessonTitle || '').substring(0, 100),
+          outline: (headingsOutline || '').split('\n').slice(0, 4).join('\n'),
           content: coreContent
         };
       } catch (err) {
@@ -34302,6 +34740,19 @@
         localStorage.setItem('ai_translate_target_lang', currentAiTargetLang);
       }
 
+      // TỐI ƯU TIẾT KIỆM TOKEN: Kiểm tra Session Cache phía Client trước khi gọi mạng
+      const currentLessonId = (state && state.activeLessonId) || '';
+      const clientCacheKey = `${currentLessonId}:${mode}:${activeStyle || ''}:${mode === 'translate' ? currentAiTargetLang : ''}:${(customPrompt || '').substring(0, 30)}:${text.trim().toLowerCase()}`;
+      if (!bypassCache && aiClientSessionCache.has(clientCacheKey)) {
+        const cachedRes = aiClientSessionCache.get(clientCacheKey);
+        if (cachedRes && cachedRes.text) {
+          showAiResultPopover(mode, triggerRect);
+          currentAiLastResult = cachedRes;
+          renderAiSuccessResult({ ...cachedRes, cached: true });
+          return;
+        }
+      }
+
       showAiResultPopover(mode, triggerRect);
 
       // // FIX-4: Nâng cấp Skeleton UI 2 phần mô phỏng kết quả thực tế, ổn định chiều cao và tự đổi thông điệp sau 3s
@@ -34438,6 +34889,11 @@
 
         resData.text = cleanedText;
         currentAiLastResult = resData;
+        aiClientSessionCache.set(clientCacheKey, resData);
+        if (aiClientSessionCache.size > 100) {
+          const oldestKey = aiClientSessionCache.keys().next().value;
+          aiClientSessionCache.delete(oldestKey);
+        }
         renderAiSuccessResult(resData);
 
       } catch (err) {
@@ -34537,7 +34993,7 @@
           updateAiStylePills(targetStyle);
           syncUserPersonalAiSettings(targetStyle);
           if (currentAiSelectedText) {
-            requestAiExplain('explain', null, targetStyle, null, true);
+            requestAiExplain('explain', null, targetStyle, null, false);
           }
         });
       });
@@ -34872,6 +35328,16 @@
       activeHighlightItem = item;
       lastFrameTriggerRect = triggerRect || null;
 
+      const btnDeleteHlEl = document.getElementById('btnDeleteCurrentHighlight');
+      if (btnDeleteHlEl) {
+        btnDeleteHlEl.dataset.frameId = frameId;
+        btnDeleteHlEl.dataset.lessonId = state.activeLessonId;
+      }
+      if (hlDetailModal) {
+        hlDetailModal.dataset.frameId = frameId;
+        hlDetailModal.dataset.lessonId = state.activeLessonId;
+      }
+
       const previewEl = document.getElementById('hlSelectedTextPreview');
       const labelInput = document.getElementById('hlLabelInput');
       const noteInput = document.getElementById('hlNoteInput');
@@ -35112,10 +35578,23 @@
     const btnDeleteHl = document.getElementById('btnDeleteCurrentHighlight');
     if (btnDeleteHl) {
       btnDeleteHl.addEventListener('click', () => {
-        if (activeHighlightItem && state.activeLessonId) {
-          const targetItem = { ...activeHighlightItem };
-          const targetLessonId = state.activeLessonId;
+        const targetLessonId = (activeHighlightItem && activeHighlightItem.lessonId) ||
+                               btnDeleteHl.dataset.lessonId ||
+                               (hlDetailModal && hlDetailModal.dataset.lessonId) ||
+                               state.activeLessonId;
+        const targetFrameId = (activeHighlightItem && activeHighlightItem.id) ||
+                              btnDeleteHl.dataset.frameId ||
+                              (hlDetailModal && hlDetailModal.dataset.frameId);
 
+        let targetItem = activeHighlightItem;
+        if (!targetItem && targetLessonId && targetFrameId) {
+          const list = (state.learningData.frames && state.learningData.frames[targetLessonId]) ||
+                       (state.learningData.highlights && state.learningData.highlights[targetLessonId]) || [];
+          targetItem = list.find(h => h.id === targetFrameId);
+        }
+
+        if (targetItem && targetLessonId) {
+          const itemCopy = { ...targetItem };
           clearTimeout(frameAutoSaveTimer);
 
           if (state.learningData.frames && state.learningData.frames[targetLessonId]) {
@@ -35141,23 +35620,24 @@
             renderAllNotesView();
           }
 
+          activeHighlightItem = null;
           hideModalAnimated(hlDetailModal);
 
           // Thông báo Hoàn tác 5 giây
           showActionToast("Đã xóa khung", "Hoàn tác", () => {
             if (!state.learningData.frames) state.learningData.frames = {};
             if (!state.learningData.frames[targetLessonId]) state.learningData.frames[targetLessonId] = [];
-            state.learningData.frames[targetLessonId].push(targetItem);
+            state.learningData.frames[targetLessonId].push(itemCopy);
 
             if (!state.learningData.highlights) state.learningData.highlights = {};
             if (!state.learningData.highlights[targetLessonId]) state.learningData.highlights[targetLessonId] = [];
-            state.learningData.highlights[targetLessonId].push(targetItem);
+            state.learningData.highlights[targetLessonId].push(itemCopy);
 
             saveLearningData();
 
             postMessageToLessonIframe({
               type: 'APPLY_FRAME',
-              frame: targetItem
+              frame: itemCopy
             });
 
             if (typeof renderAllNotesView === 'function') {
@@ -36929,8 +37409,8 @@
       const btnCustom = document.getElementById('btnPomoModeCustom');
       const customLabel = document.getElementById('pomoCustomLabel');
 
-      const activeClass = 'pomo-mode-btn px-2.5 py-1 rounded-lg font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-[#232732] shadow-2xs transition cursor-pointer';
-      const inactiveClass = 'pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white transition cursor-pointer';
+      const activeClass = 'pomo-mode-btn px-2.5 py-1 rounded-lg font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-[#232732] shadow-2xs border border-[#EAE7DF] dark:border-[#2A313E] transition cursor-pointer';
+      const inactiveClass = 'pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition cursor-pointer';
 
       if (state.pomodoro.mode === 'shortBreak') {
         if (btn25) btn25.className = inactiveClass;
@@ -37072,7 +37552,10 @@
     }
 
     function renderPomodoroDisplay() {
-      const modeLabel = document.getElementById('focusTimerModeLabel') || document.getElementById('pomoModeBadge');
+      const modeBadge = document.getElementById('pomoModeBadge');
+      const badgeText = document.getElementById('pomoModeBadgeText');
+      const badgeDot = document.getElementById('pomoModeBadgeDot');
+      const legacyModeLabel = document.getElementById('focusTimerModeLabel');
       const timeDisplay = document.getElementById('focusTimerDisplay') || document.getElementById('pomoTimeDisplay');
       const cycleText = document.getElementById('focusTimerCycleText') || document.getElementById('pomoCycleBadge');
       const btnToggle = document.getElementById('btnFocusTimerToggle') || document.getElementById('btnPomoTogglePlay');
@@ -37085,10 +37568,33 @@
 
       if (timeDisplay) timeDisplay.innerText = timeStr;
 
-      if (modeLabel) {
-        if (state.pomodoro.mode === 'work') modeLabel.innerText = "🍅 Tập trung";
-        else if (state.pomodoro.mode === 'shortBreak') modeLabel.innerText = "☕ Nghỉ ngắn";
-        else modeLabel.innerText = "🍃 Nghỉ dài";
+      if (badgeText && modeBadge) {
+        if (state.pomodoro.mode === 'work') {
+          badgeText.innerText = "Tập trung";
+          modeBadge.className = "inline-flex items-center gap-1.5 text-[10.5px] font-semibold tracking-wide px-2 py-0.5 rounded-lg bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+          if (badgeDot) {
+            badgeDot.className = "relative inline-flex rounded-full h-2 w-2 bg-rose-500";
+            if (badgeDot.previousElementSibling) badgeDot.previousElementSibling.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75";
+          }
+        } else if (state.pomodoro.mode === 'shortBreak') {
+          badgeText.innerText = "Nghỉ ngắn";
+          modeBadge.className = "inline-flex items-center gap-1.5 text-[10.5px] font-semibold tracking-wide px-2 py-0.5 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+          if (badgeDot) {
+            badgeDot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-500";
+            if (badgeDot.previousElementSibling) badgeDot.previousElementSibling.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
+          }
+        } else {
+          badgeText.innerText = "Nghỉ dài";
+          modeBadge.className = "inline-flex items-center gap-1.5 text-[10.5px] font-semibold tracking-wide px-2 py-0.5 rounded-lg bg-sky-500/10 dark:bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20";
+          if (badgeDot) {
+            badgeDot.className = "relative inline-flex rounded-full h-2 w-2 bg-sky-500";
+            if (badgeDot.previousElementSibling) badgeDot.previousElementSibling.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75";
+          }
+        }
+      } else if (legacyModeLabel) {
+        if (state.pomodoro.mode === 'work') legacyModeLabel.innerText = "Tập trung";
+        else if (state.pomodoro.mode === 'shortBreak') legacyModeLabel.innerText = "Nghỉ ngắn";
+        else legacyModeLabel.innerText = "Nghỉ dài";
       }
 
       if (cycleText) {

@@ -140,19 +140,19 @@ module.exports = async function handler(req, res) {
       sectionTitle: sanitizeText(rawContext.sectionTitle, 120)
     };
 
-    // Xử lý Smart Document Context (dàn ý H1-H3 + nội dung xoay quanh vùng chọn - tối ưu dung lượng siêu tốc)
+    // Xử lý Smart Document Context tinh gọn (chỉ giữ dàn ý & ngữ cảnh cục bộ ngắn gọn để tiết kiệm tối đa Token)
     const rawDocContext = body.documentContext;
     let documentContextText = '';
     if (typeof rawDocContext === 'string') {
-      documentContextText = sanitizeText(rawDocContext, 3500);
+      documentContextText = sanitizeText(rawDocContext, 800);
     } else if (rawDocContext && typeof rawDocContext === 'object') {
-      const docTitle = sanitizeText(rawDocContext.title, 200);
-      const docOutline = sanitizeText(rawDocContext.outline, 1000);
-      const docContent = sanitizeText(rawDocContext.content, 2500);
+      const docTitle = sanitizeText(rawDocContext.title, 120);
+      const docOutline = sanitizeText(rawDocContext.outline, 300);
+      const docContent = sanitizeText(rawDocContext.content, 600);
       documentContextText = [
         docTitle ? `Tiêu đề bài học: ${docTitle}` : '',
-        docOutline ? `[Dàn ý các mục tiêu đề]:\n${docOutline}` : '',
-        docContent ? `[Ngữ cảnh xung quanh bài học]:\n${docContent}` : ''
+        docOutline ? `[Dàn ý tiêu đề]:\n${docOutline}` : '',
+        docContent ? `[Ngữ cảnh lân cận]:\n${docContent}` : ''
       ].filter(Boolean).join('\n\n');
     }
 
@@ -233,12 +233,13 @@ module.exports = async function handler(req, res) {
       instruction = `${instruction}\n\n${STYLE_PROMPTS[style]}`;
     }
 
-    // 3. Kiểm tra tính toán Cache máy chủ (kèm style, hash của documentContext và prompt để không lẫn cache)
+    // 3. Kiểm tra tính toán Cache máy chủ (theo mode, style, targetLang, lessonId và từ khóa đã chọn)
     const bypassCache = Boolean(body.bypassCache);
-    const promptHash = instruction ? crypto.createHash('md5').update(instruction).digest('hex').substring(0, 8) : 'default';
-    const docContextHash = documentContextText ? crypto.createHash('md5').update(documentContextText).digest('hex').substring(0, 8) : 'nodoc';
+    const lessonId = sanitizeText(body.lessonId || '', 60);
+    const cleanWord = rawText.trim().toLowerCase();
+    const promptHash = customPromptClient ? crypto.createHash('md5').update(customPromptClient).digest('hex').substring(0, 8) : 'std';
     const cacheKey = crypto.createHash('sha256')
-      .update(`${mode}:${style}:${targetLang}:${promptHash}:${docContextHash}:${rawText.toLowerCase()}`)
+      .update(`${mode}:${style}:${targetLang}:${lessonId}:${promptHash}:${cleanWord}`)
       .digest('hex');
 
     const cacheDocRef = db.doc(`ai_cache/${cacheKey}`);
@@ -302,20 +303,60 @@ module.exports = async function handler(req, res) {
         console.warn('Lỗi đọc gói người dùng:', errPlan.message);
       }
 
-      const plansConfig = (await getCachedPlansConfig()) || {};
-      const planLimits = plansConfig[userPlan] || (plansConfig.free || { monthlyAiRequests: 30 });
-      const maxMonthly = typeof planLimits.monthlyAiRequests === 'number' ? planLimits.monthlyAiRequests : 30;
+      const rawPlansConfig = (await getCachedPlansConfig()) || {};
+      const plansConfig = (rawPlansConfig && rawPlansConfig.plans) ? rawPlansConfig.plans : rawPlansConfig;
 
-      const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
-      const userMonthlyRef = db.doc(`users/${userId}/billing/ai_${currentMonth}`);
-      const mSnap = await userMonthlyRef.get();
-      const currentReqs = mSnap.exists ? (mSnap.data().requests || 0) : 0;
+      // Hạn mức AI tiêu chuẩn theo từng gói (phòng hờ khi Firestore config/plans chưa nạp hoặc thiếu cấu hình)
+      const DEFAULT_TIER_LIMITS = {
+        guest: 5,
+        free: 50,
+        plus: 500,
+        pro: 2500,
+        admin: -1
+      };
 
-      if (currentReqs >= maxMonthly) {
-        return res.status(403).json({
-          code: 'QUOTA_EXCEEDED',
-          error: `Bạn đã sử dụng hết hạn mức ${maxMonthly} lượt AI trong tháng này (Gói ${userPlan.toUpperCase()}). Nâng cấp gói Plus hoặc Pro để tiếp tục.`
-        });
+      let isAdmin = false;
+      if (userPlan === 'admin') {
+        isAdmin = true;
+      } else {
+        try {
+          const userDoc = await db.doc(`users/${userId}`).get();
+          if (userDoc.exists) {
+            const uData = userDoc.data() || {};
+            if (uData.role === 'admin' || uData.isAdmin === true || uData.tier === 'admin') {
+              isAdmin = true;
+            }
+          }
+        } catch (_) {}
+      }
+
+      const planLimitObj = plansConfig[userPlan] || {};
+      let maxMonthly = (typeof planLimitObj.monthlyAiRequests === 'number')
+        ? planLimitObj.monthlyAiRequests
+        : (DEFAULT_TIER_LIMITS[userPlan] !== undefined ? DEFAULT_TIER_LIMITS[userPlan] : 50);
+
+      // Nếu người dùng là Pro hoặc Plus, tuyệt đối không bị gán nhầm hạn mức 30 lượt của gói Free
+      if (isAdmin) {
+        maxMonthly = -1;
+      } else if (userPlan === 'pro' && (maxMonthly <= 30 || isNaN(maxMonthly))) {
+        maxMonthly = 2500;
+      } else if (userPlan === 'plus' && (maxMonthly <= 30 || isNaN(maxMonthly))) {
+        maxMonthly = 500;
+      }
+
+      // Chỉ kiểm tra hạn mức khi gói có giới hạn (maxMonthly !== -1)
+      if (maxMonthly !== -1) {
+        const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
+        const userMonthlyRef = db.doc(`users/${userId}/billing/ai_${currentMonth}`);
+        const mSnap = await userMonthlyRef.get();
+        const currentReqs = mSnap.exists ? (mSnap.data().requests || 0) : 0;
+
+        if (currentReqs >= maxMonthly) {
+          return res.status(403).json({
+            code: 'QUOTA_EXCEEDED',
+            error: `Bạn đã sử dụng hết hạn mức ${maxMonthly} lượt AI trong tháng này (Gói ${userPlan.toUpperCase()}). Vui lòng nâng cấp gói hoặc liên hệ quản trị viên để mở rộng hạn mức.`
+          });
+        }
       }
     }
 
@@ -403,7 +444,16 @@ D. [Phương án D]
       required: ['mode', 'text']
     };
 
-    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens = 1200 để phản hồi tức thì
+    // 6. Gọi callAI với mô hình nhanh (fast), tối ưu maxTokens theo từng chế độ để tiết kiệm tối đa token
+    const maxTokensByMode = {
+      explain: 350,
+      example: 400,
+      translate: 450,
+      flashcard: 550,
+      quiz: 600
+    };
+    const maxOutputTokens = maxTokensByMode[mode] || 400;
+
     let aiResponse = null;
     let callError = null;
     try {
@@ -413,7 +463,7 @@ D. [Phương án D]
         schema: jsonSchema,
         modelType: 'fast',
         taskType: 'fast',
-        maxTokens: 1200,
+        maxTokens: maxOutputTokens,
         purpose: mode
       });
     } catch (callErr) {
@@ -433,7 +483,7 @@ D. [Phương án D]
           schema: false,
           modelType: 'fast',
           taskType: 'fast',
-          maxTokens: 1200,
+          maxTokens: maxOutputTokens,
           purpose: mode
         });
         const fallbackText = extractExplanationText(fallbackRes?.data, fallbackRes?.rawText || fallbackRes?.text);
