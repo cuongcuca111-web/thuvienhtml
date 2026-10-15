@@ -83,7 +83,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "fix(v5.7.4): resolve split-screen layout shift when activating AI simple explanation popover"
+    commit_message = "feat(v5.7.5): auto-save and isolate per-user display settings in real-time"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,

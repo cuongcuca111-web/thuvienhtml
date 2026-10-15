@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.5',
+        date: '2026-10-16T05:30:00+07:00',
+        title: 'Tự Động Lưu Trữ & Đồng Bộ Toàn Diện Tùy Chọn Hiển Thị Cá Nhân Hóa (Per-User Auto-Save)',
+        items: [
+          { type: 'feature', text: 'Tự động lưu trữ thời gian thực cho từng tài khoản (Per-User Isolation): Toàn bộ thiết lập trong "Tùy chọn hiển thị" (cỡ chữ, giao diện sáng/tối, chủ đề sự kiện, thẻ tiếp tục học, kiểu bài đã học, huy hiệu đã học, khung đánh dấu, vuốt chuyển bài, trợ lý AI và tùy chỉnh đọc Aa) được lưu trữ riêng biệt trên Firestore và LocalStorage theo từng UID, không bao giờ bị ghi đè hay lẫn lộn giữa các tài khoản.' },
+          { type: 'improved', text: 'Hàm đồng bộ tức thì syncDisplaySettingsUI: Mọi công tắc, checkbox và trạng thái nút trong Popover Tùy chọn hiển thị luôn được đồng bộ chính xác 100% với cài đặt của người dùng ngay khi mở menu và sau khi nạp dữ liệu.' },
+          { type: 'fix', text: 'Khắc phục triệt để lỗi cỡ chữ không áp dụng vào bài học sau khi tải lại trang: Tự động kích hoạt đồng thời applyFontSizeToIframe và applyTextScalingToArticleHeaders khi nạp cấu hình người dùng.' }
+        ]
+      },
+      {
         version: 'v5.7.4',
         date: '2026-10-16T05:25:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Chia Đôi Màn Hình Khi Dùng Tính Năng Giải Thích Đơn Giản (AI)',
@@ -21390,51 +21400,128 @@
       });
     });
 
+    const DEFAULT_USER_DISPLAY_SETTINGS = {
+      fontSizeOffset: 0,
+      isDarkMode: false,
+      readingWidth: 'full',
+      desktopSidebarOpen: true,
+      festivalThemeEnabled: true,
+      showContinueLearning: true,
+      learnedStyle: 'border',
+      showLearnedBadge: true,
+      showTextFrames: true,
+      swipeGestureEnabled: true,
+      aiAssistantEnabled: false,
+      aiPreferredStyle: 'casual',
+      globalReadingSettings: null
+    };
+
+    function syncDisplaySettingsUI() {
+      const popover = document.getElementById('displaySettingsPopover');
+      if (!popover) return;
+
+      // 1. Cỡ chữ
+      if (typeof updateFontSizeDisplay === 'function') {
+        updateFontSizeDisplay();
+      }
+
+      // 2. Chủ đề sự kiện công khai
+      const toggleFestival = document.getElementById('toggleFestivalEffects');
+      if (toggleFestival) {
+        toggleFestival.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
+      }
+      if (typeof updateFestivalThemeAdminUI === 'function') {
+        updateFestivalThemeAdminUI();
+      }
+
+      // 3. Thẻ "Tiếp tục học"
+      const toggleContinue = document.getElementById('toggleShowContinueLearning');
+      if (toggleContinue) {
+        toggleContinue.checked = localStorage.getItem('thuvienhtml_hide_continue_learning') !== 'true';
+      }
+
+      // 4. Kiểu bài đã học
+      const curLearnedStyle = localStorage.getItem('cfg_learned_style') || 'border';
+      if (typeof updateLearnedStyleUI === 'function') {
+        updateLearnedStyleUI(curLearnedStyle);
+      }
+
+      // 5. Huy hiệu "Đã học"
+      const toggleBadge = document.getElementById('toggleLearnedBadge');
+      if (toggleBadge) {
+        toggleBadge.checked = localStorage.getItem('cfg_hide_learned_badge') !== 'true';
+      }
+
+      // 6. Hiện khung đánh dấu
+      const toggleFrames = document.getElementById('toggleShowTextFrames');
+      if (toggleFrames) {
+        toggleFrames.checked = localStorage.getItem('setting_show_text_frames') !== 'false';
+      }
+
+      // 7. Vuốt chuyển bài
+      const toggleSwipe = document.getElementById('toggleSwipeGesture');
+      if (toggleSwipe) {
+        toggleSwipe.checked = state.swipeEnabled !== false;
+      }
+
+      // 8. Trợ lý AI đọc bài
+      if (typeof syncAiToggleState === 'function') {
+        syncAiToggleState();
+      }
+
+      refreshIcons(popover);
+    }
+    window.syncDisplaySettingsUI = syncDisplaySettingsUI;
+
     async function loadUserSettings() {
-      // 1. Nạp trước từ cache theo từng user (nếu có state.userId) hoặc fallback user_cfg
-      const userKey = state.userId ? `user_cfg_${state.userId}` : 'user_cfg';
+      const isGuest = !state.userId || state.useLocalFallback || (state.user && state.user.isAnonymous);
+      const userKey = isGuest ? 'user_cfg_guest' : `user_cfg_${state.userId}`;
       let cachedCfg = null;
       try {
-        const raw = localStorage.getItem(userKey) || localStorage.getItem('user_cfg');
+        const raw = localStorage.getItem(userKey);
         if (raw) cachedCfg = JSON.parse(raw);
       } catch (_) {}
 
       // Hàm áp dụng cấu hình lên giao diện và state
       function applyConfig(cfg) {
         if (!cfg || typeof cfg !== 'object') return;
-        if (cfg.fontSizeOffset !== undefined) {
-          state.fontSizeOffset = cfg.fontSizeOffset;
+        const merged = { ...DEFAULT_USER_DISPLAY_SETTINGS, ...cfg };
+
+        if (merged.fontSizeOffset !== undefined) {
+          state.fontSizeOffset = typeof merged.fontSizeOffset === 'number' ? merged.fontSizeOffset : 0;
           updateFontSizeDisplay();
+          if (typeof applyFontSizeToIframe === 'function') applyFontSizeToIframe();
+          if (typeof applyTextScalingToArticleHeaders === 'function') applyTextScalingToArticleHeaders();
         }
-        if (cfg.isDarkMode !== undefined) {
-          state.isDarkMode = cfg.isDarkMode;
+        if (merged.isDarkMode !== undefined) {
+          state.isDarkMode = !!merged.isDarkMode;
           applyTheme(state.isDarkMode);
         }
         state.preserveOriginalTheme = true;
-        if (cfg.readingWidth) {
-          state.readingWidth = cfg.readingWidth;
+        if (merged.readingWidth) {
+          state.readingWidth = merged.readingWidth;
           applyReadingWidth(state.readingWidth);
         }
-        if (cfg.desktopSidebarOpen !== undefined) {
-          state.desktopSidebarOpen = cfg.desktopSidebarOpen;
+        if (merged.desktopSidebarOpen !== undefined) {
+          state.desktopSidebarOpen = merged.desktopSidebarOpen;
           if (typeof applyDesktopSidebarState === 'function') applyDesktopSidebarState(state.desktopSidebarOpen);
         }
-        if (cfg.sortOrder) {
-          state.sortOrder = cfg.sortOrder;
-          localStorage.setItem('local_sort_order', cfg.sortOrder);
+        if (merged.sortOrder) {
+          state.sortOrder = merged.sortOrder;
+          localStorage.setItem('local_sort_order', merged.sortOrder);
         }
-        if (cfg.aiPreferredStyle) {
-          currentAiPreferredStyle = cfg.aiPreferredStyle;
-          localStorage.setItem('ai_preferred_explain_style', cfg.aiPreferredStyle);
-          if (typeof updateAiStylePills === 'function') updateAiStylePills(cfg.aiPreferredStyle);
+        if (merged.aiPreferredStyle) {
+          currentAiPreferredStyle = merged.aiPreferredStyle;
+          localStorage.setItem('ai_preferred_explain_style', merged.aiPreferredStyle);
+          if (typeof updateAiStylePills === 'function') updateAiStylePills(merged.aiPreferredStyle);
         }
-        if (cfg.lastActiveLessonId) state.activeLessonId = cfg.lastActiveLessonId;
-        if (cfg.lastActiveCategoryId) state.activeCategoryId = cfg.lastActiveCategoryId;
+        if (merged.lastActiveLessonId) state.activeLessonId = merged.lastActiveLessonId;
+        if (merged.lastActiveCategoryId) state.activeCategoryId = merged.lastActiveCategoryId;
 
         // --- CÁC TÙY CHỌN TRONG "TÙY CHỌN HIỂN THỊ" CHO TỪNG NGƯỜI DÙNG ---
         // 1. Chủ đề Lễ hội / Sự kiện công khai (mặc định bật)
-        if (cfg.festivalThemeEnabled !== undefined) {
-          if (cfg.festivalThemeEnabled) {
+        if (merged.festivalThemeEnabled !== undefined) {
+          if (merged.festivalThemeEnabled) {
             localStorage.removeItem('thuvienhtml_festival_disabled');
           } else {
             localStorage.setItem('thuvienhtml_festival_disabled', 'true');
@@ -21449,8 +21536,8 @@
         }
 
         // 2. Thẻ "Tiếp tục học"
-        if (cfg.showContinueLearning !== undefined) {
-          if (cfg.showContinueLearning) {
+        if (merged.showContinueLearning !== undefined) {
+          if (merged.showContinueLearning) {
             localStorage.removeItem('thuvienhtml_hide_continue_learning');
           } else {
             localStorage.setItem('thuvienhtml_hide_continue_learning', 'true');
@@ -21465,17 +21552,17 @@
         }
 
         // 3. Kiểu bài đã học ('border' | 'dim' | 'strike')
-        if (cfg.learnedStyle) {
-          localStorage.setItem('cfg_learned_style', cfg.learnedStyle);
+        if (merged.learnedStyle) {
+          localStorage.setItem('cfg_learned_style', merged.learnedStyle);
         }
-        const curLearnedStyle = cfg.learnedStyle || localStorage.getItem('cfg_learned_style') || 'border';
+        const curLearnedStyle = merged.learnedStyle || localStorage.getItem('cfg_learned_style') || 'border';
         if (typeof updateLearnedStyleUI === 'function') {
           updateLearnedStyleUI(curLearnedStyle);
         }
 
         // 4. Huy hiệu "Đã học" (✓ Đã học)
-        if (cfg.showLearnedBadge !== undefined) {
-          localStorage.setItem('cfg_hide_learned_badge', cfg.showLearnedBadge ? 'false' : 'true');
+        if (merged.showLearnedBadge !== undefined) {
+          localStorage.setItem('cfg_hide_learned_badge', merged.showLearnedBadge ? 'false' : 'true');
         }
         const hideBadge = localStorage.getItem('cfg_hide_learned_badge') === 'true';
         const cbBadge = document.getElementById('toggleLearnedBadge');
@@ -21487,8 +21574,8 @@
         }
 
         // 5. Hiện khung đánh dấu văn bản
-        if (cfg.showTextFrames !== undefined) {
-          localStorage.setItem('setting_show_text_frames', cfg.showTextFrames ? 'true' : 'false');
+        if (merged.showTextFrames !== undefined) {
+          localStorage.setItem('setting_show_text_frames', merged.showTextFrames ? 'true' : 'false');
         }
         const cbFrames = document.getElementById('toggleShowTextFrames');
         if (cbFrames) {
@@ -21502,8 +21589,8 @@
         if (_iDoc && typeof applyFrameSettingsToDoc === 'function') applyFrameSettingsToDoc(iframe.contentDocument);
 
         // 6. Vuốt chuyển bài
-        if (cfg.swipeGestureEnabled !== undefined) {
-          state.swipeEnabled = !!cfg.swipeGestureEnabled;
+        if (merged.swipeGestureEnabled !== undefined) {
+          state.swipeEnabled = !!merged.swipeGestureEnabled;
         }
         const cbSwipe = document.getElementById('toggleSwipeGesture');
         if (cbSwipe) {
@@ -21511,8 +21598,8 @@
         }
 
         // 7. Trợ lý AI đọc bài (mặc định tắt)
-        if (cfg.aiAssistantEnabled !== undefined) {
-          localStorage.setItem('setting_ai_enabled', cfg.aiAssistantEnabled ? 'true' : 'false');
+        if (merged.aiAssistantEnabled !== undefined) {
+          localStorage.setItem('setting_ai_enabled', merged.aiAssistantEnabled ? 'true' : 'false');
         }
         const toggleAi = document.getElementById('toggleAiFeatures');
         if (toggleAi) {
@@ -21521,16 +21608,27 @@
         if (typeof syncAiToggleState === 'function') {
           syncAiToggleState();
         }
+
+        // 8. Tùy chỉnh đọc chuyên sâu (Aa: font, line height, margin, paper theme)
+        if (merged.globalReadingSettings && typeof applyReadingSettings === 'function') {
+          try {
+            localStorage.setItem('thuvienhtml_reading_settings', JSON.stringify(merged.globalReadingSettings));
+            applyReadingSettings(merged.globalReadingSettings, state.activeLessonId, false);
+          } catch (_) {}
+        }
+
+        // 9. Đồng bộ toàn bộ UI trong Popover Tùy chọn hiển thị
+        syncDisplaySettingsUI();
       }
 
       // Áp dụng từ bộ nhớ đệm trước
       if (cachedCfg) {
         applyConfig(cachedCfg);
       } else {
-        updateFontSizeDisplay();
+        applyConfig(DEFAULT_USER_DISPLAY_SETTINGS);
       }
 
-      if (!state.userId || state.useLocalFallback || !db) {
+      if (isGuest || !db) {
         return;
       }
 
@@ -21563,6 +21661,9 @@
           } catch (bErr) {
             console.warn("Lỗi nạp learning_bundle Firestore:", bErr);
           }
+        } else {
+          // Người dùng mới chưa có config trên Firestore -> Tự động lưu cấu hình mặc định lên Firestore
+          saveUserSettings();
         }
       } catch (e) {
         console.warn("Lỗi đọc Firestore settings:", e);
@@ -21570,22 +21671,42 @@
     }
 
     async function saveUserSettings() {
-      const festivalThemeEnabled = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
-      const showContinueLearning = localStorage.getItem('thuvienhtml_hide_continue_learning') !== 'true';
+      const isGuest = !state.userId || state.useLocalFallback || (state.user && state.user.isAnonymous);
+      const userKey = isGuest ? 'user_cfg_guest' : `user_cfg_${state.userId}`;
+
+      const cbFestival = document.getElementById('toggleFestivalEffects');
+      const festivalThemeEnabled = cbFestival ? cbFestival.checked : (localStorage.getItem('thuvienhtml_festival_disabled') !== 'true');
+
+      const cbContinue = document.getElementById('toggleShowContinueLearning');
+      const showContinueLearning = cbContinue ? cbContinue.checked : (localStorage.getItem('thuvienhtml_hide_continue_learning') !== 'true');
+
       const learnedStyle = localStorage.getItem('cfg_learned_style') || 'border';
-      const showLearnedBadge = localStorage.getItem('cfg_hide_learned_badge') !== 'true';
-      const showTextFrames = localStorage.getItem('setting_show_text_frames') !== 'false';
+
+      const cbBadge = document.getElementById('toggleLearnedBadge');
+      const showLearnedBadge = cbBadge ? cbBadge.checked : (localStorage.getItem('cfg_hide_learned_badge') !== 'true');
+
+      const cbFrames = document.getElementById('toggleShowTextFrames');
+      const showTextFrames = cbFrames ? cbFrames.checked : (localStorage.getItem('setting_show_text_frames') !== 'false');
+
       const swipeGestureEnabled = state.swipeEnabled !== false;
-      const aiAssistantEnabled = localStorage.getItem('setting_ai_enabled') === 'true';
+
+      const toggleAi = document.getElementById('toggleAiFeatures');
+      const aiAssistantEnabled = toggleAi ? toggleAi.checked : (localStorage.getItem('setting_ai_enabled') === 'true');
+
+      let globalReadingSettings = null;
+      try {
+        const rawRs = localStorage.getItem('thuvienhtml_reading_settings');
+        if (rawRs) globalReadingSettings = JSON.parse(rawRs);
+      } catch (_) {}
 
       const cfg = {
-        fontSizeOffset: state.fontSizeOffset,
-        isDarkMode: state.isDarkMode,
+        fontSizeOffset: typeof state.fontSizeOffset === 'number' ? state.fontSizeOffset : 0,
+        isDarkMode: !!state.isDarkMode,
         lastActiveLessonId: state.activeLessonId || null,
         lastActiveCategoryId: state.activeCategoryId || null,
-        preserveOriginalTheme: state.preserveOriginalTheme,
-        readingWidth: state.readingWidth,
-        desktopSidebarOpen: state.desktopSidebarOpen,
+        preserveOriginalTheme: state.preserveOriginalTheme !== false,
+        readingWidth: state.readingWidth || 'full',
+        desktopSidebarOpen: state.desktopSidebarOpen !== false,
         aiPreferredStyle: currentAiPreferredStyle || localStorage.getItem('ai_preferred_explain_style') || 'casual',
         // Tùy chọn hiển thị per-user
         festivalThemeEnabled,
@@ -21595,17 +21716,15 @@
         showTextFrames,
         swipeGestureEnabled,
         aiAssistantEnabled,
+        globalReadingSettings,
         updatedAt: new Date().toISOString()
       };
 
       try {
-        localStorage.setItem('user_cfg', JSON.stringify(cfg));
-        if (state.userId) {
-          localStorage.setItem(`user_cfg_${state.userId}`, JSON.stringify(cfg));
-        }
+        localStorage.setItem(userKey, JSON.stringify(cfg));
       } catch (_) {}
 
-      if (!state.userId || state.useLocalFallback || !db) return;
+      if (isGuest || !db) return;
 
       try {
         const settingsRef = doc(db, 'artifacts', appId, 'users', state.userId, 'settings', 'config');
@@ -32119,18 +32238,10 @@
         }
         displaySettingsPopover.classList.toggle('hidden');
         if (!displaySettingsPopover.classList.contains('hidden')) {
-          if (typeof window.updateFestivalThemeAdminUI === 'function') {
-            window.updateFestivalThemeAdminUI();
+          if (typeof window.syncDisplaySettingsUI === 'function') {
+            window.syncDisplaySettingsUI();
           }
           positionDisplaySettingsPopover();
-          refreshIcons(displaySettingsPopover);
-          if (typeof window.syncAiToggleState === 'function') {
-            window.syncAiToggleState();
-          }
-          const cbContinue = document.getElementById('toggleShowContinueLearning');
-          if (cbContinue) {
-            cbContinue.checked = localStorage.getItem('thuvienhtml_hide_continue_learning') !== 'true';
-          }
         }
       });
       if (btnCloseDisplaySettings) {
@@ -32572,6 +32683,9 @@
         if (toggle) toggle.checked = false;
         if (typeof showToast === 'function') {
           showToast('Đã ẩn thẻ "Tiếp tục học" (Bật lại trong Tùy chọn hiển thị)');
+        }
+        if (typeof saveUserSettings === 'function') {
+          saveUserSettings();
         }
       });
     }
