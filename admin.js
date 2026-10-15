@@ -5730,23 +5730,28 @@ async function fetchThemeSettingsFromFirestore() {
 }
 
 async function writeThemeSettingsToFirestore(payload) {
-  const db = getAdminDb();
-  if (!db) throw new Error("Chưa kết nối được cơ sở dữ liệu");
-  const themeDocRef = doc(db, 'config', 'theme_settings');
   const user = currentAdminUser || (adminAuth && adminAuth.currentUser);
   const dataToSave = {
     ...payload,
     updatedAt: new Date().toISOString(),
     updatedBy: user ? user.uid : 'admin'
   };
-  await setDoc(themeDocRef, dataToSave, { merge: false });
   adminThemeConfigCache = dataToSave;
   try {
     localStorage.setItem('thuvienhtml_theme_config', JSON.stringify(dataToSave));
+    localStorage.removeItem('thuvienhtml_festival_theme_override');
   } catch (_) {}
-  // Thông báo tới hệ thống toàn cục nếu cùng tab
+  // Thông báo và áp dụng trực tiếp tới hệ thống toàn cục nếu cùng tab
   if (typeof window !== 'undefined') {
+    if (typeof window.applyFestivalTheme === 'function' && dataToSave.theme) {
+      window.applyFestivalTheme(dataToSave.theme);
+    }
     window.dispatchEvent(new CustomEvent('theme_settings_updated', { detail: dataToSave }));
+  }
+  const db = getAdminDb();
+  if (db) {
+    const themeDocRef = doc(db, 'config', 'theme_settings');
+    await setDoc(themeDocRef, dataToSave, { merge: false });
   }
   return dataToSave;
 }
@@ -6153,6 +6158,14 @@ export async function renderThemeTab(container) {
     btnPreview.onclick = () => {
       const t = getThemeFromForm();
       if (typeof window !== 'undefined') {
+        try {
+          localStorage.removeItem('thuvienhtml_festival_disabled');
+          const toggleEl = document.getElementById('toggleFestivalEffects');
+          if (toggleEl) toggleEl.checked = true;
+        } catch (_) {}
+        if (typeof window.applyFestivalTheme === 'function') {
+          window.applyFestivalTheme(t);
+        }
         window.dispatchEvent(new CustomEvent('preview_theme', { detail: t }));
         toast(`Đang hiển thị xem trước Theme "${t.name}"!`);
       }
@@ -6167,6 +6180,9 @@ export async function renderThemeTab(container) {
       btnReset.disabled = true;
       btnReset.innerHTML = `<span>⏳ Đang xử lý...</span>`;
       try {
+        try {
+          localStorage.removeItem('thuvienhtml_festival_theme_override');
+        } catch (_) {}
         const payload = {
           ...cfg,
           activeMode: 'manual',
@@ -6178,6 +6194,9 @@ export async function renderThemeTab(container) {
           }
         };
         await writeThemeSettingsToFirestore(payload);
+        if (typeof window.applyFestivalTheme === 'function') {
+          window.applyFestivalTheme(THEME_PRESETS[0]);
+        }
         toast("Đã khôi phục hoàn toàn về The Codex HTML mặc định!");
         renderThemeTab(container);
       } catch (e) {
@@ -6222,12 +6241,21 @@ export async function renderThemeTab(container) {
       btnApplyManual.disabled = true;
       btnApplyManual.innerHTML = `<span>⏳ Đang phát sóng...</span>`;
       try {
+        try {
+          localStorage.removeItem('thuvienhtml_festival_theme_override');
+          localStorage.removeItem('thuvienhtml_festival_disabled');
+          const toggleEl = document.getElementById('toggleFestivalEffects');
+          if (toggleEl) toggleEl.checked = true;
+        } catch (_) {}
         const payload = {
           ...cfg,
           activeMode: 'manual',
           activeThemeId: t.id,
           theme: t
         };
+        if (typeof window.applyFestivalTheme === 'function') {
+          window.applyFestivalTheme(t);
+        }
         await writeThemeSettingsToFirestore(payload);
         toast(`Đã phát sóng Theme "${t.name}" thành công tới mọi độc giả!`);
         renderThemeTab(container);
@@ -6306,12 +6334,21 @@ export async function renderThemeTab(container) {
       if (!targetTheme) return;
       if (!confirm(`Áp dụng ngay Theme "${targetTheme.name}" cho toàn bộ hệ thống?`)) return;
       try {
+        try {
+          localStorage.removeItem('thuvienhtml_festival_theme_override');
+          localStorage.removeItem('thuvienhtml_festival_disabled');
+          const toggleEl = document.getElementById('toggleFestivalEffects');
+          if (toggleEl) toggleEl.checked = true;
+        } catch (_) {}
         const payload = {
           ...cfg,
           activeMode: 'manual',
           activeThemeId: targetTheme.id,
           theme: targetTheme
         };
+        if (typeof window.applyFestivalTheme === 'function') {
+          window.applyFestivalTheme(targetTheme);
+        }
         await writeThemeSettingsToFirestore(payload);
         toast(`Đã phát sóng "${targetTheme.name}"!`);
         renderThemeTab(container);
