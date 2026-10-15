@@ -2630,31 +2630,112 @@
 
     /* Search Button Editorial Transitions */
     #headerSearchTriggerBtn {
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      position: relative;
     }
     #headerSearchTriggerBtn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 16px -2px rgba(99, 102, 241, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.05);
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      box-shadow: 0 6px 20px -4px rgba(99, 102, 241, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    }
+    #headerSearchTriggerBtn:hover svg {
+      transform: scale(1.12);
+      color: #4F46E5;
+    }
+    .dark #headerSearchTriggerBtn:hover svg {
+      color: #818CF8;
+    }
+    #headerSearchTriggerBtn svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
     }
     #headerSearchTriggerBtn:active {
-      transform: translateY(0) scale(0.985);
+      transform: translateY(0) scale(0.975);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
     }
     .dark #headerSearchTriggerBtn:hover {
-      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.45);
+      border-color: rgba(129, 140, 248, 0.4) !important;
+      box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.5);
+    }
+    #headerSearchTriggerBtn #headerSearchKeycap {
+      transition: all 0.22s ease;
+    }
+    #headerSearchTriggerBtn:hover #headerSearchKeycap {
+      border-color: rgba(99, 102, 241, 0.3);
+      color: #4F46E5;
+      background: rgba(99, 102, 241, 0.08);
+    }
+    .dark #headerSearchTriggerBtn:hover #headerSearchKeycap {
+      border-color: rgba(129, 140, 248, 0.3);
+      color: #A5B4FC;
+      background: rgba(129, 140, 248, 0.12);
     }
 
-    /* Search Palette Container */
+    #btnMobileSearchToggle, #mbBtnSearch {
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnMobileSearchToggle:hover, #mbBtnSearch:hover {
+      transform: translateY(-1px);
+    }
+    #btnMobileSearchToggle:active, #mbBtnSearch:active {
+      transform: scale(0.92);
+    }
+
+    /* In-Article Search Bar smooth entry */
+    #inArticleSearchBar:not(.hidden) {
+      animation: inArticleSearchSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes inArticleSearchSlideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Search Palette Container & Backdrop */
     #searchCommandPaletteBackdrop {
       z-index: var(--z-search-backdrop, 9999);
-      background-color: rgba(10, 12, 16, 0.48);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      background-color: rgba(15, 17, 23, 0.52);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
       opacity: 1;
+    }
+    #searchCommandPaletteBackdrop.palette-entering {
+      animation: searchBackdropFadeIn 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     #searchCommandPaletteBackdrop.palette-fade-out {
       opacity: 0 !important;
+      animation: searchBackdropFadeOut 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    @keyframes searchBackdropFadeIn {
+      from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+      }
+      to {
+        opacity: 1;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+    }
+    @keyframes searchBackdropFadeOut {
+      from {
+        opacity: 1;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      to {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+      }
+    }
+
     #searchCommandPalette {
       z-index: var(--z-search, 10000);
       background-color: var(--search-bg);
@@ -2671,10 +2752,10 @@
         transform: translateX(-50%) !important;
         width: min(680px, calc(100vw - 32px)) !important;
         max-height: calc(100dvh - 96px) !important;
-        border-radius: 16px !important;
+        border-radius: 20px !important;
       }
       #searchCommandPalette.palette-entering {
-        animation: searchPaletteScaleDown 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteScaleDown 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
       #searchCommandPalette.palette-leaving {
         animation: searchPaletteScaleUpOut 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -2683,21 +2764,25 @@
     @keyframes searchPaletteScaleDown {
       0% {
         opacity: 0;
-        transform: translate(-50%, -10px) scale(0.975);
+        transform: translate(-50%, -14px) scale(0.975);
+        filter: blur(4px);
       }
       100% {
         opacity: 1;
         transform: translate(-50%, 0) scale(1);
+        filter: blur(0);
       }
     }
     @keyframes searchPaletteScaleUpOut {
       0% {
         opacity: 1;
         transform: translate(-50%, 0) scale(1);
+        filter: blur(0);
       }
       100% {
         opacity: 0;
-        transform: translate(-50%, -8px) scale(0.98);
+        transform: translate(-50%, -10px) scale(0.985);
+        filter: blur(3px);
       }
     }
 
@@ -2714,30 +2799,36 @@
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
       #searchCommandPalette.palette-entering {
-        animation: searchPaletteSlideUp 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteSlideUp 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
       #searchCommandPalette.palette-leaving {
-        animation: searchPaletteSlideDown 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: searchPaletteSlideDown 190ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     }
     @keyframes searchPaletteSlideUp {
       0% {
-        opacity: 0.5;
-        transform: translateY(20px) scale(0.99);
+        opacity: 0;
+        transform: translateY(28px) scale(0.98);
+        filter: blur(3px);
       }
       100% {
         opacity: 1;
         transform: translateY(0) scale(1);
+        filter: blur(0);
       }
     }
     @keyframes searchPaletteSlideDown {
       0% {
         opacity: 1;
         transform: translateY(0) scale(1);
+        filter: blur(0);
       }
       100% {
         opacity: 0;
-        transform: translateY(20px) scale(0.99);
+        transform: translateY(20px) scale(0.985);
+        filter: blur(2px);
+      }
+    }
       }
     }
 
@@ -4794,21 +4885,23 @@
       </div>
 
       <!-- THANH TÌM KIẾM TRONG BÀI (IN-ARTICLE SEARCH) -->
-      <div id="inArticleSearchBar" class="hidden bg-[#FEF3C7]/80 dark:bg-[#78350F]/50 px-3 sm:px-8 py-2 border-b border-amber-200 dark:border-amber-800/50 flex items-center justify-between text-xs">
+      <div id="inArticleSearchBar" class="hidden bg-[#FAF9F5] dark:bg-[#14161C] px-3 sm:px-8 py-2.5 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-xs shadow-xs">
         <div class="flex items-center gap-2 flex-1 min-w-0">
-          <svg class="w-3.5 h-3.5 text-amber-800 dark:text-amber-200 shrink-0" aria-hidden="true"><use href="#icon-search"></use></svg>
-          <span class="text-amber-900 dark:text-amber-100 font-medium hidden sm:inline">Tìm trong bài:</span>
-          <span id="inArticleKeyword" class="font-semibold text-amber-950 dark:text-amber-50 truncate"></span>
-          <span id="inArticleCount" class="text-amber-800 dark:text-amber-300 text-[11px] shrink-0 font-mono">(0/0)</span>
+          <div class="w-6 h-6 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-200/50 dark:border-amber-800/50">
+            <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-search"></use></svg>
+          </div>
+          <span class="text-stone-600 dark:text-stone-300 font-medium hidden sm:inline">Tìm trong bài:</span>
+          <span id="inArticleKeyword" class="font-bold text-[#1C1917] dark:text-[#EDECE8] truncate px-1.5 py-0.5 rounded bg-amber-100/60 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200"></span>
+          <span id="inArticleCount" class="text-stone-500 dark:text-stone-400 text-[11px] shrink-0 font-mono font-medium">(0/0)</span>
         </div>
         <div class="flex items-center gap-1 shrink-0">
-          <button id="btnPrevMatch" class="touch-target min-w-[44px] min-h-[44px] p-2 rounded-lg hover:bg-amber-200/70 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-100 flex items-center justify-center transition" title="Khớp trước" aria-label="Kết quả tìm kiếm trước">
+          <button id="btnPrevMatch" class="touch-target w-8 h-8 rounded-lg hover:bg-stone-200/60 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 flex items-center justify-center transition" title="Khớp trước" aria-label="Kết quả tìm kiếm trước">
             <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-left"></use></svg>
           </button>
-          <button id="btnNextMatch" class="touch-target min-w-[44px] min-h-[44px] p-2 rounded-lg hover:bg-amber-200/70 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-100 flex items-center justify-center transition" title="Khớp sau" aria-label="Kết quả tìm kiếm sau">
+          <button id="btnNextMatch" class="touch-target w-8 h-8 rounded-lg hover:bg-stone-200/60 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 flex items-center justify-center transition" title="Khớp sau" aria-label="Kết quả tìm kiếm sau">
             <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
           </button>
-          <button type="button" id="btnCloseInArticleSearch" class="touch-target min-w-[44px] min-h-[44px] p-2 rounded-xl hover:bg-amber-200/70 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-100 ml-1 flex items-center justify-center transition cursor-pointer" title="Đóng tìm kiếm trong bài" aria-label="Đóng thanh tìm kiếm">
+          <button type="button" id="btnCloseInArticleSearch" class="touch-target w-8 h-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-500 hover:text-rose-600 dark:text-stone-400 dark:hover:text-rose-400 ml-1 flex items-center justify-center transition cursor-pointer" title="Đóng tìm kiếm trong bài" aria-label="Đóng thanh tìm kiếm">
             <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-x"></use></svg>
           </button>
         </div>
@@ -25426,8 +25519,10 @@
         searchCommandPalette.classList.remove('hidden');
         searchCommandPalette.classList.add('flex');
         searchCommandPalette.classList.add('palette-entering');
+        searchCommandPaletteBackdrop.classList.add('palette-entering');
         setTimeout(() => {
           if (searchCommandPalette) searchCommandPalette.classList.remove('palette-entering');
+          if (searchCommandPaletteBackdrop) searchCommandPaletteBackdrop.classList.remove('palette-entering');
         }, 260);
       }
 
