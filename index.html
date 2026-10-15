@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.6.5',
+        date: '2026-10-15T23:59:59+07:00',
+        title: 'Thanh Công Cụ Tập Trung Pomodoro & Tiếng Ồn Trắng Đa Dạng',
+        items: [
+          { type: 'feature', text: 'Thanh công cụ Pomodoro đỉnh màn hình: Xuất hiện tinh gọn phía trên cùng trong Chế độ tập trung (Focus Mode), gồm đồng hồ đếm ngược, nút Phát/Dừng, Đặt lại, Bỏ qua và thanh tiến độ đọc mượt mà.' },
+          { type: 'feature', text: '3 chế độ bấm giờ linh hoạt: Hỗ trợ chuyển đổi nhanh chế độ Tập trung 25p, Nghỉ ngơi 5p và Tùy chỉnh giờ (chọn nhanh 15p, 30p, 45p, 60p hoặc nhập số phút tùy thích).' },
+          { type: 'feature', text: 'Bộ 4 tiếng ồn trắng chuẩn khoa học: Tích hợp 4 âm thanh nền tăng cường sự tập trung gồm Mưa rào, Sóng biển, Quán Cafe và Sóng Alpha 10Hz kích thích não bộ (tổng hợp 100% bằng Web Audio API thuần, siêu nhẹ, hoạt động offline).' },
+          { type: 'feature', text: 'Tùy chỉnh âm lượng nhạc nền: Bổ sung thanh trượt âm lượng mượt mà (0–100%) kèm nút bật/tắt tiếng (Mute) tiện lợi, tự động dừng phát khi thoát chế độ tập trung.' }
+        ]
+      },
+      {
         version: 'v5.6.4',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Khắc Phục Lỗi Đóng Khung Trong Bảng & Tối Ưu Nhận Diện Khối Đa Dòng',
@@ -2017,39 +2028,41 @@
       display: none !important;
     }
 
+    body.is-focus-mode #focusTopBar {
+      display: block !important;
+    }
+
     body.is-focus-mode #readingArea {
       position: fixed !important;
       inset: 0 !important;
       width: 100vw !important;
       height: 100dvh !important;
       z-index: 40 !important;
-      padding-top: max(2rem, env(safe-area-inset-top, 2rem)) !important;
+      padding-top: calc(max(1rem, env(safe-area-inset-top, 1rem)) + 64px) !important;
       padding-bottom: max(3.5rem, env(safe-area-inset-bottom, 3.5rem)) !important;
       background-color: var(--reading-bg, #FAF9F5);
+    }
+
+    @media (max-width: 768px) {
+      body.is-focus-mode #readingArea {
+        padding-top: calc(max(1rem, env(safe-area-inset-top, 1rem)) + 110px) !important;
+      }
     }
 
     .dark body.is-focus-mode #readingArea {
       background-color: var(--reading-bg-dark, #111317);
     }
 
-    #focusProgressBar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      width: 0%;
-      background: linear-gradient(90deg, #4F46E5, #818CF8, #F43F5E);
-      z-index: 60;
-      pointer-events: none;
-      transition: width 0.1s linear;
+    .ambient-card.is-active {
+      background-color: rgba(99, 102, 241, 0.12) !important;
+      border-color: #6366F1 !important;
+      color: #4F46E5 !important;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
     }
-
-    #focusTimerWidget {
-      position: fixed;
-      top: max(1rem, env(safe-area-inset-top, 1rem));
-      right: max(1rem, env(safe-area-inset-right, 1rem));
-      z-index: 55;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    .dark .ambient-card.is-active {
+      background-color: rgba(99, 102, 241, 0.22) !important;
+      border-color: #818CF8 !important;
+      color: #A5B4FC !important;
     }
 
   
@@ -4503,7 +4516,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.4 • build 15/10/2026 23:59</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.6.5 • build 15/10/2026 23:59</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -5238,7 +5251,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.4 • build 15/10/2026 23:59</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.6.5 • build 15/10/2026 23:59</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -7348,54 +7361,126 @@
     </div>
   </aside>
 
-    <!-- // FEATURE-1: Thanh tiến độ cuộn bài siêu mảnh trong Chế độ tập trung -->
-  <div id="focusProgressBar" class="hidden"></div>
-
-  <!-- // FEATURE-1: Widget Đồng hồ Pomodoro nổi trong Chế độ tập trung -->
-  <div id="focusTimerWidget" class="hidden select-none">
-    <div class="bg-white/95 dark:bg-[#181B20]/95 backdrop-blur-md border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl shadow-2xl p-3 w-[240px] sm:w-[260px] text-xs transition-all">
-      <div class="flex items-center justify-between pb-2 border-b border-[#E7E5DF] dark:border-[#262C36]">
-        <div class="flex items-center gap-1.5 min-w-0">
-          <span id="pomoModeBadge" class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 truncate">
-            🍅 Học tập
+  <!-- // FEATURE-FOCUS-TOOLBAR: Thanh công cụ Pomodoro & Tiếng ồn trắng đỉnh màn hình khi ở Chế độ tập trung -->
+  <header id="focusTopBar" class="hidden fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#14161C]/95 backdrop-blur-md border-b border-[#E7E5DF] dark:border-[#262C36] shadow-xs select-none">
+    <div class="max-w-[1440px] mx-auto px-3 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
+      
+      <!-- CỤM 1: ĐỒNG HỒ POMODORO & CÁC CHẾ ĐỘ GIỜ -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <!-- Huy hiệu chế độ & Đồng hồ số to rõ -->
+        <div class="flex items-center gap-2 bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1">
+          <span id="pomoModeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
+            🍅 Tập trung
           </span>
-          <span id="pomoCycleBadge" class="text-[10px] font-mono text-[#6E6B65] dark:text-[#979DA8]">#1/4</span>
+          <div id="pomoTimeDisplay" class="font-mono font-black text-xl sm:text-2xl text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums min-w-[62px]">
+            25:00
+          </div>
         </div>
+
+        <!-- Các nút điều khiển: Play/Pause, Reset, Skip -->
         <div class="flex items-center gap-1">
-          <button id="btnPomoSettings" class="p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Cài đặt Pomodoro">
-            <svg class="w-3.5 h-3.5"><use href="#icon-sliders"></use></svg>
+          <button id="btnPomoTogglePlay" type="button" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white flex items-center justify-center transition shadow-xs cursor-pointer" title="Bắt đầu / Tạm dừng">
+            <svg id="pomoPlayIcon" class="w-4 h-4 fill-white"><use href="#icon-play"></use></svg>
           </button>
-          <button id="btnExitFocusMode" class="p-1 rounded-md text-[#6E6B65] dark:text-[#979DA8] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-black/5 dark:hover:bg-white/5 transition" title="Thoát chế độ tập trung (Esc)">
-            <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+          <button id="btnPomoReset" type="button" class="w-8 h-8 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" title="Đặt lại (Reset)">
+            <svg class="w-4 h-4"><use href="#icon-rotate-ccw"></use></svg>
           </button>
+          <button id="btnPomoSkip" type="button" class="w-8 h-8 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" title="Bỏ qua / Chuyển phiên">
+            <svg class="w-4 h-4"><use href="#icon-skip-forward"></use></svg>
+          </button>
+        </div>
+
+        <!-- Bộ nút chọn chế độ giờ nhanh: 25p, 5p, Tùy chỉnh giờ -->
+        <div class="flex items-center bg-[#FAF9F5] dark:bg-[#1A1D24] p-0.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-xs">
+          <button id="btnPomoMode25" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-[#232732] shadow-2xs transition cursor-pointer" data-mins="25" title="Chế độ tập trung 25 phút">
+            25p
+          </button>
+          <button id="btnPomoMode5" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white transition cursor-pointer" data-mins="5" title="Chế độ nghỉ ngắn 5 phút">
+            5p
+          </button>
+          <div class="relative">
+            <button id="btnPomoModeCustom" type="button" class="pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white transition cursor-pointer flex items-center gap-1" title="Tùy chỉnh thời gian">
+              <span id="pomoCustomLabel">Tùy chỉnh</span>
+              <svg class="w-3 h-3 opacity-60"><use href="#icon-chevron-down"></use></svg>
+            </button>
+            <!-- Popover Tùy chỉnh giờ -->
+            <div id="pomoCustomPopover" class="hidden absolute top-full left-0 mt-1.5 z-60 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] shadow-xl rounded-xl p-3 w-56 text-xs select-none">
+              <div class="font-bold text-[11px] text-[#6E6B65] dark:text-[#979DA8] uppercase tracking-wider mb-2">Chọn nhanh thời gian</div>
+              <div class="grid grid-cols-4 gap-1.5 mb-2.5">
+                <button type="button" class="pomo-quick-chip py-1 text-center font-medium rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 transition cursor-pointer" data-mins="15">15p</button>
+                <button type="button" class="pomo-quick-chip py-1 text-center font-medium rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 transition cursor-pointer" data-mins="30">30p</button>
+                <button type="button" class="pomo-quick-chip py-1 text-center font-medium rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 transition cursor-pointer" data-mins="45">45p</button>
+                <button type="button" class="pomo-quick-chip py-1 text-center font-medium rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 transition cursor-pointer" data-mins="60">60p</button>
+              </div>
+              <div class="flex items-center gap-1.5 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
+                <input id="pomoCustomInputMins" type="number" min="1" max="180" value="45" class="w-16 px-2 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#111317] font-mono font-bold text-center text-xs focus:border-indigo-500 focus:outline-none" />
+                <span class="text-stone-500 text-[11px]">phút</span>
+                <button id="btnApplyPomoCustom" type="button" class="flex-1 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-center transition cursor-pointer shadow-xs">
+                  Đặt
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Đồng hồ số to rõ -->
-      <div class="py-2.5 text-center">
-        <div id="pomoTimeDisplay" class="font-mono font-bold text-3xl sm:text-4xl text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">
-          25:00
+      <!-- CỤM 2: TIẾNG ỒN TRẮNG ĐA DẠNG (NHƯ ẢNH 3) & THANH ÂM LƯỢNG -->
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
+        <!-- 4 Card Tiếng Ồn Trắng: Mưa rào, Sóng biển, Quán Cafe, Sóng Alpha -->
+        <div class="flex items-center gap-1 sm:gap-1.5" role="group" aria-label="Tiếng ồn trắng">
+          
+          <!-- 1. Mưa rào -->
+          <button id="btnAmbientRain" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="rain" title="Tiếng mưa rào thư thái">
+            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🌧️</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Mưa rào</span>
+          </button>
+
+          <!-- 2. Sóng biển -->
+          <button id="btnAmbientOcean" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="ocean" title="Tiếng sóng biển rì rào">
+            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🌊</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Sóng biển</span>
+          </button>
+
+          <!-- 3. Quán Cafe -->
+          <button id="btnAmbientCafe" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="cafe" title="Không gian quán cafe tập trung">
+            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">☕</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Quán Cafe</span>
+          </button>
+
+          <!-- 4. Sóng Alpha -->
+          <button id="btnAmbientAlpha" type="button" class="ambient-card group px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#1A1D24] hover:bg-white dark:hover:bg-[#232732] flex flex-col items-center justify-center min-w-[52px] sm:min-w-[60px] transition cursor-pointer" data-ambient="alpha" title="Sóng não Alpha 10Hz kích thích tập trung sâu">
+            <span class="text-base sm:text-lg transition-transform group-hover:scale-110">🧠</span>
+            <span class="text-[10px] sm:text-[11px] font-medium text-[#44403C] dark:text-[#D6D3D1] tracking-tight leading-tight mt-0.5 whitespace-nowrap">Sóng Alpha</span>
+          </button>
         </div>
-        <div id="pomoStatusText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] mt-0.5 truncate">
-          Sẵn sàng bắt đầu
+
+        <!-- Tùy chỉnh âm lượng nhạc nền -->
+        <div class="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-[#1A1D24] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1.5">
+          <button id="btnAmbientMuteToggle" type="button" class="text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer" title="Bật/Tắt âm lượng">
+            <svg id="ambientVolIcon" class="w-4 h-4"><use href="#icon-volume-2"></use></svg>
+          </button>
+          <input id="ambientVolumeSlider" type="range" min="0" max="100" value="50" class="w-16 sm:w-20 h-1.5 accent-indigo-600 bg-stone-200 dark:bg-stone-700 rounded-lg cursor-pointer" title="Âm lượng tiếng ồn trắng" />
+          <span id="ambientVolumeLabel" class="text-[10px] font-mono text-stone-500 dark:text-stone-400 w-6 text-right">50%</span>
         </div>
       </div>
 
-      <!-- Hàng nút điều khiển -->
-      <div class="flex items-center justify-center gap-1.5 pt-1 border-t border-[#E7E5DF] dark:border-[#262C36]">
-        <button id="btnPomoReset" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đặt lại phiên">
-          <svg class="w-4 h-4"><use href="#icon-rotate-ccw"></use></svg>
+      <!-- CỤM 3: CÀI ĐẶT & NÚT THOÁT FOCUS MODE -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="btnPomoSettingsTop" type="button" class="p-2 rounded-xl text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Cài đặt Pomodoro">
+          <svg class="w-4 h-4"><use href="#icon-sliders"></use></svg>
         </button>
-        <button id="btnPomoTogglePlay" class="touch-target px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-1.5 transition shadow-xs flex-1">
-          <svg id="pomoPlayIcon" class="w-4 h-4 fill-white"><use href="#icon-play"></use></svg>
-          <span id="pomoPlayLabel">Bắt đầu</span>
-        </button>
-        <button id="btnPomoSkip" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Bỏ qua phiên này">
-          <svg class="w-4 h-4"><use href="#icon-skip-forward"></use></svg>
+        <button id="btnExitFocusModeTop" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-[#1E232B] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-600 dark:text-stone-300 hover:text-rose-600 dark:hover:text-rose-400 border border-stone-200 dark:border-stone-700/80 transition text-xs font-semibold cursor-pointer" title="Thoát chế độ tập trung (Esc)">
+          <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
+          <span>Thoát</span>
+          <kbd class="hidden sm:inline-block px-1 py-0.2 bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded text-[9px] font-mono">Esc</kbd>
         </button>
       </div>
+
     </div>
-  </div>
+
+    <!-- Thanh tiến độ đọc mảnh chạy ngay sát dưới mép thanh toolbar -->
+    <div id="focusProgressBar" class="absolute bottom-0 left-0 h-[2.5px] w-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 transition-all duration-100"></div>
+  </header>
 
   <!-- // FEATURE-1: Modal Cài đặt Pomodoro -->
   <div id="pomodoroSettingsModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
@@ -14347,6 +14432,11 @@
       swipeEnabled: true, // // FEATURE-9: Bật/tắt vuốt ngang chuyển bài
       offlineSyncQueue: [], // // FEATURE-11: Hàng đợi đồng bộ khi có mạng lại
       focusMode: false,
+      ambientSound: {
+        current: null, // null | 'rain' | 'ocean' | 'cafe' | 'alpha'
+        volume: 0.5,
+        isMuted: false
+      },
       pomodoro: {
         isRunning: false,
         mode: 'work', // 'work' | 'shortBreak' | 'longBreak'
@@ -36318,20 +36408,403 @@
       }
     }
 
+    // =========================================================================
+    // CÔNG CỤ TẠO TIẾNG ỒN TRẮNG THƯ THÁI THUẦN WEB AUDIO API (KHÔNG TẢI FILE NGOÀI)
+    // =========================================================================
+    const AmbientSoundEngine = {
+      ctx: null,
+      masterGain: null,
+      currentType: null, // null | 'rain' | 'ocean' | 'cafe' | 'alpha'
+      activeNodes: [],
+      volume: 0.5,
+      isMuted: false,
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+            this.masterGain = this.ctx.createGain();
+            const savedVol = parseFloat(localStorage.getItem('local_ambient_volume') || '0.5');
+            this.volume = isNaN(savedVol) ? 0.5 : Math.max(0, Math.min(1, savedVol));
+            this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
+            this.masterGain.connect(this.ctx.destination);
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+
+      setVolume(val) {
+        this.init();
+        this.volume = Math.max(0, Math.min(1, val));
+        if (this.masterGain && this.ctx) {
+          const target = this.isMuted ? 0 : this.volume;
+          this.masterGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.05);
+        }
+        try { localStorage.setItem('local_ambient_volume', this.volume.toString()); } catch (_) {}
+      },
+
+      setMuted(muted) {
+        this.init();
+        this.isMuted = !!muted;
+        if (this.masterGain && this.ctx) {
+          const target = this.isMuted ? 0 : this.volume;
+          this.masterGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.05);
+        }
+      },
+
+      stop() {
+        if (this.activeNodes && this.activeNodes.length > 0) {
+          this.activeNodes.forEach(node => {
+            try {
+              if (node.stop) node.stop();
+              if (node.disconnect) node.disconnect();
+            } catch (_) {}
+          });
+          this.activeNodes = [];
+        }
+        this.currentType = null;
+        if (state && state.ambientSound) state.ambientSound.current = null;
+      },
+
+      // 1. Mưa rào (Rain): Pink noise + Highpass + Lowpass
+      playRain() {
+        this.init();
+        this.stop();
+        this.currentType = 'rain';
+        if (state && state.ambientSound) state.ambientSound.current = 'rain';
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const bufferSize = ctx.sampleRate * 4;
+        const noiseBuffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+          const output = noiseBuffer.getChannelData(ch);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.09;
+            b6 = white * 0.115926;
+          }
+        }
+
+        const whiteSource = ctx.createBufferSource();
+        whiteSource.buffer = noiseBuffer;
+        whiteSource.loop = true;
+
+        const hp = ctx.createBiquadFilter();
+        hp.type = 'highpass';
+        hp.frequency.setValueAtTime(220, now);
+
+        const lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(2400, now);
+
+        const rainGain = ctx.createGain();
+        rainGain.gain.setValueAtTime(0, now);
+        rainGain.gain.linearRampToValueAtTime(0.75, now + 0.8);
+
+        whiteSource.connect(hp);
+        hp.connect(lp);
+        lp.connect(rainGain);
+        rainGain.connect(this.masterGain);
+
+        whiteSource.start(now);
+        this.activeNodes.push(whiteSource, hp, lp, rainGain);
+      },
+
+      // 2. Sóng biển (Ocean Waves): Brown noise modulated by slow swell LFO
+      playOcean() {
+        this.init();
+        this.stop();
+        this.currentType = 'ocean';
+        if (state && state.ambientSound) state.ambientSound.current = 'ocean';
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const bufferSize = ctx.sampleRate * 5;
+        const noiseBuffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+          const output = noiseBuffer.getChannelData(ch);
+          let lastOut = 0.0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            output[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = output[i];
+            output[i] *= 2.6;
+          }
+        }
+
+        const brownSource = ctx.createBufferSource();
+        brownSource.buffer = noiseBuffer;
+        brownSource.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(420, now);
+
+        const lfo = ctx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.setValueAtTime(0.09, now);
+
+        const lfoFilterGain = ctx.createGain();
+        lfoFilterGain.gain.setValueAtTime(300, now);
+        lfo.connect(lfoFilterGain);
+        lfoFilterGain.connect(filter.frequency);
+
+        const swellGain = ctx.createGain();
+        swellGain.gain.setValueAtTime(0.4, now);
+
+        const lfoVolumeGain = ctx.createGain();
+        lfoVolumeGain.gain.setValueAtTime(0.28, now);
+        lfo.connect(lfoVolumeGain);
+        lfoVolumeGain.connect(swellGain.gain);
+
+        const oceanGain = ctx.createGain();
+        oceanGain.gain.setValueAtTime(0, now);
+        oceanGain.gain.linearRampToValueAtTime(0.85, now + 0.8);
+
+        brownSource.connect(filter);
+        filter.connect(swellGain);
+        swellGain.connect(oceanGain);
+        oceanGain.connect(this.masterGain);
+
+        brownSource.start(now);
+        lfo.start(now);
+        this.activeNodes.push(brownSource, lfo, filter, lfoFilterGain, swellGain, lfoVolumeGain, oceanGain);
+      },
+
+      // 3. Quán Cafe (Cafe Ambience): Multiband resonant filters + room hum
+      playCafe() {
+        this.init();
+        this.stop();
+        this.currentType = 'cafe';
+        if (state && state.ambientSound) state.ambientSound.current = 'cafe';
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const bufferSize = ctx.sampleRate * 5;
+        const noiseBuffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+          const output = noiseBuffer.getChannelData(ch);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.075;
+            b6 = white * 0.115926;
+          }
+        }
+
+        const cafeSource = ctx.createBufferSource();
+        cafeSource.buffer = noiseBuffer;
+        cafeSource.loop = true;
+
+        const bp1 = ctx.createBiquadFilter();
+        bp1.type = 'bandpass';
+        bp1.frequency.setValueAtTime(360, now);
+        bp1.Q.setValueAtTime(1.8, now);
+
+        const bp2 = ctx.createBiquadFilter();
+        bp2.type = 'bandpass';
+        bp2.frequency.setValueAtTime(840, now);
+        bp2.Q.setValueAtTime(1.5, now);
+
+        const lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(1300, now);
+
+        const cafeGain = ctx.createGain();
+        cafeGain.gain.setValueAtTime(0, now);
+        cafeGain.gain.linearRampToValueAtTime(0.75, now + 0.8);
+
+        cafeSource.connect(bp1);
+        bp1.connect(lp);
+        cafeSource.connect(bp2);
+        bp2.connect(lp);
+        lp.connect(cafeGain);
+        cafeGain.connect(this.masterGain);
+
+        cafeSource.start(now);
+        this.activeNodes.push(cafeSource, bp1, bp2, lp, cafeGain);
+      },
+
+      // 4. Sóng Alpha (Alpha Waves): 216Hz Left + 226Hz Right (10Hz Binaural beat) + soft warm noise
+      playAlpha() {
+        this.init();
+        this.stop();
+        this.currentType = 'alpha';
+        if (state && state.ambientSound) state.ambientSound.current = 'alpha';
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const merger = ctx.createChannelMerger(2);
+
+        const oscL = ctx.createOscillator();
+        oscL.type = 'sine';
+        oscL.frequency.setValueAtTime(216, now);
+        const gainL = ctx.createGain();
+        gainL.gain.setValueAtTime(0.18, now);
+        oscL.connect(gainL);
+        gainL.connect(merger, 0, 0);
+
+        const oscR = ctx.createOscillator();
+        oscR.type = 'sine';
+        oscR.frequency.setValueAtTime(226, now);
+        const gainR = ctx.createGain();
+        gainR.gain.setValueAtTime(0.18, now);
+        oscR.connect(gainR);
+        gainR.connect(merger, 0, 1);
+
+        const bufferSize = ctx.sampleRate * 3;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99765 * b0 + white * 0.0990460;
+          b1 = 0.96300 * b1 + white * 0.2965164;
+          b2 = 0.57000 * b2 + white * 1.0526913;
+          output[i] = (b0 + b1 + b2 + white * 0.1848) * 0.02;
+        }
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = noiseBuffer;
+        noiseSource.loop = true;
+
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(450, now);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.1, now);
+
+        noiseSource.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(merger, 0, 0);
+        noiseGain.connect(merger, 0, 1);
+
+        const alphaMaster = ctx.createGain();
+        alphaMaster.gain.setValueAtTime(0, now);
+        alphaMaster.gain.linearRampToValueAtTime(0.85, now + 0.8);
+
+        merger.connect(alphaMaster);
+        alphaMaster.connect(this.masterGain);
+
+        oscL.start(now);
+        oscR.start(now);
+        noiseSource.start(now);
+
+        this.activeNodes.push(oscL, oscR, gainL, gainR, noiseSource, noiseFilter, noiseGain, merger, alphaMaster);
+      }
+    };
+
+    function updateAmbientCardsUI() {
+      const current = AmbientSoundEngine.currentType;
+      const cards = document.querySelectorAll('.ambient-card');
+      cards.forEach(card => {
+        const type = card.getAttribute('data-ambient');
+        if (type === current) {
+          card.classList.add('is-active');
+        } else {
+          card.classList.remove('is-active');
+        }
+      });
+    }
+
+    function updateVolumeUI() {
+      const slider = document.getElementById('ambientVolumeSlider');
+      const label = document.getElementById('ambientVolumeLabel');
+      const volIconUse = document.querySelector('#ambientVolIcon use');
+
+      const vol = AmbientSoundEngine.isMuted ? 0 : Math.round(AmbientSoundEngine.volume * 100);
+      if (slider && !AmbientSoundEngine.isMuted) slider.value = vol;
+      if (label) label.innerText = `${vol}%`;
+
+      if (volIconUse) {
+        if (AmbientSoundEngine.isMuted || vol === 0) {
+          volIconUse.setAttribute('href', '#icon-volume-x');
+        } else if (vol <= 50) {
+          volIconUse.setAttribute('href', '#icon-volume-1');
+        } else {
+          volIconUse.setAttribute('href', '#icon-volume-2');
+        }
+      }
+    }
+
+    function updatePomoModeButtonsUI() {
+      const btn25 = document.getElementById('btnPomoMode25');
+      const btn5 = document.getElementById('btnPomoMode5');
+      const btnCustom = document.getElementById('btnPomoModeCustom');
+      const customLabel = document.getElementById('pomoCustomLabel');
+
+      const activeClass = 'pomo-mode-btn px-2.5 py-1 rounded-lg font-bold text-indigo-700 dark:text-indigo-300 bg-white dark:bg-[#232732] shadow-2xs transition cursor-pointer';
+      const inactiveClass = 'pomo-mode-btn px-2.5 py-1 rounded-lg font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white transition cursor-pointer';
+
+      if (state.pomodoro.mode === 'shortBreak') {
+        if (btn25) btn25.className = inactiveClass;
+        if (btn5) btn5.className = activeClass;
+        if (btnCustom) btnCustom.className = inactiveClass + ' flex items-center gap-1';
+      } else if (state.pomodoro.mode === 'work') {
+        if (state.pomodoro.workMinutes === 25) {
+          if (btn25) btn25.className = activeClass;
+          if (btn5) btn5.className = inactiveClass;
+          if (btnCustom) btnCustom.className = inactiveClass + ' flex items-center gap-1';
+          if (customLabel) customLabel.innerText = "Tùy chỉnh";
+        } else {
+          if (btn25) btn25.className = inactiveClass;
+          if (btn5) btn5.className = inactiveClass;
+          if (btnCustom) btnCustom.className = activeClass + ' flex items-center gap-1';
+          if (customLabel) customLabel.innerText = `${state.pomodoro.workMinutes}p`;
+        }
+      }
+    }
+
     // Chế độ tập trung (Focus Mode)
     function toggleFocusMode(forceState = null) {
       const willBeFocus = forceState !== null ? forceState : !state.focusMode;
       state.focusMode = willBeFocus;
+      const topBar = document.getElementById('focusTopBar');
 
       if (willBeFocus) {
         document.body.classList.add('is-focus-mode');
+        if (topBar) topBar.classList.remove('hidden');
         showToast("Đã bật Chế độ tập trung (Nhấn Esc để thoát)");
         if (state.pomodoro.isRunning) requestScreenWakeLock();
         if (typeof festivalParticleEngine !== 'undefined' && festivalParticleEngine) {
           festivalParticleEngine.pause();
         }
+        renderPomodoroDisplay();
+        updateAmbientCardsUI();
+        updateVolumeUI();
       } else {
         document.body.classList.remove('is-focus-mode');
+        if (topBar) topBar.classList.add('hidden');
+        const popover = document.getElementById('pomoCustomPopover');
+        if (popover) popover.classList.add('hidden');
+
+        // Dừng tiếng ồn trắng khi thoát Chế độ tập trung để không gây ồn nền
+        if (AmbientSoundEngine.currentType) {
+          AmbientSoundEngine.stop();
+          updateAmbientCardsUI();
+        }
+
         releaseScreenWakeLock();
         if (typeof festivalParticleEngine !== 'undefined' && festivalParticleEngine) {
           festivalParticleEngine.resume();
@@ -36389,6 +36862,8 @@
         console.warn("Lỗi loadPomodoroSettings:", e);
       }
       renderPomodoroDisplay();
+      if (typeof updateVolumeUI === 'function') updateVolumeUI();
+      if (typeof updateAmbientCardsUI === 'function') updateAmbientCardsUI();
     }
 
     function savePomodoroSettings() {
@@ -36436,9 +36911,9 @@
       if (timeDisplay) timeDisplay.innerText = timeStr;
 
       if (modeLabel) {
-        if (state.pomodoro.mode === 'work') modeLabel.innerText = "Tập trung";
-        else if (state.pomodoro.mode === 'shortBreak') modeLabel.innerText = "Nghỉ ngắn";
-        else modeLabel.innerText = "Nghỉ dài";
+        if (state.pomodoro.mode === 'work') modeLabel.innerText = "🍅 Tập trung";
+        else if (state.pomodoro.mode === 'shortBreak') modeLabel.innerText = "☕ Nghỉ ngắn";
+        else modeLabel.innerText = "🍃 Nghỉ dài";
       }
 
       if (cycleText) {
@@ -36452,6 +36927,8 @@
       if (iconUse) {
         iconUse.setAttribute('href', state.pomodoro.isRunning ? '#icon-pause' : '#icon-play');
       }
+
+      updatePomoModeButtonsUI();
     }
 
     function startPomodoroTimer(setNewTarget = true) {
@@ -36607,9 +37084,14 @@
       }, { passive: true });
     }
 
-    // Phím tắt Esc để thoát Focus Mode
+    // Phím tắt Esc để thoát Focus Mode hoặc đóng popover
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && state.focusMode) {
+        const pomoCustomPopover = document.getElementById('pomoCustomPopover');
+        if (pomoCustomPopover && !pomoCustomPopover.classList.contains('hidden')) {
+          pomoCustomPopover.classList.add('hidden');
+          return;
+        }
         const pomodoroModal = document.getElementById('pomodoroSettingsModal');
         if (pomodoroModal && !pomodoroModal.classList.contains('hidden')) {
           hideModalAnimated(pomodoroModal);
@@ -36639,6 +37121,11 @@
       btnExitFocusMode.addEventListener('click', () => toggleFocusMode(false));
     }
 
+    const btnExitFocusModeTop = document.getElementById('btnExitFocusModeTop');
+    if (btnExitFocusModeTop) {
+      btnExitFocusModeTop.addEventListener('click', () => toggleFocusMode(false));
+    }
+
     const btnFocusTimerToggle = document.getElementById('btnFocusTimerToggle') || document.getElementById('btnPomoTogglePlay');
     if (btnFocusTimerToggle) {
       btnFocusTimerToggle.addEventListener('click', togglePomodoroTimer);
@@ -36652,6 +37139,143 @@
     const btnFocusTimerReset = document.getElementById('btnFocusTimerReset') || document.getElementById('btnPomoReset');
     if (btnFocusTimerReset) {
       btnFocusTimerReset.addEventListener('click', resetPomodoroTimer);
+    }
+
+    // Gắn sự kiện Tiếng Ồn Trắng (Ảnh 3: Mưa rào, Sóng biển, Quán Cafe, Sóng Alpha)
+    const ambientCardMap = {
+      rain: () => AmbientSoundEngine.playRain(),
+      ocean: () => AmbientSoundEngine.playOcean(),
+      cafe: () => AmbientSoundEngine.playCafe(),
+      alpha: () => AmbientSoundEngine.playAlpha()
+    };
+
+    document.querySelectorAll('.ambient-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const type = card.getAttribute('data-ambient');
+        if (AmbientSoundEngine.currentType === type) {
+          AmbientSoundEngine.stop();
+        } else if (ambientCardMap[type]) {
+          ambientCardMap[type]();
+        }
+        updateAmbientCardsUI();
+      });
+    });
+
+    // Thanh trượt âm lượng & nút Mute
+    const ambientSlider = document.getElementById('ambientVolumeSlider');
+    if (ambientSlider) {
+      ambientSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value) / 100;
+        AmbientSoundEngine.setMuted(false);
+        AmbientSoundEngine.setVolume(val);
+        updateVolumeUI();
+      });
+    }
+
+    const btnAmbientMute = document.getElementById('btnAmbientMuteToggle');
+    if (btnAmbientMute) {
+      btnAmbientMute.addEventListener('click', () => {
+        AmbientSoundEngine.setMuted(!AmbientSoundEngine.isMuted);
+        updateVolumeUI();
+      });
+    }
+
+    // Nút chọn nhanh chế độ giờ Pomodoro: 25p, 5p, Tùy chỉnh
+    const btnPomo25 = document.getElementById('btnPomoMode25');
+    if (btnPomo25) {
+      btnPomo25.addEventListener('click', () => {
+        pausePomodoroTimer();
+        state.pomodoro.mode = 'work';
+        state.pomodoro.workMinutes = 25;
+        state.pomodoro.remainingMs = 25 * 60 * 1000;
+        renderPomodoroDisplay();
+        savePomodoroState();
+        showToast("Đã chọn chế độ tập trung 25 phút");
+      });
+    }
+
+    const btnPomo5 = document.getElementById('btnPomoMode5');
+    if (btnPomo5) {
+      btnPomo5.addEventListener('click', () => {
+        pausePomodoroTimer();
+        state.pomodoro.mode = 'shortBreak';
+        state.pomodoro.shortBreakMinutes = 5;
+        state.pomodoro.remainingMs = 5 * 60 * 1000;
+        renderPomodoroDisplay();
+        savePomodoroState();
+        showToast("Đã chọn chế độ nghỉ ngắn 5 phút");
+      });
+    }
+
+    const btnPomoCustom = document.getElementById('btnPomoModeCustom');
+    const pomoCustomPopover = document.getElementById('pomoCustomPopover');
+    if (btnPomoCustom && pomoCustomPopover) {
+      btnPomoCustom.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pomoCustomPopover.classList.toggle('hidden');
+      });
+    }
+
+    function applyCustomPomoMinutes(mins) {
+      const m = parseInt(mins, 10);
+      if (isNaN(m) || m <= 0) {
+        showToast("Vui lòng nhập số phút hợp lệ (từ 1 đến 180)", "error");
+        return;
+      }
+      pausePomodoroTimer();
+      state.pomodoro.mode = 'work';
+      state.pomodoro.workMinutes = Math.min(180, Math.max(1, m));
+      state.pomodoro.remainingMs = state.pomodoro.workMinutes * 60 * 1000;
+      if (pomoCustomPopover) pomoCustomPopover.classList.add('hidden');
+      renderPomodoroDisplay();
+      savePomodoroState();
+      showToast(`Đã thiết lập Pomodoro: ${state.pomodoro.workMinutes} phút`, "success");
+    }
+
+    document.querySelectorAll('.pomo-quick-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const mins = chip.getAttribute('data-mins');
+        applyCustomPomoMinutes(mins);
+      });
+    });
+
+    const btnApplyCustom = document.getElementById('btnApplyPomoCustom');
+    const inputCustomMins = document.getElementById('pomoCustomInputMins');
+    if (btnApplyCustom && inputCustomMins) {
+      btnApplyCustom.addEventListener('click', () => {
+        applyCustomPomoMinutes(inputCustomMins.value);
+      });
+      inputCustomMins.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') applyCustomPomoMinutes(inputCustomMins.value);
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (pomoCustomPopover && !pomoCustomPopover.classList.contains('hidden')) {
+        if (!pomoCustomPopover.contains(e.target) && btnPomoCustom && !btnPomoCustom.contains(e.target)) {
+          pomoCustomPopover.classList.add('hidden');
+        }
+      }
+    });
+
+    // Nút mở modal cài đặt từ thanh top bar
+    const btnPomoSettingsTop = document.getElementById('btnPomoSettingsTop');
+    if (btnPomoSettingsTop) {
+      btnPomoSettingsTop.addEventListener('click', () => {
+        const pomodoroModal = document.getElementById('pomodoroSettingsModal');
+        const pomodoroWorkInput = document.getElementById('pomodoroWorkInput') || document.getElementById('pomoInputWork');
+        const pomodoroShortBreakInput = document.getElementById('pomodoroShortBreakInput') || document.getElementById('pomoInputShort');
+        const pomodoroLongBreakInput = document.getElementById('pomodoroLongBreakInput') || document.getElementById('pomoInputLong');
+        const pomodoroAutoSwitchCheck = document.getElementById('pomodoroAutoSwitchCheck') || document.getElementById('pomoCheckAutoSwitch');
+        const pomodoroSoundCheck = document.getElementById('pomodoroSoundCheck') || document.getElementById('pomoCheckSound');
+
+        if (pomodoroWorkInput) pomodoroWorkInput.value = state.pomodoro.workMinutes;
+        if (pomodoroShortBreakInput) pomodoroShortBreakInput.value = state.pomodoro.shortBreakMinutes;
+        if (pomodoroLongBreakInput) pomodoroLongBreakInput.value = state.pomodoro.longBreakMinutes;
+        if (pomodoroAutoSwitchCheck) pomodoroAutoSwitchCheck.checked = state.pomodoro.autoSwitch;
+        if (pomodoroSoundCheck) pomodoroSoundCheck.checked = state.pomodoro.soundEnabled;
+        if (pomodoroModal) showModalAnimated(pomodoroModal);
+      });
     }
 
     // Modal Cài đặt Pomodoro
