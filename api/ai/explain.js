@@ -25,6 +25,66 @@ function sanitizeText(str, maxLen) {
   return str.replace(/[\u0000-\u0008\u000B-\u000C\u000E-\u001F]/g, '').trim().substring(0, maxLen);
 }
 
+// Bóc tách nội dung giải thích an toàn chống cắt cụt JSON hoặc trả chuỗi rác "{"
+function extractExplanationText(data, rawText) {
+  // 1. Kiểm tra từ object parsed
+  if (data && typeof data === 'object') {
+    const candidate = data.text || data.explanation || data.summary || data.content;
+    if (typeof candidate === 'string' && candidate.trim().length >= 15 && candidate.trim() !== '{' && candidate.trim() !== '{}') {
+      return candidate.trim();
+    }
+  }
+
+  // 2. Kiểm tra chuỗi thô (nếu data là string hoặc rawText)
+  const raw = typeof data === 'string' ? data : (rawText || (data && data.text) || '');
+  if (!raw || typeof raw !== 'string') return '';
+
+  let trimmed = raw.trim();
+  // Xóa bọc markdown ```json ... ```
+  trimmed = trimmed.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+  // Thử parse JSON
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && typeof parsed === 'object') {
+      const candidate = parsed.text || parsed.explanation || parsed.summary || parsed.content;
+      if (typeof candidate === 'string' && candidate.trim().length >= 15 && candidate.trim() !== '{' && candidate.trim() !== '{}') {
+        return candidate.trim();
+      }
+    }
+  } catch (_) {}
+
+  // 3. Dùng Regex bóc tách nội dung trường "text", "explanation", "summary", "content" kể cả khi JSON bị cắt cụt
+  const regex = /"(?:text|explanation|summary|content)"\s*:\s*"((?:\\.|[^"\\])*)("|$)/i;
+  const match = trimmed.match(regex);
+  if (match && match[1]) {
+    try {
+      const unescaped = JSON.parse(`"${match[1]}"`);
+      if (unescaped.trim().length >= 15) {
+        return unescaped.trim();
+      }
+    } catch (_) {
+      const clean = match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      if (clean.trim().length >= 15) {
+        return clean.trim();
+      }
+    }
+  }
+
+  // 4. Dọn sạch các ký tự {, }, `, quotes thừa ở đầu/cuối
+  const cleaned = trimmed
+    .replace(/^[\s{}"`]+/, '')
+    .replace(/[\s{}"`]+$/, '')
+    .trim();
+
+  // Nếu chuỗi còn lại chỉ là {, {}, rỗng hoặc ngắn dưới 15 ký tự -> không hợp lệ
+  if (!cleaned || cleaned === '{' || cleaned === '{}' || cleaned.length < 15) {
+    return '';
+  }
+
+  return cleaned;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Chỉ chấp nhận phương thức POST' });
@@ -174,6 +234,7 @@ module.exports = async function handler(req, res) {
     }
 
     // 3. Kiểm tra tính toán Cache máy chủ (kèm style, hash của documentContext và prompt để không lẫn cache)
+    const bypassCache = Boolean(body.bypassCache);
     const promptHash = instruction ? crypto.createHash('md5').update(instruction).digest('hex').substring(0, 8) : 'default';
     const docContextHash = documentContextText ? crypto.createHash('md5').update(documentContextText).digest('hex').substring(0, 8) : 'nodoc';
     const cacheKey = crypto.createHash('sha256')
@@ -181,22 +242,33 @@ module.exports = async function handler(req, res) {
       .digest('hex');
 
     const cacheDocRef = db.doc(`ai_cache/${cacheKey}`);
-    const cachedSnap = await cacheDocRef.get();
 
-    if (cachedSnap.exists) {
-      const cachedData = cachedSnap.data();
-      if (cachedData && cachedData.result) {
-        return res.status(200).json({
-          success: true,
-          cached: true,
-          mode: cachedData.result.mode || mode,
-          style: cachedData.result.style || style,
-          text: cachedData.result.text || '',
-          terms: cachedData.result.terms || [],
-          examples: cachedData.result.examples || [],
-          targetLang: cachedData.result.targetLang || targetLang
-        });
+    if (!bypassCache) {
+      const cachedSnap = await cacheDocRef.get();
+      if (cachedSnap.exists) {
+        const cachedData = cachedSnap.data();
+        if (cachedData && cachedData.result) {
+          const cachedText = extractExplanationText(cachedData.result, cachedData.result.text);
+          // CHẶN TRIỆT ĐỂ: Nếu cache cũ chỉ có "{" hoặc quá ngắn -> xóa bản ghi rác và tiếp tục tạo mới
+          if (cachedText && cachedText.length >= 15) {
+            return res.status(200).json({
+              success: true,
+              cached: true,
+              mode: cachedData.result.mode || mode,
+              style: cachedData.result.style || style,
+              text: cachedText,
+              terms: cachedData.result.terms || [],
+              examples: cachedData.result.examples || [],
+              targetLang: cachedData.result.targetLang || targetLang
+            });
+          } else {
+            cacheDocRef.delete().catch(() => {});
+          }
+        }
       }
+    } else {
+      // Khi client yêu cầu bypassCache: chủ động dọn dẹp cache cũ nếu có
+      cacheDocRef.delete().catch(() => {});
     }
 
     // 4. Kiểm tra hạn mức theo gói (chỉ trừ lượt khi KHÔNG có cache)
@@ -356,30 +428,59 @@ ${rawText}
       required: ['mode', 'text']
     };
 
-    // 6. Gọi callAI với mô hình nhanh (fast)
-    const aiResponse = await callAI({
-      system: systemPrompt,
-      prompt: userPrompt,
-      schema: jsonSchema,
-      taskType: 'fast',
-      maxTokens: 350,
-      purpose: mode
-    });
-
-    let finalResult = aiResponse.data;
-    if (!finalResult || typeof finalResult !== 'object') {
-      // Trường hợp fallback nếu parse schema JSON lỗi
-      finalResult = {
-        mode: mode,
-        text: sanitizeText(aiResponse.text, 2500),
-        terms: [],
-        examples: []
-      };
+    // 6. Gọi callAI với mô hình nhanh (fast), tăng maxTokens lên 3072 (từ 2500 - 4096 tokens) để không bị cạn token suy nghĩ
+    let aiResponse = null;
+    try {
+      aiResponse = await callAI({
+        system: systemPrompt,
+        prompt: userPrompt,
+        schema: jsonSchema,
+        taskType: 'fast',
+        maxTokens: 3072,
+        purpose: mode
+      });
+    } catch (callErr) {
+      console.warn('Lỗi gọi callAI lần 1:', callErr.message);
     }
 
+    let extractedExplanation = extractExplanationText(aiResponse?.data, aiResponse?.rawText || aiResponse?.text);
+
+    // Tự động gọi fallback nếu lần 1 thất bại, bị cắt cụt JSON hoặc trả chuỗi rác
+    if (!extractedExplanation || extractedExplanation.length < 15) {
+      console.warn('Kết quả AI lần 1 bị cắt cụt JSON hoặc không hợp lệ. Đang tự động gọi fallback plain-text...');
+      try {
+        const fallbackRes = await callAI({
+          system: systemPrompt,
+          prompt: userPrompt + '\n\n[BẮT BUỘC]: Trả về nội dung giải thích trực tiếp dạng văn bản thường, KHÔNG dùng cấu trúc JSON hay bọc mã markdown.',
+          schema: false,
+          taskType: 'fast',
+          maxTokens: 3072,
+          purpose: mode
+        });
+        const fallbackText = extractExplanationText(fallbackRes?.data, fallbackRes?.rawText || fallbackRes?.text);
+        if (fallbackText && fallbackText.length >= 15) {
+          extractedExplanation = fallbackText;
+          aiResponse = fallbackRes;
+        }
+      } catch (fbErr) {
+        console.warn('Lỗi gọi fallback AI:', fbErr.message);
+      }
+    }
+
+    // TUYỆT ĐỐI KHÔNG lưu vào cache, KHÔNG trừ lượt dùng và KHÔNG bao giờ trả chữ "{" về giao diện
+    if (!extractedExplanation || extractedExplanation === '{' || extractedExplanation === '{}' || extractedExplanation.length < 15) {
+      return res.status(502).json({
+        code: 'AI_RESPONSE_TRUNCATED',
+        error: 'Mô hình AI bị quá tải hoặc phản hồi bị ngắt quãng. Vui lòng bấm "Thử lại" hoặc đổi sang phong cách giải thích khác.'
+      });
+    }
+
+    let finalResult = (aiResponse && typeof aiResponse.data === 'object' && !aiResponse.data.truncated) ? aiResponse.data : {};
     finalResult.mode = mode;
+    finalResult.style = style;
     finalResult.targetLang = targetLang;
-    finalResult.text = sanitizeText(finalResult.text, 2500);
+    finalResult.text = sanitizeText(extractedExplanation, 2500);
+
     if (Array.isArray(finalResult.terms)) {
       finalResult.terms = finalResult.terms.slice(0, 3).map(t => ({
         term: sanitizeText(t.term, 100),
@@ -388,14 +489,14 @@ ${rawText}
     } else {
       finalResult.terms = [];
     }
+
     if (Array.isArray(finalResult.examples)) {
       finalResult.examples = finalResult.examples.slice(0, 3).map(e => sanitizeText(e, 500));
     } else {
       finalResult.examples = [];
     }
 
-    // 7 & 8. Lưu Cache và cập nhật lượt dùng song song không chặn response (Fire-and-forget)
-    finalResult.style = style;
+    // 7 & 8. Lưu Cache và cập nhật lượt dùng CHỈ KHI KẾT QUẢ ĐÃ XÁC THỰC HỢP LỆ
     Promise.all([
       cacheDocRef.set({
         key: cacheKey,

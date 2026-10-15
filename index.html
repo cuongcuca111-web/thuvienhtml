@@ -86,12 +86,14 @@
     const CHANGELOG = [
       {
         version: 'v5.4.2',
-        date: '2026-10-15T13:55:00+07:00',
-        title: 'Khôi Phục Hoàn Toàn Thanh Công Cụ Bôi Đen (Đóng Khung, Chỉnh Màu, Giải Thích, Ví Dụ, Dịch)',
+        date: '2026-10-15T15:30:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Cắt Cụt JSON Trợ Lý AI (Ký Tự "{") & Chuẩn Hóa v5.4.2',
         items: [
-          { type: 'fix', text: 'Khắc phục lỗi tham chiếu ngầm (ReferenceError) trong Bridge Script của Iframe bài học: Khai báo đầy đủ nút cha và ngữ cảnh vùng chọn, giúp phát tin nhắn TEXT_SELECTED lập tức khi người dùng bôi đen văn bản.' },
-          { type: 'fix', text: 'Tối ưu hóa điều hướng hiển thị Thanh công cụ nổi (#highlightFloatingToolbar): Nhận diện chuẩn xác màn hình Desktop/Laptop (kể cả thiết bị có màn hình cảm ứng hoặc Surface), đảm bảo thanh công cụ nổi luôn xuất hiện chính xác phía trên/dưới vùng chọn.' },
-          { type: 'improved', text: 'Mở rộng hiển thị Trợ lý AI (Giải thích, Ví dụ, Dịch): Luôn sẵn sàng trên thanh công cụ bôi đen với cơ chế hạn mức minh bạch và phản hồi tức thì khi nhả chuột.' }
+          { type: 'fix', text: 'Sửa dứt điểm lỗi AI chỉ hiển thị ký tự "{" tại khung kết quả (#aiResultPopover): Tăng giới hạn maxOutputTokens lên 3072, vô hiệu hóa thinkingBudget trên Gemini 2.5 Flash để tránh cạn kiệt token và kích hoạt chuẩn JSON mime type.' },
+          { type: 'fix', text: 'Bảo vệ đa lớp cho quá trình xử lý phản hồi AI: Bổ sung Regex bóc tách trường text/explanation/summary khi JSON bị ngắt quãng, dọn sạch dấu ngoặc nhọn thừa và ngăn chặn tuyệt đối việc lưu kết quả lỗi vào ai_cache.' },
+          { type: 'improved', text: 'Nâng cấp trải nghiệm giao diện người dùng: Tự động kiểm tra làm sạch dữ liệu trước khi hiển thị, hỗ trợ nút "Thử lại" kèm cờ bypassCache bỏ qua cache cũ và dọn sạch bộ nhớ tạm LocalStorage/SessionStorage.' },
+          { type: 'fix', text: 'Khắc phục lỗi tham chiếu ngầm (ReferenceError) trong Bridge Script của Iframe bài học và tối ưu thanh công cụ nổi (#highlightFloatingToolbar) hiển thị chuẩn xác trên cả màn hình cảm ứng & Desktop.' },
+          { type: 'improved', text: 'Đồng bộ chuẩn hóa phiên bản v5.4.2 trên toàn bộ hệ thống (index.html, package.json, sw.js).' }
         ]
       },
       {
@@ -4066,7 +4068,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 13:55</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 15:30</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4791,7 +4793,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 13:55</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.2 • build 15/10/2026 15:30</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -31951,6 +31953,59 @@
     }
     window.closeAiResultPopover = closeAiResultPopover;
 
+    function cleanCorruptedAiClientStorage() {
+      try {
+        [localStorage, sessionStorage].forEach(store => {
+          if (!store) return;
+          const toRemove = [];
+          for (let i = 0; i < store.length; i++) {
+            const k = store.key(i);
+            if (!k) continue;
+            const val = store.getItem(k);
+            if (typeof val === 'string' && (val === '{' || val === '{}' || val.trim() === '{' || val.trim() === '{}')) {
+              toRemove.push(k);
+            } else if (typeof val === 'string' && (val.includes('"text":"{"') || val.includes('"text": "{"'))) {
+              toRemove.push(k);
+            }
+          }
+          toRemove.forEach(k => store.removeItem(k));
+        });
+      } catch (_) {}
+    }
+
+    function cleanAiClientContent(raw) {
+      if (!raw || typeof raw !== 'string') return '';
+      let text = raw.trim();
+      text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && typeof parsed === 'object') {
+          const val = parsed.text || parsed.explanation || parsed.summary || parsed.content;
+          if (typeof val === 'string' && val.trim().length >= 15 && val.trim() !== '{' && val.trim() !== '{}') {
+            text = val.trim();
+          }
+        }
+      } catch (_) {}
+
+      const match = text.match(/"(?:text|explanation|summary|content)"\s*:\s*"((?:\\.|[^"\\])*)("|$)/i);
+      if (match && match[1]) {
+        try {
+          const unescaped = JSON.parse(`"${match[1]}"`);
+          if (unescaped.trim().length >= 15) text = unescaped.trim();
+        } catch (_) {
+          const clean = match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+          if (clean.trim().length >= 15) text = clean.trim();
+        }
+      }
+
+      text = text.replace(/^[\s{}"`]+/, '').replace(/[\s{}"`]+$/, '').trim();
+      if (!text || text === '{' || text === '{}' || text.length < 15) {
+        return '';
+      }
+      return text;
+    }
+
     function renderAiSuccessResult(data) {
       const bodyEl = document.getElementById('aiResultBody');
       const cachedBadge = document.getElementById('aiCachedBadge');
@@ -31960,7 +32015,14 @@
       }
 
       if (!bodyEl) return;
-      const safeText = escapeAiHtml(data.text || '');
+
+      const cleaned = cleanAiClientContent(data.text);
+      if (!cleaned) {
+        renderAiError('Phản hồi AI không hoàn chỉnh hoặc bị cắt ngắn. Vui lòng bấm "Thử lại".', true);
+        return;
+      }
+
+      const safeText = escapeAiHtml(cleaned);
       const paragraphs = safeText.split(/\n\s*\n/).filter(Boolean);
       let html = '<div class="space-y-2 text-[#1C1917] dark:text-[#EDECE8] leading-relaxed">';
       if (paragraphs.length > 0) {
@@ -32003,7 +32065,7 @@
       bodyEl.innerHTML = html;
     }
 
-    function renderAiError(errMsg) {
+    function renderAiError(errMsg, forceBypass = true) {
       const bodyEl = document.getElementById('aiResultBody');
       if (!bodyEl) return;
       bodyEl.innerHTML = `
@@ -32021,7 +32083,7 @@
       const retryBtn = document.getElementById('btnAiRetry');
       if (retryBtn) {
         retryBtn.addEventListener('click', () => {
-          requestAiExplain(currentAiActiveMode, currentAiTargetLang, currentAiPreferredStyle);
+          requestAiExplain(currentAiActiveMode, currentAiTargetLang, currentAiPreferredStyle, null, true);
         });
       }
     }
@@ -32105,7 +32167,7 @@
       });
     }
 
-    async function requestAiExplain(mode, customLang, customStyle, customPrompt) {
+    async function requestAiExplain(mode, customLang, customStyle, customPrompt, bypassCache = false) {
       const now = Date.now();
       if (now - lastAiRequestTime < 600) return;
       lastAiRequestTime = now;
@@ -32267,7 +32329,8 @@
           lessonId: (state && state.activeLessonId) || '',
           style: activeStyle || undefined,
           documentContext: smartDocContext || undefined,
-          customPrompt: customPrompt || undefined
+          customPrompt: customPrompt || undefined,
+          bypassCache: Boolean(bypassCache)
         };
 
         const response = await fetch('/api/ai/explain', {
@@ -32289,17 +32352,24 @@
             return;
           }
           if (response.status === 429) {
-            renderAiError(resData.error || 'Bạn đang gửi yêu cầu quá nhanh (429). Vui lòng đợi 1 phút trước khi thử lại.');
+            renderAiError(resData.error || 'Bạn đang gửi yêu cầu quá nhanh (429). Vui lòng đợi 1 phút trước khi thử lại.', true);
             return;
           }
           if (response.status >= 500) {
-            renderAiError(resData.error || `Máy chủ AI tạm thời gặp sự cố (HTTP ${response.status}). Vui lòng bấm "Thử lại".`);
+            renderAiError(resData.error || `Máy chủ AI tạm thời gặp sự cố (HTTP ${response.status}). Vui lòng bấm "Thử lại".`, true);
             return;
           }
-          renderAiError(resData.error || `Lỗi xử lý AI từ máy chủ (HTTP ${response.status})`);
+          renderAiError(resData.error || `Lỗi xử lý AI từ máy chủ (HTTP ${response.status})`, true);
           return;
         }
 
+        const cleanedText = cleanAiClientContent(resData.text);
+        if (!cleanedText) {
+          renderAiError('Nội dung AI nhận về không đầy đủ hoặc bị cắt ngắn. Vui lòng bấm "Thử lại".', true);
+          return;
+        }
+
+        resData.text = cleanedText;
         currentAiLastResult = resData;
         renderAiSuccessResult(resData);
 
@@ -32400,7 +32470,7 @@
           updateAiStylePills(targetStyle);
           syncUserPersonalAiSettings(targetStyle);
           if (currentAiSelectedText) {
-            requestAiExplain('explain', null, targetStyle);
+            requestAiExplain('explain', null, targetStyle, null, true);
           }
         });
       });
@@ -32636,11 +32706,16 @@
           }
         });
       }
+      try { cleanCorruptedAiClientStorage(); } catch (_) {}
     }
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initAiExplainListeners);
+      document.addEventListener('DOMContentLoaded', () => {
+        try { cleanCorruptedAiClientStorage(); } catch (_) {}
+        initAiExplainListeners();
+      });
     } else {
+      try { cleanCorruptedAiClientStorage(); } catch (_) {}
       initAiExplainListeners();
     }
 
