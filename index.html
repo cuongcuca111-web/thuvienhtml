@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.2',
+        date: '2026-10-16T01:30:00+07:00',
+        title: 'Lưu Trữ Tùy Chọn Hiển Thị Cá Nhân Hóa & Tối Ưu Trải Nghiệm Mặc Định',
+        items: [
+          { type: 'feature', text: 'Đồng bộ & lưu trữ Tùy chọn hiển thị theo từng tài khoản: Toàn bộ tùy chọn hiển thị (chủ đề công khai, thẻ tiếp tục học, kiểu thẻ đã học, huy hiệu đã học, khung đánh dấu, cử chỉ vuốt, trợ lý AI) được lưu trữ riêng biệt trên Firestore và LocalStorage cho từng người dùng.' },
+          { type: 'improved', text: 'Mặc định bật Chủ đề sự kiện công khai cho tất cả độc giả để tận hưởng trọn vẹn không khí lễ hội.' },
+          { type: 'improved', text: 'Điều chỉnh mặc định âm lượng tiếng ồn trắng (White Noise / Âm thanh nền) ở mức dịu êm 20%.' },
+          { type: 'improved', text: 'Mặc định tắt Trợ lý AI đọc bài để người dùng chủ động kích hoạt khi có nhu cầu.' }
+        ]
+      },
+      {
         version: 'v5.7.1',
         date: '2026-10-16T01:10:00+07:00',
         title: 'Tinh Chỉnh Typography & Cân Bằng Thị Giác Thống Kê & Bộ Lọc Ghi Chú',
@@ -7839,8 +7850,8 @@
           <button id="btnAmbientMuteToggle" type="button" class="w-6 h-6 rounded-lg text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition cursor-pointer" title="Bật/Tắt âm lượng">
             <svg id="ambientVolIcon" class="w-4 h-4"><use href="#icon-volume-2"></use></svg>
           </button>
-          <input id="ambientVolumeSlider" type="range" min="0" max="100" value="50" class="w-16 sm:w-20 h-1.5 accent-indigo-600 bg-stone-200 dark:bg-stone-700 rounded-full cursor-pointer" title="Âm lượng tiếng ồn trắng" />
-          <span id="ambientVolumeLabel" class="text-[11px] font-mono font-bold text-stone-600 dark:text-stone-300 w-8 text-right tabular-nums">50%</span>
+          <input id="ambientVolumeSlider" type="range" min="0" max="100" value="20" class="w-16 sm:w-20 h-1.5 accent-indigo-600 bg-stone-200 dark:bg-stone-700 rounded-full cursor-pointer" title="Âm lượng tiếng ồn trắng" />
+          <span id="ambientVolumeLabel" class="text-[11px] font-sans font-bold text-stone-600 dark:text-stone-300 w-8 text-right tabular-nums">20%</span>
         </div>
       </div>
 
@@ -11746,6 +11757,9 @@
             }
           }
           applyFestivalTheme(resolved);
+          if (typeof saveUserSettings === 'function') {
+            saveUserSettings();
+          }
         };
       }
 
@@ -14918,7 +14932,7 @@
       focusMode: false,
       ambientSound: {
         current: null, // null | 'rain' | 'ocean' | 'cafe' | 'alpha'
-        volume: 0.5,
+        volume: 0.2,
         isMuted: false
       },
       pomodoro: {
@@ -21345,21 +21359,146 @@
     });
 
     async function loadUserSettings() {
-      if (!state.userId || state.useLocalFallback || !db) {
-        try {
-          const cfg = JSON.parse(localStorage.getItem('user_cfg') || '{}');
-          if (cfg.fontSizeOffset !== undefined) state.fontSizeOffset = cfg.fontSizeOffset;
-          if (cfg.isDarkMode !== undefined) {
-            state.isDarkMode = cfg.isDarkMode;
-            applyTheme(state.isDarkMode);
+      // 1. Nạp trước từ cache theo từng user (nếu có state.userId) hoặc fallback user_cfg
+      const userKey = state.userId ? `user_cfg_${state.userId}` : 'user_cfg';
+      let cachedCfg = null;
+      try {
+        const raw = localStorage.getItem(userKey) || localStorage.getItem('user_cfg');
+        if (raw) cachedCfg = JSON.parse(raw);
+      } catch (_) {}
+
+      // Hàm áp dụng cấu hình lên giao diện và state
+      function applyConfig(cfg) {
+        if (!cfg || typeof cfg !== 'object') return;
+        if (cfg.fontSizeOffset !== undefined) {
+          state.fontSizeOffset = cfg.fontSizeOffset;
+          updateFontSizeDisplay();
+        }
+        if (cfg.isDarkMode !== undefined) {
+          state.isDarkMode = cfg.isDarkMode;
+          applyTheme(state.isDarkMode);
+        }
+        state.preserveOriginalTheme = true;
+        if (cfg.readingWidth) {
+          state.readingWidth = cfg.readingWidth;
+          applyReadingWidth(state.readingWidth);
+        }
+        if (cfg.desktopSidebarOpen !== undefined) {
+          state.desktopSidebarOpen = cfg.desktopSidebarOpen;
+          if (typeof applyDesktopSidebarState === 'function') applyDesktopSidebarState(state.desktopSidebarOpen);
+        }
+        if (cfg.sortOrder) {
+          state.sortOrder = cfg.sortOrder;
+          localStorage.setItem('local_sort_order', cfg.sortOrder);
+        }
+        if (cfg.aiPreferredStyle) {
+          currentAiPreferredStyle = cfg.aiPreferredStyle;
+          localStorage.setItem('ai_preferred_explain_style', cfg.aiPreferredStyle);
+          if (typeof updateAiStylePills === 'function') updateAiStylePills(cfg.aiPreferredStyle);
+        }
+        if (cfg.lastActiveLessonId) state.activeLessonId = cfg.lastActiveLessonId;
+        if (cfg.lastActiveCategoryId) state.activeCategoryId = cfg.lastActiveCategoryId;
+
+        // --- CÁC TÙY CHỌN TRONG "TÙY CHỌN HIỂN THỊ" CHO TỪNG NGƯỜI DÙNG ---
+        // 1. Chủ đề Lễ hội / Sự kiện công khai (mặc định bật)
+        if (cfg.festivalThemeEnabled !== undefined) {
+          if (cfg.festivalThemeEnabled) {
+            localStorage.removeItem('thuvienhtml_festival_disabled');
+          } else {
+            localStorage.setItem('thuvienhtml_festival_disabled', 'true');
           }
-          state.preserveOriginalTheme = true;
-          if (cfg.readingWidth) {
-            state.readingWidth = cfg.readingWidth;
-            applyReadingWidth(state.readingWidth);
+        }
+        const cbFestival = document.getElementById('toggleFestivalEffects');
+        if (cbFestival) {
+          cbFestival.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
+        }
+        if (typeof applyFestivalTheme === 'function' && typeof resolveActiveTheme === 'function' && typeof currentThemeConfig !== 'undefined') {
+          applyFestivalTheme(resolveActiveTheme(currentThemeConfig));
+        }
+
+        // 2. Thẻ "Tiếp tục học"
+        if (cfg.showContinueLearning !== undefined) {
+          if (cfg.showContinueLearning) {
+            localStorage.removeItem('thuvienhtml_hide_continue_learning');
+          } else {
+            localStorage.setItem('thuvienhtml_hide_continue_learning', 'true');
           }
-        } catch (_) {}
+        }
+        const cbContinue = document.getElementById('toggleShowContinueLearning');
+        if (cbContinue) {
+          cbContinue.checked = localStorage.getItem('thuvienhtml_hide_continue_learning') !== 'true';
+        }
+        if (typeof updateContinueLearningCards === 'function') {
+          updateContinueLearningCards();
+        }
+
+        // 3. Kiểu bài đã học ('border' | 'dim' | 'strike')
+        if (cfg.learnedStyle) {
+          localStorage.setItem('cfg_learned_style', cfg.learnedStyle);
+        }
+        const curLearnedStyle = cfg.learnedStyle || localStorage.getItem('cfg_learned_style') || 'border';
+        if (typeof updateLearnedStyleUI === 'function') {
+          updateLearnedStyleUI(curLearnedStyle);
+        }
+
+        // 4. Huy hiệu "Đã học" (✓ Đã học)
+        if (cfg.showLearnedBadge !== undefined) {
+          localStorage.setItem('cfg_hide_learned_badge', cfg.showLearnedBadge ? 'false' : 'true');
+        }
+        const hideBadge = localStorage.getItem('cfg_hide_learned_badge') === 'true';
+        const cbBadge = document.getElementById('toggleLearnedBadge');
+        if (cbBadge) cbBadge.checked = !hideBadge;
+        if (hideBadge) {
+          document.body.classList.add('hide-learned-badge');
+        } else {
+          document.body.classList.remove('hide-learned-badge');
+        }
+
+        // 5. Hiện khung đánh dấu văn bản
+        if (cfg.showTextFrames !== undefined) {
+          localStorage.setItem('setting_show_text_frames', cfg.showTextFrames ? 'true' : 'false');
+        }
+        const cbFrames = document.getElementById('toggleShowTextFrames');
+        if (cbFrames) {
+          cbFrames.checked = localStorage.getItem('setting_show_text_frames') !== 'false';
+        }
+        if (typeof postMessageToLessonIframe === 'function') {
+          postMessageToLessonIframe({ type: 'UPDATE_FRAME_SETTINGS', showFrames: cbFrames ? cbFrames.checked : true });
+        }
+        const iframe = document.getElementById('lessonIframe');
+        const _iDoc = typeof getSafeIframeDocument === 'function' ? getSafeIframeDocument(iframe) : null;
+        if (_iDoc && typeof applyFrameSettingsToDoc === 'function') applyFrameSettingsToDoc(iframe.contentDocument);
+
+        // 6. Vuốt chuyển bài
+        if (cfg.swipeGestureEnabled !== undefined) {
+          state.swipeEnabled = !!cfg.swipeGestureEnabled;
+        }
+        const cbSwipe = document.getElementById('toggleSwipeGesture');
+        if (cbSwipe) {
+          cbSwipe.checked = state.swipeEnabled !== false;
+        }
+
+        // 7. Trợ lý AI đọc bài (mặc định tắt)
+        if (cfg.aiAssistantEnabled !== undefined) {
+          localStorage.setItem('setting_ai_enabled', cfg.aiAssistantEnabled ? 'true' : 'false');
+        }
+        const toggleAi = document.getElementById('toggleAiFeatures');
+        if (toggleAi) {
+          toggleAi.checked = localStorage.getItem('setting_ai_enabled') === 'true';
+        }
+        if (typeof syncAiToggleState === 'function') {
+          syncAiToggleState();
+        }
+      }
+
+      // Áp dụng từ bộ nhớ đệm trước
+      if (cachedCfg) {
+        applyConfig(cachedCfg);
+      } else {
         updateFontSizeDisplay();
+      }
+
+      if (!state.userId || state.useLocalFallback || !db) {
         return;
       }
 
@@ -21367,21 +21506,11 @@
         const settingsRef = doc(db, 'artifacts', appId, 'users', state.userId, 'settings', 'config');
         const snap = await getDoc(settingsRef);
         if (snap.exists()) {
-          const cfg = snap.data();
-          if (cfg.fontSizeOffset !== undefined) state.fontSizeOffset = cfg.fontSizeOffset;
-          if (cfg.isDarkMode !== undefined) {
-            state.isDarkMode = cfg.isDarkMode;
-            applyTheme(state.isDarkMode);
-          }
-          if (cfg.sortOrder) {
-            state.sortOrder = cfg.sortOrder;
-            localStorage.setItem('local_sort_order', cfg.sortOrder);
-          }
-          if (cfg.aiPreferredStyle) {
-            currentAiPreferredStyle = cfg.aiPreferredStyle;
-            localStorage.setItem('ai_preferred_explain_style', cfg.aiPreferredStyle);
-            if (typeof updateAiStylePills === 'function') updateAiStylePills(cfg.aiPreferredStyle);
-          }
+          const cloudCfg = snap.data();
+          applyConfig(cloudCfg);
+          try {
+            localStorage.setItem(userKey, JSON.stringify(cloudCfg));
+          } catch (_) {}
 
           // Nạp learning_bundle (frames & notes) từ Firestore
           try {
@@ -21402,43 +21531,21 @@
           } catch (bErr) {
             console.warn("Lỗi nạp learning_bundle Firestore:", bErr);
           }
-          if (cfg.lastActiveLessonId) state.activeLessonId = cfg.lastActiveLessonId;
-          if (cfg.lastActiveCategoryId) state.activeCategoryId = cfg.lastActiveCategoryId;
-          state.preserveOriginalTheme = true;
-          if (cfg.readingWidth) {
-            state.readingWidth = cfg.readingWidth;
-            applyReadingWidth(state.readingWidth);
-          }
-          if (cfg.desktopSidebarOpen !== undefined) {
-            state.desktopSidebarOpen = cfg.desktopSidebarOpen;
-            applyDesktopSidebarState(state.desktopSidebarOpen);
-          }
         }
       } catch (e) {
         console.warn("Lỗi đọc Firestore settings:", e);
       }
-      try {
-        const learnedStyle = localStorage.getItem('cfg_learned_style') || 'border';
-        updateLearnedStyleUI(learnedStyle);
-
-        const hideBadge = localStorage.getItem('cfg_hide_learned_badge') === 'true';
-        const cbBadge = document.getElementById('toggleLearnedBadge');
-        if (hideBadge) {
-          document.body.classList.add('hide-learned-badge');
-          if (cbBadge) cbBadge.checked = false;
-        } else {
-          document.body.classList.remove('hide-learned-badge');
-          if (cbBadge) cbBadge.checked = true;
-        }
-
-        const hideContinueLearning = localStorage.getItem('thuvienhtml_hide_continue_learning') === 'true';
-        const cbContinue = document.getElementById('toggleShowContinueLearning');
-        if (cbContinue) cbContinue.checked = !hideContinueLearning;
-      } catch (_) {}
-      updateFontSizeDisplay();
     }
 
     async function saveUserSettings() {
+      const festivalThemeEnabled = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
+      const showContinueLearning = localStorage.getItem('thuvienhtml_hide_continue_learning') !== 'true';
+      const learnedStyle = localStorage.getItem('cfg_learned_style') || 'border';
+      const showLearnedBadge = localStorage.getItem('cfg_hide_learned_badge') !== 'true';
+      const showTextFrames = localStorage.getItem('setting_show_text_frames') !== 'false';
+      const swipeGestureEnabled = state.swipeEnabled !== false;
+      const aiAssistantEnabled = localStorage.getItem('setting_ai_enabled') === 'true';
+
       const cfg = {
         fontSizeOffset: state.fontSizeOffset,
         isDarkMode: state.isDarkMode,
@@ -21448,11 +21555,22 @@
         readingWidth: state.readingWidth,
         desktopSidebarOpen: state.desktopSidebarOpen,
         aiPreferredStyle: currentAiPreferredStyle || localStorage.getItem('ai_preferred_explain_style') || 'casual',
+        // Tùy chọn hiển thị per-user
+        festivalThemeEnabled,
+        showContinueLearning,
+        learnedStyle,
+        showLearnedBadge,
+        showTextFrames,
+        swipeGestureEnabled,
+        aiAssistantEnabled,
         updatedAt: new Date().toISOString()
       };
 
       try {
         localStorage.setItem('user_cfg', JSON.stringify(cfg));
+        if (state.userId) {
+          localStorage.setItem(`user_cfg_${state.userId}`, JSON.stringify(cfg));
+        }
       } catch (_) {}
 
       if (!state.userId || state.useLocalFallback || !db) return;
@@ -28882,6 +29000,7 @@
       btnStyleBorderEl.addEventListener('click', () => {
         updateLearnedStyleUI('border');
         localStorage.setItem('cfg_learned_style', 'border');
+        if (typeof saveUserSettings === 'function') saveUserSettings();
       });
     }
 
@@ -28890,6 +29009,7 @@
       btnStyleDimEl.addEventListener('click', () => {
         updateLearnedStyleUI('dim');
         localStorage.setItem('cfg_learned_style', 'dim');
+        if (typeof saveUserSettings === 'function') saveUserSettings();
       });
     }
 
@@ -28898,6 +29018,7 @@
       btnStyleStrikeEl.addEventListener('click', () => {
         updateLearnedStyleUI('strike');
         localStorage.setItem('cfg_learned_style', 'strike');
+        if (typeof saveUserSettings === 'function') saveUserSettings();
       });
     }
 
@@ -28911,6 +29032,7 @@
           document.body.classList.add('hide-learned-badge');
           localStorage.setItem('cfg_hide_learned_badge', 'true');
         }
+        if (typeof saveUserSettings === 'function') saveUserSettings();
       });
     }
 
@@ -32437,6 +32559,9 @@
         if (typeof updateContinueLearningCards === 'function') {
           updateContinueLearningCards();
         }
+        if (typeof saveUserSettings === 'function') {
+          saveUserSettings();
+        }
       });
     }
 
@@ -34249,7 +34374,7 @@
         if (toggleAi) {
           return Boolean(toggleAi.checked);
         }
-        return localStorage.getItem('setting_ai_enabled') !== 'false';
+        return localStorage.getItem('setting_ai_enabled') === 'true';
       } catch (_) {
         return false;
       }
@@ -35230,7 +35355,7 @@
           toggleAi.checked = false;
           try { localStorage.setItem('setting_ai_enabled', 'false'); } catch (_) {}
         } else {
-          toggleAi.checked = localStorage.getItem('setting_ai_enabled') !== 'false';
+          toggleAi.checked = localStorage.getItem('setting_ai_enabled') === 'true';
         }
         if (typeof updateAiButtonsVisibility === 'function') {
           updateAiButtonsVisibility();
@@ -35295,6 +35420,9 @@
           const local = currentSelectionInfo;
           const text = (bridge && bridge.text) || (local && local.text) || '';
           updateAiButtonsVisibility(text);
+          if (typeof saveUserSettings === 'function') {
+            saveUserSettings();
+          }
           if (!enabled) {
             closeAiResultPopover();
             showToast("Đã tắt Trợ lý AI đọc bài");
@@ -36450,6 +36578,7 @@
         const iframe = document.getElementById('lessonIframe');
         const _iDoc = getSafeIframeDocument(iframe);
         if (_iDoc) applyFrameSettingsToDoc(iframe.contentDocument);
+        if (typeof saveUserSettings === 'function') saveUserSettings();
       });
     }
 
@@ -36466,6 +36595,7 @@
         const iframe = document.getElementById('lessonIframe');
         const _iDoc = getSafeIframeDocument(iframe);
         if (_iDoc) applyFrameSettingsToDoc(iframe.contentDocument);
+        if (typeof saveUserSettings === 'function') saveUserSettings();
       });
     }
 
@@ -37177,7 +37307,7 @@
       masterGain: null,
       currentType: null, // null | 'rain' | 'ocean' | 'cafe' | 'alpha'
       activeNodes: [],
-      volume: 0.5,
+      volume: 0.2,
       isMuted: false,
 
       init() {
@@ -37186,8 +37316,8 @@
           if (AudioCtx) {
             this.ctx = new AudioCtx();
             this.masterGain = this.ctx.createGain();
-            const savedVol = parseFloat(localStorage.getItem('local_ambient_volume') || '0.5');
-            this.volume = isNaN(savedVol) ? 0.5 : Math.max(0, Math.min(1, savedVol));
+            const savedVol = parseFloat(localStorage.getItem('local_ambient_volume') || '0.2');
+            this.volume = isNaN(savedVol) ? 0.2 : Math.max(0, Math.min(1, savedVol));
             this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
             this.masterGain.connect(this.ctx.destination);
           }
