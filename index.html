@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.3',
+        date: '2026-10-16T01:38:00+07:00',
+        title: 'Tối Giản Bộ Lọc Màu Ghi Chú & Tái Thiết Kế Song Song Thẻ Thống Kê',
+        items: [
+          { type: 'improved', text: 'Tối giản bộ lọc màu ghi chú: Lược bỏ nhãn chữ (Vàng, Xanh, Hồng, Tím) để chỉ giữ lại chấm màu sắc nét và số lượng ghi chú, mang lại phong cách tối giản thanh lịch và tiết kiệm diện tích tối đa.' },
+          { type: 'fix', text: 'Khắc phục viền không cân đối ở bộ lọc màu: Mở rộng vùng đệm container và chuẩn hóa đường viền trạng thái active ring-2 sắc sảo, triệt tiêu hiện tượng xén viền dưới.' },
+          { type: 'improved', text: 'Tái thiết kế thẻ Thống kê song song đối xứng: Chuỗi liên tiếp và Mục tiêu ngày luôn hiển thị song song 2 cột trên mọi kích cỡ màn hình, đồng bộ độ cao và bổ sung thanh tiến độ mốc chuỗi ngày đối xứng hài hòa với thanh mục tiêu.' }
+        ]
+      },
+      {
         version: 'v5.7.2',
         date: '2026-10-16T01:30:00+07:00',
         title: 'Lưu Trữ Tùy Chọn Hiển Thị Cá Nhân Hóa & Tối Ưu Trải Nghiệm Mặc Định',
@@ -6105,37 +6115,33 @@
           <input id="searchNotesInput" type="text" placeholder="Tìm kiếm ghi chú, trích dẫn trong bài học..." class="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none placeholder:text-[#6E6B65]/70 dark:placeholder:text-[#979DA8]/70 shadow-2xs transition-all" />
         </div>
         <!-- Hàng 2: Phạm vi hiển thị + Color chips cuộn ngang -->
-        <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-0.5">
-          <select id="notesLessonFilterSelect" class="text-xs px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0 shadow-2xs cursor-pointer font-medium" title="Phạm vi hiển thị">
+        <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-2">
+          <select id="notesLessonFilterSelect" class="h-8 text-xs px-3 rounded-xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-600 focus:outline-none shrink-0 shadow-2xs cursor-pointer font-medium" title="Phạm vi hiển thị">
             <option value="all">Toàn thư viện</option>
             <option value="category">Mục hiện tại</option>
             <option value="current">Bài đang đọc</option>
           </select>
           <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 shrink-0"></div>
-          <div class="flex items-center gap-2 shrink-0 font-sans" role="group" aria-label="Lọc theo màu khung">
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 cursor-pointer shrink-0 shadow-xs flex items-center gap-1.5 transition-all font-sans" data-color="all">
+          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 font-sans" role="group" aria-label="Lọc theo màu khung">
+            <button class="notes-color-filter h-8 px-3 text-xs rounded-xl font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 border border-stone-900 dark:border-stone-100 cursor-pointer shrink-0 shadow-xs flex items-center gap-1.5 transition-all font-sans" data-color="all" title="Tất cả ghi chú">
               <span>Tất cả</span>
               <span id="chipCountAll" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="yellow">
-              <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
-              <span>Vàng</span>
-              <span id="chipCountYellow" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
+            <button class="notes-color-filter h-8 px-2.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="yellow" title="Màu Vàng" aria-label="Màu Vàng">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+              <span id="chipCountYellow" class="text-[11px] font-semibold font-sans tabular-nums">0</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-emerald-900 dark:text-emerald-200 border border-emerald-300/80 dark:border-emerald-700/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="green">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-              <span>Xanh</span>
-              <span id="chipCountGreen" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
+            <button class="notes-color-filter h-8 px-2.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-emerald-900 dark:text-emerald-200 border border-emerald-300/80 dark:border-emerald-700/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="green" title="Màu Xanh" aria-label="Màu Xanh">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+              <span id="chipCountGreen" class="text-[11px] font-semibold font-sans tabular-nums">0</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-rose-900 dark:text-rose-200 border border-rose-300/80 dark:border-rose-700/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="pink">
-              <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
-              <span>Hồng</span>
-              <span id="chipCountPink" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
+            <button class="notes-color-filter h-8 px-2.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-rose-900 dark:text-rose-200 border border-rose-300/80 dark:border-rose-700/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="pink" title="Màu Hồng" aria-label="Màu Hồng">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
+              <span id="chipCountPink" class="text-[11px] font-semibold font-sans tabular-nums">0</span>
             </button>
-            <button class="notes-color-filter px-3 py-1.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-purple-900 dark:text-purple-200 border border-purple-300/80 dark:border-purple-700/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="purple">
-              <span class="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>
-              <span>Tím</span>
-              <span id="chipCountPurple" class="text-[11px] font-semibold font-sans tabular-nums opacity-85">(0)</span>
+            <button class="notes-color-filter h-8 px-2.5 text-xs rounded-xl font-medium bg-white dark:bg-[#161A22] text-purple-900 dark:text-purple-200 border border-purple-300/80 dark:border-purple-700/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-2xs cursor-pointer shrink-0 flex items-center gap-1.5 transition-all font-sans" data-color="purple" title="Màu Tím" aria-label="Màu Tím">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0"></span>
+              <span id="chipCountPurple" class="text-[11px] font-semibold font-sans tabular-nums">0</span>
             </button>
           </div>
         </div>
@@ -6263,56 +6269,63 @@
       <!-- Body Content (Scrollable) -->
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4">
 
-        <!-- Hàng 1: Chuỗi ngày học liên tiếp & Mục tiêu hôm nay -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <!-- Hàng 1: Chuỗi ngày học liên tiếp & Mục tiêu hôm nay (Luôn song song 2 cột đối xứng) -->
+        <div class="grid grid-cols-2 gap-2.5 sm:gap-4">
           <!-- Streak Card -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-white/70 dark:from-amber-950/40 dark:via-orange-950/20 dark:to-[#161A22] border border-amber-300/50 dark:border-amber-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-3 font-sans">
-              <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                Chuỗi liên tiếp
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300/40 dark:border-amber-800/50 font-sans tracking-wide">KỶ LUẬT</span>
-            </div>
-            <div class="flex items-center gap-3.5">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
-                <svg class="w-6 h-6"><use href="#icon-flame"></use></svg>
+          <div class="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-white/70 dark:from-amber-950/40 dark:via-orange-950/20 dark:to-[#161A22] border border-amber-300/50 dark:border-amber-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2.5 sm:mb-3 font-sans">
+                <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span class="truncate">Chuỗi liên tiếp</span>
+                </span>
+                <span class="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300/40 dark:border-amber-800/50 font-sans tracking-wide shrink-0">KỶ LUẬT</span>
               </div>
-              <div class="min-w-0 flex-1">
-                <div class="flex items-baseline gap-2">
-                  <span id="analyticsStreakCount" class="font-sans text-2xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
-                  <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2]">ngày liên tục</span>
+              <div class="flex items-center gap-2 sm:gap-3.5 mb-2.5">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6"><use href="#icon-flame"></use></svg>
                 </div>
-                <p class="text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5">Duy trì nhịp đọc hàng ngày</p>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-baseline gap-1 sm:gap-1.5 flex-wrap">
+                    <span id="analyticsStreakCount" class="font-sans text-xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
+                    <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2]">ngày</span>
+                  </div>
+                  <p class="text-[10px] sm:text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5 truncate">Duy trì nhịp đọc</p>
+                </div>
               </div>
+            </div>
+            <div class="w-full h-2 sm:h-2.5 rounded-full bg-amber-100 dark:bg-amber-950/80 overflow-hidden border border-amber-200/50 dark:border-amber-800/40 p-0.5 mt-1">
+              <div id="analyticsStreakBar" class="h-full bg-gradient-to-r from-amber-500 via-orange-400 to-amber-600 rounded-full transition-all duration-700 shadow-sm" style="width: 100%"></div>
             </div>
           </div>
 
           <!-- Daily Goal Card -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-white/70 dark:from-indigo-950/40 dark:via-violet-950/20 dark:to-[#161A22] border border-indigo-300/50 dark:border-indigo-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-3 font-sans">
-              <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                Mục tiêu hôm nay
-              </span>
-              <span id="analyticsGoalPercent" class="text-[10px] font-bold font-sans text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-950/80 px-2 py-0.5 rounded-full border border-indigo-300/40 dark:border-indigo-800/50 tabular-nums">0%</span>
-            </div>
-            <div class="flex items-center gap-3.5 mb-2.5">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
-                <svg class="w-6 h-6"><use href="#icon-book-open"></use></svg>
+          <div class="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-white/70 dark:from-indigo-950/40 dark:via-violet-950/20 dark:to-[#161A22] border border-indigo-300/50 dark:border-indigo-700/40 shadow-xs relative overflow-hidden group flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2.5 sm:mb-3 font-sans">
+                <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  <span class="truncate">Mục tiêu hôm nay</span>
+                </span>
+                <span id="analyticsGoalPercent" class="text-[9px] sm:text-[10px] font-bold font-sans text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-950/80 px-1.5 sm:px-2 py-0.5 rounded-full border border-indigo-300/40 dark:border-indigo-800/50 tabular-nums shrink-0">0%</span>
               </div>
-              <div class="min-w-0 flex-1">
-                <div id="analyticsTodayGoalText" class="flex items-baseline gap-1.5 flex-wrap">
-                  <span id="analyticsGoalDoneNum" class="font-sans text-2xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
-                  <span class="text-base sm:text-lg font-normal text-stone-400 dark:text-stone-500 mx-0.5">/</span>
-                  <span id="analyticsGoalTargetNum" class="text-base sm:text-lg font-semibold text-stone-600 dark:text-stone-300 tabular-nums">2</span>
-                  <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2] ml-0.5">bài</span>
-                  <span id="analyticsGoalTimeBadge" class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 tabular-nums ml-1">(0p)</span>
+              <div class="flex items-center gap-2 sm:gap-3.5 mb-2.5">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6"><use href="#icon-book-open"></use></svg>
                 </div>
-                <p class="text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5">Tiến độ bài học &amp; Pomodoro</p>
+                <div class="min-w-0 flex-1">
+                  <div id="analyticsTodayGoalText" class="flex items-baseline gap-1 sm:gap-1.5 flex-wrap">
+                    <span id="analyticsGoalDoneNum" class="font-sans text-xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-[#EDECE8] tracking-tight tabular-nums">0</span>
+                    <span class="text-sm sm:text-lg font-normal text-stone-400 dark:text-stone-500 mx-0.5">/</span>
+                    <span id="analyticsGoalTargetNum" class="text-sm sm:text-lg font-semibold text-stone-600 dark:text-stone-300 tabular-nums">2</span>
+                    <span class="text-xs sm:text-sm font-medium text-[#6E6B65] dark:text-[#9AA3B2] ml-0.5">bài</span>
+                    <span id="analyticsGoalTimeBadge" class="text-[10px] sm:text-[11px] font-medium text-indigo-600 dark:text-indigo-400 tabular-nums ml-0.5">(0p)</span>
+                  </div>
+                  <p class="text-[10px] sm:text-[11px] text-[#78716C] dark:text-[#8E95A3] mt-0.5 truncate">Tiến độ &amp; Pomodoro</p>
+                </div>
               </div>
             </div>
-            <div class="w-full h-2.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 overflow-hidden border border-indigo-200/50 dark:border-indigo-800/40 p-0.5">
+            <div class="w-full h-2 sm:h-2.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 overflow-hidden border border-indigo-200/50 dark:border-indigo-800/40 p-0.5 mt-1">
               <div id="analyticsGoalBar" class="h-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 rounded-full transition-all duration-700 shadow-sm" style="width: 0%"></div>
             </div>
           </div>
@@ -36083,10 +36096,10 @@
       const chipPink = document.getElementById('chipCountPink');
       const chipPurple = document.getElementById('chipCountPurple');
       if (chipAll) chipAll.innerText = `(${totalNotes})`;
-      if (chipYellow) chipYellow.innerText = `(${countYellow})`;
-      if (chipGreen) chipGreen.innerText = `(${countGreen})`;
-      if (chipPink) chipPink.innerText = `(${countPink})`;
-      if (chipPurple) chipPurple.innerText = `(${countPurple})`;
+      if (chipYellow) chipYellow.innerText = countYellow;
+      if (chipGreen) chipGreen.innerText = countGreen;
+      if (chipPink) chipPink.innerText = countPink;
+      if (chipPurple) chipPurple.innerText = countPurple;
 
       if (countLabel) countLabel.innerText = `${totalNotes} khung & ghi chú trong thư viện`;
 
@@ -36432,11 +36445,11 @@
       btn.addEventListener('click', () => {
         notesActiveColorFilter = btn.getAttribute('data-color') || 'all';
         document.querySelectorAll('.notes-color-filter').forEach(b => {
-          b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-1', 'scale-[1.03]', 'shadow-sm');
-          b.classList.add('opacity-80');
+          b.classList.remove('ring-2', 'ring-indigo-600', 'dark:ring-indigo-400', 'shadow-xs', 'font-bold');
+          b.classList.add('opacity-75');
         });
-        btn.classList.remove('opacity-80');
-        btn.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-1', 'scale-[1.03]', 'shadow-sm');
+        btn.classList.remove('opacity-75');
+        btn.classList.add('ring-2', 'ring-indigo-600', 'dark:ring-indigo-400', 'shadow-xs', 'font-bold');
         renderAllNotesView();
       });
     });
@@ -37085,7 +37098,13 @@
 
       // 1. Streak
       const streakEl = document.getElementById('analyticsStreakCount');
-      if (streakEl) streakEl.innerText = a.streak || 1;
+      const streak = a.streak || 1;
+      if (streakEl) streakEl.innerText = streak;
+      const streakBarEl = document.getElementById('analyticsStreakBar');
+      if (streakBarEl) {
+        const streakPct = Math.min(100, Math.max(15, Math.round(((streak % 7 || 7) / 7) * 100)));
+        streakBarEl.style.width = `${streakPct}%`;
+      }
 
       // 2. Goal
       const goal = a.dailyGoal || { lessons: 2, minutes: 30 };
