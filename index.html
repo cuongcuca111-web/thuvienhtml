@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.5.7',
+        date: '2026-10-15T23:59:00+07:00',
+        title: 'Chuẩn Hóa Tiêu Đề & Nút Xác Nhận Modal Đăng Xuất (Đăng xuất?)',
+        items: [
+          { type: 'fixed', text: 'Thay thế toàn bộ nhãn "Xác nhận xóa?" và nút "Xác nhận xóa" thành "Đăng xuất?": Modal xác nhận khi bấm Đăng xuất tài khoản giờ đây hiển thị tiêu đề và nút bấm đồng nhất, chính xác ngữ nghĩa và thân thiện với người dùng.' },
+          { type: 'improved', text: 'Tối ưu biểu tượng modal xác nhận linh hoạt: Tự động chuyển đổi sang biểu tượng Đăng xuất chuyên dụng khi người dùng thực hiện thoát tài khoản, tách biệt hoàn toàn với biểu tượng thùng rác khi xóa bài học.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.5.7 trên toàn hệ thống (index.html, package.json, sw.js).' }
+        ]
+      },
+      {
         version: 'v5.5.6',
         date: '2026-10-15T23:55:00+07:00',
         title: 'Tái Thiết Kế Thông Báo Đẩy Ntfy: Định Dạng Trực Quan, Chuẩn Mực & Dễ Nhìn',
@@ -6739,17 +6749,17 @@
     </div>
   </div>
 
-  <!-- MODAL XÁC NHẬN XÓA -->
+  <!-- MODAL XÁC NHẬN XÓA / ĐĂNG XUẤT -->
   <div id="confirmDeleteModal" class="modal-animated fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-[#161A20] border border-[#E6E6E1] dark:border-[#262C36] rounded-card w-full max-w-sm max-h-[85dvh] overflow-y-auto overscroll-contain shadow-2xl p-5 text-center" style="-webkit-overflow-scrolling: touch;">
-      <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3">
+      <div id="confirmDeleteIconWrap" class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3">
         <svg class="w-6 h-6" aria-hidden="true"><use href="#icon-trash-2"></use></svg>
       </div>
-      <h3 id="confirmDeleteTitle" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Xác nhận xóa?</h3>
+      <h3 id="confirmDeleteTitle" class="text-sm font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Đăng xuất?</h3>
       <p id="confirmDeleteMsg" class="text-xs text-[#6B6B66] dark:text-[#9AA3B2] mb-5">Hành động này sẽ xóa dữ liệu vĩnh viễn.</p>
       <div class="flex items-center justify-center gap-2">
         <button id="btnCancelConfirmDelete" class="touch-target px-4 py-2 rounded-card border border-[#E6E6E1] dark:border-[#262C36] text-xs font-medium text-[#6B6B66]">Hủy</button>
-        <button id="btnProceedConfirmDelete" class="touch-target px-4 py-2 rounded-card bg-red-600 hover:bg-red-700 text-white text-xs font-medium">Xác nhận xóa</button>
+        <button id="btnProceedConfirmDelete" class="touch-target px-4 py-2 rounded-card bg-red-600 hover:bg-red-700 text-white text-xs font-medium">Đăng xuất?</button>
       </div>
     </div>
   </div>
@@ -27729,10 +27739,29 @@
     });
 
     const confirmModal = document.getElementById('confirmDeleteModal');
+    const confirmTitle = document.getElementById('confirmDeleteTitle');
     const confirmMsg = document.getElementById('confirmDeleteMsg');
     const btnProceedDelete = document.getElementById('btnProceedConfirmDelete');
 
-    function askConfirmDelete(message, onConfirm) {
+    function askConfirmDelete(message, onConfirm, options = {}) {
+      const isLogout = (message || '').toLowerCase().includes('đăng xuất');
+      const title = typeof options === 'string' ? options : (options.title || (isLogout ? 'Đăng xuất?' : 'Xác nhận xóa?'));
+      const confirmText = options.confirmText || (isLogout ? 'Đăng xuất?' : 'Xác nhận xóa');
+
+      if (confirmTitle) confirmTitle.innerText = title;
+      if (btnProceedDelete) btnProceedDelete.innerText = confirmText;
+
+      const iconWrap = document.getElementById('confirmDeleteIconWrap');
+      if (iconWrap) {
+        if (isLogout) {
+          iconWrap.className = 'w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3';
+          iconWrap.innerHTML = '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>';
+        } else {
+          iconWrap.className = 'w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-3';
+          iconWrap.innerHTML = '<svg class="w-6 h-6" aria-hidden="true"><use href="#icon-trash-2"></use></svg>';
+        }
+      }
+
       confirmMsg.innerText = message;
       state.lastDeleteAction = onConfirm;
       showModalAnimated(confirmModal);
