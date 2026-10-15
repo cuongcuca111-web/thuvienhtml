@@ -457,6 +457,13 @@ module.exports = async function handler(req, res) {
 
       snap.forEach(docSnap => {
         const data = docSnap.data();
+
+        // Tự động chuyển pending sang expired nếu đã qua 15 phút mà khách không chuyển
+        if (data.status === 'pending' && data.expiresAt && (nowMs > new Date(data.expiresAt).getTime())) {
+          data.status = 'expired';
+          try { docSnap.ref.update({ status: 'expired', updatedAt: new Date(nowMs).toISOString() }); } catch (_) {}
+        }
+
         if (data.status === 'user_confirmed') userConfirmedCount++;
         if (data.status === 'pending') pendingCount++;
 
@@ -523,9 +530,9 @@ module.exports = async function handler(req, res) {
 
       // Sắp xếp ưu tiên: Đơn chờ xử lý lên trên, đơn đã duyệt / đã hủy / hết hạn tự xuống dưới
       const STATUS_PRIORITY = {
-        'user_confirmed': 1, // Khách báo đã chuyển (ưu tiên cao nhất)
-        'pending': 2,        // Chờ thanh toán
-        'paid': 3,           // Đã kích hoạt
+        'user_confirmed': 1, // Khách báo đã chuyển (ưu tiên cao nhất - DUY NHẤT ĐƠN NÀY CẦN DUYỆT)
+        'paid': 2,           // Đã kích hoạt
+        'pending': 3,        // Chờ thanh toán (khách chưa bấm chuyển)
         'cancelled': 4,      // Đã hủy
         'expired': 5         // Hết hạn
       };

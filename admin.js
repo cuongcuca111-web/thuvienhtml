@@ -3695,9 +3695,9 @@ function buildBillingTabDOM(container, cachedData) {
 function sortOrdersByPriority(orders) {
   if (!Array.isArray(orders)) return [];
   const STATUS_PRIORITY = {
-    'user_confirmed': 1, // Khách báo đã chuyển (ưu tiên số 1 - cần duyệt ngay)
-    'pending': 2,        // Chờ thanh toán
-    'paid': 3,           // Đã kích hoạt
+    'user_confirmed': 1, // Khách báo đã chuyển (ưu tiên số 1 - DUY NHẤT ĐƠN NÀY CẦN DUYỆT)
+    'paid': 2,           // Đã kích hoạt
+    'pending': 3,        // Chờ thanh toán (khách chưa bấm chuyển)
     'cancelled': 4,      // Đã hủy
     'expired': 5         // Hết hạn
   };
@@ -3727,10 +3727,10 @@ function renderSingleOrderRow(ord) {
   const createdDate = ord.createdAt ? new Date(ord.createdAt).toLocaleString('vi-VN') : '—';
   const amountStr = (ord.amount || 0).toLocaleString('vi-VN') + ' ₫';
   const planText = `${(ord.planId || '').toUpperCase()} (${ord.period === 'yearly' ? 'Năm' : 'Tháng'})`;
-  const isPending = ord.status === 'user_confirmed' || ord.status === 'pending';
+  const isWaitingApproval = ord.status === 'user_confirmed';
 
   return `
-    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition ${ord.status === 'user_confirmed' ? 'bg-amber-50/25 dark:bg-amber-950/15' : ''} ${!isPending ? 'opacity-85' : ''}">
+    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition ${ord.status === 'user_confirmed' ? 'bg-amber-50/25 dark:bg-amber-950/15' : ''} ${!isWaitingApproval ? 'opacity-85' : ''}">
       <td class="py-3 px-3 text-center">
         <input type="checkbox" class="order-select-checkbox rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" data-status="${esc(ord.status)}">
       </td>
@@ -3765,12 +3765,17 @@ function renderSingleOrderRow(ord) {
       <td class="py-3 px-3.5 text-center">${statusBadge}</td>
       <td class="py-3 px-3.5 text-gray-500 text-[11px]">${esc(createdDate)}</td>
       <td class="py-3 px-3.5 text-right space-x-1 whitespace-nowrap">
-        ${isPending ? `
+        ${isWaitingApproval ? `
           <button type="button" class="btn-admin-confirm-order px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Duyệt đơn ngay">
             Duyệt
           </button>
           <button type="button" class="btn-admin-cancel-order px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-gray-600 dark:text-gray-300 font-semibold text-[11px] transition active:scale-95 cursor-pointer" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Hủy đơn ngay">
             Hủy
+          </button>
+        ` : ord.status === 'pending' ? `
+          <span class="text-[11px] text-gray-400 font-medium mr-1.5 italic">Chưa báo chuyển</span>
+          <button type="button" class="btn-admin-cancel-order p-1 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer inline-flex items-center" data-id="${esc(ord.id)}" data-code="${esc(ord.code)}" title="Hủy đơn này">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         ` : ord.status === 'paid' ? `
           <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1.5">
@@ -3824,13 +3829,13 @@ function renderOrdersTableRows(orders, currentSearch = '') {
     return `<tr><td colspan="9" class="py-8 text-center text-gray-400">Chưa có đơn hàng nào được tạo.</td></tr>`;
   }
 
-  // Tách biệt: Đơn chờ lên trên, Đơn đã duyệt hoặc đã hủy xuống dưới
-  const waitingOrders = sorted.filter(o => o.status === 'user_confirmed' || o.status === 'pending');
-  const finishedOrders = sorted.filter(o => o.status !== 'user_confirmed' && o.status !== 'pending');
+  // Tách biệt: Đơn chờ duyệt lên trên (CHỈ các đơn khách đã bấm 'Tôi đã chuyển khoản'), Đơn khác xuống dưới
+  const waitingOrders = sorted.filter(o => o.status === 'user_confirmed');
+  const finishedOrders = sorted.filter(o => o.status !== 'user_confirmed');
 
   let html = '';
 
-  // 1. CÁC ĐƠN CHỜ LÊN TRÊN (Ưu tiên cao nhất)
+  // 1. CÁC ĐƠN CHỜ DUYỆT LÊN TRÊN (Ưu tiên cao nhất - khách đã bấm 'Tôi đã chuyển khoản')
   if (waitingOrders.length > 0) {
     html += `
       <tr class="bg-amber-50/70 dark:bg-amber-950/40 border-b border-amber-200/80 dark:border-amber-800/80">
@@ -3838,7 +3843,7 @@ function renderOrdersTableRows(orders, currentSearch = '') {
           <div class="flex items-center justify-between">
             <span class="flex items-center gap-2 uppercase tracking-wider">
               <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-              <span>Đơn chờ xử lý (${waitingOrders.length} đơn cần duyệt / chờ chuyển khoản)</span>
+              <span>Đơn chờ xử lý (${waitingOrders.length} đơn cần duyệt)</span>
             </span>
             <span class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded-full">▲ Ưu tiên lên trên</span>
           </div>
@@ -3856,14 +3861,14 @@ function renderOrdersTableRows(orders, currentSearch = '') {
               <svg class="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
               <span>Tất cả đơn hàng đã được xử lý (không có đơn chờ duyệt)</span>
             </span>
-            <span class="text-[10px] text-gray-500 font-mono">${finishedOrders.length} đơn đã hoàn tất</span>
+            <span class="text-[10px] text-gray-500 font-mono">${finishedOrders.length} đơn</span>
           </div>
         </td>
       </tr>
     `;
   }
 
-  // 2. DẢI PHÂN CÁCH VÀ CÁC ĐƠN ĐÃ XỬ LÝ (ĐÃ DUYỆT HOẶC ĐÃ HỦY) XUỐNG DƯỚI
+  // 2. DẢI PHÂN CÁCH VÀ CÁC ĐƠN ĐÃ XỬ LÝ HOẶC CHỜ KHÁCH CHUYỂN XUỐNG DƯỚI
   if (finishedOrders.length > 0) {
     if (waitingOrders.length > 0) {
       html += `
@@ -3872,7 +3877,7 @@ function renderOrdersTableRows(orders, currentSearch = '') {
             <div class="flex items-center justify-between">
               <span class="flex items-center gap-1.5 uppercase tracking-wider font-semibold">
                 <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                <span>Đơn đã xử lý (${finishedOrders.length} đơn đã duyệt hoặc đã hủy)</span>
+                <span>Đơn khác (${finishedOrders.length} đơn đã kích hoạt, đã hủy hoặc chờ khách chuyển)</span>
               </span>
               <span class="text-[10px] text-gray-500 font-medium bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded-full">▼ Tự động chuyển xuống dưới</span>
             </div>

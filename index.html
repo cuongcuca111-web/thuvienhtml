@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.7',
+        date: '2026-10-15T18:00:00+07:00',
+        title: 'Tối Ưu Tiếp Nhận Đơn Nâng Cấp Gói, Bộ Đếm Ngược 15 Phút & Tự Động Làm Mới Mã QR',
+        items: [
+          { type: 'feature', text: 'Tiếp nhận đơn chờ xử lý chuẩn xác: Chỉ những khách hàng đã bấm xác nhận "Tôi đã chuyển khoản" mới được đưa vào danh sách "Đơn chờ xử lý" của Admin kèm nút Duyệt/Hủy. Người xem mã đơn thuần (chưa xác nhận) hiển thị trạng thái "Chưa báo chuyển" ở mục Đơn khác và không hiển thị nút duyệt.' },
+          { type: 'feature', text: 'Đồng hồ đếm ngược 15 phút thời gian thực: Tích hợp bộ đếm ngược trực quan trong khung thanh toán. Khi hết 15 phút, hệ thống tự động thông báo hủy mã QR đó và hiển thị nút "Tạo mã mới" để cấp mã thanh toán và nội dung chuyển khoản hoàn toàn mới.' },
+          { type: 'feature', text: 'Khôi phục phiên QR chạy nền thông minh: Nếu người dùng thoát trang hoặc đóng popup khi chưa hết 15 phút, bấm "Nâng cấp gói" sẽ tự động mở lại đúng mã QR đang hoạt động với thời gian đếm ngược thực tế đã trừ phần thời gian người dùng rời khỏi trang.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.4.7 trên toàn bộ hệ thống (index.html, package.json, sw.js, admin.js, api/admin/billing.js).' }
+        ]
+      },
+      {
         version: 'v5.4.6',
         date: '2026-10-15T17:30:00+07:00',
         title: 'Chống Đè Chữ & Đồng Bộ Thanh Công Cụ Nổi Bám Theo Đoạn Bôi Đen Khi Cuộn Chuột',
@@ -4112,7 +4123,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.6 • build 15/10/2026 17:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.7 • build 15/10/2026 18:00</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4837,7 +4848,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.6 • build 15/10/2026 17:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.7 • build 15/10/2026 18:00</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -8005,15 +8016,25 @@
         <div id="upgradeStep2" class="hidden space-y-6">
           
           <!-- Thanh điều hướng và thời hạn đơn -->
-          <div class="flex items-center justify-between pb-3 border-b border-[#EBE8E1] dark:border-[#232833] text-xs">
+          <div class="flex items-center justify-between pb-3 border-b border-[#EBE8E1] dark:border-[#232833] text-xs gap-2 flex-wrap">
             <button type="button" id="btnBackToStep1" class="px-2.5 py-1.5 rounded-lg border border-[#E0DED7] dark:border-[#2C323E] hover:border-indigo-500 text-[#78756D] hover:text-indigo-600 dark:text-[#9AA3B2] dark:hover:text-indigo-400 font-medium flex items-center gap-1.5 transition cursor-pointer">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
               <span>Đổi gói khác</span>
             </button>
 
+            <!-- Đếm ngược thời gian thanh toán 15 phút (chạy nền thời gian thực) -->
+            <div id="qrCountdownWrapper" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800/60 text-xs font-medium shadow-2xs">
+              <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Hết hạn sau:</span>
+              <span id="qrCountdownDisplay" class="font-bold font-mono text-amber-900 dark:text-amber-200 tabular-nums text-xs">15:00</span>
+            </div>
+
             <!-- Mã đơn hàng tinh tế -->
             <div class="flex items-center gap-2 text-xs">
-              <span class="text-[#78756D] dark:text-[#9AA3B2] font-medium">Mã đơn:</span>
+              <span class="text-[#78756D] dark:text-[#9AA3B2] font-medium hidden sm:inline">Mã đơn:</span>
               <span id="step2HeaderOrderCode" class="font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-md border border-indigo-200/60 dark:border-indigo-800/60">—</span>
             </div>
           </div>
@@ -8043,13 +8064,14 @@
                 <div id="qrWrapper" class="relative w-full max-w-[240px] aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 shadow-2xs border border-gray-100 dark:border-gray-800">
                   <img id="qrImageElement" src="" alt="Mã QR VietQR" class="w-full h-full object-contain" />
                   
-                  <!-- Lớp phủ khi mã QR hết hạn -->
+                  <!-- Lớp phủ khi mã QR hết hạn (sau 15 phút) -->
                   <div id="qrExpiredOverlay" class="hidden absolute inset-0 bg-white/95 dark:bg-[#161920]/95 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
-                    <span class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-2">
+                    <span class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-2">
                       <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     </span>
-                    <p class="text-xs font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Mã QR đã hết hạn</p>
-                    <button type="button" id="btnRecreateOrder" class="mt-2.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold transition cursor-pointer">
+                    <p class="text-xs font-bold text-[#1C1B18] dark:text-[#E8E6E1]">Mã QR đã hết hạn (sau 15 phút)</p>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1 max-w-[200px]">Đơn thanh toán này đã tự động hủy. Vui lòng bấm tạo mã mới để nhận mã QR và nội dung chuyển khoản mới.</p>
+                    <button type="button" id="btnRecreateOrder" class="mt-2.5 px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold transition cursor-pointer shadow-2xs active:scale-95">
                       Tạo mã mới
                     </button>
                   </div>
@@ -10386,6 +10408,31 @@
         return;
       }
 
+      // Kiểm tra nếu người dùng đã có mã QR thanh toán đang chạy nền và chưa hết hạn 15 phút
+      const activeSession = typeof getActiveQrSession === 'function' ? getActiveQrSession() : null;
+      if (activeSession) {
+        upgradeModalState.selectedPlan = activeSession.planId || 'plus';
+        upgradeModalState.period = activeSession.period || 'monthly';
+        upgradeModalState.currentOrderId = activeSession.orderId;
+        upgradeModalState.orderExpiresTime = activeSession.expiresAt;
+
+        const modal = document.getElementById('upgradeModal');
+        if (modal) {
+          stopOrderVerificationPolling();
+          populateUpgradeStep2(activeSession, activeSession.planId, activeSession.period);
+          updateUpgradeStepper(1);
+          showUpgradeStep(2);
+          startQrCountdown(activeSession.expiresAt);
+          subscribeOrderRealtime(activeSession.orderId);
+
+          modal.classList.remove('hidden', 'modal-closing');
+          void modal.offsetWidth;
+          modal.classList.add('modal-active');
+          document.body.style.overflow = 'hidden';
+          return;
+        }
+      }
+
       if (preSelectedPlan && ['plus', 'pro'].includes(preSelectedPlan)) {
         upgradeModalState.selectedPlan = preSelectedPlan;
       } else {
@@ -10955,6 +11002,169 @@
       }
     }
 
+    // =========================================================================
+    // QUẢN LÝ PHIÊN THANH TOÁN QR & ĐẾM NGƯỢC 15 PHÚT CHẠY NỀN THỜI GIAN THỰC
+    // =========================================================================
+    function getActiveQrSession() {
+      try {
+        const raw = localStorage.getItem('thuvienhtml_active_qr_order');
+        if (!raw) return null;
+        const session = JSON.parse(raw);
+        if (!session || !session.expiresAt || !session.orderId || !session.code) {
+          localStorage.removeItem('thuvienhtml_active_qr_order');
+          return null;
+        }
+        const currentUid = (auth && auth.currentUser) ? auth.currentUser.uid : (state.user ? state.user.uid : null);
+        if (session.uid && currentUid && session.uid !== currentUid) {
+          localStorage.removeItem('thuvienhtml_active_qr_order');
+          return null;
+        }
+        // Kiểm tra hết hạn 15 phút
+        if (Date.now() >= session.expiresAt) {
+          localStorage.removeItem('thuvienhtml_active_qr_order');
+          return null;
+        }
+        return session;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function saveActiveQrSession(data) {
+      try {
+        const currentUid = (auth && auth.currentUser) ? auth.currentUser.uid : (state.user ? state.user.uid : null);
+        const session = {
+          ...data,
+          uid: currentUid,
+          savedAt: Date.now()
+        };
+        localStorage.setItem('thuvienhtml_active_qr_order', JSON.stringify(session));
+      } catch (_) {}
+    }
+
+    function clearActiveQrSession() {
+      try {
+        localStorage.removeItem('thuvienhtml_active_qr_order');
+      } catch (_) {}
+    }
+
+    function populateUpgradeStep2(data, planId, period) {
+      const qrImg = document.getElementById('qrImageElement');
+      if (qrImg && data.qr) qrImg.src = data.qr;
+
+      const bankSnapshot = data.bankSnapshot || {};
+      const bankNameEl = document.getElementById('transferBankName');
+      const accNoEl = document.getElementById('transferAccountNo');
+      const accNameEl = document.getElementById('transferAccountName');
+      const amountEl = document.getElementById('transferAmount');
+      const codeEl = document.getElementById('transferOrderCode');
+      const btnCopyAmt = document.getElementById('btnCopyAmount');
+      const trustNameEl = document.getElementById('transferTrustAccountName');
+
+      if (bankNameEl) bankNameEl.innerText = bankSnapshot.bankName || '';
+      if (accNoEl) accNoEl.innerText = bankSnapshot.accountNo || '';
+      if (accNameEl) accNameEl.innerText = bankSnapshot.accountName || '';
+      if (amountEl) amountEl.innerText = `${(data.amount || 0).toLocaleString('vi-VN')} ₫`;
+      if (codeEl) codeEl.innerText = data.code || '';
+      const headerCodeEl = document.getElementById('step2HeaderOrderCode');
+      if (headerCodeEl) headerCodeEl.innerText = data.code || '—';
+      if (typeof resetProofUpload === 'function') resetProofUpload();
+      if (btnCopyAmt) btnCopyAmt.dataset.rawVal = String(data.amount || 0);
+      if (trustNameEl) trustNameEl.innerText = bankSnapshot.accountName || 'chủ tài khoản';
+
+      // Ẩn/hiện các hàng biên lai nếu thông tin ngân hàng thiếu
+      const rowBank = document.getElementById('rowTransferBank');
+      const rowAccNo = document.getElementById('rowTransferAccountNo');
+      const rowAccName = document.getElementById('rowTransferAccountName');
+      if (rowBank) rowBank.classList.toggle('hidden', !bankSnapshot.bankName);
+      if (rowAccNo) rowAccNo.classList.toggle('hidden', !bankSnapshot.accountNo);
+      if (rowAccName) rowAccName.classList.toggle('hidden', !bankSnapshot.accountName);
+
+      // Cập nhật tiêu đề hộp thoại sang bước QR tinh tế
+      const titleEl = document.getElementById('upgradeModalTitle');
+      const subTitleEl = document.getElementById('upgradeModalSubtitle');
+      if (titleEl) {
+        if (typeof window.tierBadge === 'function') {
+          titleEl.innerHTML = `<span class="inline-flex items-center gap-2">Thanh toán ${window.tierBadge(planId, { size: 'md', variant: 'plan' })}</span>`;
+        } else {
+          const planLabel = planId.toLowerCase() === 'pro' ? 'Pro' : 'Plus';
+          titleEl.innerText = `Thanh toán gói ${planLabel}`;
+        }
+      }
+      if (subTitleEl) {
+        subTitleEl.innerText = `Mã đơn: ${data.code || ''} · Mở app ngân hàng quét mã hoặc chuyển theo biên lai bên dưới`;
+      }
+
+      // Đặt lại các khối tương tác về trạng thái ban đầu
+      const initialBox = document.getElementById('qrActionInitial');
+      const verifyingBox = document.getElementById('qrActionVerifying');
+      if (initialBox) initialBox.classList.remove('hidden');
+      if (verifyingBox) verifyingBox.classList.add('hidden');
+      stopOrderVerificationPolling();
+
+      // Đặt lại lớp phủ hết hạn và nút báo chuyển khoản
+      const expiredOverlay = document.getElementById('qrExpiredOverlay');
+      if (expiredOverlay) expiredOverlay.classList.add('hidden');
+
+      const btnUserConfirm = document.getElementById('btnUserConfirmTransfer');
+      if (btnUserConfirm) {
+        btnUserConfirm.disabled = false;
+        btnUserConfirm.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Tôi đã chuyển khoản</span>';
+        btnUserConfirm.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
+
+      const waitingText = document.getElementById('qrStatusWaitingText');
+      if (waitingText) {
+        waitingText.innerText = "Đang chờ bạn thanh toán. Gói sẽ tự động kích hoạt ngay sau khi nhận được tiền.";
+      }
+    }
+
+    function startQrCountdown(expiresTimestamp) {
+      if (upgradeModalState.countdownTimer) {
+        clearInterval(upgradeModalState.countdownTimer);
+        upgradeModalState.countdownTimer = null;
+      }
+
+      const displayEl = document.getElementById('qrCountdownDisplay');
+      const overlayEl = document.getElementById('qrExpiredOverlay');
+      const btnConfirm = document.getElementById('btnUserConfirmTransfer');
+
+      const updateTimer = () => {
+        const now = Date.now();
+        const remainingSec = Math.max(0, Math.floor((expiresTimestamp - now) / 1000));
+
+        const mins = Math.floor(remainingSec / 60);
+        const secs = remainingSec % 60;
+        const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        if (displayEl) {
+          displayEl.innerText = timeStr;
+          if (remainingSec <= 180) { // Dưới 3 phút đổi màu cảnh báo
+            displayEl.classList.add('text-rose-600', 'dark:text-rose-400');
+          } else {
+            displayEl.classList.remove('text-rose-600', 'dark:text-rose-400');
+          }
+        }
+
+        if (remainingSec <= 0) {
+          if (upgradeModalState.countdownTimer) {
+            clearInterval(upgradeModalState.countdownTimer);
+            upgradeModalState.countdownTimer = null;
+          }
+          clearActiveQrSession();
+          if (overlayEl) overlayEl.classList.remove('hidden');
+          if (btnConfirm) {
+            btnConfirm.disabled = true;
+            btnConfirm.classList.add('opacity-50', 'cursor-not-allowed');
+          }
+          showToast("Mã QR đã hết hạn (sau 15 phút). Vui lòng tạo mã mới để tiếp tục.", "warning");
+        }
+      };
+
+      updateTimer();
+      upgradeModalState.countdownTimer = setInterval(updateTimer, 1000);
+    }
+
     async function handleSelectPlanToOrder(planId) {
       upgradeModalState.selectedPlan = planId;
       const period = upgradeModalState.period;
@@ -10963,6 +11173,22 @@
         showToast("Vui lòng đăng nhập để nâng cấp gói.");
         return;
       }
+
+      // Kiểm tra nếu người dùng đã có mã QR của gói này chưa hết 15 phút (khôi phục mã cũ)
+      const activeSession = getActiveQrSession();
+      if (activeSession && activeSession.planId === planId && activeSession.period === period) {
+        upgradeModalState.currentOrderId = activeSession.orderId;
+        upgradeModalState.orderExpiresTime = activeSession.expiresAt;
+        populateUpgradeStep2(activeSession, planId, period);
+        updateUpgradeStepper(1);
+        showUpgradeStep(2);
+        startQrCountdown(activeSession.expiresAt);
+        subscribeOrderRealtime(activeSession.orderId);
+        return;
+      }
+
+      // Nếu tạo đơn mới (gói khác hoặc mã cũ đã hết hạn), dọn dẹp session cũ
+      clearActiveQrSession();
 
       // Tính số tiền ước tính theo chu kỳ để hiển thị trên popup loading ngay lập tức
       const pricing = (window.effectivePlans && window.effectivePlans.pricing) || {
@@ -10996,77 +11222,24 @@
         // Bước 2: Server đã cấp mã đơn đối soát
         setQrLoadingStage(2);
 
+        const expiresTime = new Date(data.expiresAt).getTime();
         upgradeModalState.currentOrderId = data.orderId;
-        upgradeModalState.orderExpiresTime = new Date(data.expiresAt).getTime();
+        upgradeModalState.orderExpiresTime = expiresTime;
 
-        const qrImg = document.getElementById('qrImageElement');
-        if (qrImg) qrImg.src = data.qr;
+        // Lưu phiên QR đang hoạt động vào localStorage kèm mốc hết hạn 15 phút tuyệt đối
+        saveActiveQrSession({
+          orderId: data.orderId,
+          code: data.code,
+          amount: data.amount,
+          planId: planId,
+          period: period,
+          qr: data.qr,
+          bankSnapshot: data.bankSnapshot,
+          expiresAt: expiresTime,
+          createdAt: Date.now()
+        });
 
-        const bankSnapshot = data.bankSnapshot || {};
-        const bankNameEl = document.getElementById('transferBankName');
-        const accNoEl = document.getElementById('transferAccountNo');
-        const accNameEl = document.getElementById('transferAccountName');
-        const amountEl = document.getElementById('transferAmount');
-        const codeEl = document.getElementById('transferOrderCode');
-        const btnCopyAmt = document.getElementById('btnCopyAmount');
-        const trustNameEl = document.getElementById('transferTrustAccountName');
-
-        if (bankNameEl) bankNameEl.innerText = bankSnapshot.bankName || '';
-        if (accNoEl) accNoEl.innerText = bankSnapshot.accountNo || '';
-        if (accNameEl) accNameEl.innerText = bankSnapshot.accountName || '';
-        if (amountEl) amountEl.innerText = `${(data.amount || 0).toLocaleString('vi-VN')} ₫`;
-        if (codeEl) codeEl.innerText = data.code || '';
-        const headerCodeEl = document.getElementById('step2HeaderOrderCode');
-        if (headerCodeEl) headerCodeEl.innerText = data.code || '—';
-        if (typeof resetProofUpload === 'function') resetProofUpload();
-        if (btnCopyAmt) btnCopyAmt.dataset.rawVal = String(data.amount || 0);
-        if (trustNameEl) trustNameEl.innerText = bankSnapshot.accountName || 'chủ tài khoản';
-
-        // Ẩn/hiện các hàng biên lai nếu thông tin ngân hàng thiếu
-        const rowBank = document.getElementById('rowTransferBank');
-        const rowAccNo = document.getElementById('rowTransferAccountNo');
-        const rowAccName = document.getElementById('rowTransferAccountName');
-        if (rowBank) rowBank.classList.toggle('hidden', !bankSnapshot.bankName);
-        if (rowAccNo) rowAccNo.classList.toggle('hidden', !bankSnapshot.accountNo);
-        if (rowAccName) rowAccName.classList.toggle('hidden', !bankSnapshot.accountName);
-
-        // Cập nhật tiêu đề hộp thoại sang bước QR tinh tế
-        const titleEl = document.getElementById('upgradeModalTitle');
-        const subTitleEl = document.getElementById('upgradeModalSubtitle');
-        if (titleEl) {
-          if (typeof window.tierBadge === 'function') {
-            titleEl.innerHTML = `<span class="inline-flex items-center gap-2">Thanh toán ${window.tierBadge(planId, { size: 'md', variant: 'plan' })}</span>`;
-          } else {
-            const planLabel = planId.toLowerCase() === 'pro' ? 'Pro' : 'Plus';
-            titleEl.innerText = `Thanh toán gói ${planLabel}`;
-          }
-        }
-        if (subTitleEl) {
-          subTitleEl.innerText = `Mã đơn: ${data.code || ''} · Mở app ngân hàng quét mã hoặc chuyển theo biên lai bên dưới`;
-        }
-
-        // Đặt lại các khối tương tác về trạng thái ban đầu
-        const initialBox = document.getElementById('qrActionInitial');
-        const verifyingBox = document.getElementById('qrActionVerifying');
-        if (initialBox) initialBox.classList.remove('hidden');
-        if (verifyingBox) verifyingBox.classList.add('hidden');
-        stopOrderVerificationPolling();
-
-        // Đặt lại lớp phủ hết hạn và nút báo chuyển khoản
-        const expiredOverlay = document.getElementById('qrExpiredOverlay');
-        if (expiredOverlay) expiredOverlay.classList.add('hidden');
-
-        const btnUserConfirm = document.getElementById('btnUserConfirmTransfer');
-        if (btnUserConfirm) {
-          btnUserConfirm.disabled = false;
-          btnUserConfirm.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Tôi đã chuyển khoản</span>';
-          btnUserConfirm.classList.remove('opacity-60', 'cursor-not-allowed');
-        }
-
-        const waitingText = document.getElementById('qrStatusWaitingText');
-        if (waitingText) {
-          waitingText.innerText = "Đang chờ bạn thanh toán. Gói sẽ tự động kích hoạt ngay sau khi nhận được tiền.";
-        }
+        populateUpgradeStep2(data, planId, period);
 
         // Tải trước ảnh QR vào bộ nhớ đệm trước khi đóng popup loading để màn hình chuyển mượt mà
         let isTransitioned = false;
@@ -11078,7 +11251,7 @@
             closeQrLoadingModal();
             updateUpgradeStepper(1);
             showUpgradeStep(2);
-            startQrCountdown();
+            startQrCountdown(expiresTime);
             subscribeOrderRealtime(data.orderId);
           }, 320);
         };
@@ -11087,7 +11260,6 @@
           const preloader = new Image();
           preloader.onload = preloader.onerror = completeFlow;
           preloader.src = data.qr;
-          // Fallback an toàn sau 1.2s nếu mạng chập chờn
           setTimeout(completeFlow, 1200);
         } else {
           completeFlow();
@@ -11105,14 +11277,6 @@
         }
         showToast("Không thể tạo đơn: " + userFriendlyMsg);
       }
-    }
-
-    function startQrCountdown() {
-      if (upgradeModalState.countdownTimer) {
-        clearInterval(upgradeModalState.countdownTimer);
-        upgradeModalState.countdownTimer = null;
-      }
-      // Bỏ đếm ngược thời gian thanh toán theo yêu cầu
     }
 
     function startOrderVerificationPolling(orderId) {
@@ -11167,6 +11331,7 @@
         const data = await res.json();
 
         if (res.ok && data && data.status === 'paid') {
+          clearActiveQrSession();
           stopOrderVerificationPolling();
           if (upgradeModalState.countdownTimer) {
             clearInterval(upgradeModalState.countdownTimer);
@@ -11223,6 +11388,7 @@
           const order = docSnap.data();
 
           if (order.status === 'paid') {
+            clearActiveQrSession();
             stopOrderVerificationPolling();
             if (upgradeModalState.countdownTimer) {
               clearInterval(upgradeModalState.countdownTimer);
@@ -11403,6 +11569,7 @@
         });
         const json = await res.json();
         if (res.ok) {
+          clearActiveQrSession();
           showToast("Đã gửi thông báo chuyển khoản! Đang chờ xác nhận từ phía Admin.");
           closeUpgradeModal();
           openBillingHistoryModal(true);
@@ -11823,6 +11990,7 @@
     const btnRecreateOrder = document.getElementById('btnRecreateOrder');
     if (btnRecreateOrder) {
       btnRecreateOrder.addEventListener('click', () => {
+        clearActiveQrSession();
         handleSelectPlanToOrder(upgradeModalState.selectedPlan || 'plus');
       });
     }
