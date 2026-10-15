@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.5.4',
+        date: '2026-10-15T23:00:00+07:00',
+        title: 'Sửa Lỗi Nút "Xóa Khung" Xuất Hiện Khi Chưa Đóng Khung Văn Bản',
+        items: [
+          { type: 'fixed', text: 'Chỉ hiển thị nút "Xóa khung" khi đoạn văn bản bôi đen đã có khung hoặc giao với khung có sẵn: Chuyển đổi cơ chế nhận diện khung sang phân tích DOM trực tiếp (range.intersectsNode), loại bỏ hoàn toàn các sai số do lệch chỉ mục ký tự.' },
+          { type: 'fixed', text: 'Triệt tiêu trạng thái ma (Ghost State): Tự động xóa sạch activeHighlightItem và bộ đệm selection cũ khi đóng cửa sổ ghi chú, khi nhả chọn văn bản hoặc khi bắt đầu chọn đoạn văn bản mới, ngăn tình trạng ghi nhớ sai khung cũ.' },
+          { type: 'improved', text: 'Đồng bộ hóa nhận diện khung hai chiều: Cả iframe tài liệu và trang cha đều kiểm tra chính xác vùng chọn theo phần tử .text-frame thực tế trên màn hình, mang lại trải nghiệm chuẩn xác tuyệt đối.' }
+        ]
+      },
+      {
         version: 'v5.5.3',
         date: '2026-10-15T22:30:00+07:00',
         title: 'Sửa Triệt Để Lỗi Hiển Thị Popup AI Bị Trôi Xuống Đáy & Đồng Nhất Khung Đọc Sách',
@@ -16206,6 +16216,34 @@
         endOffset = startOffset + text.length;
       } catch (_) {}
 
+      // Kiểm tra chính xác đoạn bôi đen có nằm trong hoặc giao với khung nào không
+      let hasIntersectingFrames = false;
+      let intersectingFrameId = null;
+      try {
+        const frameAncestor = parentEl ? parentEl.closest('.text-frame, .custom-highlight') : null;
+        if (frameAncestor) {
+          hasIntersectingFrames = true;
+          intersectingFrameId = frameAncestor.getAttribute('data-frame-id') || frameAncestor.getAttribute('data-hl-id');
+        } else {
+          const frames = document.querySelectorAll('.text-frame, .custom-highlight');
+          for (let i = 0; i < frames.length; i++) {
+            const f = frames[i];
+            try {
+              if (range.intersectsNode(f)) {
+                const fRange = document.createRange();
+                fRange.selectNodeContents(f);
+                if (range.compareBoundaryPoints(Range.END_TO_START, fRange) < 0 &&
+                    range.compareBoundaryPoints(Range.START_TO_END, fRange) > 0) {
+                  hasIntersectingFrames = true;
+                  intersectingFrameId = f.getAttribute('data-frame-id') || f.getAttribute('data-hl-id');
+                  break;
+                }
+              }
+            } catch (_) {}
+          }
+        }
+      } catch (_) {}
+
       const rect = range.getBoundingClientRect();
       let prefix = '', suffix = '', before = '', after = '', sectionTitle = '';
       try {
@@ -16257,6 +16295,8 @@
         quoteFont: quoteFont,
         startOffset: startOffset,
         endOffset: endOffset,
+        hasIntersectingFrames: hasIntersectingFrames,
+        intersectingFrameId: intersectingFrameId,
         rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
       }, '*');
     } catch (err) {
@@ -17205,9 +17245,11 @@
       const mbActionBar = document.getElementById('mobileSelectionActionBar');
       const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
       const mbAiMenuPopup = document.getElementById('mbAiMenuPopup');
+      const mbEraser = document.getElementById('mbBtnEraser');
 
       if (mbActionBar) mbActionBar.classList.add('hidden');
       if (mbAiMenuPopup) mbAiMenuPopup.classList.add('hidden');
+      if (mbEraser) mbEraser.classList.add('hidden');
       if (mbBar) mbBar.classList.remove('hidden');
       if (hlToolbar && !hlToolbar.matches(':hover')) {
         hlToolbar.classList.add('hidden');
@@ -17215,6 +17257,7 @@
           updateToolbarEraserState(false);
         }
       }
+      activeHighlightItem = null;
     }
 
     function clearAllSelectionContexts() {
@@ -17233,6 +17276,8 @@
       postMessageToLessonIframe({ type: 'CLEAR_SELECTION' });
       currentSelectionInfo = null;
       currentSelectionInfoBridge = null;
+      activeHighlightItem = null;
+      window._lastCapturedSelectionOffsets = null;
       hideSelectionToolbar();
     }
 
@@ -17317,11 +17362,16 @@
             before: msg.before || '',
             after: msg.after || '',
             sectionTitle: msg.sectionTitle || '',
+            quoteFont: msg.quoteFont || '',
             startOffset: msg.startOffset,
-            endOffset: msg.endOffset
+            endOffset: msg.endOffset,
+            hasIntersectingFrames: msg.hasIntersectingFrames,
+            frameId: msg.intersectingFrameId || null
           };
           window._lastValidSelectionBridge = { ...currentSelectionInfoBridge };
           currentAiSelectedText = msg.text || '';
+          window._lastCapturedSelectionOffsets = null;
+          activeHighlightItem = null;
           try {
             if (msg.rect) {
               const ifr = iframe || document.getElementById('lessonIframe');
@@ -17350,6 +17400,8 @@
                                            (mbActionBar && (mbActionBar.matches(':hover') || mbActionBar.contains(document.activeElement)));
           if (!isInteractingWithToolbar) {
             currentSelectionInfoBridge = null;
+            activeHighlightItem = null;
+            window._lastCapturedSelectionOffsets = null;
             if (typeof updateAiButtonsVisibility === 'function') {
               updateAiButtonsVisibility('');
             }
@@ -31584,6 +31636,8 @@
               after: after,
               sectionTitle: sectionTitle
             };
+            window._lastCapturedSelectionOffsets = null;
+            activeHighlightItem = null;
 
             if (typeof updateAiButtonsVisibility === 'function') {
               updateAiButtonsVisibility(text);
@@ -32201,7 +32255,7 @@
 
         const iframe = document.getElementById('lessonIframe');
         const doc = getSafeIframeDocument(iframe);
-        const root = (doc && (doc.querySelector('#article-content') || doc.body)) || null;
+        const root = (doc && doc.body) || null;
         const fullText = root ? (root.textContent || '') : '';
         let range = null;
         let text = '';
@@ -32213,8 +32267,8 @@
             text = sel.toString().trim();
           }
         }
+        const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
         if (!text) {
-          const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
           if (bridgeInfo && bridgeInfo.text) {
             text = bridgeInfo.text;
           } else if (currentSelectionInfo && currentSelectionInfo.text) {
@@ -32226,13 +32280,21 @@
         if (!text || !fullText) return null;
 
         let s = -1, e = -1;
-        if (range && root) {
+        // Ưu tiên 1: Lấy offset từ bridgeInfo nếu có sẵn (đo trực tiếp từ Range bên trong iframe)
+        if (bridgeInfo && typeof bridgeInfo.startOffset === 'number' && bridgeInfo.startOffset >= 0 &&
+            typeof bridgeInfo.endOffset === 'number' && bridgeInfo.endOffset > bridgeInfo.startOffset) {
+          s = bridgeInfo.startOffset;
+          e = bridgeInfo.endOffset;
+        }
+        // Ưu tiên 2: Đo Range trên same-origin doc.body
+        if (s === -1 && range && root) {
           const offsets = getRangeOffsets(range, root);
           if (offsets && offsets.end > offsets.start) {
             s = offsets.start;
             e = offsets.end;
           }
         }
+        // Ưu tiên 3: Tìm vị trí text trong fullText
         if (s === -1 && text) {
           s = fullText.indexOf(text);
           if (s !== -1) e = s + text.length;
@@ -32250,7 +32312,45 @@
     function checkSelectionIntersectsFrames() {
       try {
         if (!state.activeLessonId) return false;
-        if (activeHighlightItem && activeHighlightItem.id) return true;
+
+        // 1. Kiểm tra trực tiếp trên DOM của iframe (chính xác tuyệt đối theo giao diện)
+        const iframe = document.getElementById('lessonIframe');
+        const doc = getSafeIframeDocument(iframe);
+        if (doc) {
+          const sel = doc.getSelection();
+          if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            const ancestor = range.commonAncestorContainer;
+            const parentEl = ancestor.nodeType === 1 ? ancestor : ancestor.parentElement;
+            if (parentEl && parentEl.closest('.text-frame, .custom-highlight')) {
+              return true;
+            }
+            const frames = doc.querySelectorAll('.text-frame, .custom-highlight');
+            for (let i = 0; i < frames.length; i++) {
+              const f = frames[i];
+              try {
+                if (range.intersectsNode(f)) {
+                  const fRange = doc.createRange();
+                  fRange.selectNodeContents(f);
+                  if (range.compareBoundaryPoints(Range.END_TO_START, fRange) < 0 &&
+                      range.compareBoundaryPoints(Range.START_TO_END, fRange) > 0) {
+                    return true;
+                  }
+                }
+              } catch (_) {}
+            }
+            // Đã kiểm tra trực tiếp DOM và không giao với bất kỳ khung nào
+            return false;
+          }
+        }
+
+        // 2. Nếu bridge từ iframe đã phân tích DOM và gửi cờ
+        const bridgeInfo = currentSelectionInfoBridge || window.currentSelectionInfoBridge;
+        if (bridgeInfo && typeof bridgeInfo.hasIntersectingFrames === 'boolean') {
+          return bridgeInfo.hasIntersectingFrames;
+        }
+
+        // 3. Fallback: Dùng offset (chỉ khi không có DOM range trực tiếp)
         const offsets = getCurrentSelectionOffsets();
         if (!offsets) return false;
         const list = (state.learningData.frames && state.learningData.frames[state.activeLessonId]) ||
@@ -34272,6 +34372,7 @@
     function closeAndSaveFrameModal() {
       persistCurrentFrameData();
       hideModalAnimated(hlDetailModal);
+      activeHighlightItem = null;
       const iframe = document.getElementById('lessonIframe');
       if (iframe && iframe.contentWindow) {
         try { iframe.contentWindow.focus(); } catch (_) {}
