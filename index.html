@@ -2,7 +2,7 @@
 <html lang="vi" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Thư viện Sách HTML - Đọc & Ôn tập Chuyên sâu</title>
 
   <!-- Chống lưu đệm phiên bản HTML cũ trên trình duyệt và CDN -->
@@ -84,6 +84,16 @@
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG bên dưới.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
+      {
+        version: 'v5.5.2',
+        date: '2026-10-15T21:30:00+07:00',
+        title: 'Tối Ưu Giao Diện Di Động: Nút Đăng Nhập Chuẩn Xác & Triệt Tiêu Lỗi Phóng To/Thu Nhỏ Vô Ý',
+        items: [
+          { type: 'fixed', text: 'Hiển thị nút Đăng nhập / Tài khoản chuẩn xác 100% trên điện thoại: Tinh gọn các nút phụ trên Header (chuyển Tạo link nhanh và Prompt AI vào Menu tài khoản trên màn hình nhỏ), giúp Avatar / Nút đăng nhập luôn nằm gọn bên phải màn hình mà không cần kéo ngang.' },
+          { type: 'fixed', text: 'Khóa hiện tượng tràn ngang (Horizontal Overflow): Thiết lập overflow-x: hidden trên html & body, khóa max-width 100vw và overflow-x: clip trên Header, ngăn ngừa hoàn toàn tình trạng trang bị trượt lề trái phải.' },
+          { type: 'fixed', text: 'Triệt tiêu 100% lỗi tự động phóng to / thu nhỏ (Accidental Zoom In / Zoom Out): Bổ sung maximum-scale=1.0, user-scalable=no, chặn sự kiện gesturestart (pinch-to-zoom) và chạm đúp (double-tap zoom), đồng thời chuẩn hóa font 16px cho ô nhập liệu trên di động để iOS không bao giờ tự phóng to khi bấm nhầm.' }
+        ]
+      },
       {
         version: 'v5.5.1',
         date: '2026-10-15T21:00:00+07:00',
@@ -629,6 +639,31 @@
       );
     }
 
+    // TRIỆT TIÊU LỖI ZOOM IN / ZOOM OUT VÔ Ý TRÊN ĐIỆN THOẠI (iOS & ANDROID)
+    // 1. Ngăn chặn cử chỉ pinch-to-zoom (chụm/xòe 2 ngón tay) trên Safari iOS
+    document.addEventListener('gesturestart', function (e) {
+      e.preventDefault();
+    }, { passive: false });
+    document.addEventListener('gesturechange', function (e) {
+      e.preventDefault();
+    }, { passive: false });
+    document.addEventListener('gestureend', function (e) {
+      e.preventDefault();
+    }, { passive: false });
+
+    // 2. Ngăn chặn phóng to khi chạm 2 lần liên tiếp (Double-tap to zoom) ngoài ô nhập liệu
+    let __lastTouchEnd = 0;
+    document.addEventListener('touchend', function (e) {
+      const now = Date.now();
+      if (now - __lastTouchEnd <= 300) {
+        const tag = e.target ? e.target.tagName : '';
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+          e.preventDefault();
+        }
+      }
+      __lastTouchEnd = now;
+    }, { passive: false });
+
     function sanitizeHtml(value) { return escapeHtml(value); }
 
     function formatDate(val, options) {
@@ -1049,13 +1084,33 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
       background-color: var(--bg-app);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       touch-action: manipulation;
       min-height: 100dvh;
+      width: 100%;
+      max-width: 100vw;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Triệt tiêu 100% hiện tượng tự động phóng to (Auto Zoom In) trên iPhone khi bấm vào ô nhập liệu / tìm kiếm */
+    @media screen and (max-width: 768px) {
+      input:not([type="checkbox"]):not([type="radio"]),
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
     }
 
     /* // ANIM: Chuyển màu êm ái khi đổi theme Dark/Light (chỉ kích hoạt lúc chuyển đổi) */
@@ -1539,6 +1594,9 @@
       height: var(--header-height) !important;
       min-height: var(--header-height) !important;
       max-height: var(--header-height) !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      overflow-x: clip !important;
       position: sticky;
       top: 0;
       z-index: 50;
@@ -3674,13 +3732,13 @@
       <!-- CỤM PHẢI: Nhóm hành động (flex-nowrap, shrink-0, ml-auto) -->
       <div class="header-right-cluster flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap ml-auto">
         
-        <!-- Nút Tìm kiếm khi màn hình nhỏ (≤ 900px, vùng chạm chuẩn ≥ 44x44px) -->
-        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[901px]:hidden touch-target w-11 h-11 flex items-center justify-center p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" title="Tìm kiếm">
-          <svg class="w-5 h-5"><use href="#s-search"></use></svg>
+        <!-- Nút Tìm kiếm khi màn hình nhỏ (≤ 900px, kích thước 36x36px gọn gàng) -->
+        <button id="btnMobileSearchToggle" aria-label="Tìm kiếm bài học" class="min-[901px]:hidden touch-target h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" title="Tìm kiếm">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5"><use href="#s-search"></use></svg>
         </button>
 
-        <!-- Nút Thư Viện Prompt AI (Nằm giữa Tìm kiếm và Tạo link nhanh) -->
-        <button id="btnPromptLibrary" type="button" class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg border border-violet-200/90 dark:border-violet-500/30 bg-gradient-to-r from-violet-50/90 via-purple-50/60 to-indigo-50/80 dark:from-violet-950/40 dark:via-purple-950/30 dark:to-indigo-950/40 hover:from-violet-100 hover:to-indigo-100 dark:hover:from-violet-900/50 dark:hover:to-indigo-900/50 text-[#1C1917] dark:text-[#EDECE8] hover:border-violet-300 dark:hover:border-violet-600 active:scale-95 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Thư Viện Prompt AI chuyên sâu cho học tập & nghiên cứu" aria-label="Thư Viện Prompt AI">
+        <!-- Nút Thư Viện Prompt AI (Hiển thị từ sm trở lên, trên mobile có trong Menu Tài khoản) -->
+        <button id="btnPromptLibrary" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg border border-violet-200/90 dark:border-violet-500/30 bg-gradient-to-r from-violet-50/90 via-purple-50/60 to-indigo-50/80 dark:from-violet-950/40 dark:via-purple-950/30 dark:to-indigo-950/40 hover:from-violet-100 hover:to-indigo-100 dark:hover:from-violet-900/50 dark:hover:to-indigo-900/50 text-[#1C1917] dark:text-[#EDECE8] hover:border-violet-300 dark:hover:border-violet-600 active:scale-95 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Thư Viện Prompt AI chuyên sâu cho học tập & nghiên cứu" aria-label="Thư Viện Prompt AI">
           <svg class="w-3.5 h-3.5 text-violet-600 dark:text-violet-400 group-hover:rotate-12 transition-transform duration-200 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
           </svg>
@@ -3689,14 +3747,14 @@
           <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold uppercase tracking-wider bg-violet-600/10 dark:bg-violet-400/15 text-violet-700 dark:text-violet-300 border border-violet-200/80 dark:border-violet-700/50">AI</span>
         </button>
 
-        <!-- Nút Tạo link nhanh (>= 1180px hiện chữ, < 1180px thu gọn icon) -->
-        <button id="btnHeaderQuickShare" class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
+        <!-- Nút Tạo link nhanh (Hiển thị từ sm trở lên, trên mobile đã có ở Thanh điều hướng đáy và Menu) -->
+        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
           <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-link"></use></svg>
           <span class="hidden min-[1180px]:inline">Tạo link nhanh</span>
         </button>
 
-        <!-- Nút chỉ báo trạng thái đồng bộ (>= 1360px hiện chữ, < 1360px chấm tròn, bấm mở popover) -->
-        <button id="btnSyncStatusIndicator" type="button" class="flex items-center gap-1 text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1.5 sm:px-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
+        <!-- Nút chỉ báo trạng thái đồng bộ (Hiển thị từ sm trở lên, trên mobile xem chi tiết trong Menu) -->
+        <button id="btnSyncStatusIndicator" type="button" class="hidden sm:flex items-center gap-1 text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1.5 sm:px-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
           <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
           <span id="syncText" class="hidden min-[1360px]:inline font-medium">Đã đồng bộ</span>
         </button>
@@ -4916,6 +4974,15 @@
     <button id="btnOpenAdminPanel" class="hidden w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-semibold mb-0.5 transition">
       <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
       <span>Quản trị hệ thống</span>
+    </button>
+
+    <!-- Nút mở Thư viện Prompt AI dành riêng cho mobile khi thu gọn trên Header -->
+    <button id="btnMenuPromptLibrary" onclick="if(typeof openPromptLibrary==='function')openPromptLibrary();" class="sm:hidden w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition cursor-pointer">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-4 h-4 text-violet-600 dark:text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
+        <span>Thư Viện Prompt AI</span>
+      </div>
+      <span class="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">AI</span>
     </button>
 
     <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
@@ -26181,7 +26248,7 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>${cleanTitle}</title>
   <style>
     body {
@@ -26191,6 +26258,8 @@
       color: inherit;
       background: transparent;
       word-break: break-word;
+      touch-action: manipulation;
+      overflow-x: hidden;
     }
     article.reader-content {
       max-width: 100%;
@@ -31260,9 +31329,19 @@
 
     function injectHighlightStyles(doc) {
       if (!doc || doc.getElementById('__parent_frame_styles')) return;
+      try {
+        doc.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+        doc.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+        doc.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+      } catch (_) {}
       const style = doc.createElement('style');
       style.id = '__parent_frame_styles';
       style.textContent = `
+        html, body {
+          touch-action: manipulation;
+          overflow-x: hidden;
+          max-width: 100vw;
+        }
         body { touch-action: manipulation; }
         .text-frame {
           display: inline;
