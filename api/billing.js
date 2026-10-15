@@ -70,14 +70,18 @@ module.exports = async function handler(req, res) {
         }
       } catch (_) {}
 
-      if (configuredSecret) {
-        const authHeader = req.headers.authorization || '';
-        const secureToken = req.headers['secure-token'] || req.headers['x-api-key'] || (req.query && req.query.token) || '';
-        const tokenVal = authHeader.replace(/^Bearer\s+|^Apikey\s+/i, '').trim() || secureToken;
-        if (tokenVal !== configuredSecret) {
-          return res.status(401).json({ error: 'Webhook secret không hợp lệ' });
-        }
+      if (!configuredSecret) {
+        console.error('[Billing Webhook] Lỗi: Chưa cấu hình webhookSecret trong admin_secrets/payment');
+        return res.status(503).json({ error: 'Webhook chưa được cấu hình khóa bảo mật trên máy chủ' });
       }
+
+      const authHeader = req.headers.authorization || '';
+      const secureToken = req.headers['secure-token'] || req.headers['x-api-key'] || (req.query && req.query.token) || '';
+      const tokenVal = authHeader.replace(/^Bearer\s+|^Apikey\s+/i, '').trim() || secureToken;
+      if (!tokenVal || tokenVal !== configuredSecret) {
+        return res.status(401).json({ error: 'Webhook secret không hợp lệ hoặc bị thiếu' });
+      }
+
 
       // Trích xuất danh sách giao dịch từ nhiều định dạng:
       // - SePay: body là 1 object có content, transferAmount, referenceCode

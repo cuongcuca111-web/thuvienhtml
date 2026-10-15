@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment & Secrets
+.env*
+*.key
+*.pem
+
+# Python & Scratch Scripts
+*.py
+*.pyc
+__pycache__/
+*.bak
+*.png
+*.txt
+
+# Browser Test Profiles & Dumps
+cdp_*
+
+# Temporary HTML/JS snippets
+api_admin_ai_*.js
+bridge_code_snippet.js
+commit_651e3ca_ai.js
+logo_preview.html
+new_modals.html
+new_study_plan_js.js
+orig_bridge.js
+patched_bridge.js
+perfect_ai_backend.js
+temp_script_0.js
+test_snippet.js
+toolbar_*.html

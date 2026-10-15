@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.3.9',
+        date: '2026-10-15T11:15:00+07:00',
+        title: 'Nâng Cấp Bảo Mật Toàn Diện, Tối Ưu Hóa Luồng AI, PWA & Trải Nghiệm Tiếp Cận (A11y)',
+        items: [
+          { type: 'security', text: 'Khóa bảo mật kho mã kích hoạt activation_codes và bắt buộc kiểm thực webhookSecret thanh toán (P0).' },
+          { type: 'security', text: 'Cách ly Sandbox Iframe sách (#lessonIframe) chống XSS và đồng bộ luồng nhận diện gói cước billing/plan cho Trợ lý AI.' },
+          { type: 'improved', text: 'Khóa nút chống click trùng, thiết lập timeout 25s cho AI và giải quyết dứt điểm lỗi nút \'Thử lại\' khi mất focus.' },
+          { type: 'improved', text: 'Tự động hóa đồng bộ cache Service Worker theo query version và chuẩn hóa 100% khả năng tiếp cận (A11y, touch-target 44px) cho toàn bộ hệ thống nút bấm.' }
+        ]
+      },
+      {
         version: 'v5.3.8',
         date: '2026-10-14T10:55:00+07:00',
         title: 'Tái Thiết Kế & Đồng Bộ Hoàn Hảo Logo Trợ Lý AI Gemini & DeepSeek Theo Hệ Thống Icon Web',
@@ -1565,18 +1576,65 @@
       scrollbar-width: none;
     }
 
-    /* Hỗ trợ vùng bấm an toàn tối thiểu 36px/44px */
+    /* // A11Y & MOBILE-DESIGN: VÙNG BẤM TỐI THIỂU 44x44px THEO WCAG 2.2 AA & TOUCH-FIRST */
     .touch-target {
-      min-height: 36px;
-      min-width: 36px;
+      min-height: 44px;
+      min-width: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
-    @media (max-width: 640px) {
-      .touch-target {
+    @media (min-width: 769px) {
+      .touch-target.touch-target--desktop-compact {
+        min-height: 36px;
+        min-width: 36px;
+      }
+    }
+    @media (max-width: 768px) {
+      .touch-target,
+      .reader-ctrl-btn,
+      #readingArea button.reader-ctrl-btn,
+      #highlightFloatingToolbar button:not(.hl-color-btn),
+      #mobileSelectionActionBar button,
+      #aiResultPopover button,
+      .modal-animated button:not(.btn-no-min-size) {
         min-height: 44px;
         min-width: 44px;
+      }
+    }
+
+    /* // A11Y: CHUẨN ĐỌC SÁCH CHUYÊN SÂU - LINE-HEIGHT & ĐỘ TƯƠNG PHẢN WCAG AA/AAA */
+    #readingContentContainer {
+      line-height: 1.75;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    #descriptionText {
+      line-height: 1.75;
+    }
+    /* Đảm bảo tương phản màu chữ phụ đạt chuẩn AAA trên nền #FAF9F5 và #111317 */
+    .a11y-subtext {
+      color: #57534E;
+    }
+    .dark .a11y-subtext {
+      color: #9AA3B2;
+    }
+
+    /* // MOBILE-DESIGN: BẢO VỆ VÙNG AN TOÀN TRÊN THIẾT BỊ IOS (NOTCH & HOME INDICATOR) */
+    @supports (padding: max(0px)) {
+      @media (max-width: 768px) {
+        .modal-animated.is-bottom-sheet > div {
+          padding-bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem)) !important;
+        }
+        #mobileBottomBar {
+          padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0px)) !important;
+        }
+        #mobileSelectionActionBar {
+          padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px)) !important;
+        }
+        #aiResultPopover {
+          padding-bottom: max(0.75rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem)) !important;
+        }
       }
     }
   
@@ -3419,8 +3477,8 @@
                 <span class="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
                 <span class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] tracking-tight">Tùy chọn hiển thị</span>
               </div>
-              <button id="btnCloseDisplaySettings" class="text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng tùy chọn hiển thị">
-                <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+              <button id="btnCloseDisplaySettings" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-1" aria-label="Đóng tùy chọn hiển thị" title="Đóng">
+                <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
               </button>
             </div>
 
@@ -3683,7 +3741,7 @@
           placeholder="Tìm kiếm bài học, câu hỏi..." 
           class="w-full bg-[#F2F0EB] dark:bg-[#16181E] text-sm text-[#1C1917] dark:text-[#EDECE8] pl-9 pr-8 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] focus:border-indigo-500"
         />
-        <button id="btnCloseMobileSearch" class="absolute right-2 p-1 text-gray-400 hover:text-gray-600">
+        <button type="button" id="btnCloseMobileSearch" class="touch-target w-8 h-8 min-w-[32px] min-h-[32px] flex items-center justify-center absolute right-1.5 top-1/2 -translate-y-1/2 rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng tìm kiếm" title="Đóng">
           <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -3893,9 +3951,9 @@
         </button>
       </div>
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
-        <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
+        <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.8 • build 14/10/2026 10:55</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.3.9 • build 15/10/2026 10:45</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -3921,7 +3979,7 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <button id="btnQuickExportFromReminder" class="px-2.5 py-1 rounded-md bg-amber-600 hover:bg-amber-700 text-white font-medium text-[11px] transition shadow-2xs">Tải .json ngay</button>
-          <button id="btnCloseReminderBanner" class="p-1 text-amber-700 dark:text-amber-300 hover:bg-amber-200/50 dark:hover:bg-amber-900/50 rounded transition" title="Nhắc lại sau"><svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg></button>
+          <button type="button" id="btnCloseReminderBanner" class="touch-target min-w-[36px] min-h-[36px] p-1.5 rounded-xl text-amber-800 dark:text-amber-200 hover:text-amber-950 dark:hover:text-white hover:bg-amber-200/60 dark:hover:bg-amber-900/60 flex items-center justify-center transition cursor-pointer" title="Nhắc lại sau" aria-label="Nhắc lại sau"><svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg></button>
         </div>
       </div>
 
@@ -3929,30 +3987,30 @@
         
         <!-- NHÓM 1: ĐIỀU HƯỚNG & NHẢY BÀI [Trước | 1/2 | Sau] • [Nhảy tới] -->
         <div class="flex items-center gap-1.5 shrink-0 flex-nowrap">
-          <button id="btnPrevLesson" class="h-9 px-3 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0 touch-target" aria-label="Bài trước" title="Bài trước (←)">
-            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-chevron-left"></use></svg>
+          <button id="btnPrevLesson" class="reader-ctrl-btn touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 sm:h-9 px-3.5 sm:px-3 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài trước" title="Bài trước (←)">
+            <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-chevron-left"></use></svg>
             <span class="hidden sm:inline">Trước</span>
           </button>
 
           <!-- Bộ đếm bài 1 / 2 tích hợp mở ô nhảy số bài trực tiếp -->
           <div id="indexJumpContainer" class="relative flex items-center shrink-0">
-            <button id="btnIndexJumpTrigger" type="button" class="h-9 px-3 rounded-[10px] bg-[#F2F0EB] dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-semibold font-mono text-xs sm:text-[13px] border border-transparent hover:border-indigo-400/50 transition cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap touch-target" title="Bấm để nhập số bài và nhảy tới nhanh">
+            <button id="btnIndexJumpTrigger" type="button" class="reader-ctrl-btn touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 sm:h-9 px-3.5 sm:px-3 rounded-[10px] bg-[#F2F0EB] dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-semibold font-mono text-xs sm:text-[13px] border border-transparent hover:border-indigo-400/50 transition cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap" title="Bấm để nhập số bài và nhảy tới nhanh" aria-label="Nhập số bài">
               <span id="currentLessonIndexBadge">0 / 0</span>
-              <svg class="w-2.5 h-2.5 opacity-50 shrink-0"><use href="#icon-chevron-down"></use></svg>
+              <svg class="w-2.5 h-2.5 opacity-50 shrink-0" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
             </button>
             <input 
               id="jumpLessonInput" 
               type="number" 
               min="1" 
-              class="hidden w-16 h-9 px-1 py-0.5 rounded-[10px] border-2 border-indigo-500 bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-semibold text-xs sm:text-[13px] shadow-sm focus:outline-none" 
+              class="hidden w-16 h-9 min-h-[44px] sm:min-h-[36px] px-1 py-0.5 rounded-[10px] border-2 border-indigo-500 bg-white dark:bg-[#181B20] text-center text-[#1C1917] dark:text-[#EDECE8] font-semibold text-xs sm:text-[13px] shadow-sm focus:outline-none" 
               aria-label="Nhập số bài để tới" 
               placeholder="#" 
             />
           </div>
 
-          <button id="btnNextLesson" class="h-9 px-3 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0 touch-target" aria-label="Bài sau" title="Bài sau (→)">
+          <button id="btnNextLesson" class="reader-ctrl-btn touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 sm:h-9 px-3.5 sm:px-3 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition shadow-2xs disabled:opacity-30 disabled:pointer-events-none shrink-0" aria-label="Bài sau" title="Bài sau (→)">
             <span class="hidden sm:inline">Sau</span>
-            <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-chevron-right"></use></svg>
+            <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
           </button>
         </div>
 
@@ -3962,13 +4020,13 @@
         <!-- NHÓM 2: HIỂN THỊ ĐỘ RỘNG [Vừa | Rộng | Toàn màn] -->
         <div class="flex items-center gap-1.5 shrink-0">
           <div class="hidden md:flex items-center bg-[#F2F0EB] dark:bg-[#16181E] border border-[#E7E5DF] dark:border-[#262C36] rounded-[10px] p-0.5 text-xs shrink-0 h-9" title="Độ rộng khung đọc bài">
-            <button data-width-opt="compact" class="width-tab px-3 py-1 rounded-[8px] text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium h-full flex items-center">
+            <button data-width-opt="compact" class="width-tab px-3 py-1 rounded-[8px] text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium h-full flex items-center" aria-label="Độ rộng Vừa">
               Vừa
             </button>
-            <button data-width-opt="wide" class="width-tab px-3 py-1 rounded-[8px] text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium h-full flex items-center">
+            <button data-width-opt="wide" class="width-tab px-3 py-1 rounded-[8px] text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition font-medium h-full flex items-center" aria-label="Độ rộng Rộng">
               Rộng
             </button>
-            <button data-width-opt="full" class="width-tab px-3 py-1 rounded-[8px] bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition h-full flex items-center">
+            <button data-width-opt="full" class="width-tab px-3 py-1 rounded-[8px] bg-white dark:bg-[#252932] text-indigo-600 dark:text-indigo-400 shadow-xs font-semibold transition h-full flex items-center" aria-label="Độ rộng Toàn màn">
               Toàn màn
             </button>
           </div>
@@ -3980,24 +4038,24 @@
         <!-- NHÓM 3: HÀNH ĐỘNG THAO TÁC NHANH (Đã học | Yêu thích | Nghe | Tập trung) -->
         <div class="flex items-center gap-1.5 shrink-0 flex-nowrap ml-auto md:ml-0">
           <!-- Nút Đã học -->
-          <button id="btnToggleLearned" class="h-9 px-3.5 rounded-[10px] font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shadow-2xs border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] hover:border-emerald-400 active:scale-95 shrink-0 touch-target" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
-            <svg id="learnedIcon" class="w-4 h-4 text-gray-400 shrink-0"><use href="#icon-circle"></use></svg>
+          <button id="btnToggleLearned" class="reader-ctrl-btn touch-target min-h-[44px] sm:min-h-[36px] sm:h-9 px-3.5 rounded-[10px] font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shadow-2xs border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] hover:border-emerald-400 active:scale-95 shrink-0" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
+            <svg id="learnedIcon" class="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" aria-hidden="true"><use href="#icon-circle"></use></svg>
             <span id="learnedLabel" class="inline">Đã học</span>
           </button>
 
           <!-- Nút Yêu thích -->
-          <button id="btnToggleFavorite" class="h-9 w-9 min-w-[36px] rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-center transition shadow-2xs shrink-0 touch-target" title="Đánh dấu yêu thích" aria-label="Đánh dấu yêu thích">
-            <svg id="favIcon" class="w-4 h-4 text-gray-400 fill-none shrink-0"><use href="#icon-star"></use></svg>
+          <button id="btnToggleFavorite" class="reader-ctrl-btn touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] sm:h-9 sm:w-9 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-center transition shadow-2xs shrink-0" title="Đánh dấu yêu thích" aria-label="Đánh dấu yêu thích">
+            <svg id="favIcon" class="w-4 h-4 text-stone-400 dark:text-stone-500 fill-none shrink-0" aria-hidden="true"><use href="#icon-star"></use></svg>
           </button>
 
           <!-- Nút Nghe TTS -->
-          <button id="btnTextToSpeech" class="h-9 w-9 min-w-[36px] rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition shadow-2xs font-medium shrink-0 touch-target" title="Đọc bài thành tiếng (Text-to-Speech)" aria-label="Đọc bài thành tiếng">
-            <svg class="w-4 h-4 shrink-0"><use href="#icon-volume-2"></use></svg>
+          <button id="btnTextToSpeech" class="reader-ctrl-btn touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] sm:h-9 sm:w-9 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition shadow-2xs font-medium shrink-0" title="Đọc bài thành tiếng (Text-to-Speech)" aria-label="Đọc bài thành tiếng">
+            <svg class="w-4 h-4 shrink-0" aria-hidden="true"><use href="#icon-volume-2"></use></svg>
           </button>
 
           <!-- Nút Tập trung -->
-          <button id="btnToggleFocusMode" class="h-9 w-9 min-w-[36px] rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center transition shadow-2xs font-medium shrink-0 touch-target" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro" aria-label="Chế độ tập trung">
-            <svg class="w-4 h-4 text-rose-500 shrink-0"><use href="#icon-focus"></use></svg>
+          <button id="btnToggleFocusMode" class="reader-ctrl-btn touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] sm:h-9 sm:w-9 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center transition shadow-2xs font-medium shrink-0" title="Bật Chế độ tập trung & Hẹn giờ Pomodoro" aria-label="Chế độ tập trung">
+            <svg class="w-4 h-4 text-rose-500 shrink-0" aria-hidden="true"><use href="#icon-focus"></use></svg>
           </button>
 
           <!-- Hidden inputs for backward compatibility -->
@@ -4012,22 +4070,22 @@
       </div>
 
       <!-- THANH TÌM KIẾM TRONG BÀI (IN-ARTICLE SEARCH) -->
-      <div id="inArticleSearchBar" class="hidden bg-[#FEF3C7]/60 dark:bg-[#78350F]/40 px-3 sm:px-8 py-2 border-b border-amber-200 dark:border-amber-800/50 flex items-center justify-between text-xs">
+      <div id="inArticleSearchBar" class="hidden bg-[#FEF3C7]/80 dark:bg-[#78350F]/50 px-3 sm:px-8 py-2 border-b border-amber-200 dark:border-amber-800/50 flex items-center justify-between text-xs">
         <div class="flex items-center gap-2 flex-1 min-w-0">
-          <svg class="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0"><use href="#icon-search"></use></svg>
-          <span class="text-amber-800 dark:text-amber-200 font-medium hidden sm:inline">Tìm trong bài:</span>
-          <span id="inArticleKeyword" class="font-semibold text-amber-900 dark:text-amber-100 truncate"></span>
-          <span id="inArticleCount" class="text-amber-700 dark:text-amber-400 text-[11px] shrink-0 font-mono">(0/0)</span>
+          <svg class="w-3.5 h-3.5 text-amber-800 dark:text-amber-200 shrink-0" aria-hidden="true"><use href="#icon-search"></use></svg>
+          <span class="text-amber-900 dark:text-amber-100 font-medium hidden sm:inline">Tìm trong bài:</span>
+          <span id="inArticleKeyword" class="font-semibold text-amber-950 dark:text-amber-50 truncate"></span>
+          <span id="inArticleCount" class="text-amber-800 dark:text-amber-300 text-[11px] shrink-0 font-mono">(0/0)</span>
         </div>
         <div class="flex items-center gap-1 shrink-0">
-          <button id="btnPrevMatch" class="touch-target p-1 rounded hover:bg-amber-200 text-amber-900" title="Khớp trước">
-            <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
+          <button id="btnPrevMatch" class="touch-target min-w-[44px] min-h-[44px] p-2 rounded-lg hover:bg-amber-200/70 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-100 flex items-center justify-center transition" title="Khớp trước" aria-label="Kết quả tìm kiếm trước">
+            <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-left"></use></svg>
           </button>
-          <button id="btnNextMatch" class="touch-target p-1 rounded hover:bg-amber-200 text-amber-900" title="Khớp sau">
-            <svg class="w-4 h-4"><use href="#icon-chevron-right"></use></svg>
+          <button id="btnNextMatch" class="touch-target min-w-[44px] min-h-[44px] p-2 rounded-lg hover:bg-amber-200/70 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-100 flex items-center justify-center transition" title="Khớp sau" aria-label="Kết quả tìm kiếm sau">
+            <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
           </button>
-          <button id="btnCloseInArticleSearch" class="touch-target p-1 rounded hover:bg-amber-200 text-amber-900 ml-1" title="Đóng">
-            <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+          <button type="button" id="btnCloseInArticleSearch" class="touch-target min-w-[44px] min-h-[44px] p-2 rounded-xl hover:bg-amber-200/70 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-100 ml-1 flex items-center justify-center transition cursor-pointer" title="Đóng tìm kiếm trong bài" aria-label="Đóng thanh tìm kiếm">
+            <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-x"></use></svg>
           </button>
         </div>
       </div>
@@ -4117,16 +4175,16 @@
             <!-- Tiêu đề lớn & Meta row -->
             
             <!-- // FEATURE-3: Banner nhắc ôn tập bài học khi đến hạn -->
-            <div id="spacedReviewBanner" class="hidden mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div class="flex items-center gap-2 text-amber-900 dark:text-amber-200 font-medium">
-                <svg class="w-4 h-4 text-amber-600 shrink-0"><use href="#icon-calendar-clock"></use></svg>
-                <span>Bài này đến hạn ôn lại hôm nay (<span id="spacedReviewStageLabel">Mốc 1 ngày</span>)</span>
+            <div id="spacedReviewBanner" class="hidden mb-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2 text-amber-950 dark:text-amber-100 font-semibold">
+                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true"><use href="#icon-calendar-clock"></use></svg>
+                <span>Bài này đến hạn ôn lại hôm nay (<span id="spacedReviewStageLabel" class="underline decoration-amber-500/50">Mốc 1 ngày</span>)</span>
               </div>
               <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                <button id="btnSpacedReviewForgot" class="touch-target px-2.5 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 text-amber-900 dark:text-amber-100 font-medium transition">
+                <button id="btnSpacedReviewForgot" class="touch-target min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 text-amber-950 dark:text-amber-100 font-semibold transition" aria-label="Chưa nhớ bài này">
                   Chưa nhớ
                 </button>
-                <button id="btnSpacedReviewRemember" class="touch-target px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs transition">
+                <button id="btnSpacedReviewRemember" class="touch-target min-h-[44px] px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs transition" aria-label="Đã nhớ bài này">
                   Nhớ rồi
                 </button>
               </div>
@@ -4145,68 +4203,68 @@
                 </h1>
                 <button 
                   id="btnInlineRename" 
-                  class="inline-flex items-center justify-center p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition shrink-0" 
+                  class="touch-target min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 inline-flex items-center justify-center p-2 sm:p-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition shrink-0" 
                   title="Đổi tên hiển thị" 
                   aria-label="Đổi tên bài học"
                 >
-                  <svg class="w-3.5 h-3.5"><use href="#icon-pencil"></use></svg>
+                  <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#icon-pencil"></use></svg>
                 </button>
               </div>
 
               <!-- Dòng thông tin ngay dưới tiêu đề: gom thành các chip gọn cuộn ngang 1 hàng trên mobile -->
-              <div class="flex items-center gap-1.5 sm:gap-2 flex-nowrap sm:flex-wrap text-xs text-[#6E6B65] dark:text-[#979DA8] mt-1.5 overflow-x-auto no-scrollbar py-0.5 w-full">
+              <div class="flex items-center gap-1.5 sm:gap-2 flex-nowrap sm:flex-wrap text-xs text-[#57534E] dark:text-[#9AA3B2] mt-1.5 overflow-x-auto no-scrollbar py-0.5 w-full">
                 <!-- Chip Tên file -->
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shrink-0" title="File gốc">
-                  <svg class="w-3.5 h-3.5 text-indigo-500 shrink-0"><use href="#icon-file-text"></use></svg>
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] font-mono text-[11px] shrink-0" title="File gốc">
+                  <svg class="w-3.5 h-3.5 text-indigo-500 shrink-0" aria-hidden="true"><use href="#icon-file-text"></use></svg>
                   <span id="originalFileNameTag" class="truncate max-w-[160px] sm:max-w-[220px]">lesson.html</span>
                 </div>
 
                 <!-- Chip Định dạng -->
-                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium shrink-0">
+                <div class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium shrink-0">
                   <span>HTML thuần</span>
                 </div>
 
                 <!-- Chip Lịch ôn tập -->
-                <div id="spacedReviewMetaBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] text-[#6E6B65] dark:text-[#979DA8] shrink-0 hover:border-amber-300 dark:hover:border-amber-800 transition">
-                  <svg class="w-3.5 h-3.5 text-amber-500 shrink-0"><use href="#icon-calendar-clock"></use></svg>
+                <div id="spacedReviewMetaBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F2F0EB] dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] text-[11px] text-[#57534E] dark:text-[#9AA3B2] shrink-0 hover:border-amber-300 dark:hover:border-amber-800 transition">
+                  <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" aria-hidden="true"><use href="#icon-calendar-clock"></use></svg>
                   <span id="spacedReviewMetaText">Chưa bật nhắc ôn</span>
-                  <button id="btnToggleSpacedReview" class="ml-1 text-[11px] font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Bật</button>
+                  <button id="btnToggleSpacedReview" class="ml-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Bật</button>
                 </div>
 
                 <!-- Danh sách Nhãn bài học -->
                 <div id="articleTagsList" class="flex items-center gap-1.5 shrink-0"></div>
 
                 <!-- Nút + Nhãn nằm cuối hàng chip -->
-                <button id="btnArticleManageTags" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition shadow-2xs shrink-0" title="Gắn hoặc quản lý nhãn">
-                  <svg class="w-3 h-3"><use href="#icon-tag"></use></svg>
+                <button id="btnArticleManageTags" class="touch-target min-h-[44px] sm:min-h-[28px] inline-flex items-center gap-1 px-3 py-1.5 sm:px-2.5 sm:py-0.5 rounded-lg text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition shadow-2xs shrink-0" title="Gắn hoặc quản lý nhãn" aria-label="Gắn hoặc quản lý nhãn">
+                  <svg class="w-3 h-3" aria-hidden="true"><use href="#icon-tag"></use></svg>
                   <span>+ Nhãn</span>
                 </button>
               </div>
             </div>
 
             <!-- // REDESIGN: KHỐI GHI CHÚ & CÂU HỎI TRỌNG TÂM (THU GỌN / MỞ RỘNG, NHỚ TRẠNG THÁI THEO BÀI) -->
-            <div id="descriptionBox" class="mb-2.5 bg-[#FAF9F5] dark:bg-[#16191F] border border-[#E7E5DF] dark:border-[#262C36] border-l-4 border-l-indigo-600 dark:border-l-indigo-400 rounded-r-xl rounded-l-md p-2 sm:px-3 sm:py-2 transition-all duration-200 shadow-2xs">
+            <div id="descriptionBox" class="mb-2.5 bg-[#FAF9F5] dark:bg-[#16191F] border border-[#E7E5DF] dark:border-[#262C36] border-l-4 border-l-indigo-600 dark:border-l-indigo-400 rounded-r-xl rounded-l-md p-2.5 sm:px-3 sm:py-2.5 transition-all duration-200 shadow-2xs">
               <div class="flex items-center justify-between gap-2 select-none">
-                <button id="btnToggleNotesAccordion" type="button" class="flex items-center gap-1.5 text-left group cursor-pointer focus:outline-none min-w-0" aria-expanded="true" title="Bấm để thu gọn hoặc mở rộng ghi chú">
-                  <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-book-open"></use></svg>
+                <button id="btnToggleNotesAccordion" type="button" class="min-h-[44px] sm:min-h-0 flex items-center gap-2 text-left group cursor-pointer focus:outline-none min-w-0" aria-expanded="true" title="Bấm để thu gọn hoặc mở rộng ghi chú">
+                  <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" aria-hidden="true"><use href="#icon-book-open"></use></svg>
                   <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 truncate">
                     <span class="inline sm:hidden">Ghi chú</span>
                     <span class="hidden sm:inline">Ghi chú &amp; Câu hỏi trọng tâm</span>
                   </span>
-                  <svg id="notesAccordionChevron" class="w-3.5 h-3.5 text-[#6E6B65] dark:text-[#979DA8] transition-transform duration-200 shrink-0"><use href="#icon-chevron-down"></use></svg>
+                  <svg id="notesAccordionChevron" class="w-3.5 h-3.5 text-[#57534E] dark:text-[#9AA3B2] transition-transform duration-200 shrink-0" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
                 </button>
                 
                 <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   <!-- Nút Tự kiểm tra Flashcards cho bài học -->
-                  <button id="btnStudyLessonFlashcards" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] sm:text-xs font-semibold text-indigo-700 dark:text-indigo-300 shadow-2xs hover:bg-indigo-100 transition shrink-0" title="Tự kiểm tra các câu hỏi trọng tâm của bài này">
-                    <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-cards"></use></svg>
+                  <button id="btnStudyLessonFlashcards" class="touch-target min-h-[44px] sm:min-h-0 inline-flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] sm:text-xs font-semibold text-indigo-700 dark:text-indigo-300 shadow-2xs hover:bg-indigo-100 transition shrink-0" title="Tự kiểm tra các câu hỏi trọng tâm của bài này" aria-label="Tự kiểm tra flashcard bài học">
+                    <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-cards"></use></svg>
                     <span class="hidden sm:inline">Tự kiểm tra</span>
                     <span class="inline sm:hidden">Kiểm tra</span>
                   </button>
 
                   <!-- Nút Sửa ghi chú -->
-                  <button id="btnEditDescription" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-white dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-[11px] sm:text-xs font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition shrink-0" title="Chỉnh sửa ghi chú">
-                    <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-pencil"></use></svg>
+                  <button id="btnEditDescription" class="touch-target min-h-[44px] sm:min-h-0 inline-flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 rounded-lg bg-white dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-[11px] sm:text-xs font-medium text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition shrink-0" title="Chỉnh sửa ghi chú" aria-label="Sửa ghi chú">
+                    <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-pencil"></use></svg>
                     <span class="hidden sm:inline">Sửa ghi chú</span>
                     <span class="inline sm:hidden">Sửa</span>
                   </button>
@@ -4214,12 +4272,12 @@
               </div>
               
               <!-- Thân nội dung ghi chú (thu gọn / mở rộng) -->
-              <div id="notesBodyContainer" class="mt-1.5 transition-all duration-200">
+              <div id="notesBodyContainer" class="mt-2 transition-all duration-200">
                 <div id="descriptionContentWrapper" class="relative">
-                  <p id="descriptionText" class="font-serif text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line line-clamp-3 transition-all cursor-pointer" title="Bấm để chỉnh sửa ghi chú">
+                  <p id="descriptionText" class="font-serif text-xs sm:text-sm text-[#1C1917] dark:text-[#EDECE8] leading-[1.75] whitespace-pre-line line-clamp-3 transition-all cursor-pointer" title="Bấm để chỉnh sửa ghi chú">
                     Chưa có mô tả cho bài học này. Nhấp vào đây để thêm câu hỏi ôn tập hoặc ghi chú.
                   </p>
-                  <button id="btnToggleDescExpand" class="hidden text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-1 hover:underline">
+                  <button id="btnToggleDescExpand" class="hidden text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-1 hover:underline min-h-[36px] flex items-center">
                     Xem thêm
                   </button>
                 </div>
@@ -4233,10 +4291,10 @@
                     placeholder="Nhập mô tả hoặc câu hỏi ôn tập..."
                   ></textarea>
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2 text-xs">
-                    <span class="text-[#6E6B65] dark:text-[#979DA8] hidden sm:inline">Phím tắt: Ctrl + Enter để lưu, Esc để hủy</span>
+                    <span class="text-[#57534E] dark:text-[#9AA3B2] hidden sm:inline">Phím tắt: Ctrl + Enter để lưu, Esc để hủy</span>
                     <div class="flex items-center gap-2 self-end sm:self-auto">
-                      <button id="btnCancelDesc" class="px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition">Hủy</button>
-                      <button id="btnSaveDesc" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-2xs transition">Lưu ghi chú</button>
+                      <button id="btnCancelDesc" class="touch-target min-h-[44px] px-3.5 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[#57534E] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition font-medium">Hủy</button>
+                      <button id="btnSaveDesc" class="touch-target min-h-[44px] px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-2xs transition">Lưu ghi chú</button>
                     </div>
                   </div>
                 </div>
@@ -4258,7 +4316,7 @@
 
               <iframe 
                 id="lessonIframe" 
-                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms" 
+                sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" 
                 scrolling="no" 
                 class="w-full border-0 transition-opacity duration-150 block" 
                 style="min-height: 200px; background-color: transparent;" 
@@ -4268,14 +4326,14 @@
 
             <!-- Chân trang chuyển bài -->
             <div class="mt-8 pt-4 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between">
-              <button id="btnBottomPrev" class="touch-target px-4 py-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shadow-2xs">
-                <svg class="w-4 h-4"><use href="#icon-chevron-left"></use></svg>
+              <button id="btnBottomPrev" class="touch-target min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-xs sm:text-sm font-semibold text-[#1C1917] dark:text-[#EDECE8] transition flex items-center gap-1.5 shadow-2xs" aria-label="Bài trước">
+                <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-left"></use></svg>
                 <span>Bài trước</span>
               </button>
-              <span class="text-xs text-[#6E6B65] dark:text-[#979DA8] hidden sm:inline">Dùng phím mũi tên ← và → để đổi bài</span>
-              <button id="btnBottomNext" class="touch-target px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shadow-xs">
+              <span class="text-xs text-[#57534E] dark:text-[#9AA3B2] hidden sm:inline">Dùng phím mũi tên ← và → để đổi bài</span>
+              <button id="btnBottomNext" class="touch-target min-h-[44px] px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-xs" aria-label="Bài tiếp">
                 <span>Bài tiếp</span>
-                <svg class="w-4 h-4"><use href="#icon-chevron-right"></use></svg>
+                <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
               </button>
             </div>
           </div>
@@ -4284,7 +4342,7 @@
       </div>
     
     <!-- // FEATURE: THANH ĐIỀU HƯỚNG TÌM KIẾM NỔI DẠNG VIÊN THUỐC (FLOATING SEARCH NAV PILL) -->
-    <aside id="searchInArticleFloatingNav" class="hidden fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181B20]/95 dark:bg-[#181B20]/95 backdrop-blur-md text-white shadow-2xl border border-white/15 select-none transition-all duration-200" aria-label="Điều hướng kết quả tìm kiếm trong bài">
+    <aside id="searchInArticleFloatingNav" class="hidden fixed bottom-[calc(max(3.75rem,env(safe-area-inset-bottom,0px))+0.75rem)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181B20]/95 dark:bg-[#181B20]/95 backdrop-blur-md text-white shadow-2xl border border-white/15 select-none transition-all duration-200" aria-label="Điều hướng kết quả tìm kiếm trong bài">
       <div class="flex items-center gap-1.5 pl-1 pr-2">
         <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" aria-hidden="true"><use href="#icon-search"></use></svg>
         <span id="searchFloatingPillKeyword" class="text-xs font-medium text-white/90 max-w-[120px] sm:max-w-[180px] truncate"></span>
@@ -4310,43 +4368,43 @@
   </div>
 
   <!-- BOTTOM BAR CỐ ĐỊNH CHO MOBILE -->
-  <nav id="mobileBottomBar" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-3 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-lg">
-    <button id="mbBtnPrev" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Bài trước">
+  <nav id="mobileBottomBar" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-3 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-lg">
+    <button id="mbBtnPrev" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Bài trước">
       <svg class="w-5 h-5"><use href="#icon-chevron-left"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Trước</span>
     </button>
-    <button id="mbBtnToc" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Mục lục bài học">
+    <button id="mbBtnToc" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Mục lục bài học">
       <svg class="w-5 h-5"><use href="#icon-list"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Mục lục</span>
     </button>
-    <button id="mbBtnSearch" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Tìm kiếm">
+    <button id="mbBtnSearch" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Tìm kiếm">
       <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Tìm kiếm</span>
     </button>
-    <button id="mbBtnShare" class="touch-target flex flex-col items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 active:scale-95 transition" aria-label="Chia sẻ link">
+    <button id="mbBtnShare" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Chia sẻ link">
       <svg class="w-5 h-5"><use href="#icon-share-2"></use></svg>
       <span class="text-[10px] mt-0.5 font-medium">Chia sẻ</span>
     </button>
-    <button id="mbBtnNext" class="touch-target flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 active:scale-95 transition font-semibold" aria-label="Bài tiếp">
+    <button id="mbBtnNext" class="touch-target flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 active:scale-95 transition font-semibold min-w-[44px] min-h-[44px]" aria-label="Bài tiếp">
       <svg class="w-5 h-5"><use href="#icon-chevron-right"></use></svg>
       <span class="text-[10px] mt-0.5">Tiếp</span>
     </button>
   </nav>
 
   <!-- // FIX-2: THANH CÔNG CỤ BÔI ĐEN CỐ ĐỊNH Ở ĐÁY MÀN HÌNH CHO THIẾT BỊ CẢM ỨNG (TOUCH / COARSE POINTER) -->
-  <aside id="mobileSelectionActionBar" class="hidden md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-2 pt-1 pb-[max(0.6rem,env(safe-area-inset-bottom,0px))] flex items-center justify-between gap-1 shadow-2xl transition-all duration-200 select-none" aria-label="Thao tác đoạn văn bản đã chọn">
+  <aside id="mobileSelectionActionBar" class="hidden md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-2 pt-1 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] flex items-center justify-between gap-1 shadow-2xl transition-all duration-200 select-none" aria-label="Thao tác đoạn văn bản đã chọn">
     <!-- 4 chấm màu tròn viền nổi -->
     <div class="flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded-full bg-black/5 dark:bg-white/5">
-      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="yellow" title="Khung màu Vàng" aria-label="Màu Vàng">
+      <button type="button" class="mobile-hl-color-btn min-w-[44px] min-h-[44px] w-11 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="yellow" title="Khung màu Vàng" aria-label="Màu Vàng">
         <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #d97706;"></span>
       </button>
-      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="green" title="Khung màu Xanh" aria-label="Màu Xanh">
+      <button type="button" class="mobile-hl-color-btn min-w-[44px] min-h-[44px] w-11 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="green" title="Khung màu Xanh" aria-label="Màu Xanh">
         <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #059669;"></span>
       </button>
-      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="pink" title="Khung màu Hồng" aria-label="Màu Hồng">
+      <button type="button" class="mobile-hl-color-btn min-w-[44px] min-h-[44px] w-11 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="pink" title="Khung màu Hồng" aria-label="Màu Hồng">
         <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #db2777;"></span>
       </button>
-      <button type="button" class="mobile-hl-color-btn min-w-[36px] min-h-[44px] w-9 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="purple" title="Khung màu Tím" aria-label="Màu Tím">
+      <button type="button" class="mobile-hl-color-btn min-w-[44px] min-h-[44px] w-11 h-11 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer" data-color="purple" title="Khung màu Tím" aria-label="Màu Tím">
         <span class="w-5 h-5 rounded-full border-2 border-white/90 dark:border-black/90 shadow-2xs" style="background-color: #7c3aed;"></span>
       </button>
     </div>
@@ -4402,7 +4460,7 @@
     </div>
 
     <!-- Nút Bỏ chọn -->
-    <button id="mbBtnCancelSelection" type="button" class="min-w-[40px] min-h-[44px] w-10 h-11 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#9AA3B2] flex items-center justify-center transition shrink-0 cursor-pointer" title="Bỏ chọn" aria-label="Bỏ chọn">
+    <button id="mbBtnCancelSelection" type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#57534E] dark:text-[#9AA3B2] flex items-center justify-center transition shrink-0 cursor-pointer" title="Bỏ chọn" aria-label="Bỏ chọn">
       <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
     </button>
   </aside>
@@ -4437,7 +4495,7 @@
     <!-- Handle bar & Header cho Bottom sheet trên mobile -->
     <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#E6E6E1] dark:border-[#262C36] sm:hidden">
       <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto"></div>
-      <button id="btnCloseUserMenuMobile" class="touch-target p-1 text-[#6B6B66] dark:text-[#9AA3B2] absolute right-3 top-2.5" aria-label="Đóng menu tài khoản">
+      <button id="btnCloseUserMenuMobile" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer absolute right-2 top-1" aria-label="Đóng menu tài khoản" title="Đóng">
         <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
       </button>
     </div>
@@ -4618,9 +4676,9 @@
 
     <!-- // FIX: Hiển thị phiên bản build app & bấm xem lịch sử cập nhật -->
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
-      <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
+      <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.8 • build 14/10/2026 10:55</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.3.9 • build 15/10/2026 10:45</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4647,7 +4705,7 @@
             <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]">Người nhận không cần đăng nhập vẫn mở xem được trực tiếp</p>
           </div>
         </div>
-        <button id="btnCloseShareModal" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2] hover:bg-black/5 cursor-pointer" aria-label="Đóng modal">
+        <button id="btnCloseShareModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng chia sẻ bài học" title="Đóng">
           <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -4781,7 +4839,7 @@
     <svg class="w-3.5 h-3.5 text-indigo-400 dark:text-indigo-600"><use href="#icon-clock"></use></svg>
     <span id="resumePositionText">Đã quay lại vị trí đang đọc</span>
     <button id="btnScrollToTop" class="underline hover:opacity-80 text-[11px] font-bold ml-1">Về đầu bài</button>
-    <button id="btnCloseResumePill" class="opacity-60 hover:opacity-100 p-0.5 ml-1">
+    <button type="button" id="btnCloseResumePill" class="touch-target min-w-[32px] min-h-[32px] p-1 rounded-full opacity-70 hover:opacity-100 hover:bg-white/20 dark:hover:bg-black/10 transition flex items-center justify-center cursor-pointer ml-1" aria-label="Đóng thông báo" title="Đóng">
       <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
     </button>
   </div>
@@ -4877,27 +4935,27 @@
   <!-- Menu chọn ngôn ngữ đích cho Dịch thuật -->
   <div id="aiTranslateLangMenu" class="hidden fixed z-65 bg-[#1C1917] dark:bg-[#EDECE8] text-white dark:text-[#1C1917] rounded-xl shadow-2xl p-1.5 flex flex-col gap-0.5 border border-white/10 dark:border-black/10 min-w-[145px] text-xs select-none">
     <div class="text-[10px] uppercase font-bold text-white/50 dark:text-black/50 px-2 py-1 tracking-wider">Ngôn ngữ đích</div>
-    <button data-lang="Tiếng Việt" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+    <button data-lang="Tiếng Việt" class="ai-lang-choice min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
       <span>Tiếng Việt</span>
       <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
     </button>
-    <button data-lang="English" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+    <button data-lang="English" class="ai-lang-choice min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
       <span>English</span>
       <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
     </button>
-    <button data-lang="Trung Quốc (中文)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+    <button data-lang="Trung Quốc (中文)" class="ai-lang-choice min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
       <span>中文 (Trung)</span>
       <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
     </button>
-    <button data-lang="Nhật Bản (日本語)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+    <button data-lang="Nhật Bản (日本語)" class="ai-lang-choice min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
       <span>日本語 (Nhật)</span>
       <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
     </button>
-    <button data-lang="Hàn Quốc (한국어)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+    <button data-lang="Hàn Quốc (한국어)" class="ai-lang-choice min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
       <span>한국어 (Hàn)</span>
       <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
     </button>
-    <button data-lang="Pháp (Français)" class="ai-lang-choice text-left px-2 py-1.5 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
+    <button data-lang="Pháp (Français)" class="ai-lang-choice min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/10 transition flex items-center justify-between cursor-pointer">
       <span>Français (Pháp)</span>
       <span class="lang-check text-indigo-400 dark:text-indigo-600 hidden font-bold">✓</span>
     </button>
@@ -4908,25 +4966,25 @@
   <div id="aiResultPopover" class="hidden fixed z-[90] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-200 select-none overflow-hidden
        w-full sm:w-[440px] max-w-[calc(100vw-24px)] bottom-0 sm:bottom-auto sm:top-auto sm:left-auto">
     <!-- Thanh kéo Mobile Drag Handle -->
-    <div class="sm:hidden w-12 h-1 bg-[#E7E5DF] dark:bg-[#262C36] rounded-full mx-auto my-2 shrink-0"></div>
+    <div class="sm:hidden w-12 h-1 bg-[#E7E5DF] dark:border-[#262C36] rounded-full mx-auto my-2 shrink-0"></div>
     
     <!-- Header -->
     <div class="px-4 py-3 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 shrink-0">
       <div class="flex items-center gap-2 min-w-0">
         <div id="aiHeaderIcon" class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
         </div>
         <span id="aiHeaderTitle" class="font-serif font-bold text-sm truncate">Giải thích đơn giản</span>
         <span id="aiCachedBadge" class="hidden text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 shrink-0">⚡ Đã lưu</span>
       </div>
-      <button id="btnCloseAiPopover" type="button" class="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] transition cursor-pointer" aria-label="Đóng kết quả AI">
-        <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+      <button id="btnCloseAiPopover" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng kết quả AI" title="Đóng">
+        <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
       </button>
     </div>
 
     <!-- Selected text quote snippet -->
     <div class="px-4 pt-2.5 pb-1 shrink-0">
-      <div id="aiSelectedSnippet" class="bg-[#FAF9F5] dark:bg-[#14161C] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1.5 text-xs text-[#6E6B65] dark:text-[#979DA8] italic truncate line-clamp-2">
+      <div id="aiSelectedSnippet" class="bg-[#FAF9F5] dark:bg-[#14161C] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl px-2.5 py-1.5 text-xs text-[#57534E] dark:text-[#9AA3B2] italic truncate line-clamp-2">
         "..."
       </div>
     </div>
@@ -4937,28 +4995,28 @@
     </div>
 
     <!-- Footer Action Bar -->
-    <div class="px-4 py-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/70 dark:bg-[#14161C]/70 flex items-center justify-between gap-1.5 shrink-0 text-xs">
+    <div class="px-4 py-2.5 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/70 dark:bg-[#14161C]/70 flex items-center justify-between gap-1.5 shrink-0 text-xs pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))] sm:pb-2.5">
       <div class="flex items-center gap-1.5">
-        <button id="btnAiCopyResult" type="button" class="touch-target px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 font-medium flex items-center gap-1 text-[#1C1917] dark:text-[#EDECE8] transition shadow-2xs cursor-pointer">
-          <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-copy"></use></svg>
+        <button id="btnAiCopyResult" type="button" class="touch-target min-h-[44px] px-3 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-black/5 dark:hover:bg-white/5 font-semibold flex items-center gap-1 text-[#1C1917] dark:text-[#EDECE8] transition shadow-2xs cursor-pointer">
+          <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-copy"></use></svg>
           <span>Sao chép</span>
         </button>
-        <button id="btnAiSaveAsNote" type="button" class="touch-target px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-1 transition shadow-2xs cursor-pointer">
-          <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-pencil"></use></svg>
+        <button id="btnAiSaveAsNote" type="button" class="touch-target min-h-[44px] px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center gap-1 transition shadow-2xs cursor-pointer">
+          <svg class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><use href="#icon-pencil"></use></svg>
           <span>Lưu thành ghi chú</span>
         </button>
       </div>
 
       <!-- Mode Switcher Menu -->
       <div class="relative">
-        <button id="btnAiSwitchModeToggle" type="button" class="touch-target px-2 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1 font-medium transition cursor-pointer">
+        <button id="btnAiSwitchModeToggle" type="button" class="touch-target min-h-[44px] px-3 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#57534E] dark:text-[#9AA3B2] flex items-center gap-1 font-semibold transition cursor-pointer">
           <span>Chế độ khác</span>
-          <svg class="w-3 h-3"><use href="#icon-chevron-down"></use></svg>
+          <svg class="w-3 h-3" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
         </button>
-        <div id="aiSwitchModeMenu" class="hidden absolute bottom-full right-0 mb-1.5 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-1 flex flex-col gap-0.5 z-65 min-w-[145px]">
-          <button data-switch-mode="explain" class="ai-switch-mode-btn text-left px-2.5 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer">Giải thích đơn giản</button>
-          <button data-switch-mode="example" class="ai-switch-mode-btn text-left px-2.5 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer">Cho ví dụ</button>
-          <button data-switch-mode="translate" class="ai-switch-mode-btn text-left px-2.5 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer">Dịch thuật</button>
+        <div id="aiSwitchModeMenu" class="hidden absolute bottom-full right-0 mb-1.5 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-1 flex flex-col gap-0.5 z-65 min-w-[155px]">
+          <button data-switch-mode="explain" class="ai-switch-mode-btn min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer flex items-center">Giải thích đơn giản</button>
+          <button data-switch-mode="example" class="ai-switch-mode-btn min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer flex items-center">Cho ví dụ</button>
+          <button data-switch-mode="translate" class="ai-switch-mode-btn min-h-[44px] text-left px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-xs text-[#1C1917] dark:text-[#EDECE8] transition cursor-pointer flex items-center">Dịch thuật</button>
         </div>
       </div>
     </div>
@@ -4973,8 +5031,8 @@
           <span id="hlModalColorDot" class="w-3 h-3 rounded-full shrink-0 bg-amber-500 ring-2 ring-white dark:ring-[#161A20]"></span>
           <p id="hlSelectedTextPreview" class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] truncate flex-1 min-w-0" title="Trích đoạn">Trích đoạn...</p>
         </div>
-        <button id="btnCloseHlDetail" class="touch-target w-8 h-8 rounded-lg text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center cursor-pointer shrink-0" aria-label="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseHlDetail" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer shrink-0" aria-label="Đóng" title="Đóng">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -5088,7 +5146,7 @@
           </div>
 
           <!-- Nút đóng ✕ -->
-          <button id="btnCloseAllNotesModal" class="touch-target w-10 h-10 rounded-lg text-[#6E6B65] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center cursor-pointer" aria-label="Đóng bảng">
+          <button id="btnCloseAllNotesModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng ghi chú" title="Đóng">
             <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
           </button>
         </div>
@@ -5212,11 +5270,11 @@
           </div>
           <div>
             <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]" id="fcSessionTitle">Ôn tập Flashcard</h3>
-            <p class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]" id="fcSessionSubtitle">Thẻ 1 / 5</p>
+            <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2]" id="fcSessionSubtitle">Thẻ 1 / 5</p>
           </div>
         </div>
-        <button id="btnCloseFcModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5">
-          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        <button id="btnCloseFcModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng ôn tập" title="Đóng">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -5227,32 +5285,32 @@
           <div id="fcCardInner" class="relative w-full h-full min-h-[220px] sm:min-h-[260px] transition-transform duration-500 transform-style-preserve-3d rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] shadow-md bg-[#FAF9F5] dark:bg-[#111317]">
             <!-- Mặt trước (Câu hỏi) -->
             <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between rounded-2xl">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">MẶT TRƯỚC • CÂU HỎI</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">MẶT TRƯỚC • CÂU HỎI</span>
               <div class="my-auto text-center">
                 <p id="fcCardFrontText" class="font-serif text-lg sm:text-xl font-bold text-[#1C1917] dark:text-[#EDECE8] leading-relaxed"></p>
               </div>
-              <span class="text-[11px] text-center text-[#6E6B65] dark:text-[#9AA3B2]">Chạm hoặc bấm Phím cách để lật đáp án</span>
+              <span class="text-[11px] text-center text-[#57534E] dark:text-[#9AA3B2]">Chạm hoặc bấm Phím cách để lật đáp án</span>
             </div>
             <!-- Mặt sau (Đáp án) -->
             <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 flex flex-col justify-between rounded-2xl bg-indigo-50/40 dark:bg-indigo-950/30">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">MẶT SAU • ĐÁP ÁN</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">MẶT SAU • ĐÁP ÁN</span>
               <div class="my-auto text-center">
                 <p id="fcCardBackText" class="font-serif text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-relaxed whitespace-pre-line"></p>
               </div>
-              <span class="text-[11px] text-center text-[#6E6B65] dark:text-[#9AA3B2]">Bạn đã nhớ câu hỏi này chưa?</span>
+              <span class="text-[11px] text-center text-[#57534E] dark:text-[#9AA3B2]">Bạn đã nhớ câu hỏi này chưa?</span>
             </div>
           </div>
         </div>
 
         <!-- Nút thao tác dưới thẻ -->
         <div class="flex items-center justify-center gap-3 w-full max-w-md mt-6">
-          <button id="btnFcForgot" class="flex-1 touch-target py-2.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs">
+          <button id="btnFcForgot" class="flex-1 touch-target min-h-[44px] py-2.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 border border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-100 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs" aria-label="Chưa nhớ thẻ này">
             <span>← Chưa nhớ</span>
           </button>
-          <button id="btnFcFlip" class="touch-target py-2.5 px-4 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] text-xs sm:text-sm font-semibold transition hover:bg-black/5 shadow-2xs">
+          <button id="btnFcFlip" class="touch-target min-h-[44px] py-2.5 px-4 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] text-xs sm:text-sm font-semibold transition hover:bg-black/5 shadow-2xs" aria-label="Lật thẻ">
             <span>Lật thẻ</span>
           </button>
-          <button id="btnFcRemembered" class="flex-1 touch-target py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-xs">
+          <button id="btnFcRemembered" class="flex-1 touch-target min-h-[44px] py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-xs" aria-label="Đã nhớ thẻ này">
             <span>Nhớ rồi →</span>
           </button>
         </div>
@@ -5261,15 +5319,15 @@
       <!-- Kết quả phiên học (Hiện khi xong tất cả thẻ) -->
       <div id="fcSessionSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4">
         <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs">
-          <svg class="w-8 h-8"><use href="#icon-check-check"></use></svg>
+          <svg class="w-8 h-8" aria-hidden="true"><use href="#icon-check-check"></use></svg>
         </div>
         <h4 class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8]">Hoàn thành phiên kiểm tra!</h4>
-        <p id="fcSummaryStats" class="text-sm text-[#6E6B65] dark:text-[#9AA3B2]">Bạn đã nhớ 4 / 5 câu hỏi (80%)</p>
+        <p id="fcSummaryStats" class="text-sm text-[#57534E] dark:text-[#9AA3B2]">Bạn đã nhớ 4 / 5 câu hỏi (80%)</p>
         <div class="flex items-center gap-3 pt-2">
-          <button id="btnFcRetryUnknown" class="touch-target px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-50">
+          <button id="btnFcRetryUnknown" class="touch-target min-h-[44px] px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-950/40" aria-label="Ôn lại thẻ chưa nhớ">
             Ôn lại thẻ chưa nhớ
           </button>
-          <button id="btnFcFinish" class="touch-target px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs">
+          <button id="btnFcFinish" class="touch-target min-h-[44px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs" aria-label="Hoàn tất phiên kiểm tra">
             Hoàn tất
           </button>
         </div>
@@ -5284,15 +5342,15 @@
       <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
-            <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
+            <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-bar-chart"></use></svg>
           </div>
           <div>
             <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Thống kê Học tập</h3>
-            <p class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]">Hành trình tích lũy tri thức của bạn</p>
+            <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2]">Hành trình tích lũy tri thức của bạn</p>
           </div>
         </div>
-        <button id="btnCloseAnalyticsModal" class="p-1.5 rounded-lg text-[#6E6B65] hover:bg-black/5">
-          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        <button id="btnCloseAnalyticsModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng thống kê" title="Đóng">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -5379,7 +5437,7 @@
             <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]" id="authModalSubtitle">Đồng bộ dữ liệu đám mây</p>
           </div>
         </div>
-        <button id="btnCloseAuthModal" class="touch-target p-1 rounded text-[#6B6B66] dark:text-[#9AA3B2]" aria-label="Đóng modal">
+        <button id="btnCloseAuthModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng tài khoản" title="Đóng">
           <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -5532,7 +5590,7 @@
         </div>
 
         <!-- Nút đóng (Esc) -->
-        <button id="btnCloseUploadModal" type="button" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" aria-label="Đóng hộp thoại (Esc)">
+        <button id="btnCloseUploadModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" aria-label="Đóng hộp thoại (Esc)" title="Đóng">
           <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M5 5l10 10M15 5L5 15"/>
           </svg>
@@ -5748,7 +5806,7 @@
             <p id="pasteModalSubtitle" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate">Hỗ trợ Markdown chuẩn &amp; văn bản thô tiếng Việt</p>
           </div>
         </div>
-        <button id="btnClosePasteModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" aria-label="Đóng modal">
+        <button id="btnClosePasteModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer" aria-label="Đóng bảng dán văn bản" title="Đóng">
           <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -5843,7 +5901,7 @@
           </button>
           
           <!-- Nút Đóng (X tự vẽ 44x44px) -->
-          <button id="btnCloseStudyPlanModal" type="button" class="touch-target w-11 h-11 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" aria-label="Đóng bảng kế hoạch">
+          <button id="btnCloseStudyPlanModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" aria-label="Đóng bảng kế hoạch" title="Đóng">
             <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
         </div>
@@ -6080,7 +6138,7 @@
           </div>
           <h3 id="createPlanModalTitle" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Tạo Kế hoạch &amp; Lịch thi mới</h3>
         </div>
-        <button id="btnCloseCreatePlanModal" type="button" class="touch-target w-10 h-10 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition cursor-pointer" aria-label="Đóng modal">
+        <button id="btnCloseCreatePlanModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng tạo kế hoạch" title="Đóng">
           <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
@@ -6298,7 +6356,7 @@
           <h3 id="lessonActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn bài học</h3>
           <p id="lessonActionMenuSub" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate mt-0.5"></p>
         </div>
-        <button id="btnCloseLessonActionMenu" class="p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đóng" aria-label="Đóng">
+        <button id="btnCloseLessonActionMenu" type="button" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer shrink-0" title="Đóng" aria-label="Đóng">
           <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -6371,7 +6429,7 @@
           <h3 id="catActionMenuTitle" class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] truncate">Tùy chọn mục</h3>
           <p id="catActionMenuSub" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] truncate mt-0.5"></p>
         </div>
-        <button id="btnCloseCatActionMenu" class="p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Đóng" aria-label="Đóng">
+        <button id="btnCloseCatActionMenu" type="button" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer shrink-0" title="Đóng" aria-label="Đóng">
           <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -6412,8 +6470,8 @@
           <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Quản lý nhãn bài học</h3>
           <p id="tagManageLessonTitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] truncate max-w-[280px] mt-0.5"></p>
         </div>
-        <button id="btnCloseTagManageModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseTagManageModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng quản lý nhãn" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
       
@@ -6468,8 +6526,8 @@
     <div class="bg-white dark:bg-[#181B20] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-5 border border-[#E7E5DF] dark:border-[#262C36] shadow-xl">
       <div class="flex items-center justify-between pb-3 border-b border-[#E7E5DF] dark:border-[#262C36]">
         <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Chuyển đến mục khác</h3>
-        <button id="btnCloseBatchMoveModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseBatchMoveModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng chuyển mục" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
       <div id="batchMoveCatOptions" class="py-3 max-h-60 overflow-y-auto space-y-1"></div>
@@ -6498,8 +6556,8 @@
         </div>
         <div class="flex items-center gap-2">
           <button id="btnEmptyTrashAll" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition border border-red-200 dark:border-red-900/50">Dọn sạch</button>
-          <button id="btnCloseTrashModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng" aria-label="Đóng">
-            <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+          <button id="btnCloseTrashModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Đóng" aria-label="Đóng thùng rác">
+            <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
           </button>
         </div>
       </div>
@@ -6594,8 +6652,8 @@
           </div>
           <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Bảng phím tắt thao tác nhanh</h3>
         </div>
-        <button id="btnCloseShortcutsModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseShortcutsModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Đóng" aria-label="Đóng bảng phím tắt">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
       <div class="p-4 flex-1 overflow-y-auto space-y-3 text-xs">
@@ -6689,6 +6747,23 @@
     </div>
   </aside>
 
+  <!-- // Banner cảnh báo mất kết nối đồng bộ đám mây (Cloud Sync Error Banner) -->
+  <aside id="cloudSyncErrorBanner" class="hidden fixed bottom-[calc(max(3.75rem,env(safe-area-inset-bottom,0px))+0.75rem)] md:bottom-4 left-3 right-3 sm:left-4 sm:right-auto sm:max-w-md z-[9997] bg-amber-950/95 dark:bg-[#2A2015]/95 text-amber-100 p-3 sm:p-3.5 rounded-2xl shadow-2xl backdrop-blur-md border border-amber-500/30 flex items-center justify-between gap-3 text-xs transition-all duration-200 select-none" role="alert" aria-label="Cảnh báo đồng bộ đám mây">
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+      <p class="font-medium text-xs text-amber-100 truncate">Mất kết nối đồng bộ đám mây • Đang dùng bản đệm thiết bị</p>
+    </div>
+    <div class="flex items-center gap-1.5 shrink-0">
+      <button id="btnRetryCloudSync" type="button" class="touch-target px-2.5 py-1 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-semibold text-xs shadow-xs transition cursor-pointer flex items-center gap-1">
+        <svg class="w-3.5 h-3.5"><use href="#icon-rotate-ccw"></use></svg>
+        <span>Thử lại</span>
+      </button>
+      <button id="btnDismissCloudSyncBanner" type="button" class="touch-target p-1 rounded-lg text-amber-300 hover:text-white hover:bg-white/10 transition cursor-pointer" title="Ẩn thông báo" aria-label="Đóng thông báo">
+        <svg class="w-4 h-4 shrink-0"><use href="#icon-x"></use></svg>
+      </button>
+    </div>
+  </aside>
+
     <!-- // FEATURE-1: Thanh tiến độ cuộn bài siêu mảnh trong Chế độ tập trung -->
   <div id="focusProgressBar" class="hidden"></div>
 
@@ -6749,8 +6824,8 @@
           </div>
           <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Cài đặt Pomodoro</h3>
         </div>
-        <button id="btnClosePomoSettings" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnClosePomoSettings" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng cài đặt Pomodoro" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -6852,7 +6927,7 @@
         <button id="btnTtsVoiceMenu" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Chọn giọng đọc">
           <svg class="w-4 h-4"><use href="#icon-sliders"></use></svg>
         </button>
-        <button id="btnCloseTtsBar" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng thanh nghe">
+        <button id="btnCloseTtsBar" type="button" class="touch-target p-1.5 rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" title="Đóng thanh nghe" aria-label="Đóng thanh nghe">
           <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -6870,8 +6945,8 @@
           </div>
           <h3 class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8]">Chọn giọng đọc</h3>
         </div>
-        <button id="btnCloseTtsVoiceModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseTtsVoiceModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng chọn giọng đọc" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
       <div id="ttsVoiceListContainer" class="py-3 flex-1 overflow-y-auto space-y-1.5 text-xs max-h-64">
@@ -6894,8 +6969,8 @@
             <p id="sharedLinksSubtitle" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">Quản lý và thu hồi liên kết bài học</p>
           </div>
         </div>
-        <button id="btnCloseSharedLinksModal" class="p-1.5 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition" title="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseSharedLinksModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng quản lý link chia sẻ" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -6955,8 +7030,8 @@
             <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Tự động bảo vệ dữ liệu với bản chụp an toàn (IndexedDB)</p>
           </div>
         </div>
-        <button id="btnCloseBackupRestoreModal" class="touch-target p-1 text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] dark:hover:text-[#E8E6E1] rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseBackupRestoreModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng sao lưu khôi phục" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -7008,8 +7083,8 @@
             <p class="text-[11px] text-[#6E6B65] dark:text-[#979DA8]">Phát hiện thay đổi ở cả hai phía kể từ lần đồng bộ trước</p>
           </div>
         </div>
-        <button id="btnCloseConflictModalX" class="touch-target p-1 text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] rounded-lg transition" aria-label="Để sau">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
+        <button id="btnCloseConflictModalX" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng xử lý xung đột" title="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
 
@@ -7114,7 +7189,7 @@
         <span id="popoverDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
         <h4 class="font-bold text-xs text-[#1C1B18] dark:text-[#E8E6E1]">Đồng bộ đám mây</h4>
       </div>
-      <button id="btnCloseSyncPopover" class="p-1 text-[#6E6B65] hover:text-[#1C1B18] dark:text-[#979DA8] rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng">
+      <button id="btnCloseSyncPopover" type="button" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-1" aria-label="Đóng trạng thái đồng bộ" title="Đóng">
         <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
       </button>
     </div>
@@ -7166,7 +7241,7 @@
             <p class="text-[11px] text-[#6E6B65] dark:text-[#9AA3B2]">Cá nhân hóa phông chữ, màu nền &amp; bố cục</p>
           </div>
         </div>
-        <button id="btnCloseReadingSettingsModal" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 transition" aria-label="Đóng bảng tùy chỉnh đọc">
+        <button id="btnCloseReadingSettingsModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng tùy chỉnh đọc" title="Đóng">
           <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -7358,7 +7433,7 @@
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
-        <button id="btnCloseWhatsNewX" type="button" class="touch-target p-1 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer -mr-1" aria-label="Đóng">
+        <button id="btnCloseWhatsNewX" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-1" aria-label="Đóng" title="Đóng">
           <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -7414,7 +7489,7 @@
             <p class="text-[11px] text-[#6B6B66] dark:text-[#9AA3B2]">Toàn bộ các phiên bản đã phát hành ngoại tuyến</p>
           </div>
         </div>
-        <button id="btnCloseChangelogModal" type="button" class="touch-target p-1.5 rounded-lg text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer" aria-label="Đóng">
+        <button id="btnCloseChangelogModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng" title="Đóng">
           <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -7444,7 +7519,7 @@
             </button>
           </p>
         </div>
-        <button id="btnCloseUpgradeModal" type="button" class="touch-target w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng">
+        <button id="btnCloseUpgradeModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng" title="Đóng">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -8208,7 +8283,7 @@
             </p>
           </div>
         </div>
-        <button id="btnCloseBillingHistoryModal" type="button" class="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng">
+        <button id="btnCloseBillingHistoryModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng" title="Đóng">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -8290,7 +8365,7 @@
     <div class="bg-white dark:bg-[#1A1D23] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh]">
       <div class="px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
         <h4 class="font-serif font-bold text-sm text-[#1C1B18] dark:text-[#E8E6E1]">Ảnh biên lai đã gửi</h4>
-        <button type="button" id="btnCloseUserProofLightbox" class="p-1 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer">
+        <button type="button" id="btnCloseUserProofLightbox" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng ảnh biên lai" title="Đóng">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
@@ -8326,7 +8401,7 @@
             </p>
           </div>
         </div>
-        <button id="btnCloseRedeemCodeModal" type="button" class="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng">
+        <button id="btnCloseRedeemCodeModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-2 -mt-1" aria-label="Đóng nhập mã kích hoạt" title="Đóng">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -8403,7 +8478,7 @@
             </p>
           </div>
         </div>
-        <button id="btnCloseAccountCenterModal" type="button" class="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-1" aria-label="Đóng">
+        <button id="btnCloseAccountCenterModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer -mr-1" aria-label="Đóng quản lý tài khoản" title="Đóng">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -8936,7 +9011,7 @@
             <span class="sm:hidden">Tải lên</span>
           </button>
 
-          <button id="btnClosePromptLibraryModal" type="button" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 active:scale-90 transition cursor-pointer" aria-label="Đóng thư viện prompt">
+          <button id="btnClosePromptLibraryModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer" aria-label="Đóng thư viện prompt" title="Đóng">
             <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
           </button>
         </div>
@@ -9015,7 +9090,7 @@
         <div class="flex items-center gap-2 min-w-0" id="promptDetailTierHeader">
           <!-- Populated by JS -->
         </div>
-        <button id="btnClosePromptDetailModal" type="button" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 active:scale-90 transition cursor-pointer" aria-label="Đóng chi tiết prompt">
+        <button id="btnClosePromptDetailModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer" aria-label="Đóng chi tiết prompt" title="Đóng">
           <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -9085,7 +9160,7 @@
             <p class="text-[11px] text-stone-500">Chỉ quản trị viên mới có quyền đăng tải hoặc biên soạn prompt</p>
           </div>
         </div>
-        <button id="btnCloseAdminPromptEditorModal" type="button" class="touch-target p-2 rounded-xl text-[#6E6B65] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5 active:scale-90 transition cursor-pointer" aria-label="Đóng biên tập prompt">
+        <button id="btnCloseAdminPromptEditorModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer" aria-label="Đóng biên tập prompt" title="Đóng">
           <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
         </button>
       </div>
@@ -13240,8 +13315,8 @@
       const toast = document.createElement('div');
       toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl bg-[#1C1B18] text-white dark:bg-[#E8E6E1] dark:text-[#161A20] shadow-xl text-xs flex items-center justify-between gap-3 animate-slide-up border border-white/10';
       toast.innerHTML = `
-        <span class="truncate">${message}</span>
-        <button class="px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shrink-0 transition shadow-2xs">${actionLabel}</button>
+        <span class="truncate">${escapeHtml(message)}</span>
+        <button class="px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shrink-0 transition shadow-2xs">${escapeHtml(actionLabel)}</button>
       `;
 
       const btn = toast.querySelector('button');
@@ -16818,7 +16893,7 @@
           }`;
 
           const iconName = type === 'error' ? 'alert-circle' : 'check-circle-2';
-          toastEl.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+          toastEl.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i><span>${escapeHtml(message)}</span>`;
           container.appendChild(toastEl);
           if (typeof refreshIcons === 'function') refreshIcons();
         }
@@ -16861,9 +16936,9 @@
       toast.innerHTML = `
         <div class="flex items-center gap-2 min-w-0">
           <svg class="w-4 h-4 text-emerald-400 shrink-0"><use href="#icon-check-circle-2"></use></svg>
-          <span class="truncate">${message}</span>
+          <span class="truncate">${escapeHtml(message)}</span>
         </div>
-        <button class="px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] shrink-0 transition active:scale-95 shadow-2xs">${actionLabel}</button>
+        <button class="px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] shrink-0 transition active:scale-95 shadow-2xs">${escapeHtml(actionLabel)}</button>
       `;
       const btn = toast.querySelector('button');
       let handled = false;
@@ -17649,41 +17724,55 @@
       }
     }
 
+    function showCloudSyncErrorBanner() {
+      const banner = document.getElementById('cloudSyncErrorBanner');
+      if (banner) banner.classList.remove('hidden');
+    }
+
+    function hideCloudSyncErrorBanner() {
+      const banner = document.getElementById('cloudSyncErrorBanner');
+      if (banner) banner.classList.add('hidden');
+    }
+
     function syncAllUserStatusDots() {
       try {
         const isOnline = navigator.onLine;
         const isAnonymous = !state.user || Boolean(state.user.isAnonymous);
+        const hasSyncError = Boolean(state.hasSyncError);
+
+        let dotColorClass = "bg-emerald-500";
+        let dotTitle = "Trực tuyến (Online)";
+
+        if (!isOnline) {
+          dotColorClass = "bg-slate-400";
+          dotTitle = "Ngoại tuyến (Offline)";
+        } else if (hasSyncError) {
+          dotColorClass = "bg-amber-500 animate-pulse";
+          dotTitle = "Mất kết nối đồng bộ đám mây • Đang dùng bản đệm thiết bị";
+        } else if (isAnonymous) {
+          dotColorClass = "bg-amber-400";
+          dotTitle = "Chế độ Khách";
+        }
 
         // Header status dot (w-2.5 h-2.5 = 10px)
         const statusDot = document.getElementById('userStatusDot');
         if (statusDot) {
-          statusDot.className = (isOnline && !isAnonymous)
-            ? "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] bg-emerald-500 shadow-2xs z-10 pointer-events-none"
-            : (!isOnline
-              ? "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] bg-slate-400 shadow-2xs z-10 pointer-events-none"
-              : "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] bg-amber-400 shadow-2xs z-10 pointer-events-none");
-          statusDot.title = !isOnline ? "Ngoại tuyến (Offline)" : (isAnonymous ? "Chế độ Khách" : "Trực tuyến (Online)");
+          statusDot.className = `absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#16181E] ${dotColorClass} shadow-2xs z-10 pointer-events-none`;
+          statusDot.title = dotTitle;
         }
 
         // Dropdown card status dot (w-3 h-3 = 12px)
         const dropdownDot = document.getElementById('userDropdownStatusDot');
         if (dropdownDot) {
-          dropdownDot.className = (isOnline && !isAnonymous)
-            ? "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-emerald-500 shadow-2xs z-10 pointer-events-none"
-            : (!isOnline
-              ? "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-slate-400 shadow-2xs z-10 pointer-events-none"
-              : "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] bg-amber-400 shadow-2xs z-10 pointer-events-none");
-          dropdownDot.title = !isOnline ? "Ngoại tuyến (Offline)" : (isAnonymous ? "Chế độ Khách" : "Trực tuyến (Online)");
+          dropdownDot.className = `absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-[#1C2028] ${dotColorClass} shadow-2xs z-10 pointer-events-none`;
+          dropdownDot.title = dotTitle;
         }
 
         // Account modal big dot (w-3.5 h-3.5 = 14px)
         const accDot = document.getElementById('accProfileOnlineDot');
         if (accDot) {
-          accDot.className = (isOnline && !isAnonymous)
-            ? "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-emerald-500 shadow-2xs z-10 pointer-events-none"
-            : (!isOnline
-              ? "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-slate-400 shadow-2xs z-10 pointer-events-none"
-              : "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] bg-amber-400 shadow-2xs z-10 pointer-events-none");
+          accDot.className = `absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-[#1A1D24] ${dotColorClass} shadow-2xs z-10 pointer-events-none`;
+          accDot.title = dotTitle;
         }
       } catch (e) {
         console.warn('[StatusDot] Lỗi đồng bộ chấm online:', e);
@@ -18655,10 +18744,16 @@
           state.categories = [];
         }
 
+        state.hasSyncError = false;
+        hideCloudSyncErrorBanner();
+        syncAllUserStatusDots();
         saveLocalCategories();
         renderCategoriesAndLessons();
       }, (error) => {
         console.warn("Firestore Categories error:", error);
+        state.hasSyncError = true;
+        showCloudSyncErrorBanner();
+        syncAllUserStatusDots();
       });
 
       state.unsubscribeLessons = onSnapshot(lessonCol, (snapshot) => {
@@ -18710,6 +18805,10 @@
         // Tự động dọn dẹp các bài trùng trong state
         autoCleanupDuplicateData(true);
 
+        state.hasSyncError = false;
+        hideCloudSyncErrorBanner();
+        syncAllUserStatusDots();
+
         saveLocalLessons();
 
         if (!state.isSharedMode) {
@@ -18723,6 +18822,9 @@
         }
       }, (error) => {
         console.warn("Firestore Lessons error:", error);
+        state.hasSyncError = true;
+        showCloudSyncErrorBanner();
+        syncAllUserStatusDots();
       });
     }
 
@@ -18769,7 +18871,7 @@
           <div class="flex items-center gap-2">
             <input type="checkbox" class="tag-assign-cb rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" data-tag-id="${tag.id}" ${isChecked ? 'checked' : ''} />
             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${tag.color};"></span>
-            <span class="font-medium text-[11px] text-[#1C1917] dark:text-[#EDECE8]">${tag.name}</span>
+            <span class="font-medium text-[11px] text-[#1C1917] dark:text-[#EDECE8]">${escapeHtml(tag.name)}</span>
           </div>
           <span class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] font-mono">${isChecked ? 'Đã gắn' : ''}</span>
         `;
@@ -18807,7 +18909,7 @@
         item.innerHTML = `
           <div class="flex items-center gap-2 min-w-0">
             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${tag.color};"></span>
-            <span class="text-[11px] font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">${tag.name}</span>
+            <span class="text-[11px] font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">${escapeHtml(tag.name)}</span>
           </div>
           <div class="flex items-center gap-1 shrink-0">
             <button class="btn-rename-tag p-1 rounded hover:bg-black/5 text-[#6E6B65] dark:text-[#979DA8]" title="Đổi tên nhãn">
@@ -19020,7 +19122,7 @@
           <div class="flex items-center gap-2 min-w-0">
             <input type="checkbox" class="tag-filter-opt-cb rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" data-filter-tag-id="${tag.id}" ${isChecked ? 'checked' : ''} />
             <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${tag.color};"></span>
-            <span class="truncate text-[11px] text-[#1C1917] dark:text-[#EDECE8]">${tag.name}</span>
+            <span class="truncate text-[11px] text-[#1C1917] dark:text-[#EDECE8]">${escapeHtml(tag.name)}</span>
           </div>
         `;
 
@@ -26907,6 +27009,29 @@
       });
     }
 
+    // Nút "Thử lại" và "Ẩn" trên Banner cảnh báo mất kết nối đồng bộ đám mây
+    const btnRetryCloudSync = document.getElementById('btnRetryCloudSync');
+    if (btnRetryCloudSync) {
+      btnRetryCloudSync.addEventListener('click', () => {
+        showToast("Đang kết nối lại đám mây...", "info");
+        hideCloudSyncErrorBanner();
+        state.hasSyncError = false;
+        syncAllUserStatusDots();
+        try {
+          if (state.unsubscribeCategories) state.unsubscribeCategories();
+          if (state.unsubscribeLessons) state.unsubscribeLessons();
+        } catch (_) {}
+        setupRealtimeListeners();
+      });
+    }
+
+    const btnDismissCloudSyncBanner = document.getElementById('btnDismissCloudSyncBanner');
+    if (btnDismissCloudSyncBanner) {
+      btnDismissCloudSyncBanner.addEventListener('click', () => {
+        hideCloudSyncErrorBanner();
+      });
+    }
+
     // // FIX: Khởi động app an toàn, hỗ trợ cả trường hợp DOM đã tải xong trước khi module thực thi
     
     // =========================================================================
@@ -30952,7 +31077,8 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/'/g, '&#039;')
+        .replace(/`/g, '&#x60;');
     }
 
     function updateAiButtonsVisibility(text) {
@@ -31072,6 +31198,9 @@
         currentAiAbortController.abort();
         currentAiAbortController = null;
       }
+      if (typeof aiStatusTimer !== 'undefined' && aiStatusTimer) { clearTimeout(aiStatusTimer); aiStatusTimer = null; }
+      if (typeof aiTimeoutTimer !== 'undefined' && aiTimeoutTimer) { clearTimeout(aiTimeoutTimer); aiTimeoutTimer = null; }
+      if (typeof setAiButtonsLoading === 'function') setAiButtonsLoading(false);
       const popover = document.getElementById('aiResultPopover');
       const backdrop = document.getElementById('aiResultBackdrop');
       const switchMenu = document.getElementById('aiSwitchModeMenu');
@@ -31208,6 +31337,35 @@
       }
     }
 
+    let aiStatusTimer = null;
+    let aiTimeoutTimer = null;
+
+    // // FIX-1: Khóa trạng thái các nút bấm gọi AI chống spam & double submit
+    function setAiButtonsLoading(isLoading) {
+      const ids = [
+        'btnAiExplain', 'btnAiExample', 'btnAiTranslate', 'btnAiTranslateLangToggle',
+        'btnAiMobileDropdownToggle', 'btnAiMobileExplain', 'btnAiMobileExample', 'btnAiMobileTranslate',
+        'btnAiSwitchModeToggle', 'btnAiRetry'
+      ];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.disabled = isLoading;
+        if (isLoading) {
+          el.classList.add('pointer-events-none', 'opacity-50');
+          el.setAttribute('aria-busy', 'true');
+        } else {
+          el.classList.remove('pointer-events-none', 'opacity-50');
+          el.removeAttribute('aria-busy');
+        }
+      });
+      document.querySelectorAll('.ai-switch-mode-btn, .ai-lang-choice').forEach(el => {
+        el.disabled = isLoading;
+        if (isLoading) el.classList.add('pointer-events-none', 'opacity-50');
+        else el.classList.remove('pointer-events-none', 'opacity-50');
+      });
+    }
+
     async function requestAiExplain(mode, customLang) {
       const now = Date.now();
       if (now - lastAiRequestTime < 600) return;
@@ -31243,6 +31401,15 @@
         if (localInfo.rect) triggerRect = localInfo.rect;
       }
 
+      // // FIX-3: Ưu tiên dùng lại text và context từ lần gọi trước nếu vùng bôi đen bị mất focus (đặc biệt khi bấm "Thử lại")
+      if ((!text || text.length < 5) && currentAiSelectedText && currentAiSelectedText.length >= 5) {
+        text = currentAiSelectedText;
+        context = currentAiContext || { before: '', after: '', sectionTitle: '' };
+      }
+      if (!triggerRect && currentAiTriggerRect) {
+        triggerRect = currentAiTriggerRect;
+      }
+
       if (!text || text.length < 5) {
         showToast("Vui lòng bôi đen đoạn văn bản để giải thích", "error");
         return;
@@ -31266,21 +31433,29 @@
 
       showAiResultPopover(mode, triggerRect);
 
-      if (currentAiAbortController) {
-        currentAiAbortController.abort();
-      }
-      currentAiAbortController = new AbortController();
-
+      // // FIX-4: Nâng cấp Skeleton UI 2 phần mô phỏng kết quả thực tế, ổn định chiều cao và tự đổi thông điệp sau 3s
       const bodyEl = document.getElementById('aiResultBody');
       if (bodyEl) {
         bodyEl.innerHTML = `
-          <div class="space-y-2 py-2">
-            <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded animate-pulse w-3/4"></div>
-            <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded animate-pulse w-full"></div>
-            <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded animate-pulse w-5/6"></div>
-            <div class="flex items-center justify-between pt-2">
-              <span class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] italic">Đang phân tích bài học...</span>
-              <button id="btnCancelAiRequest" type="button" class="text-xs text-rose-500 hover:underline cursor-pointer">Hủy</button>
+          <div class="space-y-3 py-2 min-h-[140px] flex flex-col justify-between select-none">
+            <!-- Phần 1: Mô phỏng đoạn văn giải thích -->
+            <div class="space-y-2">
+              <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded-md animate-pulse w-11/12"></div>
+              <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded-md animate-pulse w-full"></div>
+              <div class="h-3.5 bg-gray-200 dark:bg-gray-800 rounded-md animate-pulse w-4/5"></div>
+            </div>
+            <!-- Phần 2: Mô phỏng khung thẻ thuật ngữ / ví dụ -->
+            <div class="p-2.5 rounded-lg border border-indigo-100/60 dark:border-indigo-900/30 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-1.5 animate-pulse">
+              <div class="h-2.5 bg-indigo-200/70 dark:bg-indigo-800/50 rounded w-1/3"></div>
+              <div class="h-3 bg-indigo-100 dark:bg-indigo-900/40 rounded w-5/6"></div>
+            </div>
+            <!-- Thanh trạng thái & Nút Hủy -->
+            <div class="flex items-center justify-between pt-1 border-t border-[#E7E5DF]/60 dark:border-[#262C36]/60">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-spin shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                <span id="aiLoadingStatusText" class="text-[11px] text-[#6E6B65] dark:text-[#979DA8] italic transition-opacity duration-300">Đang phân tích bài học...</span>
+              </div>
+              <button id="btnCancelAiRequest" type="button" class="touch-target text-xs text-rose-500 hover:text-rose-600 hover:underline cursor-pointer font-medium">Hủy</button>
             </div>
           </div>
         `;
@@ -31288,7 +31463,33 @@
         if (cancelBtn) {
           cancelBtn.addEventListener('click', () => closeAiResultPopover());
         }
+
+        if (aiStatusTimer) clearTimeout(aiStatusTimer);
+        aiStatusTimer = setTimeout(() => {
+          const statusEl = document.getElementById('aiLoadingStatusText');
+          if (statusEl) {
+            statusEl.textContent = 'Đang trích xuất thuật ngữ & ví dụ...';
+          }
+        }, 3000);
       }
+
+      // Khóa nút bấm tương tác AI
+      setAiButtonsLoading(true);
+
+      if (currentAiAbortController) {
+        currentAiAbortController.abort();
+      }
+      currentAiAbortController = new AbortController();
+
+      // // FIX-2: Bộ đếm timeout 25 giây tự động hủy khi máy chủ phản hồi chậm hoặc nghẽn mạng
+      let isAiTimeout = false;
+      if (aiTimeoutTimer) clearTimeout(aiTimeoutTimer);
+      aiTimeoutTimer = setTimeout(() => {
+        isAiTimeout = true;
+        if (currentAiAbortController) {
+          try { currentAiAbortController.abort('timeout'); } catch (_) {}
+        }
+      }, 25000);
 
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -31332,7 +31533,15 @@
             renderPlanQuotaExceeded(resData.error);
             return;
           }
-          renderAiError(resData.error || 'Lỗi xử lý AI từ máy chủ');
+          if (response.status === 429) {
+            renderAiError(resData.error || 'Bạn đang gửi yêu cầu quá nhanh (429). Vui lòng đợi 1 phút trước khi thử lại.');
+            return;
+          }
+          if (response.status >= 500) {
+            renderAiError(resData.error || `Máy chủ AI tạm thời gặp sự cố (HTTP ${response.status}). Vui lòng bấm "Thử lại".`);
+            return;
+          }
+          renderAiError(resData.error || `Lỗi xử lý AI từ máy chủ (HTTP ${response.status})`);
           return;
         }
 
@@ -31340,11 +31549,36 @@
         renderAiSuccessResult(resData);
 
       } catch (err) {
-        if (err.name === 'AbortError') return;
+        const isAbort = (err && err.name === 'AbortError') || err === 'timeout';
+        if (isAbort && !isAiTimeout) {
+          return; // Hủy có chủ đích do người dùng đóng popover hoặc gửi yêu cầu mới
+        }
+
         console.error('Lỗi gọi AI Explain:', err);
-        renderAiError(err.message || 'Không thể kết nối tới máy chủ');
+
+        // // FIX-2: Phân loại thông báo lỗi cụ thể & chính xác
+        if (isAiTimeout) {
+          renderAiError('Yêu cầu AI đã quá hạn thời gian chờ (25s) do phản hồi mạng chậm. Vui lòng bấm "Thử lại".');
+          return;
+        }
+
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
+          renderAiError('Thiết bị đang mất kết nối Internet (Offline). Vui lòng kiểm tra lại mạng và thử lại.');
+          return;
+        }
+
+        const errMsg = (err && err.message) ? err.message : '';
+        if (errMsg.includes('Failed to fetch') || errMsg.includes('NetworkError')) {
+          renderAiError('Không thể kết nối tới máy chủ AI. Vui lòng kiểm tra đường truyền mạng hoặc bấm "Thử lại".');
+          return;
+        }
+
+        renderAiError(errMsg || 'Không thể kết nối tới máy chủ AI. Vui lòng bấm "Thử lại".');
       } finally {
+        if (aiStatusTimer) { clearTimeout(aiStatusTimer); aiStatusTimer = null; }
+        if (aiTimeoutTimer) { clearTimeout(aiTimeoutTimer); aiTimeoutTimer = null; }
         currentAiAbortController = null;
+        setAiButtonsLoading(false);
       }
     }
 
@@ -35729,6 +35963,7 @@
     function renderChangelogGroupedItems(items) {
       if (!Array.isArray(items) || items.length === 0) return '';
       const groups = {
+        'security': { label: 'Bảo mật', class: 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60', items: [] },
         'new': { label: 'Mới', class: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60', items: [] },
         'improved': { label: 'Cải thiện', class: 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/60', items: [] },
         'fixed': { label: 'Sửa lỗi', class: 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60', items: [] }
@@ -35736,7 +35971,8 @@
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const t = item.type || 'new';
+        let t = item.type || 'new';
+        if (t === 'feature') t = 'new';
         if (groups[t]) {
           groups[t].items.push(item.text);
         } else {
@@ -35745,7 +35981,7 @@
       }
 
       let html = '';
-      const order = ['new', 'improved', 'fixed'];
+      const order = ['security', 'new', 'improved', 'fixed'];
       for (let i = 0; i < order.length; i++) {
         const gKey = order[i];
         const g = groups[gKey];

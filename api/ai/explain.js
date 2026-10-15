@@ -51,8 +51,14 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    const guestId = sanitizeText(req.headers['x-guest-id'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'guest_unknown', 64);
-    const rateLimitKey = isGuest ? `guest_${guestId}` : `user_${userId}`;
+    // Xác định IP thật từ server, TUYỆT ĐỐI không tin cậy x-guest-id từ client để chống spam xoay tua header
+    const rawIp = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+                  req.headers['x-real-ip'] ||
+                  req.socket?.remoteAddress ||
+                  'unknown_ip';
+    // Băm IP SHA-256 kèm salt để sinh guestId an toàn, không thể bị client giả mạo
+    const guestId = 'guest_' + crypto.createHash('sha256').update(`thuvienhtml_guest_ip:${rawIp}`).digest('hex').substring(0, 32);
+    const rateLimitKey = isGuest ? guestId : `user_${userId}`;
 
     // 1. Kiểm tra giới hạn tần suất (Rate Limit 10 req/phút)
     if (!checkUserRateLimit(rateLimitKey)) {
@@ -159,10 +165,24 @@ module.exports = async function handler(req, res) {
         });
       }
     } else {
-      // Đọc gói của người dùng
-      const userBillingRef = db.doc(`users/${userId}/billing/subscription`);
-      const bSnap = await userBillingRef.get();
-      const userPlan = (bSnap.exists && bSnap.data().plan) ? bSnap.data().plan : 'free';
+      // Đọc gói của người dùng từ users/{userId}/billing/plan (đồng bộ chuẩn với api/billing.js)
+      let userPlan = 'free';
+      try {
+        const userPlanRef = db.doc(`users/${userId}/billing/plan`);
+        const pSnap = await userPlanRef.get();
+        if (pSnap.exists && pSnap.data().tier && pSnap.data().active !== false) {
+          userPlan = String(pSnap.data().tier).toLowerCase();
+        } else {
+          // Đường dẫn dự phòng subscription nếu có
+          const userSubRef = db.doc(`users/${userId}/billing/subscription`);
+          const sSnap = await userSubRef.get();
+          if (sSnap.exists && (sSnap.data().plan || sSnap.data().tier)) {
+            userPlan = String(sSnap.data().plan || sSnap.data().tier).toLowerCase();
+          }
+        }
+      } catch (errPlan) {
+        console.warn('Lỗi đọc gói người dùng:', errPlan.message);
+      }
 
       const plansConfig = (await getCachedPlansConfig()) || {};
       const planLimits = plansConfig[userPlan] || (plansConfig.free || { monthlyAiRequests: 30 });
