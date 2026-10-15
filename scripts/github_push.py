@@ -85,7 +85,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "fix(v5.4.5): sua triet de loi giai thich ai va toi uu adapter gemini v1beta"
+    commit_message = "fix(v5.4.6): chong che chu va dong bo thanh cong cu noi bam theo vung chon khi cuon"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,

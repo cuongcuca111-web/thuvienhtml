@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.4.6',
+        date: '2026-10-15T17:30:00+07:00',
+        title: 'Chống Đè Chữ & Đồng Bộ Thanh Công Cụ Nổi Bám Theo Đoạn Bôi Đen Khi Cuộn Chuột',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi thanh công cụ nổi (#highlightFloatingToolbar) che/đè lên đoạn văn bản được bôi đen: Thiết lập khoảng cách đệm an toàn GAP = 14px, tính toán tự động chiều cao thực tế của thanh công cụ và đảo chiều thông minh (lật xuống dưới nếu sát mép header trên cùng).' },
+          { type: 'feature', text: 'Thanh công cụ bám dính thời gian thực theo văn bản khi cuộn chuột: Lắng nghe sự kiện scroll trong iframe bài học kết hợp requestAnimationFrame (60fps) để thanh công cụ di chuyển mượt mà bám sát tọa độ đoạn chữ khi lăn chuột lên/xuống.' },
+          { type: 'fix', text: 'Cơ chế đóng tự nhiên: Thanh công cụ giữ nguyên vị trí theo đoạn văn bản bôi đen và chỉ biến mất khi người dùng nhấp chuột ra vị trí khác.' },
+          { type: 'improved', text: 'Đồng bộ hóa phiên bản v5.4.6 trên toàn bộ hệ thống (index.html, package.json, sw.js).' }
+        ]
+      },
+      {
         version: 'v5.4.5',
         date: '2026-10-15T17:00:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Mô Hình AI Bị Quá Tải Hoặc Phản Hồi Bị Ngắt Quãng',
@@ -4101,7 +4112,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.5 • build 15/10/2026 17:00</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.4.6 • build 15/10/2026 17:30</span>
         </button>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
         <button id="btnSecretAdminSealDesktop" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -4826,7 +4837,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.5 • build 15/10/2026 17:00</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.4.6 • build 15/10/2026 17:30</span>
       </button>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
       <button id="btnSecretAdminSealMobile" type="button" class="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center text-gray-500 dark:text-gray-400 opacity-20 dark:opacity-15 hover:opacity-75 focus:opacity-85 focus:outline-none transition-opacity select-none cursor-pointer" aria-label="Thông tin phiên bản">
@@ -15477,6 +15488,27 @@
     _iframeSelectionDebounceTimer = setTimeout(emitSelectionMessage, 200);
   });
 
+  // Lắng nghe sự kiện scroll bên trong Iframe để đồng bộ vị trí thanh toolbar bám theo vùng chọn
+  let _iframeScrollRaf = null;
+  const _handleIframeScroll = () => {
+    if (_iframeScrollRaf) return;
+    _iframeScrollRaf = requestAnimationFrame(() => {
+      _iframeScrollRaf = null;
+      try {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        window.parent.postMessage({
+          type: 'SELECTION_SCROLLED',
+          rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height }
+        }, '*');
+      } catch (_) {}
+    });
+  };
+  window.addEventListener('scroll', _handleIframeScroll, { passive: true, capture: true });
+  document.addEventListener('scroll', _handleIframeScroll, { passive: true, capture: true });
+
   // VIỆC 1: Click 1 lần KHÔNG làm gì cả
   // Mousedown e.detail >= 2: preventDefault() để chặn trình duyệt tự bôi đen từ khi nhấp đúp
   document.addEventListener('mousedown', (e) => {
@@ -16250,7 +16282,89 @@
     let bridgeReadableChunks = [];
     let currentSelectionInfoBridge = null;
 
-    // // FIX-2: ĐIỀU HƯỚNG HIỂN THỊ THANH CÔNG CỤ BÔI ĐEN TRÊN DESKTOP VS CẢM ỨNG DI ĐỘNG (IOS SAFARI)
+    // Định vị thanh công cụ bám theo vùng chọn theo thời gian thực (chống che chữ, chống giật)
+    function repositionSelectionToolbar(rect = null, ifr = null) {
+      const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+      if (!hlToolbar || hlToolbar.classList.contains('hidden')) return;
+
+      const targetIfr = ifr || document.getElementById('lessonIframe');
+      const targetRect = rect || (currentSelectionInfoBridge && currentSelectionInfoBridge.rect);
+      if (!targetRect) return;
+
+      const ifRect = targetIfr ? targetIfr.getBoundingClientRect() : { top: 0, left: 0 };
+      const selTop = ifRect.top + targetRect.top;
+      const selBottom = ifRect.top + targetRect.bottom;
+      const selLeft = ifRect.left + targetRect.left;
+      const selWidth = targetRect.width || 0;
+
+      // Nếu đoạn bôi đen đã bị cuộn hoàn toàn ra khỏi viewport (quá đỉnh hoặc quá đáy màn hình)
+      if (selBottom < 40 || selTop > window.innerHeight - 20) {
+        hlToolbar.style.opacity = '0';
+        hlToolbar.style.pointerEvents = 'none';
+        return;
+      } else {
+        hlToolbar.style.opacity = '1';
+        hlToolbar.style.pointerEvents = 'auto';
+      }
+
+      const tbHeight = hlToolbar.offsetHeight || 50;
+      const tbWidth = hlToolbar.offsetWidth || 520;
+      const GAP = 14; // Khoảng cách đệm an toàn tuyệt đối, chống đè lên chữ
+
+      // Đỉnh an toàn bên trên: lấy mép dưới của Header (khoảng 56px - 64px)
+      const headerEl = document.querySelector('header') || document.getElementById('mainHeader');
+      const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 58;
+      const minTopSafe = Math.max(10, headerBottom + 8);
+
+      // Thử đặt thanh công cụ ở PHÍA TRÊN đoạn văn bản bôi đen
+      let topPos = selTop - tbHeight - GAP;
+
+      // Nếu không đủ chỗ phía trên (sẽ đè vào header hoặc tràn mép trên) -> lật xuống PHÍA DƯỚI đoạn bôi đen
+      if (topPos < minTopSafe) {
+        topPos = selBottom + GAP;
+        // Nếu phía dưới cũng tràn mép dưới màn hình thì căn sát mép dưới an toàn
+        if (topPos + tbHeight > window.innerHeight - 10) {
+          topPos = Math.max(minTopSafe, window.innerHeight - tbHeight - 10);
+        }
+      }
+
+      // Căn giữa theo chiều ngang của đoạn bôi đen
+      const centerHoriz = selLeft + (selWidth / 2);
+      const padding = 12;
+      const maxLeft = Math.max(padding, window.innerWidth - tbWidth - padding);
+      const leftPos = Math.max(padding, Math.min(maxLeft, centerHoriz - (tbWidth / 2)));
+
+      hlToolbar.style.top = `${Math.round(topPos)}px`;
+      hlToolbar.style.left = `${Math.round(leftPos)}px`;
+    }
+    window.repositionSelectionToolbar = repositionSelectionToolbar;
+
+    // Đồng bộ vị trí thanh nổi khi trang cha cuộn hoặc thay đổi kích thước
+    let _parentScrollRaf = null;
+    const _handleParentScrollOrResize = () => {
+      if (_parentScrollRaf) return;
+      _parentScrollRaf = requestAnimationFrame(() => {
+        _parentScrollRaf = null;
+        if (currentSelectionInfoBridge && currentSelectionInfoBridge.rect) {
+          repositionSelectionToolbar(currentSelectionInfoBridge.rect);
+        }
+      });
+    };
+    window.addEventListener('scroll', _handleParentScrollOrResize, { passive: true, capture: true });
+    window.addEventListener('resize', _handleParentScrollOrResize, { passive: true });
+
+    // Tự động đóng thanh công cụ khi người dùng click/chạm ra vị trí khác ngoài thanh công cụ
+    document.addEventListener('pointerdown', (e) => {
+      const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
+      const mbActionBar = document.getElementById('mobileSelectionActionBar');
+      if (hlToolbar && hlToolbar.classList.contains('hidden') && (!mbActionBar || mbActionBar.classList.contains('hidden'))) {
+        return;
+      }
+      if (e.target.closest('#highlightFloatingToolbar, #highlightToolbar, #mobileSelectionActionBar, #aiExplainModal, #aiInlineExplainModal, #aiAssistantPopover, #mobileAiMenuPopup, .modal-animated, .custom-color-picker-dialog, #wrapCustomColorBtn, .color-swatch-popover')) {
+        return;
+      }
+      clearAllSelectionContexts();
+    }, { capture: true });
     function showSelectionToolbar(hasIntersectingFrames = false, rect = null, ifr = null) {
       const mbBar = document.getElementById('mobileBottomBar');
       const mbActionBar = document.getElementById('mobileSelectionActionBar');
@@ -16281,20 +16395,9 @@
         if (mbBar) mbBar.classList.remove('hidden');
         if (hlToolbar) {
           hlToolbar.classList.remove('hidden');
-          if (rect) {
-            const ifRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
-            const isNearTop = (ifRect.top + rect.top) < 70;
-            const topPos = isNearTop
-              ? Math.max(10, ifRect.top + rect.bottom + 8)
-              : Math.max(10, ifRect.top + rect.top - 46);
-            const centerHoriz = ifRect.left + rect.left + ((rect.width || 0) / 2);
-            const tbWidth = hlToolbar.offsetWidth || 520;
-            const padding = 12;
-            const maxLeft = Math.max(padding, window.innerWidth - tbWidth - padding);
-            const leftPos = Math.max(padding, Math.min(maxLeft, centerHoriz - (tbWidth / 2)));
-            hlToolbar.style.top = `${topPos}px`;
-            hlToolbar.style.left = `${leftPos}px`;
-          }
+          hlToolbar.style.opacity = '1';
+          hlToolbar.style.pointerEvents = 'auto';
+
           if (typeof updateToolbarColorIndicators === 'function') {
             updateToolbarColorIndicators();
           }
@@ -16303,6 +16406,12 @@
           }
           if (typeof updateAiButtonsVisibility === 'function') {
             updateAiButtonsVisibility();
+          }
+
+          if (rect) {
+            repositionSelectionToolbar(rect, ifr);
+            // Căn chỉnh lại vị trí sau khi các nút con (AI, Eraser...) đã bung layout
+            requestAnimationFrame(() => repositionSelectionToolbar(rect, ifr));
           }
         }
       }
@@ -16390,6 +16499,17 @@
           const container = document.getElementById('iframeOuterContainer');
           if (container && msg.bg) {
             container.style.backgroundColor = msg.bg;
+          }
+          break;
+        }
+
+        case 'SELECTION_SCROLLED': {
+          if (currentSelectionInfoBridge && msg.rect) {
+            currentSelectionInfoBridge.rect = msg.rect;
+            if (window._lastValidSelectionBridge) {
+              window._lastValidSelectionBridge.rect = msg.rect;
+            }
+            repositionSelectionToolbar(msg.rect, iframe);
           }
           break;
         }
