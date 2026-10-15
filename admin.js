@@ -5794,7 +5794,10 @@ export async function renderThemeTab(container) {
 
   const activeTheme = cfg.theme || THEME_PRESETS[0];
   const isScheduleActive = cfg.activeMode === 'schedule' && cfg.schedule && cfg.schedule.enabled;
-  const isDefaultTheme = activeTheme.id === 'default' && cfg.activeMode === 'manual';
+  const isDefaultTheme = (activeTheme.id === 'default' || !activeTheme.id) && (activeTheme.effect === 'none' || !activeTheme.effect) && cfg.activeMode === 'manual';
+  const now = Date.now();
+  const inRange = isScheduleActive && now >= (cfg.schedule.startTimestamp || 0) && now <= (cfg.schedule.endTimestamp || 0);
+  const isCurrentlyBroadcasting = (cfg.activeMode === 'manual' && !isDefaultTheme) || inRange;
 
   // Hiển thị trạng thái phát sóng
   let broadcastStatusHtml = '';
@@ -5928,6 +5931,15 @@ export async function renderThemeTab(container) {
 
         <div class="flex items-center gap-2 flex-wrap shrink-0">
           ${broadcastStatusHtml}
+          ${isCurrentlyBroadcasting ? `
+            <button id="btnQuickToggleThemeOff" type="button" class="touch-target min-h-[38px] px-3.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-semibold text-rose-700 dark:text-rose-300 transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Tạm dừng công khai theme này cho toàn bộ người dùng">
+              <span>⏸️ Tắt công khai theme</span>
+            </button>
+          ` : `
+            <button id="btnQuickToggleThemeOn" type="button" class="touch-target min-h-[38px] px-3.5 py-2 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Công khai theme đang thiết kế cho toàn bộ độc giả">
+              <span>▶️ Bật công khai theme</span>
+            </button>
+          `}
           <button id="btnResetToCodexDefault" type="button" class="touch-target min-h-[38px] px-3.5 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#181B20] hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-300 transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Khôi phục ngay lập tức về giao diện gốc The Codex HTML">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             <span>Về The Codex Mặc định</span>
@@ -6155,6 +6167,58 @@ export async function renderThemeTab(container) {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('preview_theme', { detail: t }));
         toast(`Đang hiển thị xem trước Theme "${t.name}"!`);
+      }
+    };
+  }
+
+  // 3.5 Nút Bật / Tắt Công Khai Theme Nhanh
+  const btnQuickOff = document.getElementById('btnQuickToggleThemeOff');
+  if (btnQuickOff) {
+    btnQuickOff.onclick = async () => {
+      if (!confirm("Bạn có muốn tắt công khai theme này không? Giao diện toàn bộ người dùng sẽ trở về chuẩn mặc định.")) return;
+      btnQuickOff.disabled = true;
+      btnQuickOff.innerHTML = `<span>⏳ Đang tắt...</span>`;
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: 'manual',
+          activeThemeId: 'default',
+          theme: { ...THEME_PRESETS[0] },
+          schedule: {
+            ...(cfg.schedule || {}),
+            enabled: false
+          }
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast("Đã tắt công khai theme thành công!");
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+        renderThemeTab(container);
+      }
+    };
+  }
+
+  const btnQuickOn = document.getElementById('btnQuickToggleThemeOn');
+  if (btnQuickOn) {
+    btnQuickOn.onclick = async () => {
+      const t = getThemeFromForm();
+      if (!confirm(`Bạn có muốn công khai ngay Theme "${t.name}" cho toàn bộ người dùng?`)) return;
+      btnQuickOn.disabled = true;
+      btnQuickOn.innerHTML = `<span>⏳ Đang công khai...</span>`;
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: 'manual',
+          activeThemeId: t.id,
+          theme: t
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast(`Đã công khai phát sóng Theme "${t.name}" thành công!`);
+        renderThemeTab(container);
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+        renderThemeTab(container);
       }
     };
   }

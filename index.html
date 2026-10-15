@@ -85,6 +85,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.0',
+        date: '2026-10-16T00:58:00+07:00',
+        title: 'Tính Năng Tắt / Mở Chủ Đề Công Khai (Public Theme Toggle) & Phân Quyền Bảo Mật Theme',
+        items: [
+          { type: 'feature', text: 'Thêm tính năng Tắt / Mở Theme trong menu Tùy chọn hiển thị: Khi Quản trị viên công khai hoặc phát sóng một chủ đề sự kiện (Giáng sinh, Tết, Mùa thu, v.v.), độc giả có thể chủ động bật hoặc tắt giao diện & hiệu ứng trên máy cá nhân.' },
+          { type: 'security', text: 'Bảo mật phân quyền Theme tuyệt đối: Độc giả chỉ được phép bật/tắt theme công khai, không thể tùy chỉnh hay thay đổi presets/cấu hình theme; hộp chọn Presets chỉ hiển thị riêng cho Quản trị viên.' },
+          { type: 'improved', text: 'Quản trị viên Theme Studio: Thêm nút 1-click Bật / Tắt công khai theme phát sóng tức thì và khôi phục sạch hoàn toàn các biến màu sắc khi người dùng tắt theme.' }
+        ]
+      },
+      {
         version: 'v5.6.9',
         date: '2026-10-16T00:50:00+07:00',
         title: 'Tối Ưu Hóa Triệt Để Token & Hạn Mức AI Giải Thích Từ Vựng',
@@ -4293,33 +4303,33 @@
                   </button>
                 </div>
 
-                <!-- KHỐI QUẢN TRỊ: CHỦ ĐỀ & HIỆU ỨNG MÙA LỄ HỘI (ẨN MẶC ĐỊNH - CHỈ HIỂN THỊ CHO ADMIN) -->
+                <!-- KHỐI CHỦ ĐỀ GIAO DIỆN / LỄ HỘI CÔNG KHAI -->
                 <div id="festivalThemeSettingsWrapper" class="hidden border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 pt-1.5 mt-0.5 space-y-1">
-                  <!-- Hàng: Hiệu ứng mùa lễ hội (Festival Effects Toggle) -->
-                  <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <!-- Hàng: Tắt / Mở Chủ đề Công khai (Người dùng có thể bật/tắt khi Admin công khai theme) -->
+                  <div id="publicThemeToggleRow" class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
                     <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                      <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                        <span class="text-sm">❄️</span>
+                      <div id="publicThemeIconContainer" class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                        <span id="publicThemeIcon" class="text-sm">❄️</span>
                       </div>
                       <div class="min-w-0">
                         <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-1.5">
-                          <span>Hiệu ứng mùa lễ hội</span>
-                          <span class="text-[9px] px-1 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight">Admin</span>
+                          <span id="publicThemeTitle">Chủ đề: Giáng Sinh</span>
+                          <span id="publicThemeBadge" class="text-[9px] px-1.5 py-0.2 rounded font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 leading-tight">Công khai</span>
                         </div>
-                        <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tuyết rơi, hoa đào, lá phong ngoài nền</div>
+                        <div id="publicThemeDesc" class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Bật/tắt giao diện và hiệu ứng chủ đề sự kiện</div>
                       </div>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0" title="Bật hoặc tắt theme này trên máy của bạn">
                       <input type="checkbox" id="toggleFestivalEffects" class="sr-only peer" checked>
                       <div class="w-9 h-5 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
                     </label>
                   </div>
 
-                  <!-- Khối: Chọn Chủ đề & Hiệu ứng Lễ hội (Theme Presets) -->
-                  <div id="festivalThemeSelectorBox" class="p-2 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-1.5">
+                  <!-- Khối: Tùy chỉnh Theme Presets (CHỈ DÀNH RIÊNG CHO QUẢN TRỊ VIÊN - NGƯỜI DÙNG THƯỜNG KHÔNG THỂ TÙY CHỈNH) -->
+                  <div id="festivalThemeSelectorBox" class="hidden p-2 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-1.5">
                     <div class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] px-0.5 flex items-center justify-between">
                       <div class="flex items-center gap-1">
-                        <span>CHỦ ĐỀ LỄ HỘI</span>
+                        <span>TÙY CHỈNH CHỦ ĐỀ</span>
                         <span class="text-[9px] px-1 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight">Admin</span>
                       </div>
                       <span id="activeThemeBadgeLabel" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold">Mặc định</span>
@@ -10839,18 +10849,105 @@
     }
     window.isCurrentUserAdmin = isCurrentUserAdmin;
 
-    // Cập nhật hiển thị mục cấu hình Chủ đề Lễ hội (chỉ Admin mới nhìn thấy & thao tác)
+    // Helper lấy thông tin hiển thị của Theme
+    function getThemeDisplayMeta(theme) {
+      if (!theme) return { icon: '📖', name: 'The Codex HTML', isPublic: false };
+      const isDefault = (theme.id === 'default' || !theme.id) &&
+                        (theme.effect === 'none' || !theme.effect) &&
+                        (!theme.lightAmbientBg || theme.lightAmbientBg === '#FAF9F5');
+      let icon = '🎨';
+      if (theme.icon) {
+        icon = theme.icon;
+      } else if (theme.effect === 'snow' || theme.id === 'christmas') {
+        icon = '❄️';
+      } else if (theme.effect === 'tet_blossom' || theme.id === 'tet') {
+        icon = '🌸';
+      } else if (theme.effect === 'autumn_leaves' || theme.id === 'autumn') {
+        icon = '🍁';
+      } else if (theme.effect === 'sparkles') {
+        icon = '✨';
+      }
+      return {
+        icon: icon,
+        name: theme.name || 'Sự kiện',
+        isPublic: !isDefault
+      };
+    }
+    window.getThemeDisplayMeta = getThemeDisplayMeta;
+
+    // Cập nhật hiển thị mục cấu hình Chủ đề:
+    // - Khi Admin công khai theme: Người dùng có thể TẮT / BẬT theme đó (Switch toggle).
+    // - Người dùng KHÔNG THỂ tùy chỉnh theme (Ẩn festivalThemeSelectorBox đối với người dùng thường).
+    // - Khi không có theme công khai: Ẩn mục này đối với người dùng thường.
+    // - Đối với Admin: Luôn thấy mục này và thấy khối tùy chỉnh preset.
     function updateFestivalThemeAdminUI() {
       const wrapper = document.getElementById('festivalThemeSettingsWrapper');
       if (!wrapper) return;
       const isAdmin = isCurrentUserAdmin();
+      const currentResolved = resolveActiveTheme(currentThemeConfig);
+      const meta = getThemeDisplayMeta(currentResolved);
+      const isThemePublic = meta.isPublic;
+
+      // 1. Cập nhật icon, tiêu đề và badge cho hàng Toggle
+      const titleEl = document.getElementById('publicThemeTitle');
+      const iconEl = document.getElementById('publicThemeIcon');
+      const badgeEl = document.getElementById('publicThemeBadge');
+      const descEl = document.getElementById('publicThemeDesc');
+      const selectorBox = document.getElementById('festivalThemeSelectorBox');
+
+      if (titleEl) {
+        if (isThemePublic) {
+          titleEl.textContent = `Chủ đề: ${meta.name}`;
+        } else {
+          titleEl.textContent = 'Chủ đề giao diện';
+        }
+      }
+      if (iconEl) {
+        iconEl.textContent = meta.icon;
+      }
+      if (badgeEl) {
+        if (isAdmin) {
+          badgeEl.textContent = isThemePublic ? 'Công khai (Admin)' : 'Admin';
+          badgeEl.className = 'text-[9px] px-1.5 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight';
+        } else {
+          badgeEl.textContent = 'Công khai';
+          badgeEl.className = 'text-[9px] px-1.5 py-0.2 rounded font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 leading-tight';
+        }
+      }
+      if (descEl) {
+        if (isThemePublic) {
+          descEl.textContent = 'Bật/tắt giao diện & hiệu ứng chủ đề do Admin công khai';
+        } else {
+          descEl.textContent = 'Mặc định (Chưa có chủ đề công khai)';
+        }
+      }
+
+      // 2. Đồng bộ trạng thái checkbox toggle với localStorage
+      const toggleBtn = document.getElementById('toggleFestivalEffects');
+      if (toggleBtn) {
+        toggleBtn.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
+      }
+
+      // 3. Phân quyền hiển thị:
       if (isAdmin) {
+        // Quản trị viên: luôn nhìn thấy toggle và khối tùy chỉnh presets
         wrapper.classList.remove('hidden');
+        if (selectorBox) selectorBox.classList.remove('hidden');
+        if (currentResolved) updateThemePresetUI(currentResolved.id);
       } else {
-        wrapper.classList.add('hidden');
+        // Người dùng thường: KHÔNG ĐƯỢC tùy chỉnh theme (ẩn selector box)
+        if (selectorBox) selectorBox.classList.add('hidden');
+        if (isThemePublic) {
+          // Khi admin CÔNG KHAI theme: Người dùng có thể TẮT / BẬT theme đó
+          wrapper.classList.remove('hidden');
+        } else {
+          // Khi không có theme công khai: Ẩn đi để menu gọn gàng
+          wrapper.classList.add('hidden');
+        }
       }
     }
     window.updateFestivalThemeAdminUI = updateFestivalThemeAdminUI;
+    window.updateFestivalThemeUI = updateFestivalThemeAdminUI;
 
     // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ User Preset Override & Firestore Schedule)
     function resolveActiveTheme(cfg) {
@@ -11051,14 +11148,23 @@
       activeFestivalTheme = theme;
 
       const isUserDisabled = localStorage.getItem('thuvienhtml_festival_disabled') === 'true';
-      const isDefault = theme.id === 'default' && theme.effect === 'none';
+      const isDefault = (theme.id === 'default' || !theme.id) &&
+                        (theme.effect === 'none' || !theme.effect) &&
+                        (!theme.lightAmbientBg || theme.lightAmbientBg === '#FAF9F5');
 
       // 1. Cập nhật CSS Variables
       const root = document.documentElement;
-      if (theme.lightAmbientBg) root.style.setProperty('--ambient-bg-light', theme.lightAmbientBg);
-      if (theme.darkAmbientBg) root.style.setProperty('--ambient-bg-dark', theme.darkAmbientBg);
-      if (theme.accentColor) root.style.setProperty('--festival-accent', theme.accentColor);
-      if (theme.accentGlow) root.style.setProperty('--festival-accent-glow', theme.accentGlow);
+      if (!isDefault && !isUserDisabled) {
+        if (theme.lightAmbientBg) root.style.setProperty('--ambient-bg-light', theme.lightAmbientBg);
+        if (theme.darkAmbientBg) root.style.setProperty('--ambient-bg-dark', theme.darkAmbientBg);
+        if (theme.accentColor) root.style.setProperty('--festival-accent', theme.accentColor);
+        if (theme.accentGlow) root.style.setProperty('--festival-accent-glow', theme.accentGlow);
+      } else {
+        root.style.setProperty('--ambient-bg-light', '#FAF9F5');
+        root.style.setProperty('--ambient-bg-dark', '#111317');
+        root.style.setProperty('--festival-accent', '#4F46E5');
+        root.style.setProperty('--festival-accent-glow', 'rgba(79, 70, 229, 0.4)');
+      }
 
       // 2. Body Class cho Ambient Background & Viền phát sáng băng tuyết
       if (!isDefault && !isUserDisabled) {
@@ -11082,6 +11188,11 @@
           festivalParticleEngine.stop();
         }
       }
+
+      // 6. Đồng bộ lại trạng thái hiển thị trong Menu Tùy Chọn Hiển Thị
+      try {
+        updateFestivalThemeAdminUI();
+      } catch (_) {}
     }
     window.applyFestivalTheme = applyFestivalTheme;
 
@@ -11601,22 +11712,25 @@
         }
       }, 60000);
 
-      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị
+      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị (Bật/Tắt Theme Công Khai)
       const toggleBtn = document.getElementById('toggleFestivalEffects');
       if (toggleBtn) {
         toggleBtn.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
         toggleBtn.onchange = () => {
           const disabled = !toggleBtn.checked;
+          const resolved = resolveActiveTheme(currentThemeConfig);
           if (disabled) {
             localStorage.setItem('thuvienhtml_festival_disabled', 'true');
+            if (typeof showToast === 'function') {
+              showToast("Đã tắt chủ đề sự kiện, chuyển về giao diện gốc");
+            }
           } else {
             localStorage.removeItem('thuvienhtml_festival_disabled');
+            if (typeof showToast === 'function') {
+              showToast(`Đã bật chủ đề: ${resolved.name || 'Sự kiện'}`);
+            }
           }
-          if (currentThemeConfig) {
-            applyFestivalTheme(resolveActiveTheme(currentThemeConfig));
-          } else {
-            applyFestivalTheme(resolveActiveTheme(null));
-          }
+          applyFestivalTheme(resolved);
         };
       }
 
