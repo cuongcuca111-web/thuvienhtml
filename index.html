@@ -85,6 +85,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.5.3',
+        date: '2026-10-15T22:30:00+07:00',
+        title: 'Sửa Triệt Để Lỗi Hiển Thị Popup AI Bị Trôi Xuống Đáy & Đồng Nhất Khung Đọc Sách',
+        items: [
+          { type: 'fixed', text: 'Khắc phục triệt để lỗi Popup AI (Giải thích, Ví dụ, Dịch) bị trôi xuống đáy màn hình: Xây dựng hệ thống định vị động thông minh (positionAiPopover), tự động đo chiều cao thực tế và kẹp chặt popup luôn nằm trọn 100% trong khung nhìn hiển thị (Viewport Safe Clamping).' },
+          { type: 'fixed', text: 'Tự động nâng và căn chỉnh lại vị trí khi AI trả lời (reclampAiPopoverPosition): Đo lại chiều cao ngay khi nội dung AI hoặc lỗi hiển thị, tự động kéo popup lên cao để các nút thao tác và phần nội dung không bao giờ bị chìm xuống dưới thanh tác vụ.' },
+          { type: 'fixed', text: 'Bảo vệ vùng bôi đen (Selection Lock): Khóa và lưu trữ vĩnh viễn tọa độ cùng văn bản đã chọn khi click các nút thao tác AI trên cả thanh nổi máy tính và thanh điều khiển di động, ngăn ngừa hiện tượng mất vùng chọn.' },
+          { type: 'improved', text: 'Đồng nhất khung đọc sách, loại bỏ cảm giác chia nửa màn hình: Áp dụng chiều cao tối thiểu linh hoạt (min-h-[460px] sm:min-h-[calc(100vh-280px)]) cho khung hiển thị bài đọc (#iframeOuterContainer), giúp các bài học ngắn luôn trải đều trang nhã xuống chân trang thay vì bị cụt lửng.' }
+        ]
+      },
+      {
         version: 'v5.5.2',
         date: '2026-10-15T21:30:00+07:00',
         title: 'Tối Ưu Giao Diện Di Động: Nút Đăng Nhập Chuẩn Xác & Triệt Tiêu Lỗi Phóng To/Thu Nhỏ Vô Ý',
@@ -4667,7 +4678,7 @@
             </div>
 
             <!-- Khung Iframe hiển thị file HTML -->
-            <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-xl border border-[#E7E5DF]/50 dark:border-[#262C36]/50">
+            <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-xl border border-[#E7E5DF]/50 dark:border-[#262C36]/50 min-h-[460px] sm:min-h-[calc(100vh-280px)]">
               <div id="iframeLoadingSkeleton" class="absolute inset-0 bg-white dark:bg-[#161A20] flex flex-col p-6 sm:p-8 gap-3.5 z-10 hidden transition-opacity duration-150">
                 <div class="skeleton-shimmer h-7 w-2/5 rounded-md"></div>
                 <div class="skeleton-shimmer h-4 w-4/5 rounded-md mt-2"></div>
@@ -4684,7 +4695,7 @@
                 sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" 
                 scrolling="no" 
                 class="w-full border-0 transition-opacity duration-150 block" 
-                style="min-height: 200px; background-color: transparent;" 
+                style="min-height: 460px; background-color: transparent;" 
                 title="Nội dung bài học HTML"
               ></iframe>
             </div>
@@ -5336,9 +5347,9 @@
   </div>
 
   <!-- Popover & Bottom Sheet Hiển thị Kết quả AI -->
-  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-[85] bg-black/30 backdrop-blur-xs transition-opacity duration-200"></div>
-  <div id="aiResultPopover" class="hidden fixed z-[90] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-200 select-none overflow-hidden
-       w-full sm:w-[440px] max-w-[calc(100vw-24px)] bottom-0 sm:bottom-auto sm:top-auto sm:left-auto">
+  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-[85] bg-black/40 backdrop-blur-xs transition-opacity duration-200"></div>
+  <div id="aiResultPopover" class="hidden fixed z-[90] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-150 select-none overflow-hidden
+       w-full sm:w-[460px] max-w-[calc(100vw-32px)] max-h-[85dvh] sm:max-h-[calc(100vh-84px)] bottom-0 sm:bottom-auto sm:top-auto sm:left-auto">
     <!-- Thanh kéo Mobile Drag Handle -->
     <div class="sm:hidden w-12 h-1 bg-[#E7E5DF] dark:border-[#262C36] rounded-full mx-auto my-2 shrink-0"></div>
     
@@ -5383,7 +5394,7 @@
     </div>
 
     <!-- Body container with scroll -->
-    <div id="aiResultBody" class="px-4 py-3 text-xs leading-relaxed max-h-[50dvh] sm:max-h-[360px] overflow-y-auto space-y-3">
+    <div id="aiResultBody" class="px-4 py-3 text-xs leading-relaxed flex-1 min-h-[140px] max-h-[55dvh] sm:max-h-[calc(100vh-280px)] overflow-y-auto space-y-3 overscroll-contain">
       <!-- Nội dung kết quả render tại đây -->
     </div>
 
@@ -17281,6 +17292,17 @@
             if (window._lastValidSelectionBridge) {
               window._lastValidSelectionBridge.rect = msg.rect;
             }
+            try {
+              const ifr = iframe || document.getElementById('lessonIframe');
+              const ifrRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
+              currentAiTriggerRect = {
+                top: ifrRect.top + msg.rect.top,
+                bottom: ifrRect.top + msg.rect.bottom,
+                left: ifrRect.left + msg.rect.left,
+                width: msg.rect.width || 0,
+                height: msg.rect.height || 0
+              };
+            } catch (_) {}
             repositionSelectionToolbar(msg.rect, iframe);
           }
           break;
@@ -17299,6 +17321,20 @@
             endOffset: msg.endOffset
           };
           window._lastValidSelectionBridge = { ...currentSelectionInfoBridge };
+          currentAiSelectedText = msg.text || '';
+          try {
+            if (msg.rect) {
+              const ifr = iframe || document.getElementById('lessonIframe');
+              const ifrRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
+              currentAiTriggerRect = {
+                top: ifrRect.top + msg.rect.top,
+                bottom: ifrRect.top + msg.rect.bottom,
+                left: ifrRect.left + msg.rect.left,
+                width: msg.rect.width || 0,
+                height: msg.rect.height || 0
+              };
+            }
+          } catch (_) {}
           if (typeof updateAiButtonsVisibility === 'function') {
             updateAiButtonsVisibility(msg.text);
           }
@@ -32778,6 +32814,15 @@
       });
     }
 
+    [mbBtnAiDropdown, mbAiActionExplain, mbAiActionExample, mbAiActionTranslate, mbAiActionFlashcard, mbAiActionQuiz].forEach(el => {
+      if (!el) return;
+      ['mousedown', 'pointerdown', 'touchstart'].forEach(evt => {
+        el.addEventListener(evt, (e) => {
+          e.stopPropagation();
+        }, { passive: true });
+      });
+    });
+
     // =========================================================================
     // TÍNH NĂNG AI (A): GIẢI THÍCH TẠI CHỖ, VÍ DỤ & DỊCH THUẬT TRÊN THANH NỔI
     // =========================================================================
@@ -33003,9 +33048,101 @@
       return hasVietnamese ? 'English' : 'Tiếng Việt';
     }
 
-    function showAiResultPopover(mode, triggerRect) {
+    function positionAiPopover(triggerRect) {
       const popover = document.getElementById('aiResultPopover');
       const backdrop = document.getElementById('aiResultBackdrop');
+      if (!popover) return;
+
+      const isDesktop = window.innerWidth >= 640;
+      const viewportW = window.innerWidth;
+      const viewportH = window.innerHeight;
+
+      if (!isDesktop) {
+        // Chế độ Bottom Sheet cố định chuẩn mực cho màn hình nhỏ / điện thoại
+        if (backdrop) backdrop.classList.remove('hidden');
+        popover.style.removeProperty('top');
+        popover.style.removeProperty('transform');
+        popover.style.bottom = '0px';
+        popover.style.left = '0px';
+        popover.style.right = '0px';
+        popover.style.width = '100%';
+        popover.style.maxWidth = '100vw';
+        popover.style.maxHeight = 'calc(100dvh - 56px)';
+        return;
+      }
+
+      // Chế độ Desktop (>= 640px): Tự động căn chỉnh thông minh, không bao giờ tràn màn hình hay trôi đáy
+      const popoverW = Math.min(460, viewportW - 32);
+      popover.style.width = popoverW + 'px';
+      popover.style.maxWidth = 'calc(100vw - 32px)';
+      popover.style.maxHeight = 'calc(100vh - 84px)';
+      popover.style.removeProperty('bottom');
+      popover.style.removeProperty('right');
+      popover.style.removeProperty('transform');
+
+      // Vùng an toàn với sidebar mục lục bên trái
+      const mainSidebar = document.getElementById('mainSidebar');
+      let minLeft = 16;
+      if (mainSidebar && !mainSidebar.classList.contains('-translate-x-full')) {
+        const sRect = mainSidebar.getBoundingClientRect();
+        if (sRect.right > 0 && sRect.right < viewportW / 2) {
+          minLeft = Math.max(minLeft, sRect.right + 16);
+        }
+      }
+      const maxLeft = Math.max(minLeft, viewportW - popoverW - 16);
+
+      // Chiều cao thực tế của popover
+      const popoverH = Math.min(viewportH - 84, Math.max(280, popover.offsetHeight || 380));
+      const headerSafeTop = 64; // Dưới top header chính
+      const maxSafeTop = Math.max(headerSafeTop, viewportH - popoverH - 16);
+
+      const validRect = (triggerRect && typeof triggerRect.top === 'number' && typeof triggerRect.bottom === 'number');
+
+      if (validRect) {
+        if (backdrop) backdrop.classList.add('hidden');
+
+        // Thử đặt BÊN DƯỚI đoạn bôi đen
+        let top = triggerRect.bottom + 12;
+        const fitsBelow = (top + popoverH <= viewportH - 16);
+        const fitsAbove = (triggerRect.top - 12 - popoverH >= headerSafeTop);
+
+        if (!fitsBelow && fitsAbove) {
+          top = triggerRect.top - popoverH - 12;
+        } else if (!fitsBelow && !fitsAbove) {
+          // Cả trên lẫn dưới đều quá chật -> Căn giữa khoảng an toàn
+          top = Math.round(headerSafeTop + (viewportH - headerSafeTop - 16 - popoverH) / 2);
+        }
+
+        top = Math.max(headerSafeTop, Math.min(maxSafeTop, top));
+
+        let left = triggerRect.left + (triggerRect.width / 2) - (popoverW / 2);
+        left = Math.max(minLeft, Math.min(maxLeft, left));
+
+        popover.style.top = Math.round(top) + 'px';
+        popover.style.left = Math.round(left) + 'px';
+      } else {
+        // Nếu không có triggerRect -> Căn giữa màn hình đọc sách với backdrop nhẹ
+        if (backdrop) backdrop.classList.remove('hidden');
+        const left = Math.max(minLeft, Math.round(minLeft + (viewportW - minLeft - popoverW) / 2));
+        const top = Math.max(headerSafeTop, Math.round(headerSafeTop + (viewportH - headerSafeTop - popoverH) / 2));
+
+        popover.style.top = Math.round(top) + 'px';
+        popover.style.left = Math.round(left) + 'px';
+      }
+    }
+    window.positionAiPopover = positionAiPopover;
+
+    function reclampAiPopoverPosition() {
+      const popover = document.getElementById('aiResultPopover');
+      if (!popover || popover.classList.contains('hidden')) return;
+      requestAnimationFrame(() => {
+        positionAiPopover(currentAiTriggerRect);
+      });
+    }
+    window.reclampAiPopoverPosition = reclampAiPopoverPosition;
+
+    function showAiResultPopover(mode, triggerRect) {
+      const popover = document.getElementById('aiResultPopover');
       if (!popover) return;
 
       currentAiActiveMode = mode;
@@ -33053,48 +33190,9 @@
       const hlToolbar = document.getElementById('highlightFloatingToolbar');
       if (hlToolbar) hlToolbar.classList.add('hidden');
 
-      if (window.innerWidth >= 640 && triggerRect) {
-        if (backdrop) backdrop.classList.add('hidden');
-        popover.style.removeProperty('bottom');
-        popover.style.removeProperty('transform');
-
-        const popoverW = 440;
-        const popoverEstH = 340;
-        const viewportW = window.innerWidth;
-        const viewportH = window.innerHeight;
-
-        let top = triggerRect.bottom + 10;
-        if (top + popoverEstH > viewportH - 20 && triggerRect.top > popoverEstH + 20) {
-          top = triggerRect.top - popoverEstH - 10;
-        }
-        top = Math.max(16, Math.min(viewportH - popoverEstH - 16, top));
-
-        let left = triggerRect.left + (triggerRect.width / 2) - (popoverW / 2);
-        
-        // Kiểm tra vị trí sidebar mục lục bên trái để không bị che đè
-        const mainSidebar = document.getElementById('mainSidebar');
-        let minLeft = 16;
-        if (mainSidebar && !mainSidebar.classList.contains('-translate-x-full')) {
-          const sRect = mainSidebar.getBoundingClientRect();
-          if (sRect.right > 0 && sRect.right < viewportW / 2) {
-            minLeft = Math.max(minLeft, sRect.right + 16);
-          }
-        }
-        
-        left = Math.max(minLeft, Math.min(viewportW - popoverW - 16, left));
-
-        popover.style.top = top + 'px';
-        popover.style.left = left + 'px';
-      } else {
-        if (backdrop) backdrop.classList.remove('hidden');
-        popover.style.removeProperty('top');
-        popover.style.removeProperty('left');
-        popover.style.bottom = '0px';
-        popover.style.left = '0px';
-        popover.style.right = '0px';
-      }
-
       popover.classList.remove('hidden');
+      positionAiPopover(triggerRect);
+      requestAnimationFrame(() => positionAiPopover(triggerRect));
     }
 
     function closeAiResultPopover() {
@@ -33226,6 +33324,7 @@
       html += '</div>';
 
       bodyEl.innerHTML = html;
+      reclampAiPopoverPosition();
     }
 
     function renderAiError(errMsg, forceBypass = true) {
@@ -33243,6 +33342,7 @@
           </button>
         </div>
       `;
+      reclampAiPopoverPosition();
       const retryBtn = document.getElementById('btnAiRetry');
       if (retryBtn) {
         retryBtn.addEventListener('click', () => {
@@ -33266,6 +33366,7 @@
           </button>
         </div>
       `;
+      reclampAiPopoverPosition();
       const btn = document.getElementById('btnAiOpenLoginModal');
       if (btn) {
         btn.addEventListener('click', () => {
@@ -33291,6 +33392,7 @@
           </button>
         </div>
       `;
+      reclampAiPopoverPosition();
       const btn = document.getElementById('btnAiOpenPricingModal');
       if (btn) {
         btn.addEventListener('click', () => {
@@ -33773,6 +33875,13 @@
           closeAiResultPopover();
         }
       });
+
+      window.addEventListener('resize', () => {
+        reclampAiPopoverPosition();
+      });
+      window.addEventListener('scroll', () => {
+        reclampAiPopoverPosition();
+      }, { passive: true });
 
       document.addEventListener('click', (e) => {
         const pop = document.getElementById('aiResultPopover');
