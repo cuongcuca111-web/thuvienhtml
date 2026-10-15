@@ -85,16 +85,6 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
-        version: 'v5.6.6',
-        date: '2026-10-15T23:59:59+07:00',
-        title: 'Khôi Phục Tính Năng Kích Hoạt Theme Lễ Hội & Thêm Tùy Chọn Bật/Ẩn Cho Độc Giả',
-        items: [
-          { type: 'fixed', text: 'Khắc phục triệt để lỗi bấm kích hoạt Theme lễ hội: Đồng bộ trực tiếp hàm applyFestivalTheme ngay khi phát sóng hoặc xem thử từ Admin, tự động dọn sạch cờ override và cờ vô hiệu hóa cục bộ.' },
-          { type: 'feature', text: 'Tùy chọn Bật/Ẩn theme lễ hội trong Tùy chọn hiển thị: Cung cấp nút gạt bật/tắt cá nhân cho mọi độc giả (chỉ có thể bật/tắt hiệu ứng, không thay đổi chủ đề hệ thống).' },
-          { type: 'improved', text: 'Tối ưu hóa hạt Canvas toàn màn hình: Phân bổ hạt rơi tự nhiên toàn nền, tăng độ sắc nét và mượt mà cho hiệu ứng tuyết rơi, hoa đào và lá phong.' }
-        ]
-      },
-      {
         version: 'v5.6.5',
         date: '2026-10-15T23:59:59+07:00',
         title: 'Thanh Công Cụ Tập Trung Pomodoro & Tiếng Ồn Trắng Đa Dạng',
@@ -4036,25 +4026,55 @@
                   </button>
                 </div>
 
-                <!-- KHỐI: CHỦ ĐỀ & HIỆU ỨNG MÙA LỄ HỘI (TÙY CHỌN BẬT / ẨN CHO ĐỘC GIẢ) -->
-                <div id="festivalThemeSettingsWrapper" class="border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 pt-1.5 mt-0.5 space-y-1">
+                <!-- KHỐI QUẢN TRỊ: CHỦ ĐỀ & HIỆU ỨNG MÙA LỄ HỘI (ẨN MẶC ĐỊNH - CHỈ HIỂN THỊ CHO ADMIN) -->
+                <div id="festivalThemeSettingsWrapper" class="hidden border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 pt-1.5 mt-0.5 space-y-1">
                   <!-- Hàng: Hiệu ứng mùa lễ hội (Festival Effects Toggle) -->
                   <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
                     <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                      <div id="festivalToggleIconBox" class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                        <span id="festivalToggleIcon" class="text-sm">❄️</span>
+                      <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                        <span class="text-sm">❄️</span>
                       </div>
                       <div class="min-w-0">
                         <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-1.5">
-                          <span>Theme &amp; hiệu ứng lễ hội</span>
+                          <span>Hiệu ứng mùa lễ hội</span>
+                          <span class="text-[9px] px-1 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight">Admin</span>
                         </div>
-                        <div id="festivalToggleStatusText" class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tuyết rơi, hoa đào, lá phong ngoài nền</div>
+                        <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tuyết rơi, hoa đào, lá phong ngoài nền</div>
                       </div>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer shrink-0" title="Bật hoặc ẩn hiệu ứng mùa lễ hội">
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
                       <input type="checkbox" id="toggleFestivalEffects" class="sr-only peer" checked>
                       <div class="w-9 h-5 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
                     </label>
+                  </div>
+
+                  <!-- Khối: Chọn Chủ đề & Hiệu ứng Lễ hội (Theme Presets) -->
+                  <div id="festivalThemeSelectorBox" class="p-2 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-1.5">
+                    <div class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] px-0.5 flex items-center justify-between">
+                      <div class="flex items-center gap-1">
+                        <span>CHỦ ĐỀ LỄ HỘI</span>
+                        <span class="text-[9px] px-1 py-0.2 rounded font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 leading-tight">Admin</span>
+                      </div>
+                      <span id="activeThemeBadgeLabel" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold">Mặc định</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1 text-[11px]">
+                      <button type="button" data-theme-id="christmas" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                        <span>❄️</span>
+                        <span class="truncate">Giáng Sinh</span>
+                      </button>
+                      <button type="button" data-theme-id="tet" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                        <span>🌸</span>
+                        <span class="truncate">Tết Đoàn Viên</span>
+                      </button>
+                      <button type="button" data-theme-id="autumn" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                        <span>🍁</span>
+                        <span class="truncate">Thu Vàng</span>
+                      </button>
+                      <button type="button" data-theme-id="default" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                        <span>📖</span>
+                        <span class="truncate">Mặc định</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -10468,55 +10488,45 @@
     }
     window.isCurrentUserAdmin = isCurrentUserAdmin;
 
-    // Cập nhật nhãn trạng thái và icon cho nút Toggle trong Menu Tùy Chọn Hiển Thị
-    function updateFestivalToggleStatusUI() {
-      const toggleBtn = document.getElementById('toggleFestivalEffects');
-      const statusText = document.getElementById('festivalToggleStatusText');
-      const iconEl = document.getElementById('festivalToggleIcon');
-      if (!toggleBtn) return;
-
-      const isUserDisabled = localStorage.getItem('thuvienhtml_festival_disabled') === 'true';
-      toggleBtn.checked = !isUserDisabled;
-
-      const curTheme = activeFestivalTheme || DEFAULT_FESTIVAL_THEME;
-      if (iconEl) {
-        if (curTheme.effect === 'snow') iconEl.textContent = '❄️';
-        else if (curTheme.effect === 'tet_blossom') iconEl.textContent = '🌸';
-        else if (curTheme.effect === 'autumn_leaves') iconEl.textContent = '🍁';
-        else if (curTheme.effect === 'sparkles') iconEl.textContent = '✨';
-        else iconEl.textContent = '🎨';
-      }
-      if (statusText) {
-        if (isUserDisabled) {
-          statusText.textContent = 'Đang ẩn theme & hiệu ứng';
-        } else if (curTheme && curTheme.id !== 'default') {
-          statusText.textContent = `Đang bật: ${curTheme.name}`;
-        } else {
-          statusText.textContent = 'Tuyết rơi, hoa đào, lá phong ngoài nền';
-        }
-      }
-    }
-    window.updateFestivalToggleStatusUI = updateFestivalToggleStatusUI;
-
+    // Cập nhật hiển thị mục cấu hình Chủ đề Lễ hội (chỉ Admin mới nhìn thấy & thao tác)
     function updateFestivalThemeAdminUI() {
-      updateFestivalToggleStatusUI();
+      const wrapper = document.getElementById('festivalThemeSettingsWrapper');
+      if (!wrapper) return;
+      const isAdmin = isCurrentUserAdmin();
+      if (isAdmin) {
+        wrapper.classList.remove('hidden');
+      } else {
+        wrapper.classList.add('hidden');
+      }
     }
     window.updateFestivalThemeAdminUI = updateFestivalThemeAdminUI;
 
-    // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ Firestore Manual & Schedule)
+    // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ User Preset Override & Firestore Schedule)
     function resolveActiveTheme(cfg) {
+      // 1. Kiểm tra lựa chọn thủ công của người dùng trên máy (User Preset Override) - Chỉ áp dụng cho Quản trị viên
+      if (isCurrentUserAdmin()) {
+        const userOverrideId = localStorage.getItem('thuvienhtml_festival_theme_override');
+        if (userOverrideId) {
+          const matched = FESTIVAL_THEME_PRESETS.find(p => p.id === userOverrideId);
+          if (matched) return matched;
+        }
+      } else {
+        // Dọn dẹp override cục bộ nếu không phải admin để luôn theo cấu hình từ Admin / Mặc định
+        try { localStorage.removeItem('thuvienhtml_festival_theme_override'); } catch (_) {}
+      }
+
       if (!cfg) return DEFAULT_FESTIVAL_THEME;
       const now = Date.now();
 
-      // 1. Chế độ Thủ công từ Admin (Manual Force Override)
+      // 2. Chế độ Thủ công từ Admin (Manual Force Override)
       if (cfg.activeMode === 'manual') {
         return cfg.theme || DEFAULT_FESTIVAL_THEME;
       }
 
-      // 2. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
+      // 3. Chế độ Hẹn lịch tự động (Schedule Engine - Chuẩn hóa Timestamp tuyệt đối)
       if (cfg.activeMode === 'schedule' && cfg.schedule && cfg.schedule.enabled) {
-        let startMs = Number(cfg.schedule.startTimestamp) || 0;
-        let endMs = Number(cfg.schedule.endTimestamp) || 0;
+        let startMs = cfg.schedule.startTimestamp;
+        let endMs = cfg.schedule.endTimestamp;
 
         // Fallback phân tích nếu chỉ có chuỗi ISO
         if (!startMs && cfg.schedule.startTime) startMs = new Date(cfg.schedule.startTime).getTime();
@@ -10527,17 +10537,57 @@
         }
       }
 
-      // 3. Mặc định: The Codex gốc
+      // 4. Mặc định: The Codex gốc
       return DEFAULT_FESTIVAL_THEME;
     }
 
+    // Cập nhật giao diện nút chọn Theme Presets trong Popover Cài Đặt Hiển Thị
     function updateThemePresetUI(themeId) {
-      updateFestivalToggleStatusUI();
+      const container = document.getElementById('festivalThemeSelectorBox');
+      if (!container) return;
+
+      const currentId = themeId || 'default';
+      const badge = document.getElementById('activeThemeBadgeLabel');
+      const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === currentId) || DEFAULT_FESTIVAL_THEME;
+      if (badge) {
+        badge.textContent = preset.name.split(' ')[0] || preset.name;
+        if (currentId === 'christmas') {
+          badge.textContent = 'Giáng Sinh';
+        }
+      }
+
+      const buttons = container.querySelectorAll('.btn-theme-preset');
+      buttons.forEach(btn => {
+        const bId = btn.getAttribute('data-theme-id');
+        if (bId === currentId) {
+          btn.classList.add('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-400', 'dark:border-indigo-600', 'text-indigo-600', 'dark:text-indigo-300', 'font-semibold');
+          btn.classList.remove('border-transparent');
+        } else {
+          btn.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-400', 'dark:border-indigo-600', 'text-indigo-600', 'dark:text-indigo-300', 'font-semibold');
+          btn.classList.add('border-transparent');
+        }
+      });
     }
 
+    // Đổi theme qua nút chọn Preset (Chỉ dành cho Quản trị viên)
     function setFestivalThemeById(themeId) {
-      const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === themeId) || DEFAULT_FESTIVAL_THEME;
-      applyFestivalTheme(preset);
+      if (!isCurrentUserAdmin()) {
+        showToast("Tính năng tùy chỉnh chủ đề lễ hội chỉ dành cho Quản trị viên");
+        return;
+      }
+      if (themeId === 'default') {
+        localStorage.removeItem('thuvienhtml_festival_theme_override');
+        const resolved = resolveActiveTheme(currentThemeConfig);
+        applyFestivalTheme(resolved);
+        showToast("Đã khôi phục giao diện Mặc định");
+      } else {
+        localStorage.setItem('thuvienhtml_festival_theme_override', themeId);
+        const preset = FESTIVAL_THEME_PRESETS.find(p => p.id === themeId);
+        if (preset) {
+          applyFestivalTheme(preset);
+          showToast(`Đã kích hoạt chủ đề: ${preset.name}`);
+        }
+      }
     }
     window.setFestivalThemeById = setFestivalThemeById;
 
@@ -10805,7 +10855,9 @@
       }
 
       setModalActive(active) {
+        if (this.isModalActive === active) return;
         this.isModalActive = active;
+
         if (!this.modalCanvas) return;
 
         if (active && this.isRunning && this.effect !== 'none') {
@@ -10823,14 +10875,14 @@
               this.modalCanvas.classList.add('hidden');
               this.modalCtx?.clearRect(0, 0, this.width, this.height);
             }
-          }, 400);
+          }, 500);
         }
       }
 
       initParticles(effect) {
         this.effect = effect;
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 32 : 65;
+        const count = isMobile ? 22 : 45;
 
         this.ambientParticles = [];
         for (let i = 0; i < count; i++) {
@@ -10844,7 +10896,7 @@
 
       initModalParticles(effect) {
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 28 : 50;
+        const count = isMobile ? 24 : 42;
         this.modalParticles = [];
         for (let i = 0; i < count; i++) {
           this.modalParticles.push(this.createParticle(effect, true, true));
@@ -10853,14 +10905,22 @@
 
       createParticle(effect, randomY = false, isFullWidth = false) {
         const y = randomY ? Math.random() * this.height : -20;
-        const x = Math.random() * this.width;
+        let x = 0;
+
+        if (isFullWidth || window.innerWidth <= 900) {
+          x = Math.random() * this.width;
+        } else {
+          // Phân bổ hạt chủ yếu ở 2 vùng biên lề trái và phải (tránh vùng giữa nơi chứa khung đọc sách)
+          const isLeftMargin = Math.random() > 0.5;
+          x = isLeftMargin ? (Math.random() * (this.width * 0.28)) : (this.width * 0.72 + Math.random() * (this.width * 0.28));
+        }
 
         const base = {
           x: x,
           y: y,
-          size: Math.random() * 3.2 + 2,
+          size: Math.random() * 3 + 2,
           speedY: Math.random() * 0.85 + 0.45,
-          speedX: (Math.random() - 0.5) * 0.65,
+          speedX: (Math.random() - 0.5) * 0.6,
           opacity: Math.random() * 0.55 + 0.35,
           swing: Math.random() * Math.PI * 2,
           swingSpeed: Math.random() * 0.02 + 0.01,
@@ -10869,23 +10929,22 @@
         };
 
         if (effect === 'snow') {
-          base.size = Math.random() * 2.8 + 2.0;
-          base.speedY = Math.random() * 0.85 + 0.45;
+          base.size = Math.random() * 2.8 + (isFullWidth ? 2.0 : 1.6);
+          base.speedY = Math.random() * 0.75 + 0.35;
           base.color = '#FFFFFF';
         } else if (effect === 'tet_blossom') {
           base.color = Math.random() > 0.4 ? '#FDA4AF' : '#FDE047';
           base.rotation = Math.random() * Math.PI * 2;
           base.rotSpeed = (Math.random() - 0.5) * 0.03;
-          base.size = Math.random() * 5 + 4;
+          base.size = Math.random() * 4 + 4;
         } else if (effect === 'autumn_leaves') {
           base.color = Math.random() > 0.5 ? '#EA580C' : '#D97706';
           base.rotation = Math.random() * Math.PI * 2;
           base.rotSpeed = (Math.random() - 0.5) * 0.02;
-          base.size = Math.random() * 6 + 4;
+          base.size = Math.random() * 5 + 4;
         } else if (effect === 'sparkles') {
           base.color = Math.random() > 0.5 ? '#38BDF8' : '#FCD34D';
           base.twinkle = Math.random() * Math.PI * 2;
-          base.size = Math.random() * 3 + 2;
         }
 
         return base;
@@ -10901,7 +10960,6 @@
 
         this.effect = effect;
         this.isRunning = true;
-        this.resize();
         this.isModalActive = isAnyPopupOpen();
         this.initParticles(effect);
 
@@ -10919,11 +10977,9 @@
           });
         }
 
-        if (this.animFrameId) {
-          cancelAnimationFrame(this.animFrameId);
-          this.animFrameId = null;
+        if (!this.animFrameId) {
+          this.loop();
         }
-        this.loop();
       }
 
       stop() {
@@ -10939,7 +10995,7 @@
               this.ambientCanvas.classList.add('hidden');
               this.ambientCtx?.clearRect(0, 0, this.width, this.height);
             }
-          }, 400);
+          }, 700);
         }
         if (this.modalCanvas) {
           this.modalCanvas.classList.add('opacity-0');
@@ -10948,7 +11004,7 @@
               this.modalCanvas.classList.add('hidden');
               this.modalCtx?.clearRect(0, 0, this.width, this.height);
             }
-          }, 400);
+          }, 500);
         }
       }
 
@@ -10982,15 +11038,9 @@
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
-            ctx.shadowBlur = 5;
-            ctx.shadowColor = 'rgba(186, 230, 253, 0.7)';
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'rgba(186, 230, 253, 0.45)';
             ctx.fill();
-            if (p.size > 2.6) {
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.size * 0.45, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(224, 242, 254, ${p.opacity * 0.9})`;
-              ctx.fill();
-            }
           } else if (p.type === 'tet_blossom') {
             p.rotation += p.rotSpeed;
             ctx.translate(p.x, p.y);
@@ -11027,13 +11077,7 @@
       }
 
       loop() {
-        if (!this.isRunning) {
-          if (this.animFrameId) {
-            cancelAnimationFrame(this.animFrameId);
-            this.animFrameId = null;
-          }
-          return;
-        }
+        if (!this.isRunning) return;
         if (document.hidden || (typeof state !== 'undefined' && state.focusMode)) {
           this.pause();
           return;
@@ -11142,11 +11186,12 @@
         console.warn('[initPopupFestivalWatcher] Lỗi:', e);
       }
 
-      // 3. Khởi tạo trạng thái Toggle UI trong Tùy chọn hiển thị
+      // 3. Khởi tạo bộ chọn Presets UI & phân quyền hiển thị Admin
       try {
-        updateFestivalToggleStatusUI();
+        initFestivalThemePresetsUI();
+        updateFestivalThemeAdminUI();
       } catch (e) {
-        console.warn('[updateFestivalToggleStatusUI] Lỗi:', e);
+        console.warn('[initFestivalThemePresetsUI] Lỗi:', e);
       }
 
       // 4. Nạp từ localStorage trước để render tức thì (Optimistic Render)
@@ -11205,31 +11250,22 @@
         }
       }, 60000);
 
-      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị (Mọi độc giả)
+      // 7. Gắn sự kiện cho nút Toggle cá nhân trong Menu Tùy Chọn Hiển Thị
       const toggleBtn = document.getElementById('toggleFestivalEffects');
       if (toggleBtn) {
         toggleBtn.checked = localStorage.getItem('thuvienhtml_festival_disabled') !== 'true';
-        updateFestivalToggleStatusUI();
         toggleBtn.onchange = () => {
           const disabled = !toggleBtn.checked;
           if (disabled) {
             localStorage.setItem('thuvienhtml_festival_disabled', 'true');
-            if (typeof showToast === 'function') {
-              showToast("Đã ẩn theme & hiệu ứng lễ hội", "info");
-            }
           } else {
             localStorage.removeItem('thuvienhtml_festival_disabled');
-            const themeName = activeFestivalTheme?.name || 'Lễ hội';
-            if (typeof showToast === 'function') {
-              showToast(`Đã bật lại theme: ${themeName}`, "success");
-            }
           }
           if (currentThemeConfig) {
             applyFestivalTheme(resolveActiveTheme(currentThemeConfig));
           } else {
             applyFestivalTheme(resolveActiveTheme(null));
           }
-          updateFestivalToggleStatusUI();
         };
       }
 
