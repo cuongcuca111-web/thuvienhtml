@@ -108,6 +108,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.8',
+        date: '2026-10-16T18:15:00+07:00',
+        title: 'Nâng Cấp Toàn Diện Theme Giáng Sinh: Thảm Tuyết, Mũ Noel, Dây Đèn LED & Bông Tuyết Pha Lê',
+        items: [
+          { type: 'feature', text: 'Nâng cấp toàn diện hiệu ứng Giáng Sinh (Christmas Theme): Tích hợp mũ Noel 3D đung đưa trên Logo thư viện, chuỗi dây đèn LED nhấp nháy phát sáng dưới thanh Header, thảm tuyết trắng và cành thông kèm quả chuông vàng đung đưa trên Sidebar, viền tuyết đọng phủ mềm mại trên nút "Mục mới" và thanh Reader Sticky Header.' },
+          { type: 'feature', text: 'Bông tuyết pha lê 6 cánh & Tăng cường mật độ tuyết rơi: Nâng cấp FestivalParticleEngine với 18% cơ hội tạo bông tuyết lục giác pha lê tinh xảo có hiệu ứng xoay và phát sáng dịu nhẹ; tăng mật độ hạt tuyết giúp không gian lễ hội thêm lung linh, ngập tràn không khí Noel.' },
+          { type: 'improved', text: 'Bảo vệ tuyệt đối khu vực đọc tài liệu (Zero Distraction): Tự động tính toán toạ độ khung đọc sách (#iframeOuterContainer / #readingContentContainer) theo thời gian thực để bỏ qua hạt tuyết rơi đè lên chữ, đảm bảo 100% vùng đọc tài liệu luôn trong trẻo, sắc nét và tập trung tối đa.' }
+        ]
+      },
+      {
         version: 'v5.7.7',
         date: '2026-10-16T17:25:00+07:00',
         title: 'Khắc Phục Lỗi Tự Động Bật/Tắt Cài Đặt Trợ Lý AI & Huy Hiệu Đã Học Khi Tải Lại Trang',
@@ -2716,6 +2726,146 @@
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(56, 189, 248, 0.35), 0 0 20px -5px rgba(56, 189, 248, 0.18) !important;
     }
 
+    /* =========================================================================
+       CHRISTMAS FESTIVE THEME ENHANCEMENTS (MŨ NOEL, DÂY ĐÈN, BỌC TUYẾT HEADER & SIDEBAR)
+       ========================================================================= */
+    .christmas-santa-hat {
+      position: absolute;
+      top: -12px;
+      left: -9px;
+      width: 34px;
+      height: 26px;
+      pointer-events: none !important;
+      z-index: 55;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.28));
+      transform-origin: 10px 22px;
+      animation: santaHatFloat 4s ease-in-out infinite;
+    }
+    .header-left-cluster:hover .christmas-santa-hat {
+      animation: santaHatWiggle 0.6s ease-in-out;
+    }
+    @keyframes santaHatFloat {
+      0%, 100% { transform: rotate(-5deg) translateY(0); }
+      50% { transform: rotate(-1deg) translateY(-2px); }
+    }
+    @keyframes santaHatWiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      25% { transform: rotate(-18deg); }
+      75% { transform: rotate(8deg); }
+    }
+
+    /* Dây đèn Noel lung linh dưới mép Header */
+    .festival-header-fairy-lights {
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 18px;
+      pointer-events: none !important;
+      z-index: 52;
+      overflow: hidden;
+    }
+    .fairy-lights-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .fairy-lights-wire {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 12px;
+    }
+    .fairy-light-bulb {
+      position: absolute;
+      top: 5px;
+      width: 6px;
+      height: 9px;
+      border-radius: 50% 50% 45% 45%;
+      background: var(--color);
+      box-shadow: 0 0 5px var(--color), 0 0 10px var(--color);
+      transform: translateX(-50%);
+      animation: bulbGlow 2s ease-in-out infinite alternate;
+    }
+    .fairy-light-bulb::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 1.5px;
+      width: 3px;
+      height: 2.5px;
+      background: #334155;
+      border-radius: 1px;
+    }
+    @keyframes bulbGlow {
+      0% { opacity: 0.55; transform: translateX(-50%) scale(0.9); box-shadow: 0 0 3px var(--color); }
+      100% { opacity: 1; transform: translateX(-50%) scale(1.1); box-shadow: 0 0 8px var(--color), 0 0 16px var(--color); }
+    }
+
+    /* Dải tuyết đọng viền đáy Header */
+    .festival-header-snow-bottom {
+      position: absolute;
+      bottom: -11px;
+      left: 0;
+      right: 0;
+      height: 12px;
+      pointer-events: none !important;
+      z-index: 51;
+      filter: drop-shadow(0 2px 4px rgba(186, 230, 253, 0.45));
+    }
+    html.dark .festival-header-snow-bottom {
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)) drop-shadow(0 1px 3px rgba(56, 189, 248, 0.4));
+    }
+
+    /* Bọc tuyết đỉnh Sidebar & chùm lá thông */
+    .festival-sidebar-snow-cap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 16px;
+      pointer-events: none !important;
+      z-index: 45;
+      filter: drop-shadow(0 2px 4px rgba(186, 230, 253, 0.45));
+    }
+    html.dark .festival-sidebar-snow-cap {
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.65)) drop-shadow(0 1px 3px rgba(56, 189, 248, 0.4));
+    }
+    .sidebar-holly-badge {
+      position: absolute;
+      top: -6px;
+      right: 36px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    /* Bọc tuyết nút Mục mới */
+    .festival-btn-snow-cap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      pointer-events: none !important;
+      border-top-left-radius: inherit;
+      border-top-right-radius: inherit;
+      overflow: hidden;
+      z-index: 10;
+      filter: drop-shadow(0 1px 2px rgba(186, 230, 253, 0.5));
+    }
+
+    /* Viền tuyết thanh điều khiển Reader Header (chỉ trên thanh sticky, không vào bài đọc) */
+    .festival-reader-snow-edge {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      pointer-events: none !important;
+      z-index: 25;
+      filter: drop-shadow(0 1px 2px rgba(186, 230, 253, 0.4));
+    }
+
     /* HIỆU ỨNG GÓC ĐỌNG TUYẾT & HOA TRANG TRÍ (DECOR CAPS) */
     .decor-corner-cap {
       position: absolute;
@@ -2725,6 +2875,12 @@
       line-height: 0;
     }
     @media (prefers-reduced-motion: reduce) {
+      #ambientFestivalCanvas,
+      #modalFestivalCanvas,
+      .fairy-light-bulb,
+      .christmas-santa-hat {
+        animation: none !important;
+      }
       #ambientFestivalCanvas,
       #modalFestivalCanvas {
         display: none !important;
@@ -3340,7 +3496,7 @@
 </head>
 <body class="h-[100dvh] flex flex-col overflow-hidden antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
   <!-- CANVAS HIỆU ỨNG MÙA LỄ HỘI NGOÀI NỀN (AMBIENT FESTIVAL CANVAS - ZERO DISTRACTION) -->
-  <canvas id="ambientFestivalCanvas" class="fixed inset-0 pointer-events-none z-[1] hidden transition-opacity duration-700 opacity-0" aria-hidden="true"></canvas>
+  <canvas id="ambientFestivalCanvas" class="fixed inset-0 pointer-events-none z-[35] hidden transition-opacity duration-700 opacity-0" aria-hidden="true"></canvas>
   <!-- CANVAS HIỆU ỨNG TUYẾT RƠI TRÊN TẤT CẢ POPUP & MODAL (MODAL FESTIVAL CANVAS) -->
   <canvas id="modalFestivalCanvas" class="fixed inset-0 pointer-events-none z-[10010] hidden transition-opacity duration-500 opacity-0" aria-hidden="true"></canvas>
   <!-- // REDESIGN: Bộ icon SVG độc bản riêng cho Thư viện Sách HTML (Editorial vibe, nét 1.75 bo tròn, 24x24) -->
@@ -4903,7 +5059,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.7 • build 16/10/2026 17:35</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.8 • build 16/10/2026 18:15</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -5640,7 +5796,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.7 • build 16/10/2026 17:35</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.8 • build 16/10/2026 18:15</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -10895,14 +11051,14 @@
     // SECTION: THEME STUDIO & HIỆU ỨNG MÙA LỄ HỘI THÔNG MINH (V5.5.0)
     // =========================================================================
     const DEFAULT_FESTIVAL_THEME = {
-      id: "default",
-      name: "The Codex (Mặc định)",
-      effect: "none",
-      lightAmbientBg: "#FAF9F5",
-      darkAmbientBg: "#111317",
-      accentColor: "#4F46E5",
-      accentGlow: "#818CF8",
-      showDecorCaps: false
+      id: "christmas",
+      name: "Giáng Sinh",
+      effect: "snow",
+      lightAmbientBg: "#F0F7FF",
+      darkAmbientBg: "#0C111C",
+      accentColor: "#0284C7",
+      accentGlow: "#38BDF8",
+      showDecorCaps: true
     };
 
     const FESTIVAL_THEME_PRESETS = [
@@ -11311,17 +11467,150 @@
     }
     window.applyFestivalTheme = applyFestivalTheme;
 
-    // Quản lý SVG Decor Caps tinh tế ở góc Header & Modals (pointer-events: none)
+    // Helper sinh mũ Noel 3D mini cho Logo chính
+    function createSantaHatHTML() {
+      const hat = document.createElement('div');
+      hat.className = 'christmas-santa-hat';
+      hat.setAttribute('aria-hidden', 'true');
+      hat.innerHTML = `
+        <svg viewBox="0 0 36 28" width="36" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="santaHatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#EF4444"/>
+              <stop offset="60%" stop-color="#DC2626"/>
+              <stop offset="100%" stop-color="#B91C1C"/>
+            </linearGradient>
+            <filter id="hatShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="1.5" stdDeviation="1" flood-opacity="0.3" flood-color="#000000"/>
+            </filter>
+          </defs>
+          <path d="M4 22 C4 20, 32 20, 32 22 C32 26, 4 26, 4 22 Z" fill="#F8FAFC" filter="url(#hatShadow)"/>
+          <ellipse cx="6" cy="22.5" rx="3" ry="2.2" fill="#FFFFFF"/>
+          <ellipse cx="12" cy="22" rx="3.5" ry="2.4" fill="#F1F5F9"/>
+          <ellipse cx="18" cy="22.5" rx="4" ry="2.5" fill="#FFFFFF"/>
+          <ellipse cx="24" cy="22" rx="3.5" ry="2.4" fill="#F1F5F9"/>
+          <ellipse cx="30" cy="22.5" rx="3" ry="2.2" fill="#FFFFFF"/>
+          <path d="M7 21 C10 12, 17 6, 26 5 C30 11, 33 16, 29 21 Z" fill="url(#santaHatGrad)"/>
+          <path d="M12 20 C14 13, 19 8, 25 6" stroke="#F87171" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="27" cy="5" r="3.6" fill="#FFFFFF" filter="url(#hatShadow)"/>
+          <circle cx="26.2" cy="4.2" r="1.2" fill="#E2E8F0"/>
+        </svg>
+      `;
+      return hat;
+    }
+
+    // Helper sinh dây đèn LED Giáng Sinh đa sắc nhấp nháy dưới Header
+    function createFairyLightsHTML() {
+      const container = document.createElement('div');
+      container.className = 'festival-header-fairy-lights';
+      container.setAttribute('aria-hidden', 'true');
+      const wire = document.createElement('div');
+      wire.className = 'fairy-lights-wire';
+      container.appendChild(wire);
+
+      const count = 20;
+      for (let i = 0; i < count; i++) {
+        const bulb = document.createElement('span');
+        bulb.className = 'fairy-light-bulb';
+        bulb.style.setProperty('--bulb-delay', `${(i * 0.22) % 2.4}s`);
+        container.appendChild(bulb);
+      }
+      return container;
+    }
+
+    // Helper sinh viền tuyết rủ xuống dưới đáy Header
+    function createHeaderSnowBottomHTML() {
+      const snow = document.createElement('div');
+      snow.className = 'festival-header-snow-bottom';
+      snow.setAttribute('aria-hidden', 'true');
+      snow.innerHTML = `
+        <svg viewBox="0 0 1200 12" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 L1200,0 L1200,4 C1160,8 1140,2 1100,6 C1050,11 1030,3 980,7 C930,12 910,4 860,8 C810,12 790,3 740,7 C690,11 670,4 620,8 C570,12 550,3 500,7 C450,11 430,4 380,8 C330,12 310,3 260,7 C210,11 190,4 140,8 C90,12 70,3 0,6 Z" fill="#FFFFFF" fill-opacity="0.95"/>
+          <path d="M0,0 L1200,0 L1200,2 C1160,5 1140,1 1100,3 C1050,6 1030,2 980,4 C930,7 910,2 860,5 C810,7 790,2 740,4 C690,6 670,2 620,5 C570,7 550,2 500,4 C450,6 430,2 380,5 C330,7 310,2 260,4 C210,6 190,2 140,5 C90,7 70,2 0,3 Z" fill="#E0F2FE" fill-opacity="0.6"/>
+        </svg>
+      `;
+      return snow;
+    }
+
+    // Helper sinh thảm tuyết đọng + cành thông nơ đỏ chuông vàng trên Sidebar
+    function createSidebarSnowCapHTML() {
+      const cap = document.createElement('div');
+      cap.className = 'festival-sidebar-snow-cap';
+      cap.setAttribute('aria-hidden', 'true');
+      cap.innerHTML = `
+        <div class="sidebar-snow-cover">
+          <svg viewBox="0 0 320 18" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,0 L320,0 L320,6 C290,12 270,4 240,10 C210,16 190,5 160,11 C130,16 110,6 80,11 C50,16 30,5 0,9 Z" fill="#FFFFFF" fill-opacity="0.96"/>
+            <path d="M0,0 L320,0 L320,3 C290,6 270,2 240,5 C210,9 190,3 160,6 C130,9 110,3 80,6 C50,9 30,3 0,5 Z" fill="#E0F2FE" fill-opacity="0.65"/>
+          </svg>
+        </div>
+        <div class="sidebar-pine-badge">
+          <svg viewBox="0 0 54 36" width="54" height="36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="badgeShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" flood-opacity="0.35" flood-color="#000000"/>
+              </filter>
+            </defs>
+            <g filter="url(#badgeShadow)">
+              <path d="M10 22 C18 16 32 18 44 24" stroke="#14532D" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M12 20 L8 15 M18 19 L15 13 M24 19 L23 12 M30 20 L32 14 M36 21 L40 16 M42 23 L47 18" stroke="#16A34A" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14 22 L11 26 M20 21 L18 27 M26 21 L27 28 M32 22 L35 27 M38 23 L42 27" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"/>
+            </g>
+            <g filter="url(#badgeShadow)">
+              <path d="M22 17 C22 12, 32 12, 32 17 L34 24 C34 26, 20 26, 20 24 Z" fill="#FBBF24"/>
+              <path d="M20 24 C20 26, 34 26, 34 24 L34 25 C34 27, 20 27, 20 25 Z" fill="#D97706"/>
+              <circle cx="27" cy="27" r="2" fill="#B45309"/>
+              <circle cx="27" cy="14" r="2.8" fill="#DC2626"/>
+              <path d="M25 14 C20 11 17 14 20 17 Z" fill="#EF4444"/>
+              <path d="M29 14 C34 11 37 14 34 17 Z" fill="#EF4444"/>
+              <path d="M25.5 15 L22 22 M28.5 15 L32 22" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+      `;
+      return cap;
+    }
+
+    // Helper sinh viền tuyết phủ trên nút "Mục mới"
+    function createBtnSnowCapHTML() {
+      const cap = document.createElement('div');
+      cap.className = 'festival-btn-snow-cap';
+      cap.setAttribute('aria-hidden', 'true');
+      cap.innerHTML = `
+        <svg viewBox="0 0 100 12" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 L100,0 L100,3 C90,8 80,2 70,6 C60,9 50,3 40,7 C30,9 20,3 10,7 C5,8 2,4 0,3 Z" fill="#FFFFFF" fill-opacity="0.95"/>
+          <path d="M0,0 L100,0 L100,1.5 C90,4 80,1 70,3 C60,5 50,1 40,3.5 C30,5 20,1 10,3.5 C5,4 2,2 0,1.5 Z" fill="#BAE6FD" fill-opacity="0.65"/>
+        </svg>
+      `;
+      return cap;
+    }
+
+    // Helper sinh viền sương tuyết trên thanh Reader Sticky Header
+    function createReaderSnowEdgeHTML() {
+      const edge = document.createElement('div');
+      edge.className = 'festival-reader-snow-edge';
+      edge.setAttribute('aria-hidden', 'true');
+      edge.innerHTML = `
+        <svg viewBox="0 0 1200 10" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,0 L1200,0 L1200,2.5 C1150,7 1100,2 1050,5 C950,8 900,2 800,6 C700,8 650,2 550,5 C450,7 400,2 300,5 C200,8 150,2 50,5 C25,6 10,3 0,2 Z" fill="#FFFFFF" fill-opacity="0.94"/>
+          <path d="M0,0 L1200,0 L1200,1.2 C1150,3.5 1100,1 1050,2.5 C950,4 900,1 800,3 C700,4 650,1 550,2.5 C450,3.5 400,1 300,2.5 C200,4 150,1 50,2.5 C25,3 10,1.5 0,1 Z" fill="#E0F2FE" fill-opacity="0.6"/>
+        </svg>
+      `;
+      return edge;
+    }
+
+    // Quản lý SVG Decor Caps tinh tế ở Header, Modals, Sidebar & Controls (pointer-events: none)
     function updateThemeDecorCaps(enabled, effectType) {
       if (!enabled) {
-        document.querySelectorAll('.festival-top-snow-cap, .decor-corner-cap').forEach(el => el.remove());
+        document.querySelectorAll('.festival-top-snow-cap, .decor-corner-cap, .christmas-santa-hat, .festival-header-fairy-lights, .festival-header-snow-bottom, .festival-sidebar-snow-cap, .festival-btn-snow-cap, .festival-reader-snow-edge').forEach(el => el.remove());
         return;
       }
 
-      // Xử lý hiệu ứng TUYẾT RƠI (Giáng sinh): Viền trên và đọng góc toàn diện
+      // Xử lý hiệu ứng TUYẾT RƠI (Giáng sinh): Bọc tuyết, mũ Noel, đèn dây, chuông thông
       if (effectType === 'snow') {
         document.querySelectorAll('.decor-corner-cap').forEach(el => el.remove());
 
+        // 1. Viền tuyết trên các modal popup cards
         const targetContainers = getPopupCardsList();
         targetContainers.forEach(container => {
           if (!container) return;
@@ -11334,11 +11623,52 @@
 
           container.prepend(createTopSnowCap());
         });
+
+        // 2. Mũ Noel 3D trên Logo chính
+        const logoContainer = document.querySelector('.header-left-cluster .relative.w-8.h-8');
+        if (logoContainer && !logoContainer.querySelector(':scope > .christmas-santa-hat')) {
+          logoContainer.prepend(createSantaHatHTML());
+        }
+
+        // 3. Dây đèn Giáng Sinh lung linh & viền tuyết chân Header
+        const header = document.querySelector('header.editorial-header');
+        if (header) {
+          if (!header.querySelector(':scope > .festival-header-fairy-lights')) {
+            header.appendChild(createFairyLightsHTML());
+          }
+          if (!header.querySelector(':scope > .festival-header-snow-bottom')) {
+            header.appendChild(createHeaderSnowBottomHTML());
+          }
+        }
+
+        // 4. Bọc thảm tuyết + cành thông nơ đỏ chuông vàng trên Sidebar Mục lục
+        const sidebarHeader = document.querySelector('#mainSidebar > div:first-child');
+        if (sidebarHeader && !sidebarHeader.querySelector(':scope > .festival-sidebar-snow-cap')) {
+          const computed = window.getComputedStyle(sidebarHeader);
+          if (computed.position === 'static') {
+            sidebarHeader.style.position = 'relative';
+          }
+          sidebarHeader.prepend(createSidebarSnowCapHTML());
+        }
+
+        // 5. Viền tuyết phủ trên nút "Mục mới"
+        const btnNewCat = document.getElementById('btnNewCategory');
+        if (btnNewCat && !btnNewCat.querySelector(':scope > .festival-btn-snow-cap')) {
+          btnNewCat.classList.add('relative');
+          btnNewCat.prepend(createBtnSnowCapHTML());
+        }
+
+        // 6. Viền sương tuyết trên thanh công cụ Reader Sticky Header (không che nội dung đọc)
+        const stickyReader = document.getElementById('stickyReaderHeader');
+        if (stickyReader && !stickyReader.querySelector(':scope > .festival-reader-snow-edge')) {
+          stickyReader.prepend(createReaderSnowEdgeHTML());
+        }
+
         return;
       }
 
       // Xử lý hiệu ứng khác (Tết hoặc Mùa Thu): Corner cap truyền thống
-      document.querySelectorAll('.festival-top-snow-cap').forEach(el => el.remove());
+      document.querySelectorAll('.festival-top-snow-cap, .christmas-santa-hat, .festival-header-fairy-lights, .festival-header-snow-bottom, .festival-sidebar-snow-cap, .festival-btn-snow-cap, .festival-reader-snow-edge').forEach(el => el.remove());
       document.querySelectorAll('.decor-corner-cap').forEach(el => el.remove());
 
       let svgContent = '';
@@ -11463,7 +11793,7 @@
       initParticles(effect) {
         this.effect = effect;
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 22 : 45;
+        const count = isMobile ? 36 : 80;
 
         this.ambientParticles = [];
         for (let i = 0; i < count; i++) {
@@ -11477,7 +11807,7 @@
 
       initModalParticles(effect) {
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 24 : 42;
+        const count = isMobile ? 30 : 50;
         this.modalParticles = [];
         for (let i = 0; i < count; i++) {
           this.modalParticles.push(this.createParticle(effect, true, true));
@@ -11486,15 +11816,7 @@
 
       createParticle(effect, randomY = false, isFullWidth = false) {
         const y = randomY ? Math.random() * this.height : -20;
-        let x = 0;
-
-        if (isFullWidth || window.innerWidth <= 900) {
-          x = Math.random() * this.width;
-        } else {
-          // Phân bổ hạt chủ yếu ở 2 vùng biên lề trái và phải (tránh vùng giữa nơi chứa khung đọc sách)
-          const isLeftMargin = Math.random() > 0.5;
-          x = isLeftMargin ? (Math.random() * (this.width * 0.28)) : (this.width * 0.72 + Math.random() * (this.width * 0.28));
-        }
+        let x = Math.random() * this.width;
 
         const base = {
           x: x,
@@ -11506,13 +11828,21 @@
           swing: Math.random() * Math.PI * 2,
           swingSpeed: Math.random() * 0.02 + 0.01,
           type: effect,
-          isFullWidth: isFullWidth
+          isFullWidth: isFullWidth,
+          isCrystal: false
         };
 
         if (effect === 'snow') {
           base.size = Math.random() * 2.8 + (isFullWidth ? 2.0 : 1.6);
           base.speedY = Math.random() * 0.75 + 0.35;
           base.color = '#FFFFFF';
+          // 18% cơ hội là bông tuyết pha lê 6 cánh tinh xảo
+          if (Math.random() < 0.18) {
+            base.isCrystal = true;
+            base.rotation = Math.random() * Math.PI * 2;
+            base.rotSpeed = (Math.random() - 0.5) * 0.02;
+            base.size = Math.random() * 3.5 + 3.0;
+          }
         } else if (effect === 'tet_blossom') {
           base.color = Math.random() > 0.4 ? '#FDA4AF' : '#FDE047';
           base.rotation = Math.random() * Math.PI * 2;
@@ -11603,6 +11933,22 @@
       }
 
       drawParticlesList(ctx, list, isFullWidth) {
+        // Bảo vệ tuyệt đối khu vực đọc tài liệu (Zero Distraction)
+        // Khi vẽ ngoài ambient canvas, xác định vùng đọc sách để bỏ qua không vẽ hạt tuyết đè lên chữ
+        let readerRect = null;
+        if (!isFullWidth) {
+          const iframeOuter = document.getElementById('iframeOuterContainer');
+          const docViewer = document.getElementById('docViewerArea');
+          if (iframeOuter && docViewer && !docViewer.classList.contains('hidden')) {
+            readerRect = iframeOuter.getBoundingClientRect();
+          } else {
+            const readingWrapper = document.getElementById('readingContainerWrapper') || document.getElementById('readingContentContainer');
+            if (readingWrapper) {
+              readerRect = readingWrapper.getBoundingClientRect();
+            }
+          }
+        }
+
         for (let i = 0; i < list.length; i++) {
           const p = list[i];
           p.y += p.speedY;
@@ -11614,14 +11960,46 @@
             continue;
           }
 
+          // Bỏ qua nếu hạt rơi trúng khu vực đọc tài liệu (giữ tài liệu 100% trong trẻo, không che chữ)
+          if (readerRect && p.x >= readerRect.left && p.x <= readerRect.right && p.y >= readerRect.top && p.y <= readerRect.bottom) {
+            continue;
+          }
+
           ctx.save();
           if (p.type === 'snow') {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = 'rgba(186, 230, 253, 0.45)';
-            ctx.fill();
+            if (p.isCrystal) {
+              p.rotation += p.rotSpeed;
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.rotation);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${p.opacity * 0.95})`;
+              ctx.lineWidth = 1.1;
+              ctx.beginPath();
+              const r = p.size;
+              for (let k = 0; k < 6; k++) {
+                const angle = (k * Math.PI) / 3;
+                const cos = Math.cos(angle);
+                const sin = Math.sin(angle);
+                ctx.moveTo(0, 0);
+                ctx.lineTo(cos * r, sin * r);
+                const bDist = r * 0.58;
+                const bLen = r * 0.35;
+                const pCos = Math.cos(angle + Math.PI / 2);
+                const pSin = Math.sin(angle + Math.PI / 2);
+                ctx.moveTo(cos * bDist - pCos * bLen, sin * bDist - pSin * bLen);
+                ctx.lineTo(cos * bDist, sin * bDist);
+                ctx.lineTo(cos * bDist + pCos * bLen, sin * bDist + pSin * bLen);
+              }
+              ctx.shadowBlur = 5;
+              ctx.shadowColor = 'rgba(186, 230, 253, 0.6)';
+              ctx.stroke();
+            } else {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+              ctx.shadowBlur = 4;
+              ctx.shadowColor = 'rgba(186, 230, 253, 0.45)';
+              ctx.fill();
+            }
           } else if (p.type === 'tet_blossom') {
             p.rotation += p.rotSpeed;
             ctx.translate(p.x, p.y);
