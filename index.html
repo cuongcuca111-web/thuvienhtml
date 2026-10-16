@@ -40,6 +40,27 @@
     window.escapeHtml = escapeHtml;
     window.escapeAttr = escapeAttr;
 
+    // // FIX: Khai báo sớm hàm đóng/mở modal toàn cục trên window để triệt tiêu lỗi 'hideModalAnimated is not defined'
+    window.showModalAnimated = function(target) {
+      const el = typeof target === 'string' ? document.getElementById(target) : target;
+      if (!el) return;
+      el.classList.remove('hidden', 'modal-closing');
+      el.classList.add('modal-active');
+      document.body.style.overflow = 'hidden';
+    };
+    window.hideModalAnimated = function(target) {
+      const el = typeof target === 'string' ? document.getElementById(target) : target;
+      if (!el) return;
+      el.classList.remove('modal-active');
+      el.classList.add('modal-closing');
+      setTimeout(() => {
+        el.classList.add('hidden');
+        el.classList.remove('modal-closing');
+        const anyActive = document.querySelector('.modal-animated.modal-active');
+        if (!anyActive) document.body.style.overflow = '';
+      }, 220);
+    };
+
     // Áp dụng sớm trạng thái Huy hiệu "Đã học" và Dark Mode ngay tại <head> để triệt tiêu chớp giật giao diện
     (function initEarlyDisplaySettings() {
       try {
@@ -107,6 +128,16 @@
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG bên dưới.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
+      {
+        version: 'v5.8.5',
+        date: '2026-10-17T01:45:00+07:00',
+        title: 'Thiết Kế Lại Tiện Ích Giờ Hà Nội Chuẩn Editorial & Khắc Phục Triệt Để Lỗi Đóng Modal Lịch',
+        items: [
+          { type: 'improved', text: 'Tái thiết kế widget nút hiển thị Giờ Hà Nội trên Header và Thanh Chế độ tập trung theo đúng chuẩn Editorial: kích thước h-9 bo góc rounded-xl, viền tinh tế, chấm emerald nhấp nháy êm dịu, số tabular-nums đều tăm tắp và biểu tượng đồng hồ thanh thoát.' },
+          { type: 'fixed', text: 'Khắc phục triệt để lỗi hideModalAnimated is not defined khi bấm nút đóng (X): chuyển hàm đóng/mở modal ra toàn cục window an toàn và gán trực tiếp event listener qua ID nút bấm, hỗ trợ phím Escape và click backdrop.' },
+          { type: 'improved', text: 'Tối ưu độ ổn định và trải nghiệm tương tác của modal Lịch & Giờ Hà Nội, đảm bảo cuộn trang được phục hồi trơn tru sau khi đóng modal.' }
+        ]
+      },
       {
         version: 'v5.8.4',
         date: '2026-10-17T01:35:00+07:00',
@@ -4550,22 +4581,15 @@
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
                   box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
                   background-color 0.2s ease,
-                  border-color 0.2s ease,
-                  color 0.2s ease !important;
+                  border-color 0.2s ease !important;
       position: relative;
     }
     .hanoi-clock-trigger:hover {
       transform: translateY(-1.5px);
-      background-color: #FFFFFF !important;
-      border-color: rgba(99, 102, 241, 0.45) !important;
-      color: #1C1917 !important;
       box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.16), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
     }
     .dark .hanoi-clock-trigger:hover {
-      background-color: #1A1E26 !important;
-      border-color: rgba(129, 140, 248, 0.4) !important;
-      color: #EDECE8 !important;
-      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.5) !important;
+      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.45) !important;
     }
     .hanoi-clock-trigger svg.clock-icon {
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
@@ -6303,18 +6327,19 @@
         </button>
 
         <!-- Tiện ích Giờ Hà Nội & Lịch (Ảnh 1: Khoảng trống giữa Thanh tìm kiếm và Thư Viện Prompt) -->
-        <button id="btnHanoiClockHeader" type="button" class="hanoi-clock-trigger hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#1A1E26] text-[#1C1917] dark:text-[#EDECE8] text-xs font-mono font-medium shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        <button id="btnHanoiClockHeader" type="button" class="hanoi-clock-trigger touch-target hidden sm:inline-flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 hover:border-indigo-500/40 text-[#6E6B65] dark:text-[#979DA8] text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap cursor-pointer group active:scale-95" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
+          <span class="relative flex h-2 w-2 shrink-0 items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 opacity-60"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]"></span>
           </span>
-          <svg class="clock-icon w-3.5 h-3.5 text-stone-500 dark:text-stone-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="clock-icon w-3.5 h-3.5 text-stone-400 dark:text-stone-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="9"/>
-            <polyline points="12 6 12 12 16 14"/>
+            <polyline points="12 6 12 12 15 14"/>
           </svg>
-          <span class="hidden xl:inline text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400">Hà Nội</span>
-          <span id="hanoiHeaderClockText" class="font-mono font-bold text-xs tracking-tight tabular-nums text-stone-800 dark:text-stone-200">--:--:--</span>
-          <svg class="w-2.5 h-2.5 opacity-40 group-hover:opacity-100 group-hover:translate-y-0.5 transition-all shrink-0"><use href="#icon-chevron-down"></use></svg>
+          <span class="hidden md:inline whitespace-nowrap font-medium text-stone-600 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">Hà Nội</span>
+          <span class="hidden md:inline w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-700 shrink-0"></span>
+          <span id="hanoiHeaderClockText" class="font-mono font-semibold text-xs tracking-tight tabular-nums text-stone-900 dark:text-stone-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">--:--:--</span>
+          <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0 text-[#6E6B65] dark:text-[#979DA8] transition-transform duration-200 group-hover:translate-y-0.5"><use href="#icon-chevron-down"></use></svg>
         </button>
 
         <!-- Nút Thư Viện Prompt AI (Hiển thị từ sm trở lên, trên mobile có trong Menu Tài khoản) -->
@@ -7025,7 +7050,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.4 • build 17/10/2026 01:35</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.5 • build 17/10/2026 01:45</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7762,7 +7787,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.4 • build 17/10/2026 01:35</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.5 • build 17/10/2026 01:45</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -10069,17 +10094,19 @@
       <!-- CỤM 3: CÀI ĐẶT & NÚT THOÁT FOCUS MODE -->
       <div class="flex items-center gap-1.5 shrink-0">
         <!-- Tiện ích Giờ Hà Nội trên thanh Chế độ Tập trung (Ảnh 2) -->
-        <button id="btnHanoiClockFocus" type="button" class="hanoi-clock-trigger touch-target flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#161A22] hover:bg-stone-50 dark:hover:bg-[#202530] text-[#1C1917] dark:text-[#EDECE8] text-xs font-mono font-medium shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        <button id="btnHanoiClockFocus" type="button" class="hanoi-clock-trigger touch-target flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-3 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 hover:border-indigo-500/40 text-[#6E6B65] dark:text-[#979DA8] text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap cursor-pointer select-none group active:scale-95" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
+          <span class="relative flex h-2 w-2 shrink-0 items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 opacity-60"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]"></span>
           </span>
-          <svg class="clock-icon w-3.5 h-3.5 text-stone-500 dark:text-stone-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="clock-icon w-3.5 h-3.5 text-stone-400 dark:text-stone-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="9"/>
-            <polyline points="12 6 12 12 16 14"/>
+            <polyline points="12 6 12 12 15 14"/>
           </svg>
-          <span class="hidden sm:inline text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400">Hà Nội</span>
-          <span id="hanoiFocusClockText" class="font-mono font-bold text-xs tracking-tight tabular-nums text-stone-800 dark:text-stone-200">--:--:--</span>
+          <span class="hidden sm:inline whitespace-nowrap font-medium text-stone-600 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">Hà Nội</span>
+          <span class="hidden sm:inline w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-700 shrink-0"></span>
+          <span id="hanoiFocusClockText" class="font-mono font-semibold text-xs tracking-tight tabular-nums text-stone-900 dark:text-stone-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">--:--:--</span>
+          <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0 text-[#6E6B65] dark:text-[#979DA8] transition-transform duration-200 group-hover:translate-y-0.5"><use href="#icon-chevron-down"></use></svg>
         </button>
 
         <button id="btnPomoSettingsTop" type="button" class="touch-target w-9 h-9 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#161A22] hover:bg-stone-50 dark:hover:bg-[#202530] text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white flex items-center justify-center transition cursor-pointer shadow-2xs" title="Cài đặt Pomodoro">
@@ -12305,7 +12332,7 @@
             <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Giờ chuẩn Việt Nam & Lịch vạn niên tương tác</p>
           </div>
         </div>
-        <button type="button" onclick="hideModalAnimated('hanoiClockCalendarModal')" class="touch-target w-8 h-8 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#1A1E26] hover:bg-stone-100 dark:hover:bg-[#222732] text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 flex items-center justify-center transition cursor-pointer shadow-2xs" aria-label="Đóng cửa sổ">
+        <button id="btnCloseHanoiClockModal" type="button" class="touch-target w-8 h-8 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#1A1E26] hover:bg-stone-100 dark:hover:bg-[#222732] text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 flex items-center justify-center transition cursor-pointer shadow-2xs active:scale-90" aria-label="Đóng cửa sổ">
           <svg class="w-4 h-4"><use href="#s-close"></use></svg>
         </button>
       </div>
@@ -12402,7 +12429,7 @@
           </svg>
           Múi giờ chuẩn Hà Nội (GMT+7)
         </span>
-        <button type="button" onclick="hideModalAnimated('hanoiClockCalendarModal')" class="px-3 py-1.5 rounded-xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition cursor-pointer">
+        <button id="btnCloseHanoiClockModalBottom" type="button" class="px-3.5 py-1.5 rounded-xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition cursor-pointer active:scale-95">
           Đóng
         </button>
       </div>
@@ -24476,6 +24503,10 @@
 
       el._closeTimer = setTimeout(cleanup, 220);
     }
+
+    // Expose motion helpers globally so HTML inline events or other scripts can call them safely
+    window.showModalAnimated = showModalAnimated;
+    window.hideModalAnimated = hideModalAnimated;
 
     // // ANIM: Tự động đóng modal mượt mà khi người dùng chạm vào lớp nền mờ
     document.addEventListener('click', (e) => {
@@ -47174,10 +47205,35 @@ QUY TẮC:
         updateLiveClocks();
         if (typeof showModalAnimated === 'function') {
           showModalAnimated('hanoiClockCalendarModal');
+        } else if (typeof window.showModalAnimated === 'function') {
+          window.showModalAnimated('hanoiClockCalendarModal');
+        } else {
+          const m = document.getElementById('hanoiClockCalendarModal');
+          if (m) {
+            m.classList.remove('hidden');
+            m.classList.add('modal-active');
+            document.body.style.overflow = 'hidden';
+          }
+        }
+      }
+
+      function closeModal() {
+        if (typeof hideModalAnimated === 'function') {
+          hideModalAnimated('hanoiClockCalendarModal');
+        } else if (typeof window.hideModalAnimated === 'function') {
+          window.hideModalAnimated('hanoiClockCalendarModal');
+        } else {
+          const m = document.getElementById('hanoiClockCalendarModal');
+          if (m) {
+            m.classList.remove('modal-active');
+            m.classList.add('hidden');
+            document.body.style.overflow = '';
+          }
         }
       }
 
       window.openHanoiClockCalendar = openModal;
+      window.closeHanoiClockCalendar = closeModal;
 
       const btnHeader = document.getElementById('btnHanoiClockHeader');
       if (btnHeader) {
@@ -47188,6 +47244,34 @@ QUY TẮC:
       if (btnFocus) {
         btnFocus.addEventListener('click', openModal);
       }
+
+      const btnCloseHeader = document.getElementById('btnCloseHanoiClockModal');
+      if (btnCloseHeader) {
+        btnCloseHeader.addEventListener('click', closeModal);
+      }
+
+      const btnCloseBottom = document.getElementById('btnCloseHanoiClockModalBottom');
+      if (btnCloseBottom) {
+        btnCloseBottom.addEventListener('click', closeModal);
+      }
+
+      const modalEl = document.getElementById('hanoiClockCalendarModal');
+      if (modalEl) {
+        modalEl.addEventListener('click', (e) => {
+          if (e.target === modalEl) {
+            closeModal();
+          }
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+          const m = document.getElementById('hanoiClockCalendarModal');
+          if (m && !m.classList.contains('hidden') && m.classList.contains('modal-active')) {
+            closeModal();
+          }
+        }
+      });
 
       updateLiveClocks();
       setInterval(updateLiveClocks, 1000);
@@ -47216,7 +47300,7 @@ QUY TẮC:
       }
     };
 
-    console.log("%c Thư viện Sách HTML v5.8.4 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.5 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
