@@ -108,6 +108,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.18',
+        date: '2026-10-16T23:45:00+07:00',
+        title: 'Tái Thiết Kế Thẻ Kế Hoạch Học Tập & Lịch Thi Ở Sidebar Chuẩn Luxury Editorial',
+        items: [
+          { type: 'improved', text: 'Tái thiết kế toàn diện thẻ Kế hoạch học tập & Lịch thi ở Sidebar (#sidebarPinnedPlansList): Tích hợp trọn vẹn ngôn ngữ thiết kế The Codex / Luxury Editorial với nền gradient ấm áp, bo góc mềm mại 14px, viền sáng mịn và đổ bóng tầng êm ái.' },
+          { type: 'improved', text: 'Nâng cấp cụm biểu tượng & Typography: Đưa icon lịch vào hộp squircle badge trang nhã, áp dụng font serif sang trọng cho tiêu đề kỳ thi, loại bỏ font mono kéo dãn để số đếm ngày và số bài hiển thị liền mạch, tự nhiên.' },
+          { type: 'feature', text: 'Thanh tiến độ lụa mượt mà (Sleek Gradient Pill Bar): Loại bỏ các vạch cắt ngang thô kệch chia đốt, thay thế bằng thanh tiến độ gradient phát sáng nhẹ theo từng cấp độ khẩn cấp (Hổ phách sắp thi, Hồng ngọc khẩn cấp, Ngọc bích hoàn thành, Chàm an toàn).' },
+          { type: 'improved', text: 'Nút ghim tinh gọn & Phản hồi vật lý: Nút bỏ ghim tối giản tự nhiên, hiệu ứng hover nhấc nhẹ 1.5px và co nhẹ chân thực khi bấm mở chi tiết kế hoạch.' }
+        ]
+      },
+      {
         version: 'v5.7.17',
         date: '2026-10-16T23:30:00+07:00',
         title: 'Nâng Cấp Micro-Interactions & Hiệu Ứng Di Chuột Thanh Công Cụ Header Chuẩn Vibe Editorial',
@@ -2531,27 +2542,10 @@
       --plan-track: rgba(148, 163, 184, 0.2);
     }
 
-    /* Style áp dụng lên thẻ Sidebar Widget */
+    /* Style áp dụng lên vùng chứa Sidebar Widget */
     #sidebarStudyPlanWidget {
-      background-color: var(--plan-bg, rgba(79, 70, 229, 0.08));
-      border-color: var(--plan-border, rgba(79, 70, 229, 0.2));
-      color: var(--plan-fg, inherit);
-      transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
-    }
-    #sidebarStudyPlanWidget #sidebarPlanName {
-      color: var(--plan-fg, inherit);
-    }
-    #sidebarStudyPlanWidget #sidebarPlanCountdownBadge {
-      background-color: var(--plan-badge-bg, #4F46E5);
-      color: var(--plan-badge-fg, #ffffff);
-      transition: background-color 250ms ease, color 250ms ease;
-    }
-    #sidebarStudyPlanWidget #sidebarPlanProgressBarTrack {
-      background-color: var(--plan-track, rgba(79, 70, 229, 0.15));
-    }
-    #sidebarStudyPlanWidget #sidebarPlanProgressBar {
-      background-color: var(--plan-bar, #4F46E5);
-      transition: width 500ms ease-out, background-color 250ms ease;
+      background: transparent !important;
+      border: none !important;
     }
 
     /* Viền xanh hoàn thành bao quanh popup modal */
@@ -3905,22 +3899,252 @@
       background-color: #818CF8;
     }
 
-    /* Thẻ Kế hoạch ghim ở Sidebar (tối đa 3 thẻ + nút unpin) */
+    /* ==========================================================================
+       THE CODEX EDITORIAL - REDESIGNED SIDEBAR STUDY PLAN CARD (v5.7.18)
+       ========================================================================== */
     .sidebar-plan-card {
-      transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+      position: relative;
+      border-radius: 14px;
+      padding: 10px 12px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
     }
     .sidebar-plan-card:hover {
-      transform: translateY(-1px);
+      transform: translateY(-1.5px);
     }
+    .sidebar-plan-card:active {
+      transform: translateY(0) scale(0.985);
+    }
+
+    /* 1. Safe (Còn xa > 14 ngày) */
+    .sidebar-plan-card[data-urgency="safe"] {
+      background: linear-gradient(135deg, rgba(238, 242, 255, 0.75) 0%, rgba(255, 255, 255, 0.96) 100%);
+      border: 1px solid rgba(199, 210, 254, 0.85);
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.04), 0 3px 8px -2px rgba(79, 70, 229, 0.04);
+    }
+    .dark .sidebar-plan-card[data-urgency="safe"] {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(21, 24, 30, 0.96) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.28);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="safe"]:hover {
+      border-color: rgba(165, 180, 252, 0.95);
+      box-shadow: 0 6px 18px -4px rgba(79, 70, 229, 0.14);
+    }
+    .dark .sidebar-plan-card[data-urgency="safe"]:hover {
+      border-color: rgba(129, 140, 248, 0.45);
+      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
+    }
+    .sidebar-plan-card[data-urgency="safe"] .sidebar-plan-icon-tile {
+      background: rgba(79, 70, 229, 0.12);
+      color: #4F46E5;
+      border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+    .dark .sidebar-plan-card[data-urgency="safe"] .sidebar-plan-icon-tile {
+      background: rgba(99, 102, 241, 0.16);
+      color: #818CF8;
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="safe"] .sidebar-plan-badge {
+      background: rgba(79, 70, 229, 0.08);
+      color: #4338CA;
+      border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+    .dark .sidebar-plan-card[data-urgency="safe"] .sidebar-plan-badge {
+      background: rgba(99, 102, 241, 0.15);
+      color: #A5B4FC;
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="safe"] .sidebar-plan-bar {
+      background: linear-gradient(90deg, #6366F1 0%, #4F46E5 100%);
+      box-shadow: 0 0 8px rgba(79, 70, 229, 0.35);
+    }
+
+    /* 2. Soon (Sắp đến: 6-14 ngày) */
+    .sidebar-plan-card[data-urgency="soon"] {
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.5) 0%, rgba(255, 255, 255, 0.96) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      box-shadow: 0 1px 3px rgba(217, 119, 6, 0.04), 0 3px 8px -2px rgba(217, 119, 6, 0.04);
+    }
+    .dark .sidebar-plan-card[data-urgency="soon"] {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(21, 24, 30, 0.96) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="soon"]:hover {
+      border-color: rgba(245, 158, 11, 0.65);
+      box-shadow: 0 6px 18px -4px rgba(217, 119, 6, 0.14);
+    }
+    .dark .sidebar-plan-card[data-urgency="soon"]:hover {
+      border-color: rgba(251, 191, 36, 0.48);
+      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
+    }
+    .sidebar-plan-card[data-urgency="soon"] .sidebar-plan-icon-tile {
+      background: rgba(245, 158, 11, 0.14);
+      color: #B45309;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .dark .sidebar-plan-card[data-urgency="soon"] .sidebar-plan-icon-tile {
+      background: rgba(245, 158, 11, 0.18);
+      color: #FBBF24;
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .sidebar-plan-card[data-urgency="soon"] .sidebar-plan-badge {
+      background: rgba(245, 158, 11, 0.1);
+      color: #92400E;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .dark .sidebar-plan-card[data-urgency="soon"] .sidebar-plan-badge {
+      background: rgba(245, 158, 11, 0.16);
+      color: #FDE68A;
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .sidebar-plan-card[data-urgency="soon"] .sidebar-plan-bar {
+      background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+
+    /* 3. Urgent (Khẩn cấp: <= 5 ngày hoặc hôm nay/mai thi) */
+    .sidebar-plan-card[data-urgency="urgent"] {
+      background: linear-gradient(135deg, rgba(254, 226, 226, 0.55) 0%, rgba(255, 255, 255, 0.96) 100%);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      box-shadow: 0 1px 3px rgba(225, 29, 72, 0.04), 0 3px 8px -2px rgba(225, 29, 72, 0.04);
+    }
+    .dark .sidebar-plan-card[data-urgency="urgent"] {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.14) 0%, rgba(21, 24, 30, 0.96) 100%);
+      border: 1px solid rgba(244, 63, 94, 0.32);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="urgent"]:hover {
+      border-color: rgba(244, 63, 94, 0.65);
+      box-shadow: 0 6px 18px -4px rgba(225, 29, 72, 0.16);
+    }
+    .dark .sidebar-plan-card[data-urgency="urgent"]:hover {
+      border-color: rgba(251, 113, 133, 0.5);
+      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
+    }
+    .sidebar-plan-card[data-urgency="urgent"] .sidebar-plan-icon-tile {
+      background: rgba(244, 63, 94, 0.14);
+      color: #E11D48;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+    .dark .sidebar-plan-card[data-urgency="urgent"] .sidebar-plan-icon-tile {
+      background: rgba(244, 63, 94, 0.18);
+      color: #FB7185;
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+    .sidebar-plan-card[data-urgency="urgent"] .sidebar-plan-badge {
+      background: rgba(244, 63, 94, 0.1);
+      color: #BE123C;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+    .dark .sidebar-plan-card[data-urgency="urgent"] .sidebar-plan-badge {
+      background: rgba(244, 63, 94, 0.16);
+      color: #FDA4AF;
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+    .sidebar-plan-card[data-urgency="urgent"] .sidebar-plan-bar {
+      background: linear-gradient(90deg, #F43F5E 0%, #E11D48 100%);
+      box-shadow: 0 0 8px rgba(244, 63, 94, 0.45);
+    }
+
+    /* 4. Done (Đã hoàn thành 100%) */
+    .sidebar-plan-card[data-urgency="done"] {
+      background: linear-gradient(135deg, rgba(236, 253, 245, 0.65) 0%, rgba(255, 255, 255, 0.96) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      box-shadow: 0 1px 3px rgba(16, 185, 129, 0.04), 0 3px 8px -2px rgba(16, 185, 129, 0.04);
+    }
+    .dark .sidebar-plan-card[data-urgency="done"] {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(21, 24, 30, 0.96) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="done"]:hover {
+      border-color: rgba(16, 185, 129, 0.65);
+      box-shadow: 0 6px 18px -4px rgba(16, 185, 129, 0.14);
+    }
+    .dark .sidebar-plan-card[data-urgency="done"]:hover {
+      border-color: rgba(52, 211, 153, 0.5);
+      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
+    }
+    .sidebar-plan-card[data-urgency="done"] .sidebar-plan-icon-tile {
+      background: rgba(16, 185, 129, 0.14);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .dark .sidebar-plan-card[data-urgency="done"] .sidebar-plan-icon-tile {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34D399;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    .sidebar-plan-card[data-urgency="done"] .sidebar-plan-badge {
+      background: rgba(16, 185, 129, 0.1);
+      color: #047857;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .dark .sidebar-plan-card[data-urgency="done"] .sidebar-plan-badge {
+      background: rgba(16, 185, 129, 0.16);
+      color: #A7F3D0;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    .sidebar-plan-card[data-urgency="done"] .sidebar-plan-bar {
+      background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    }
+
+    /* 5. Passed (Đã quá ngày thi) */
+    .sidebar-plan-card[data-urgency="passed"] {
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+    }
+    .dark .sidebar-plan-card[data-urgency="passed"] {
+      background: #181C24;
+      border: 1px solid #282E3B;
+    }
+    .sidebar-plan-card[data-urgency="passed"] .sidebar-plan-icon-tile {
+      background: rgba(100, 116, 139, 0.12);
+      color: #64748B;
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .dark .sidebar-plan-card[data-urgency="passed"] .sidebar-plan-icon-tile {
+      background: rgba(100, 116, 139, 0.16);
+      color: #94A3B8;
+      border-color: rgba(100, 116, 139, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="passed"] .sidebar-plan-badge {
+      background: rgba(100, 116, 139, 0.1);
+      color: #475569;
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .dark .sidebar-plan-card[data-urgency="passed"] .sidebar-plan-badge {
+      background: rgba(100, 116, 139, 0.16);
+      color: #CBD5E1;
+      border-color: rgba(100, 116, 139, 0.3);
+    }
+    .sidebar-plan-card[data-urgency="passed"] .sidebar-plan-bar {
+      background: #94A3B8;
+    }
+
+    /* Progress track */
+    .sidebar-plan-track {
+      background: rgba(0, 0, 0, 0.06);
+    }
+    .dark .sidebar-plan-track {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Pin button */
     .sidebar-plan-pin-btn {
-      opacity: 0.85;
-      transition: opacity 140ms ease, transform 140ms ease;
+      opacity: 0.6;
+      transition: opacity 0.16s ease, transform 0.16s ease, color 0.16s ease, background-color 0.16s ease;
     }
     .sidebar-plan-card:hover .sidebar-plan-pin-btn {
-      opacity: 1;
+      opacity: 0.85;
     }
     .sidebar-plan-pin-btn:hover {
-      transform: scale(1.1);
+      opacity: 1 !important;
+      transform: scale(1.15);
     }
 
   
@@ -5908,7 +6132,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.17 • build 16/10/2026 23:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.18 • build 16/10/2026 23:45</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -6645,7 +6869,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.17 • build 16/10/2026 23:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.18 • build 16/10/2026 23:45</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -34234,50 +34458,54 @@
 
           let badgeHtml = '';
           if (urgency === 'done') {
-            badgeHtml = `<svg class="w-3 h-3 inline-block mr-0.5 ${isPop ? 'anim-check-pop' : ''}"><use href="#check-glyph"></use></svg>Hoàn thành`;
+            badgeHtml = `<svg class="w-3 h-3 text-emerald-600 dark:text-emerald-400 stroke-2 ${isPop ? 'anim-check-pop' : ''}"><use href="#check-glyph"></use></svg><span>Đã hoàn thành</span>`;
           } else if (sched.isTodayExam) {
-            badgeHtml = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Hôm nay thi`;
+            badgeHtml = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span><span class="w-1.5 h-1.5 rounded-full bg-rose-500 -ml-2.5"></span><span>Hôm nay thi!</span>`;
           } else if (sched.daysLeft === 1) {
-            badgeHtml = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>Ngày mai thi`;
+            badgeHtml = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span><span>Ngày mai thi</span>`;
           } else {
-            const warningDot = (urgency === 'urgent') ? `<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-pulse"></span>` : '';
-            badgeHtml = `${warningDot}còn ${sched.daysLeft} ngày`;
+            const warningDot = (urgency === 'urgent')
+              ? `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>`
+              : (urgency === 'soon')
+              ? `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>`
+              : `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>`;
+            badgeHtml = `${warningDot}<span>còn ${sched.daysLeft} ngày</span>`;
           }
 
-          let todayText = (urgency === 'done') ? "Đã xong toàn bộ" : `Hôm nay: ${sched.todayRequiredCount} bài`;
-
-          let dividersHtml = '';
-          if (sched.totalLessons <= 10 && sched.totalLessons > 1) {
-            for (let i = 1; i < sched.totalLessons; i++) {
-              const leftPct = (i / sched.totalLessons) * 100;
-              dividersHtml += `<div class="absolute top-0 bottom-0 w-[1px] bg-white/70 dark:bg-black/40" style="left: ${leftPct}%;"></div>`;
-            }
-          }
+          let todayText = (urgency === 'done')
+            ? `<span class="text-emerald-600 dark:text-emerald-400 font-medium">Đã ôn xong toàn bộ</span>`
+            : `<span>Hôm nay:</span> <strong class="font-semibold text-[#1C1917] dark:text-[#EDECE8] ml-1">${sched.todayRequiredCount}</strong> <span class="text-[#6E6B65] dark:text-[#979DA8] text-[10px] ml-0.5">bài</span>`;
 
           return `
-            <div class="sidebar-plan-card p-2.5 rounded-xl border shadow-2xs cursor-pointer hover:opacity-95 transition relative select-none" data-plan-id="${plan.id}" data-urgency="${urgency}" role="button" tabindex="0">
-              <div class="flex items-center justify-between mb-1.5 gap-1.5">
-                <div class="flex items-center gap-1.5 text-xs font-semibold truncate min-w-0 flex-1">
-                  <svg class="w-[18px] h-[18px] shrink-0" style="color: var(--plan-fg); fill: none;"><use href="#plan-glyph"></use></svg>
-                  <span class="truncate max-w-[110px]" title="${escapeAttr(plan.name)}">${escapeHtml(plan.name)}</span>
+            <div class="sidebar-plan-card group relative select-none" data-plan-id="${plan.id}" data-urgency="${urgency}" role="button" tabindex="0">
+              <div class="flex items-center justify-between mb-2 gap-2">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <div class="sidebar-plan-icon-tile w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                    <svg class="w-3.5 h-3.5"><use href="#plan-glyph"></use></svg>
+                  </div>
+                  <span class="font-serif font-bold text-xs text-[#1C1917] dark:text-[#EDECE8] truncate tracking-tight" title="${escapeAttr(plan.name)}">${escapeHtml(plan.name)}</span>
                 </div>
-                <div class="flex items-center gap-1 shrink-0">
-                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold font-mono flex items-center justify-center bg-black/5 dark:bg-white/10">
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span class="sidebar-plan-badge inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-tight">
                     ${badgeHtml}
                   </span>
-                  <!-- Nút icon bỏ ghim vùng chạm chuẩn ≥ 44x44px trên mobile, hover trên desktop -->
-                  <button type="button" class="sidebar-plan-pin-btn touch-target w-8 h-8 -mr-1 rounded-lg flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" data-unpin-id="${plan.id}" aria-label="Bỏ ghim khỏi thanh mục lục" title="Bỏ ghim khỏi thanh mục lục">
+                  <!-- Nút icon bỏ ghim chuẩn kích thước & hiệu ứng hover mềm mại -->
+                  <button type="button" class="sidebar-plan-pin-btn touch-target w-6 h-6 -mr-0.5 rounded-md flex items-center justify-center text-[#6E6B65] dark:text-[#979DA8] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" data-unpin-id="${plan.id}" aria-label="Bỏ ghim khỏi thanh mục lục" title="Bỏ ghim khỏi thanh mục lục">
                     <svg class="w-3.5 h-3.5" style="--pin-fill: currentColor;"><use href="#pin-glyph"></use></svg>
                   </button>
                 </div>
               </div>
-              <div class="flex items-center justify-between text-[11px] opacity-90 mb-1.5">
-                <span>${todayText}</span>
-                <span class="font-mono font-medium">${sched.completedCount}/${sched.totalLessons}</span>
+              <div class="flex items-center justify-between text-[11px] mb-1.5 px-0.5">
+                <div class="flex items-center text-[#6E6B65] dark:text-[#979DA8]">
+                  ${todayText}
+                </div>
+                <div class="flex items-center gap-0.5 text-[10.5px] font-semibold text-[#6E6B65] dark:text-[#979DA8] bg-black/[0.04] dark:bg-white/[0.06] px-1.5 py-0.5 rounded-md">
+                  <span>${sched.completedCount}/${sched.totalLessons}</span>
+                  <span class="text-[9.5px] opacity-70 font-normal">bài</span>
+                </div>
               </div>
-              <div class="w-full h-1.5 rounded-full overflow-hidden relative" style="background-color: var(--plan-track);">
-                <div class="h-full rounded-full transition-all duration-500" style="width: ${sched.percentCompleted}%; background-color: var(--plan-bar);" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${sched.percentCompleted}" aria-label="Tiến độ kế hoạch"></div>
-                <div class="absolute inset-0 flex pointer-events-none">${dividersHtml}</div>
+              <div class="sidebar-plan-track w-full h-1.5 rounded-full overflow-hidden">
+                <div class="sidebar-plan-bar h-full rounded-full transition-all duration-500" style="width: ${sched.percentCompleted}%;" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${sched.percentCompleted}" aria-label="Tiến độ kế hoạch"></div>
               </div>
             </div>
           `;
