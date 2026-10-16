@@ -5616,6 +5616,30 @@ if (typeof window !== 'undefined' && !window._adminPromptsListenerBound) {
 
 export const THEME_PRESETS = [
   {
+    id: "spring",
+    name: "Mùa Xuân (Tết Sum Vầy)",
+    desc: "Cánh hoa đào, hoa mai rơi nhẹ, cành lộc xuân và đèn lồng đỏ may mắn rực rỡ đón năm mới",
+    effect: "spring_blossom",
+    lightAmbientBg: "#FFF7F8",
+    darkAmbientBg: "#180D13",
+    accentColor: "#E11D48",
+    accentGlow: "#FB7185",
+    showDecorCaps: true,
+    icon: "🌸"
+  },
+  {
+    id: "summer",
+    name: "Mùa Hè (Nắng Biển Tươi Mát)",
+    desc: "Sóng biển dập dềnh, ánh nắng lấp lánh, bọt nước ngọc bích và mũ cói đón hè sảng khoái",
+    effect: "summer_breeze",
+    lightAmbientBg: "#F0FDF9",
+    darkAmbientBg: "#06181E",
+    accentColor: "#0D9488",
+    accentGlow: "#2DD4BF",
+    showDecorCaps: true,
+    icon: "☀️"
+  },
+  {
     id: "default",
     name: "The Codex (Mặc định)",
     desc: "Giao diện cổ điển giấy ấm sang trọng, tối giản, tập trung tối đa cho việc đọc sách",
@@ -6002,6 +6026,8 @@ export async function renderThemeTab(container) {
                 <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Hiệu ứng Hạt Rơi Ngoài Viền (Ambient Particle Effect):</label>
                 <select id="themeSelectEffect" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#111317] font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">
                   <option value="none" ${curEffect === 'none' ? 'selected' : ''}>🚫 Không hiệu ứng (Tối giản / Tập trung)</option>
+                  <option value="spring_blossom" ${curEffect === 'spring_blossom' ? 'selected' : ''}>🌸 Hoa mai hoa đào đón xuân (Spring Blossom)</option>
+                  <option value="summer_breeze" ${curEffect === 'summer_breeze' ? 'selected' : ''}>☀️ Nắng vàng biển xanh &amp; bọt nước (Summer Breeze)</option>
                   <option value="halloween" ${curEffect === 'halloween' ? 'selected' : ''}>🎃 Halloween kỳ bí (Tàn lửa bí ngô, đàn dơi &amp; nón phù thủy)</option>
                   <option value="snow" ${curEffect === 'snow' ? 'selected' : ''}>❄️ Tuyết rơi nhẹ mùa đông (Christmas Snow)</option>
                   <option value="autumn_leaves" ${curEffect === 'autumn_leaves' ? 'selected' : ''}>🍁 Lá phong mùa thu chao nghiêng (Golden Autumn)</option>
