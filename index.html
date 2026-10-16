@@ -108,6 +108,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.2',
+        date: '2026-10-17T00:25:00+07:00',
+        title: 'Nâng Cấp Hiệu Ứng Di Chuột Tinh Tế Cho Cặp Nút Sao Chép & Nhận Prompt Trong Thư Viện Prompt AI',
+        items: [
+          { type: 'improved', text: 'Hiệu ứng di chuột Nút Sao chép (.btn-prompt-card-copy): Nhấc nhẹ 1.5px, viền sáng tím dịu, đổ bóng mờ trang nhã, biểu tượng clipboard phóng to 1.14x chuyển màu tím chàm đặc trưng.' },
+          { type: 'improved', text: 'Hiệu ứng di chuột Nút Nhận prompt (.btn-prompt-card-get): Nhấc nhẹ 1.5px, đổ bóng hào quang tím mộng mơ (soft violet aura glow), biểu tượng ngôi sao ma thuật phóng to 1.22x xoay nhẹ 14° và tỏa ánh sáng vàng kim lung linh.' },
+          { type: 'feature', text: 'Hiệu ứng thẻ Card Prompt (.prompt-card-item): Nổi nhẹ 2.5px khi rê chuột, đổ bóng êm dịu phong cách Editorial, viền chuyển sắc tím nhẹ nhàng tôn vinh nội dung.' },
+          { type: 'improved', text: 'Đồng bộ hiệu ứng các Tab lọc danh mục & Gói: Tăng tính tương tác mượt mà khi rê chuột qua các bộ lọc Tất cả, Học tập, Gia sư Socratic, Viết & Soạn thảo, Nghiên cứu.' }
+        ]
+      },
+      {
         version: 'v5.8.1',
         date: '2026-10-17T00:10:00+07:00',
         title: 'Khắc Phục Hoàn Toàn Lỗi Icon Thẻ Nhãn Bị Cắt Cụt / Ẩn Sau Chevron Trên Nút Lọc Nhãn',
@@ -4303,6 +4314,196 @@
       transform: scale(0.92);
     }
 
+    /* ============================================================
+       PROMPT LIBRARY & PROMPT CARD BUTTONS: EDITORIAL HOVER EFFECTS
+       (Sao chép prompt, Nhận prompt, Filter tabs & Action buttons)
+       ============================================================ */
+
+    /* Thẻ Card chứa Prompt */
+    .prompt-card-item {
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.2s ease !important;
+    }
+    .prompt-card-item:hover {
+      transform: translateY(-2.5px);
+      box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.09), 0 4px 10px -2px rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(124, 58, 237, 0.25) !important;
+    }
+    .dark .prompt-card-item:hover {
+      box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4) !important;
+      border-color: rgba(139, 92, 246, 0.32) !important;
+    }
+
+    /* Nút Sao chép Prompt trên Card */
+    .btn-prompt-card-copy {
+      position: relative;
+      background-color: #FAF9F6;
+      border-color: #E7E5DF;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+    }
+    .dark .btn-prompt-card-copy {
+      background-color: #1A1E26;
+      border-color: #262C36;
+    }
+    .btn-prompt-card-copy:hover {
+      transform: translateY(-1.5px);
+      background-color: #FFFFFF !important;
+      border-color: rgba(124, 58, 237, 0.45) !important;
+      color: #5B21B6 !important;
+      box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(124, 58, 237, 0.12) !important;
+    }
+    .dark .btn-prompt-card-copy:hover {
+      background-color: #222734 !important;
+      border-color: rgba(167, 139, 250, 0.45) !important;
+      color: #EDECE8 !important;
+      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.5) !important;
+    }
+    .btn-prompt-card-copy svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
+    }
+    .btn-prompt-card-copy:hover svg {
+      transform: scale(1.14);
+      color: #7C3AED !important;
+    }
+    .dark .btn-prompt-card-copy:hover svg {
+      color: #A78BFA !important;
+    }
+    .btn-prompt-card-copy:active {
+      transform: translateY(0) scale(0.96) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    /* Nút Nhận prompt trên Card (Primary CTA) */
+    .btn-prompt-card-get {
+      position: relative;
+      background-color: #7C3AED;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  filter 0.2s ease !important;
+    }
+    .btn-prompt-card-get:hover {
+      transform: translateY(-1.5px);
+      background-color: #6D28D9 !important;
+      box-shadow: 0 6px 20px -2px rgba(124, 58, 237, 0.48), 0 2px 8px -1px rgba(124, 58, 237, 0.28) !important;
+    }
+    .dark .btn-prompt-card-get:hover {
+      background-color: #7C3AED !important;
+      box-shadow: 0 6px 22px -2px rgba(139, 92, 246, 0.55), 0 2px 8px -1px rgba(0, 0, 0, 0.6) !important;
+    }
+    .btn-prompt-card-get svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease !important;
+    }
+    .btn-prompt-card-get:hover svg {
+      transform: scale(1.22) rotate(14deg);
+      filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.85));
+    }
+    .btn-prompt-card-get:active {
+      transform: translateY(0) scale(0.97) !important;
+      box-shadow: 0 2px 8px -1px rgba(124, 58, 237, 0.35) !important;
+    }
+
+    /* Bộ lọc danh mục Prompt (Pills) */
+    .prompt-cat-filter-btn {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  color 0.2s ease !important;
+    }
+    .prompt-cat-filter-btn:not(.bg-violet-600):hover {
+      transform: translateY(-1px);
+      background-color: rgba(124, 58, 237, 0.08) !important;
+      color: #6D28D9 !important;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.1) !important;
+    }
+    .dark .prompt-cat-filter-btn:not(.bg-violet-600):not(.dark\:bg-violet-500):hover {
+      background-color: rgba(139, 92, 246, 0.15) !important;
+      color: #EDECE8 !important;
+    }
+    .prompt-cat-filter-btn.bg-violet-600:hover,
+    .dark .prompt-cat-filter-btn.dark\:bg-violet-500:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px -1px rgba(124, 58, 237, 0.45) !important;
+    }
+    .prompt-cat-filter-btn:active {
+      transform: translateY(0) scale(0.95) !important;
+    }
+
+    /* Bộ lọc Gói Prompt (Tier buttons) */
+    .prompt-tier-filter-btn {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.18s ease,
+                  color 0.18s ease !important;
+    }
+    .prompt-tier-filter-btn:hover {
+      transform: translateY(-0.5px);
+    }
+    .prompt-tier-filter-btn:active {
+      transform: translateY(0) scale(0.96) !important;
+    }
+
+    /* Nút Sao chép toàn bộ Prompt trong Modal Chi tiết */
+    #btnCopyPromptDetail {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.2s ease !important;
+    }
+    #btnCopyPromptDetail:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 8px 24px -2px rgba(124, 58, 237, 0.48) !important;
+    }
+    #btnCopyPromptDetail svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnCopyPromptDetail:hover svg {
+      transform: scale(1.14);
+    }
+    #btnCopyPromptDetail:active {
+      transform: translateY(0) scale(0.98) !important;
+      box-shadow: 0 3px 10px -1px rgba(124, 58, 237, 0.3) !important;
+    }
+
+    /* Nút Đóng ở Footer Modal Chi tiết */
+    #btnCloseDetailBottomBtn {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+    }
+    #btnCloseDetailBottomBtn:hover {
+      transform: translateY(-1px);
+      background-color: rgba(0, 0, 0, 0.05) !important;
+      border-color: rgba(0, 0, 0, 0.2) !important;
+    }
+    .dark #btnCloseDetailBottomBtn:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    #btnCloseDetailBottomBtn:active {
+      transform: translateY(0) scale(0.96) !important;
+    }
+
+    /* Nút Reset bộ lọc ở Empty state */
+    #btnResetPromptFilter {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease !important;
+    }
+    #btnResetPromptFilter:hover {
+      transform: translateY(-1px);
+      background-color: #6D28D9 !important;
+      box-shadow: 0 4px 14px -1px rgba(124, 58, 237, 0.4) !important;
+    }
+    #btnResetPromptFilter:active {
+      transform: translateY(0) scale(0.96) !important;
+    }
+
     /* In-Article Search Bar smooth entry */
     #inArticleSearchBar:not(.hidden) {
       animation: inArticleSearchSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -6727,7 +6928,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.1 • build 17/10/2026 00:10</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.2 • build 17/10/2026 00:25</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7464,7 +7665,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.1 • build 17/10/2026 00:10</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.2 • build 17/10/2026 00:25</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -45789,7 +45990,7 @@ QUY TẮC:
           }
 
           return `
-            <div class="bg-white dark:bg-[#161921] rounded-2xl border border-stone-200/80 dark:border-stone-800/80 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
+            <div class="prompt-card-item bg-white dark:bg-[#161921] rounded-2xl border border-stone-200/80 dark:border-stone-800/80 shadow-2xs flex flex-col justify-between overflow-hidden group">
               <div>
                 <!-- Ảnh Display Mẫu -->
                 <div class="aspect-video w-full overflow-hidden relative bg-stone-100 dark:bg-stone-900 border-b border-stone-200/60 dark:border-stone-800/60">
@@ -45832,13 +46033,13 @@ QUY TẮC:
 
               <!-- Nút hành động đáy Card -->
               <div class="px-4 sm:px-5 pb-4 pt-1 flex items-center gap-2">
-                <button type="button" onclick="window.handleCopyPromptCard('${prompt.id}')" class="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60 text-[#1C1917] dark:text-[#EDECE8] text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer" title="Sao chép câu lệnh prompt">
-                  <svg class="w-3.5 h-3.5 text-stone-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <button type="button" onclick="window.handleCopyPromptCard('${prompt.id}')" class="btn-prompt-card-copy px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-[#1C1917] dark:text-[#EDECE8] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer" title="Sao chép câu lệnh prompt">
+                  <svg class="w-3.5 h-3.5 text-stone-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                   <span>Sao chép</span>
                 </button>
 
-                <button type="button" onclick="window.handleGetPromptCard('${prompt.id}')" class="flex-1 py-2 px-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shadow-2xs hover:shadow transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
-                  <svg class="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
+                <button type="button" onclick="window.handleGetPromptCard('${prompt.id}')" class="btn-prompt-card-get flex-1 py-2 px-3 rounded-xl bg-violet-600 text-white text-xs font-semibold shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer">
+                  <svg class="w-3.5 h-3.5 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
                   <span>Nhận prompt</span>
                 </button>
               </div>
