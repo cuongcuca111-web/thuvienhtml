@@ -84,7 +84,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "feat(particle): redesign controls UI and add smooth density transition (v5.7.16)"
+    commit_message = "feat(header): add editorial micro-interaction hover effects to toolbar buttons (v5.7.17)"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,

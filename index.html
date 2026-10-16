@@ -108,6 +108,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.17',
+        date: '2026-10-16T23:30:00+07:00',
+        title: 'Nâng Cấp Micro-Interactions & Hiệu Ứng Di Chuột Thanh Công Cụ Header Chuẩn Vibe Editorial',
+        items: [
+          { type: 'improved', text: 'Hiệu ứng di chuột tinh tế trên toàn bộ cụm nút công cụ Header (Thư viện Prompt AI, Tạo link nhanh, Chỉ báo đồng bộ, Ghi chú, Flashcard, Kế hoạch học, Thống kê, Nút Hiển thị): Áp dụng nhịp chuyển động vật lý êm ái (cubic-bezier 0.16, 1, 0.3, 1), nâng nhẹ 1.5px (micro-lift) kèm đổ bóng mờ ảo sang trọng.' },
+          { type: 'feature', text: 'Micro-animations cho từng biểu tượng SVG: Ngôi sao Prompt xoay nhẹ 14° và mở rộng 1.14x, móc xích Tạo link nghiêng -10°, chấm trạng thái đồng bộ phát sáng ngọc bích, bút dạ quang nghiêng -12°, thẻ flashcard xòe góc 8°, và chấm thông báo kế hoạch tỏa sáng dịu.' },
+          { type: 'improved', text: 'Cảm giác bấm chân thực (Tactile Active Feedback): Độ lún nhẹ êm tay (scale 0.96 / 0.92) khi nhấp chuột, tương thích hoàn hảo cả 2 chế độ Sáng (kem giấy) và Tối (slate/obsidian).' }
+        ]
+      },
+      {
         version: 'v5.7.16',
         date: '2026-10-16T21:15:00+07:00',
         title: 'Tái Thiết Kế Giao Diện Điều Khiển Hạt Rơi & Hiệu Ứng Chuyển Đổi Mật Độ Mượt Mà (Cinematic Particle Transition)',
@@ -3521,6 +3531,190 @@
       transform: scale(0.92);
     }
 
+    /* ==========================================================================
+       EDITORIAL HEADER RIGHT CLUSTER BUTTONS - MICRO-INTERACTIONS
+       Hiệu ứng di chuột tinh tế, êm ái, phù hợp vibe Editorial / The Codex HTML
+       ========================================================================== */
+    /* 1. Nút Thư Viện Prompt AI */
+    #btnPromptLibrary {
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnPromptLibrary:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 16px -2px rgba(139, 92, 246, 0.22), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(167, 139, 250, 0.8) !important;
+    }
+    .dark #btnPromptLibrary:hover {
+      box-shadow: 0 6px 20px -2px rgba(139, 92, 246, 0.28), 0 2px 6px -1px rgba(0, 0, 0, 0.5) !important;
+      border-color: rgba(167, 139, 250, 0.5) !important;
+    }
+    #btnPromptLibrary:active {
+      transform: translateY(0) scale(0.96);
+    }
+    #btnPromptLibrary svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #btnPromptLibrary:hover svg {
+      transform: rotate(14deg) scale(1.14);
+    }
+
+    /* 2. Nút Tạo link nhanh */
+    #btnHeaderQuickShare {
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnHeaderQuickShare:hover {
+      transform: translateY(-1.5px);
+      background-color: #4338CA !important;
+      box-shadow: 0 6px 18px -2px rgba(79, 70, 229, 0.35), 0 2px 6px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+    .dark #btnHeaderQuickShare:hover {
+      box-shadow: 0 6px 20px -2px rgba(99, 102, 241, 0.45) !important;
+    }
+    #btnHeaderQuickShare:active {
+      transform: translateY(0) scale(0.96);
+    }
+    #btnHeaderQuickShare svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #btnHeaderQuickShare:hover svg {
+      transform: rotate(-10deg) scale(1.15);
+    }
+
+    /* 3. Nút Chỉ báo trạng thái Đồng bộ */
+    #btnSyncStatusIndicator {
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnSyncStatusIndicator:hover {
+      transform: translateY(-1.5px);
+      background-color: rgba(16, 185, 129, 0.08) !important;
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      color: #047857 !important;
+      box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.15) !important;
+    }
+    .dark #btnSyncStatusIndicator:hover {
+      background-color: rgba(16, 185, 129, 0.14) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+      color: #34D399 !important;
+      box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.2) !important;
+    }
+    #btnSyncStatusIndicator:active {
+      transform: translateY(0) scale(0.96);
+    }
+    #btnSyncStatusIndicator #syncDot {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    }
+    #btnSyncStatusIndicator:hover #syncDot {
+      transform: scale(1.22);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.65);
+    }
+
+    /* 4. Nhóm nút icon công cụ (Ghi chú, Flashcard, Kế hoạch, Thống kê) */
+    #btnHeaderNotes,
+    #btnHeaderFlashcards,
+    #btnHeaderStudyPlan,
+    #btnHeaderAnalytics {
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      position: relative;
+    }
+    #btnHeaderNotes:hover,
+    #btnHeaderFlashcards:hover,
+    #btnHeaderStudyPlan:hover,
+    #btnHeaderAnalytics:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+    }
+    .dark #btnHeaderNotes:hover,
+    .dark #btnHeaderFlashcards:hover,
+    .dark #btnHeaderStudyPlan:hover,
+    .dark #btnHeaderAnalytics:hover {
+      box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5);
+    }
+    #btnHeaderNotes:active,
+    #btnHeaderFlashcards:active,
+    #btnHeaderStudyPlan:active,
+    #btnHeaderAnalytics:active {
+      transform: translateY(0) scale(0.92);
+    }
+    #btnHeaderNotes svg,
+    #btnHeaderFlashcards svg,
+    #btnHeaderStudyPlan svg,
+    #btnHeaderAnalytics svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+    }
+
+    /* Từng sắc thái tinh tế cho mỗi icon */
+    #btnHeaderNotes:hover {
+      background-color: rgba(245, 158, 11, 0.12) !important;
+      color: #D97706 !important;
+    }
+    .dark #btnHeaderNotes:hover {
+      background-color: rgba(245, 158, 11, 0.18) !important;
+      color: #FBBF24 !important;
+    }
+    #btnHeaderNotes:hover svg {
+      transform: rotate(-12deg) scale(1.15);
+    }
+
+    #btnHeaderFlashcards:hover {
+      background-color: rgba(99, 102, 241, 0.12) !important;
+      color: #4F46E5 !important;
+    }
+    .dark #btnHeaderFlashcards:hover {
+      background-color: rgba(99, 102, 241, 0.18) !important;
+      color: #818CF8 !important;
+    }
+    #btnHeaderFlashcards:hover svg {
+      transform: rotate(8deg) scale(1.15);
+    }
+
+    #btnHeaderStudyPlan:hover {
+      background-color: rgba(168, 85, 247, 0.12) !important;
+      color: #9333EA !important;
+    }
+    .dark #btnHeaderStudyPlan:hover {
+      background-color: rgba(168, 85, 247, 0.18) !important;
+      color: #C084FC !important;
+    }
+    #btnHeaderStudyPlan:hover svg {
+      transform: scale(1.15);
+    }
+    #btnHeaderStudyPlan #planHeaderBadge {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    }
+    #btnHeaderStudyPlan:hover #planHeaderBadge {
+      transform: scale(1.3);
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+    }
+
+    #btnHeaderAnalytics:hover {
+      background-color: rgba(20, 184, 166, 0.12) !important;
+      color: #0D9488 !important;
+    }
+    .dark #btnHeaderAnalytics:hover {
+      background-color: rgba(20, 184, 166, 0.18) !important;
+      color: #2DD4BF !important;
+    }
+    #btnHeaderAnalytics:hover svg {
+      transform: scale(1.15);
+    }
+
+    /* 5. Nút Hiển thị (Display Settings) */
+    #btnDisplaySettingsToggle {
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnDisplaySettingsToggle:hover {
+      transform: translateY(-1.5px);
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      box-shadow: 0 5px 15px -3px rgba(99, 102, 241, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
+    }
+    .dark #btnDisplaySettingsToggle:hover {
+      border-color: rgba(129, 140, 248, 0.4) !important;
+      box-shadow: 0 6px 18px -3px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnDisplaySettingsToggle:active {
+      transform: translateY(0) scale(0.96);
+    }
+
     /* In-Article Search Bar smooth entry */
     #inArticleSearchBar:not(.hidden) {
       animation: inArticleSearchSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -5017,36 +5211,36 @@
         </button>
 
         <!-- Nút Tạo link nhanh (Hiển thị từ sm trở lên, trên mobile đã có ở Thanh điều hướng đáy và Menu) -->
-        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
+        <button id="btnHeaderQuickShare" class="hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition shrink-0 cursor-pointer select-none group" title="Tải file lên và tạo link chia sẻ trực tiếp (lưu 7 ngày)" aria-label="Tạo link nhanh">
           <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-link"></use></svg>
           <span class="hidden min-[1180px]:inline">Tạo link nhanh</span>
         </button>
 
         <!-- Nút chỉ báo trạng thái đồng bộ (Hiển thị từ sm trở lên, trên mobile xem chi tiết trong Menu) -->
-        <button id="btnSyncStatusIndicator" type="button" class="hidden sm:flex items-center gap-1 text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1.5 sm:px-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
+        <button id="btnSyncStatusIndicator" type="button" class="hidden sm:flex items-center gap-1 text-[11px] text-[#6E6B65] dark:text-[#979DA8] p-1.5 sm:px-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition cursor-pointer shrink-0 border border-transparent hover:border-black/10 dark:hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 select-none group" title="Trạng thái lưu trữ đám mây (Bấm xem chi tiết)" aria-label="Trạng thái đồng bộ" aria-live="polite">
           <span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
           <span id="syncText" class="hidden min-[1360px]:inline font-medium">Đã đồng bộ</span>
         </button>
 
         <!-- Cài App PWA (Nếu hỗ trợ) -->
-        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition shrink-0" title="Cài đặt ứng dụng" aria-label="Cài đặt ứng dụng">
+        <button id="btnPwaInstall" class="hidden items-center gap-1.5 px-2 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-medium transition shrink-0 cursor-pointer select-none group" title="Cài đặt ứng dụng" aria-label="Cài đặt ứng dụng">
           <svg class="w-3.5 h-3.5"><use href="#icon-download"></use></svg>
           <span class="hidden min-[1360px]:inline">Cài App</span>
         </button>
 
         <!-- Icon công cụ phụ: Ghi chú, Flashcards, Thống kê (hiển thị khi >= 1040px) -->
         <div class="hidden min-[1040px]:flex items-center gap-0.5 shrink-0">
-          <button id="btnHeaderNotes" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Tất cả Ghi chú & Highlight toàn thư viện" aria-label="Ghi chú và Highlight">
+          <button id="btnHeaderNotes" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer select-none group" title="Tất cả Ghi chú & Highlight toàn thư viện" aria-label="Ghi chú và Highlight">
             <svg class="w-4 h-4"><use href="#icon-highlighter"></use></svg>
           </button>
-          <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
+          <button id="btnHeaderFlashcards" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer select-none group" title="Ôn tập Flashcard tự kiểm tra" aria-label="Ôn tập Flashcards">
             <svg class="w-4 h-4"><use href="#icon-cards"></use></svg>
           </button>
-          <button id="btnHeaderStudyPlan" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 relative" title="Lịch thi & Kế hoạch" aria-label="Lịch thi và kế hoạch học tập">
+          <button id="btnHeaderStudyPlan" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 relative cursor-pointer select-none group" title="Lịch thi & Kế hoạch" aria-label="Lịch thi và kế hoạch học tập">
             <svg class="w-4 h-4"><use href="#plan-glyph"></use></svg>
             <span id="planHeaderBadge" class="hidden absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
           </button>
-          <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
+          <button id="btnHeaderAnalytics" class="touch-target p-2 rounded-lg text-[#6E6B65] dark:text-[#979DA8] hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer select-none group" title="Thống kê học tập & Chuỗi ngày học" aria-label="Thống kê học tập">
             <svg class="w-4 h-4"><use href="#icon-bar-chart"></use></svg>
           </button>
         </div>
@@ -5714,7 +5908,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.16 • build 16/10/2026 21:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.17 • build 16/10/2026 23:30</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -6451,7 +6645,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.16 • build 16/10/2026 21:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.17 • build 16/10/2026 23:30</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
