@@ -83,7 +83,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "fix(theme): elevate gingerbread sticker onto dedicated snow ledge above user card to avoid covering pro badge (v5.7.10)"
+    commit_message = "feat(theme): add Halloween Ky Bi preset with 3D witch hat, spiderwebs, pumpkin embers & 9 distinct stickers (v5.7.11)"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
