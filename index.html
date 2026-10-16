@@ -108,6 +108,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.15',
+        date: '2026-10-16T21:00:00+07:00',
+        title: 'Bộ Điều Khiển Mật Độ Hạt Rơi & Tốc Độ Linh Hoạt (Particle Density & Speed Control)',
+        items: [
+          { type: 'feature', text: 'Bộ điều khiển Tốc độ rơi (Particle Speed Control): Cho phép tùy chỉnh tốc độ rơi của hạt (Chậm 0.6x - êm dịu thư thái / Vừa 1.0x - cân bằng tự nhiên / Nhanh 1.5x - sôi động rực rỡ), phản hồi tức thì trên canvas đang chạy mà không cần tải lại trang.' },
+          { type: 'feature', text: 'Bộ điều khiển Số lượng hạt (Particle Density Control): Linh hoạt chuyển đổi giữa Nhẹ nhàng (40% - tối ưu máy yếu, tiết kiệm pin) / Tiêu chuẩn (100% - hài hòa thẩm mỹ) / Rực rỡ (160% - dày đặc mãn nhãn trên màn hình độ phân giải cao).' },
+          { type: 'improved', text: 'Tự động lưu cấu hình cá nhân vào localStorage (thuvienhtml_particle_speed, thuvienhtml_particle_density) và tự động ẩn gọn gàng khi chủ đề sự kiện tắt hoặc hiệu ứng là none. Đảm bảo tuân thủ tuyệt đối nguyên tắc Zero Distraction không bao giờ che khuất vùng đọc sách.' }
+        ]
+      },
+      {
         version: 'v5.7.14',
         date: '2026-10-16T20:30:00+07:00',
         title: 'Ra Mắt Chủ Đề Mùa Xuân (Tết Sum Vầy) & Mùa Hè (Nắng Biển Tươi Mát) Kèm Trọn Bộ Sticker Độc Bản',
@@ -5129,6 +5139,53 @@
                     </label>
                   </div>
 
+                  <!-- BỘ ĐIỀU KHIỂN HẠT RƠI (TỐC ĐỘ & SỐ LƯỢNG HẠT) -->
+                  <div id="particleControlsBox" class="p-2.5 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-2.5">
+                    
+                    <!-- Hàng: Tốc độ rơi -->
+                    <div>
+                      <div class="flex items-center justify-between text-[11px] mb-1.5">
+                        <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
+                          <span>⚡</span> Tốc độ rơi:
+                        </span>
+                        <span id="particleSpeedLabel" class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 font-mono">Vừa (1.0x)</span>
+                      </div>
+                      <div class="grid grid-cols-3 gap-1 bg-white dark:bg-[#181B20] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[11px]">
+                        <button type="button" data-particle-speed="slow" class="btn-particle-speed py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Chậm rãi - Êm dịu, nhẹ nhàng thư thái">
+                          <span>🐢</span> Chậm
+                        </button>
+                        <button type="button" data-particle-speed="normal" class="btn-particle-speed py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1" title="Vừa - Tự nhiên, cân bằng">
+                          <span>⚡</span> Vừa
+                        </button>
+                        <button type="button" data-particle-speed="fast" class="btn-particle-speed py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Nhanh - Sống động, năng động">
+                          <span>🚀</span> Nhanh
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Hàng: Mật độ / Số lượng hạt -->
+                    <div>
+                      <div class="flex items-center justify-between text-[11px] mb-1.5">
+                        <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
+                          <span>✨</span> Số lượng hạt:
+                        </span>
+                        <span id="particleDensityLabel" class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 font-mono">Tiêu chuẩn</span>
+                      </div>
+                      <div class="grid grid-cols-3 gap-1 bg-white dark:bg-[#181B20] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[11px]">
+                        <button type="button" data-particle-density="light" class="btn-particle-density py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Nhẹ nhàng - Ít hạt, tối ưu máy yếu & tiết kiệm pin">
+                          <span>🍃</span> Nhẹ
+                        </button>
+                        <button type="button" data-particle-density="standard" class="btn-particle-density py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1" title="Tiêu chuẩn - Cân bằng thẩm mỹ và mượt mà">
+                          <span>🌟</span> Vừa
+                        </button>
+                        <button type="button" data-particle-density="dense" class="btn-particle-density py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Rực rỡ - Dày đặc, sinh động mãn nhãn">
+                          <span>✨</span> Rực rỡ
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+
                   <!-- Khối: Tùy chỉnh Theme Presets (CHỈ DÀNH RIÊNG CHO QUẢN TRỊ VIÊN - NGƯỜI DÙNG THƯỜNG KHÔNG THỂ TÙY CHỈNH) -->
                   <div id="festivalThemeSelectorBox" class="hidden p-2 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-1.5">
                     <div class="text-[10px] font-semibold text-[#6E6B65] dark:text-[#979DA8] px-0.5 flex items-center justify-between">
@@ -5609,7 +5666,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.13 • build 16/10/2026 19:50</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.15 • build 16/10/2026 21:00</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -6346,7 +6403,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.13 • build 16/10/2026 19:50</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.15 • build 16/10/2026 21:00</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -11794,9 +11851,105 @@
           wrapper.classList.add('hidden');
         }
       }
+
+      // 4. Đồng bộ khối điều khiển Tốc độ & Số lượng hạt rơi
+      try {
+        updateParticleControlsUI();
+      } catch (_) {}
     }
     window.updateFestivalThemeAdminUI = updateFestivalThemeAdminUI;
     window.updateFestivalThemeUI = updateFestivalThemeAdminUI;
+
+    // Quản lý hiển thị và tương tác của Bộ điều khiển Tốc độ & Số lượng hạt rơi
+    function updateParticleControlsUI() {
+      const box = document.getElementById('particleControlsBox');
+      if (!box) return;
+
+      const isUserDisabled = localStorage.getItem('thuvienhtml_festival_disabled') === 'true';
+      const currentResolved = typeof resolveActiveTheme === 'function' ? resolveActiveTheme(currentThemeConfig) : null;
+      const hasActiveParticles = currentResolved && currentResolved.effect && currentResolved.effect !== 'none';
+
+      // Ẩn nếu người dùng tắt hiệu ứng hoặc hiệu ứng hiện tại là 'none'
+      if (isUserDisabled || !hasActiveParticles) {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
+
+      const curSpeed = (festivalParticleEngine && festivalParticleEngine.speedMode) || localStorage.getItem('thuvienhtml_particle_speed') || 'normal';
+      const curDensity = (festivalParticleEngine && festivalParticleEngine.densityMode) || localStorage.getItem('thuvienhtml_particle_density') || 'standard';
+
+      // 1. Cập nhật nhãn Tốc độ rơi
+      const speedLabel = document.getElementById('particleSpeedLabel');
+      if (speedLabel) {
+        if (curSpeed === 'slow') speedLabel.textContent = 'Chậm (0.6x)';
+        else if (curSpeed === 'fast') speedLabel.textContent = 'Nhanh (1.5x)';
+        else speedLabel.textContent = 'Vừa (1.0x)';
+      }
+
+      // 2. Cập nhật nhãn Mật độ hạt
+      const densityLabel = document.getElementById('particleDensityLabel');
+      if (densityLabel) {
+        if (curDensity === 'light') densityLabel.textContent = 'Nhẹ (40%)';
+        else if (curDensity === 'dense') densityLabel.textContent = 'Rực rỡ (160%)';
+        else densityLabel.textContent = 'Tiêu chuẩn (100%)';
+      }
+
+      // 3. Cập nhật nút bấm Speed
+      box.querySelectorAll('.btn-particle-speed').forEach(btn => {
+        const spd = btn.getAttribute('data-particle-speed');
+        const isActive = spd === curSpeed;
+        if (isActive) {
+          btn.className = 'btn-particle-speed py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1';
+        } else {
+          btn.className = 'btn-particle-speed py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1';
+        }
+      });
+
+      // 4. Cập nhật nút bấm Density
+      box.querySelectorAll('.btn-particle-density').forEach(btn => {
+        const den = btn.getAttribute('data-particle-density');
+        const isActive = den === curDensity;
+        if (isActive) {
+          btn.className = 'btn-particle-density py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1';
+        } else {
+          btn.className = 'btn-particle-density py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1';
+        }
+      });
+    }
+    window.updateParticleControlsUI = updateParticleControlsUI;
+
+    function initParticleControlsUI() {
+      const box = document.getElementById('particleControlsBox');
+      if (!box) return;
+
+      box.querySelectorAll('.btn-particle-speed').forEach(btn => {
+        btn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const spd = btn.getAttribute('data-particle-speed');
+          if (spd && festivalParticleEngine) {
+            festivalParticleEngine.setSpeed(spd);
+            updateParticleControlsUI();
+          }
+        };
+      });
+
+      box.querySelectorAll('.btn-particle-density').forEach(btn => {
+        btn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const den = btn.getAttribute('data-particle-density');
+          if (den && festivalParticleEngine) {
+            festivalParticleEngine.setDensity(den);
+            updateParticleControlsUI();
+          }
+        };
+      });
+
+      updateParticleControlsUI();
+    }
+    window.initParticleControlsUI = initParticleControlsUI;
 
     // Helper kiểm tra Theme hợp lệ theo thời gian thực (hỗ trợ User Preset Override & Firestore Schedule)
     function resolveActiveTheme(cfg) {
@@ -14282,6 +14435,11 @@
         this.width = window.innerWidth;
         this.height = window.innerHeight;
 
+        // Cấu hình Tốc độ (slow / normal / fast) và Mật độ hạt (light / standard / dense)
+        this.speedMode = localStorage.getItem('thuvienhtml_particle_speed') || 'normal';
+        this.densityMode = localStorage.getItem('thuvienhtml_particle_density') || 'standard';
+        this.speedMultiplier = this.getSpeedMultiplier(this.speedMode);
+
         this.resize();
         window.addEventListener('resize', () => this.resize(), { passive: true });
 
@@ -14293,6 +14451,38 @@
             this.resume();
           }
         });
+      }
+
+      getSpeedMultiplier(mode) {
+        if (mode === 'slow') return 0.6;
+        if (mode === 'fast') return 1.5;
+        return 1.0;
+      }
+
+      getDensityMultiplier(mode) {
+        if (mode === 'light') return 0.4;
+        if (mode === 'dense') return 1.6;
+        return 1.0;
+      }
+
+      setSpeed(mode) {
+        if (!['slow', 'normal', 'fast'].includes(mode)) mode = 'normal';
+        this.speedMode = mode;
+        this.speedMultiplier = this.getSpeedMultiplier(mode);
+        try {
+          localStorage.setItem('thuvienhtml_particle_speed', mode);
+        } catch (_) {}
+      }
+
+      setDensity(mode) {
+        if (!['light', 'standard', 'dense'].includes(mode)) mode = 'standard';
+        this.densityMode = mode;
+        try {
+          localStorage.setItem('thuvienhtml_particle_density', mode);
+        } catch (_) {}
+        if (this.isRunning && this.effect !== 'none') {
+          this.initParticles(this.effect);
+        }
       }
 
       resize() {
@@ -14336,7 +14526,10 @@
       initParticles(effect) {
         this.effect = effect;
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 36 : 80;
+        const baseCount = isMobile ? 36 : 80;
+        const mult = this.getDensityMultiplier(this.densityMode);
+        const minCount = isMobile ? 12 : 24;
+        const count = Math.max(minCount, Math.round(baseCount * mult));
 
         this.ambientParticles = [];
         for (let i = 0; i < count; i++) {
@@ -14350,7 +14543,10 @@
 
       initModalParticles(effect) {
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 30 : 50;
+        const baseCount = isMobile ? 30 : 50;
+        const mult = this.getDensityMultiplier(this.densityMode);
+        const minCount = isMobile ? 10 : 18;
+        const count = Math.max(minCount, Math.round(baseCount * mult));
         this.modalParticles = [];
         for (let i = 0; i < count; i++) {
           this.modalParticles.push(this.createParticle(effect, true, true));
@@ -14567,11 +14763,13 @@
           }
         }
 
+        const spd = this.speedMultiplier || 1.0;
+
         for (let i = 0; i < list.length; i++) {
           const p = list[i];
-          p.y += p.speedY;
-          p.swing += p.swingSpeed;
-          p.x += Math.sin(p.swing) * 0.65 + p.speedX;
+          p.y += p.speedY * spd;
+          p.swing += p.swingSpeed * spd;
+          p.x += (Math.sin(p.swing) * 0.65 + p.speedX) * spd;
 
           if (p.speedY < 0 && p.y < -20) {
             const newP = this.createParticle(this.effect, false, isFullWidth);
@@ -14591,7 +14789,7 @@
           ctx.save();
           if (p.type === 'snow') {
             if (p.isCrystal) {
-              p.rotation += p.rotSpeed;
+              p.rotation += (p.rotSpeed || 0.01) * spd;
               ctx.translate(p.x, p.y);
               ctx.rotate(p.rotation);
               ctx.strokeStyle = `rgba(255, 255, 255, ${p.opacity * 0.95})`;
@@ -14624,7 +14822,7 @@
               ctx.fill();
             }
           } else if (p.type === 'spring_blossom' || p.type === 'tet_blossom') {
-            p.rotation += p.rotSpeed;
+            p.rotation += (p.rotSpeed || 0.01) * spd;
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rotation);
             ctx.beginPath();
@@ -14646,7 +14844,7 @@
             ctx.fill();
           } else if (p.type === 'summer_breeze') {
             if (p.subType === 'sunglint') {
-              p.twinkle = (p.twinkle || 0) + 0.06;
+              p.twinkle = (p.twinkle || 0) + 0.06 * spd;
               const currentAlpha = Math.max(0.15, Math.min(1, Math.sin(p.twinkle) * 0.5 + 0.5));
               ctx.translate(p.x, p.y);
               ctx.fillStyle = p.color;
@@ -14682,7 +14880,7 @@
               ctx.fill();
             } else {
               // firefly
-              p.twinkle = (p.twinkle || 0) + 0.05;
+              p.twinkle = (p.twinkle || 0) + 0.05 * spd;
               const currentAlpha = Math.max(0.2, Math.min(1, Math.sin(p.twinkle) * 0.45 + 0.55));
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -14693,7 +14891,7 @@
               ctx.fill();
             }
           } else if (p.type === 'autumn_leaves') {
-            p.rotation += p.rotSpeed;
+            p.rotation += (p.rotSpeed || 0.01) * spd;
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rotation);
             ctx.beginPath();
@@ -14704,7 +14902,7 @@
             ctx.globalAlpha = p.opacity;
             ctx.fill();
           } else if (p.type === 'sparkles') {
-            p.twinkle += 0.05;
+            p.twinkle = (p.twinkle || 0) + 0.05 * spd;
             const currentAlpha = Math.max(0.1, Math.min(1, Math.sin(p.twinkle) * 0.5 + 0.5));
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
@@ -14715,7 +14913,7 @@
             ctx.fill();
           } else if (p.type === 'halloween') {
             if (p.subType === 'bat') {
-              p.wingFlap = (p.wingFlap || 0) + (p.flapSpeed || 0.1);
+              p.wingFlap = (p.wingFlap || 0) + (p.flapSpeed || 0.1) * spd;
               const flap = Math.sin(p.wingFlap);
               ctx.translate(p.x, p.y);
               ctx.fillStyle = p.color || '#1E1B4B';
@@ -14734,7 +14932,7 @@
               ctx.quadraticCurveTo(bs * 0.8, bs * 0.3, 0, 0);
               ctx.fill();
             } else if (p.subType === 'ember') {
-              p.twinkle = (p.twinkle || 0) + 0.05;
+              p.twinkle = (p.twinkle || 0) + 0.05 * spd;
               const currentAlpha = Math.max(0.2, Math.min(1, Math.sin(p.twinkle) * 0.4 + 0.6));
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -14745,7 +14943,7 @@
               ctx.fill();
             } else {
               // wisp
-              p.twinkle = (p.twinkle || 0) + 0.04;
+              p.twinkle = (p.twinkle || 0) + 0.04 * spd;
               const currentAlpha = Math.max(0.15, Math.min(0.9, Math.sin(p.twinkle) * 0.4 + 0.5));
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -14870,9 +15068,10 @@
         console.warn('[initPopupFestivalWatcher] Lỗi:', e);
       }
 
-      // 3. Khởi tạo bộ chọn Presets UI & phân quyền hiển thị Admin
+      // 3. Khởi tạo bộ chọn Presets UI, Bộ điều khiển Hạt rơi & phân quyền hiển thị Admin
       try {
         initFestivalThemePresetsUI();
+        initParticleControlsUI();
         updateFestivalThemeAdminUI();
       } catch (e) {
         console.warn('[initFestivalThemePresetsUI] Lỗi:', e);
