@@ -108,6 +108,18 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.20',
+        date: '2026-10-16T23:58:00+07:00',
+        title: 'Nâng Cấp Hiệu Ứng Di Chuột Toàn Bộ Thanh Công Cụ Sidebar, Bộ Lọc Bài & Cụm Danh Mục',
+        items: [
+          { type: 'improved', text: 'Hiệu ứng di chuột Nút Mục mới (#btnNewCategory): Nhấc nhẹ 1.5px, đổ bóng hào quang tím chàm (indigo aura glow), biểu tượng thư mục mở rộng 1.12x và xoay nhẹ 4°.' },
+          { type: 'improved', text: 'Hiệu ứng di chuột Bộ ba công cụ (Chọn nhiều | Lọc nhãn | Sắp xếp): Nhấc nhẹ 1.5px, viền sáng chàm, hiệu ứng xoay nhẹ biểu tượng tag nhãn và mũi tên chevron nhún xuống mượt mà.' },
+          { type: 'improved', text: 'Hiệu ứng di chuột Bộ tab lọc bài học (Tất cả | Yêu thích | Chưa đọc): Tab chưa kích hoạt đổi nền thanh nhã; Tab đang chọn nhấc nhẹ 1px với bóng mờ êm dịu chuẩn phong cách Editorial.' },
+          { type: 'feature', text: 'Hiệu ứng Nhóm danh mục (Category Controls): Nút tăng/giảm thứ tự trượt mũi tên cơ học, chevron mở rộng trượt nhẹ khi rê chuột lên card header, menu ba chấm xoay 90° và nút Thêm bài xoay dấu cộng sang trọng.' },
+          { type: 'improved', text: 'Nút thu gọn Sidebar & Nút ghim kế hoạch học tập: Thu gọn trượt mũi tên < sang trái, nút ghim nghiêng -12° và nổi bật ánh hồng ruby khi hover.' }
+        ]
+      },
+      {
         version: 'v5.7.19',
         date: '2026-10-16T23:50:00+07:00',
         title: 'Nâng Cấp Hiệu Ứng Di Chuột Cho Cụm Điều Hướng, Tab Độ Rộng, Menu Tài Khoản & Bộ Nút Đọc Bài',
@@ -3958,6 +3970,326 @@
       color: #E11D48 !important;
     }
 
+    /* ============================================================
+       SIDEBAR CONTROLS: EDITORIAL MICRO-INTERACTION HOVER EFFECTS
+       (Mục mới, Chọn nhiều, Lọc nhãn, Sắp xếp, Bộ lọc bài, Danh mục)
+       ============================================================ */
+
+    /* Nút thu gọn / đóng mục lục Desktop */
+    #btnCollapseSidebarDesktop {
+      transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnCollapseSidebarDesktop:hover {
+      background-color: rgba(0, 0, 0, 0.06) !important;
+      color: #1C1917 !important;
+    }
+    .dark #btnCollapseSidebarDesktop:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: #EDECE8 !important;
+    }
+    #btnCollapseSidebarDesktop svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnCollapseSidebarDesktop:hover svg {
+      transform: translateX(-2.5px);
+    }
+    #btnCollapseSidebarDesktop:active {
+      transform: scale(0.92) !important;
+    }
+
+    /* Nút Mục mới (Primary Action Pill) */
+    #btnNewCategory {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease !important;
+    }
+    #btnNewCategory:hover {
+      transform: translateY(-1.5px);
+      background-color: #4338CA !important;
+      box-shadow: 0 4px 14px -1px rgba(79, 70, 229, 0.45), 0 2px 6px -1px rgba(79, 70, 229, 0.25) !important;
+    }
+    .dark #btnNewCategory:hover {
+      background-color: #4F46E5 !important;
+      box-shadow: 0 4px 16px -1px rgba(99, 102, 241, 0.5), 0 2px 8px -1px rgba(0, 0, 0, 0.5) !important;
+    }
+    #btnNewCategory svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnNewCategory:hover svg {
+      transform: scale(1.12) rotate(4deg);
+    }
+    #btnNewCategory:active {
+      transform: translateY(0) scale(0.97) !important;
+      box-shadow: 0 2px 6px -1px rgba(79, 70, 229, 0.3) !important;
+    }
+
+    /* Nút Chọn nhiều bài (Batch selection) */
+    #btnToggleBatchLessons {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+    }
+    #btnToggleBatchLessons:hover {
+      transform: translateY(-1.5px);
+      background-color: rgba(99, 102, 241, 0.08) !important;
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      color: #4338CA !important;
+      box-shadow: 0 3px 10px -2px rgba(99, 102, 241, 0.18) !important;
+    }
+    .dark #btnToggleBatchLessons:hover {
+      background-color: rgba(99, 102, 241, 0.16) !important;
+      border-color: rgba(129, 140, 248, 0.4) !important;
+      color: #A5B4FC !important;
+      box-shadow: 0 3px 12px -2px rgba(0, 0, 0, 0.4) !important;
+    }
+    #btnToggleBatchLessons svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnToggleBatchLessons:hover svg {
+      transform: scale(1.14);
+    }
+    #btnToggleBatchLessons:active {
+      transform: translateY(0) scale(0.95) !important;
+    }
+
+    /* Dropdown Lọc nhãn */
+    #btnTagFilterDropdown {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+    }
+    #btnTagFilterDropdown:hover {
+      transform: translateY(-1.5px);
+      background-color: #FAF9F6 !important;
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      color: #1C1917 !important;
+      box-shadow: 0 3px 10px -2px rgba(99, 102, 241, 0.15) !important;
+    }
+    .dark #btnTagFilterDropdown:hover {
+      background-color: #161A22 !important;
+      border-color: rgba(129, 140, 248, 0.4) !important;
+      color: #EDECE8 !important;
+      box-shadow: 0 3px 12px -2px rgba(0, 0, 0, 0.4) !important;
+    }
+    #btnTagFilterDropdown span svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
+    }
+    #btnTagFilterDropdown:hover span svg {
+      transform: scale(1.15) rotate(-8deg);
+      color: #4F46E5 !important;
+    }
+    .dark #btnTagFilterDropdown:hover span svg {
+      color: #818CF8 !important;
+    }
+    #btnTagFilterDropdown > svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnTagFilterDropdown:hover > svg {
+      transform: translateY(1.5px);
+    }
+    #btnTagFilterDropdown:active {
+      transform: translateY(0) scale(0.97) !important;
+    }
+
+    /* Dropdown Sắp xếp */
+    #btnSortOrderDropdown {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+    }
+    #btnSortOrderDropdown:hover {
+      transform: translateY(-1.5px);
+      background-color: rgba(99, 102, 241, 0.08) !important;
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      color: #4338CA !important;
+      box-shadow: 0 3px 10px -2px rgba(99, 102, 241, 0.18) !important;
+    }
+    .dark #btnSortOrderDropdown:hover {
+      background-color: rgba(99, 102, 241, 0.16) !important;
+      border-color: rgba(129, 140, 248, 0.4) !important;
+      color: #A5B4FC !important;
+      box-shadow: 0 3px 12px -2px rgba(0, 0, 0, 0.4) !important;
+    }
+    #btnSortOrderDropdown svg {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
+    }
+    #btnSortOrderDropdown:hover svg {
+      transform: scale(1.16) translateY(-0.5px);
+      color: #4F46E5 !important;
+    }
+    .dark #btnSortOrderDropdown:hover svg {
+      color: #818CF8 !important;
+    }
+    #btnSortOrderDropdown:active {
+      transform: translateY(0) scale(0.95) !important;
+    }
+
+    /* Segmented Filter Tabs (Tất cả / Yêu thích / Chưa đọc) */
+    .filter-tab {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  color 0.2s ease !important;
+      cursor: pointer;
+      user-select: none;
+    }
+    .filter-tab:not(.bg-white):hover {
+      background-color: rgba(0, 0, 0, 0.04) !important;
+      color: #1C1917 !important;
+      transform: translateY(-0.5px);
+    }
+    .dark .filter-tab:not(.dark\:bg-\[\#181B20\]):not(.dark\:bg-\[\#161A20\]):hover {
+      background-color: rgba(255, 255, 255, 0.06) !important;
+      color: #EDECE8 !important;
+      transform: translateY(-0.5px);
+    }
+    .filter-tab.bg-white:hover,
+    .dark .filter-tab.dark\:bg-\[\#181B20\]:hover,
+    .dark .filter-tab.dark\:bg-\[\#161A20\]:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px -1px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    }
+    .dark .filter-tab.dark\:bg-\[\#181B20\]:hover,
+    .dark .filter-tab.dark\:bg-\[\#161A20\]:hover {
+      box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.5) !important;
+    }
+    .filter-tab:active {
+      transform: scale(0.96) !important;
+    }
+
+    /* Category Controls (Nút tăng/giảm thứ tự mục, Header accordion, Menu 3 chấm, Thêm bài) */
+    [data-move-cat-up],
+    [data-move-cat-down] {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.18s ease !important;
+      cursor: pointer;
+    }
+    [data-move-cat-up]:hover {
+      transform: translateY(-2px) scale(1.18);
+      color: #4F46E5 !important;
+    }
+    .dark [data-move-cat-up]:hover {
+      color: #818CF8 !important;
+    }
+    [data-move-cat-down]:hover {
+      transform: translateY(2px) scale(1.18);
+      color: #4F46E5 !important;
+    }
+    .dark [data-move-cat-down]:hover {
+      color: #818CF8 !important;
+    }
+    [data-move-cat-up]:active,
+    [data-move-cat-down]:active {
+      transform: scale(0.9) !important;
+    }
+
+    .cat-header {
+      transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .cat-header:hover {
+      background-color: rgba(0, 0, 0, 0.025) !important;
+    }
+    .dark .cat-header:hover {
+      background-color: rgba(255, 255, 255, 0.035) !important;
+    }
+    .cat-chevron {
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .cat-header:hover .cat-chevron:not(.is-expanded) {
+      transform: translateX(2.5px);
+    }
+    .cat-header.is-expanded .cat-chevron {
+      transform: rotate(90deg);
+    }
+    .cat-header.is-expanded:hover .cat-chevron {
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    .cat-count-badge {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.2s ease,
+                  box-shadow 0.2s ease !important;
+    }
+    .cat-header:hover .cat-count-badge {
+      transform: scale(1.04);
+    }
+
+    [data-open-cat-menu] {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  color 0.2s ease !important;
+      cursor: pointer;
+    }
+    [data-open-cat-menu]:hover {
+      transform: scale(1.1);
+      background-color: rgba(0, 0, 0, 0.06) !important;
+      color: #1C1917 !important;
+    }
+    .dark [data-open-cat-menu]:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: #EDECE8 !important;
+    }
+    [data-open-cat-menu] svg {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    [data-open-cat-menu]:hover svg {
+      transform: rotate(90deg);
+    }
+    [data-open-cat-menu]:active {
+      transform: scale(0.92) !important;
+    }
+
+    [data-add-lesson-cat] {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+      cursor: pointer;
+    }
+    [data-add-lesson-cat]:hover {
+      transform: translateY(-1.5px);
+      border-color: #4F46E5 !important;
+      background-color: rgba(79, 70, 229, 0.04) !important;
+      color: #4F46E5 !important;
+      box-shadow: 0 3px 10px -2px rgba(79, 70, 229, 0.15) !important;
+    }
+    .dark [data-add-lesson-cat]:hover {
+      border-color: #818CF8 !important;
+      background-color: rgba(129, 140, 248, 0.08) !important;
+      color: #A5B4FC !important;
+      box-shadow: 0 3px 12px -2px rgba(0, 0, 0, 0.35) !important;
+    }
+    [data-add-lesson-cat] svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    [data-add-lesson-cat]:hover svg {
+      transform: rotate(90deg) scale(1.15);
+    }
+    [data-add-lesson-cat]:active {
+      transform: translateY(0) scale(0.98) !important;
+    }
+
+    /* Lesson Check Button Micro-interaction */
+    .lesson-check-btn {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      cursor: pointer;
+    }
+    .lesson-check-btn:hover {
+      transform: scale(1.15);
+    }
+    .lesson-check-btn:active {
+      transform: scale(0.92);
+    }
+
     /* In-Article Search Bar smooth entry */
     #inArticleSearchBar:not(.hidden) {
       animation: inArticleSearchSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -4393,7 +4725,9 @@
     }
     .sidebar-plan-pin-btn:hover {
       opacity: 1 !important;
-      transform: scale(1.15);
+      transform: scale(1.18) rotate(-12deg);
+      background-color: rgba(225, 29, 72, 0.1) !important;
+      color: #E11D48 !important;
     }
 
   
@@ -6381,7 +6715,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.19 • build 16/10/2026 23:50</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.20 • build 16/10/2026 23:58</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7118,7 +7452,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.19 • build 16/10/2026 23:50</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.20 • build 16/10/2026 23:58</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
