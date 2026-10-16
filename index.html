@@ -108,6 +108,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.12',
+        date: '2026-10-16T19:30:00+07:00',
+        title: 'Theme Studio: Thêm Preset Halloween Kỳ Bí Kèm Nút Kích Hoạt Nhanh & Lọc Bỏ Mùa Thi, Tết Đoàn Viên',
+        items: [
+          { type: 'feature', text: 'Tích hợp Preset Halloween Kỳ Bí vào Theme Studio Admin: Bổ sung mẫu Halloween chuẩn (nền kem #FFF9F2 / tối #0E0B14, điểm nhấn cam ma mị #EA580C) với hiệu ứng tàn lửa bí ngô, đàn dơi và nón phù thủy.' },
+          { type: 'feature', text: 'Nút "Kích hoạt" trực tiếp trên từng thẻ Preset: Cho phép Quản trị viên phát sóng ngay lập tức bất kỳ chủ đề lễ hội nào cho toàn bộ độc giả mà không cần qua nhiều bước trung gian.' },
+          { type: 'improved', text: 'Tinh gọn danh sách Preset Lễ hội: Lọc bỏ chủ đề "Mùa Thi Tập Trung" và "Tết Đoàn Viên" khỏi danh mục Preset mẫu và bộ chọn hiệu ứng hạt rơi, giúp giao diện quản trị gọn gàng, đúng trọng tâm sự kiện.' }
+        ]
+      },
+      {
         version: 'v5.7.11',
         date: '2026-10-16T19:15:00+07:00',
         title: 'Ra Mắt Chủ Đề Mới: Halloween Kỳ Bí (Witch Hat, Mạng Nhện, Bí Ngô 3D, Hạt Lửa Ma Mị & Bộ Sticker Huyền Bí)',
@@ -4806,17 +4816,13 @@
                         <span>🎃</span>
                         <span class="truncate">Halloween</span>
                       </button>
-                      <button type="button" data-theme-id="tet" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
-                        <span>🌸</span>
-                        <span class="truncate">Tết Đoàn Viên</span>
-                      </button>
                       <button type="button" data-theme-id="autumn" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
                         <span>🍁</span>
                         <span class="truncate">Thu Vàng</span>
                       </button>
-                      <button type="button" data-theme-id="default" class="btn-theme-preset col-span-2 py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center justify-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
+                      <button type="button" data-theme-id="default" class="btn-theme-preset py-1.5 px-2 rounded-lg font-medium text-left transition flex items-center gap-1.5 border border-transparent hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-[#1E232B] text-stone-700 dark:text-stone-300 cursor-pointer">
                         <span>📖</span>
-                        <span class="truncate">Mặc định (The Codex)</span>
+                        <span class="truncate">Mặc định</span>
                       </button>
                     </div>
                   </div>
@@ -5264,7 +5270,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.11 • build 16/10/2026 19:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.12 • build 16/10/2026 19:30</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -6001,7 +6007,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.11 • build 16/10/2026 19:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.12 • build 16/10/2026 19:30</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -11286,16 +11292,6 @@
         darkAmbientBg: "#0E0B14",
         accentColor: "#EA580C",
         accentGlow: "#F97316",
-        showDecorCaps: true
-      },
-      {
-        id: "tet",
-        name: "Tết Đoàn Viên",
-        effect: "tet_blossom",
-        lightAmbientBg: "#FFF7F2",
-        darkAmbientBg: "#190F12",
-        accentColor: "#E11D48",
-        accentGlow: "#FB7185",
         showDecorCaps: true
       },
       {

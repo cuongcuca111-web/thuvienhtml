@@ -5628,6 +5628,18 @@ export const THEME_PRESETS = [
     icon: "📖"
   },
   {
+    id: "halloween",
+    name: "Halloween Kỳ Bí",
+    desc: "Tàn lửa bí ngô bập bùng, đàn dơi lượn lờ và nón phù thủy ma thuật trên nền tím gothic",
+    effect: "halloween",
+    lightAmbientBg: "#FFF9F2",
+    darkAmbientBg: "#0E0B14",
+    accentColor: "#EA580C",
+    accentGlow: "#F97316",
+    showDecorCaps: true,
+    icon: "🎃"
+  },
+  {
     id: "christmas",
     name: "Giáng Sinh An Lành",
     desc: "Tuyết trắng rơi nhẹ ngoài viền nền, điểm xuyết nón tuyết đọng tinh tế ở góc Header & Popup",
@@ -5640,18 +5652,6 @@ export const THEME_PRESETS = [
     icon: "❄️"
   },
   {
-    id: "tet",
-    name: "Tết Đoàn Viên",
-    desc: "Cánh hoa đào hồng phai và hoa mai vàng rơi phất phơ ngoài nền, sắc đỏ may mắn đầu năm",
-    effect: "tet_blossom",
-    lightAmbientBg: "#FFF1F2",
-    darkAmbientBg: "#1F0A0E",
-    accentColor: "#E11D48",
-    accentGlow: "#FB7185",
-    showDecorCaps: true,
-    icon: "🌸"
-  },
-  {
     id: "autumn",
     name: "Thu Vàng Lãng Mạn",
     desc: "Lá phong đỏ và vàng chao liệng ngoài lề, gam màu hổ phách dịu êm cho những buổi đọc thư thái",
@@ -5662,18 +5662,6 @@ export const THEME_PRESETS = [
     accentGlow: "#FBBF24",
     showDecorCaps: true,
     icon: "🍁"
-  },
-  {
-    id: "focus_exam",
-    name: "Mùa Thi Tập Trung",
-    desc: "Ánh đom đóm & tinh tú lấp lánh nhẹ nhàng trong đêm, truyền cảm hứng bứt phá điểm số",
-    effect: "sparkles",
-    lightAmbientBg: "#F8FAFC",
-    darkAmbientBg: "#090D16",
-    accentColor: "#06B6D4",
-    accentGlow: "#38BDF8",
-    showDecorCaps: false,
-    icon: "✨"
   }
 ];
 
@@ -5829,26 +5817,35 @@ export async function renderThemeTab(container) {
   // Danh sách Preset mẫu HTML
   const presetsHtml = THEME_PRESETS.map(p => {
     const isCurrentEditing = adminThemeEditingState && adminThemeEditingState.id === p.id;
+    const isCurrentlyActive = (cfg.activeThemeId === p.id || (cfg.theme && cfg.theme.id === p.id)) && isCurrentlyBroadcasting;
     return `
-      <button type="button" data-preset-id="${p.id}" class="btn-theme-preset text-left p-3 rounded-2xl border transition relative overflow-hidden flex flex-col justify-between group cursor-pointer ${isCurrentEditing ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-950/20 ring-1 ring-amber-500/50' : 'border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:border-amber-400/70'}">
+      <div class="p-3 rounded-2xl border transition relative overflow-hidden flex flex-col justify-between group ${isCurrentEditing ? 'border-amber-500 bg-amber-50/40 dark:bg-amber-950/20 ring-1 ring-amber-500/50' : 'border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:border-amber-400/70'}">
         <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">${p.icon}</span>
-            <div>
-              <div class="text-xs font-bold text-gray-900 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">${esc(p.name)}</div>
+          <button type="button" data-preset-id="${p.id}" class="btn-theme-preset text-left flex items-center gap-2 flex-1 cursor-pointer" title="Bấm để nạp thông số vào Bảng thiết kế">
+            <span class="text-xl shrink-0">${p.icon}</span>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition truncate">${esc(p.name)}</span>
+                ${isCurrentlyActive ? '<span class="text-[9px] px-1.5 py-0.2 rounded font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 shrink-0">Đang bật</span>' : ''}
+              </div>
               <div class="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">${esc(p.desc)}</div>
             </div>
-          </div>
+          </button>
         </div>
         <div class="mt-2.5 pt-2 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between text-[10px]">
           <span class="text-gray-500 dark:text-gray-400">Hiệu ứng: <strong>${p.effect === 'none' ? 'Không' : p.effect}</strong></span>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.lightAmbientBg}" title="Màu nền sáng"></span>
-            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.darkAmbientBg}" title="Màu nền tối"></span>
-            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.accentColor}" title="Màu nhấn"></span>
+          <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5">
+              <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.lightAmbientBg}" title="Màu nền sáng"></span>
+              <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.darkAmbientBg}" title="Màu nền tối"></span>
+              <span class="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs" style="background-color: ${p.accentColor}" title="Màu nhấn"></span>
+            </div>
+            <button type="button" data-activate-preset-id="${p.id}" class="btn-activate-preset px-2.5 py-1 rounded-lg ${isCurrentlyActive ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800' : 'bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800'} transition cursor-pointer" title="Kích hoạt phát sóng ngay theme này cho toàn bộ người dùng">
+              ${isCurrentlyActive ? '✓ Đang bật' : 'Kích hoạt'}
+            </button>
           </div>
         </div>
-      </button>
+      </div>
     `;
   }).join('');
 
@@ -5956,7 +5953,7 @@ export async function renderThemeTab(container) {
           <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-[#14161C]/70 backdrop-blur-sm space-y-3 shadow-2xs">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
-                <span>🌟</span> Preset Lễ Hội Sẵn Có (5 Mẫu)
+                <span>🌟</span> Preset Lễ Hội Sẵn Có (${THEME_PRESETS.length} Mẫu)
               </span>
               <span class="text-[10px] text-gray-400">Bấm để nạp thông số</span>
             </div>
@@ -6005,10 +6002,9 @@ export async function renderThemeTab(container) {
                 <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Hiệu ứng Hạt Rơi Ngoài Viền (Ambient Particle Effect):</label>
                 <select id="themeSelectEffect" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#111317] font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">
                   <option value="none" ${curEffect === 'none' ? 'selected' : ''}>🚫 Không hiệu ứng (Tối giản / Tập trung)</option>
+                  <option value="halloween" ${curEffect === 'halloween' ? 'selected' : ''}>🎃 Halloween kỳ bí (Tàn lửa bí ngô, đàn dơi &amp; nón phù thủy)</option>
                   <option value="snow" ${curEffect === 'snow' ? 'selected' : ''}>❄️ Tuyết rơi nhẹ mùa đông (Christmas Snow)</option>
-                  <option value="tet_blossom" ${curEffect === 'tet_blossom' ? 'selected' : ''}>🌸 Hoa đào &amp; hoa mai rơi (Tết Nguyên Đán)</option>
                   <option value="autumn_leaves" ${curEffect === 'autumn_leaves' ? 'selected' : ''}>🍁 Lá phong mùa thu chao nghiêng (Golden Autumn)</option>
-                  <option value="sparkles" ${curEffect === 'sparkles' ? 'selected' : ''}>✨ Tinh tú &amp; đom đóm lấp lánh (Mùa thi bứt phá)</option>
                 </select>
                 <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
                   🔒 Ràng buộc Zero-distraction: Hạt chỉ hoạt động ngoài viền nền và góc popup, tuyệt đối không bay đè lên bài học (#lessonIframe).
@@ -6155,6 +6151,34 @@ export async function renderThemeTab(container) {
         adminThemeEditingState = { ...found };
         renderThemeTab(container);
         toast(`Đã nạp thông số Preset "${found.name}"!`);
+      }
+    };
+  });
+
+  // 2.5 Nút Kích hoạt Preset trực tiếp
+  container.querySelectorAll('.btn-activate-preset').forEach(btn => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      const presetId = btn.getAttribute('data-activate-preset-id');
+      const targetPreset = THEME_PRESETS.find(p => p.id === presetId);
+      if (!targetPreset) return;
+      if (!confirm(`Bạn có chắc muốn kích hoạt ngay Theme "${targetPreset.name}" cho toàn bộ người dùng?`)) return;
+      btn.disabled = true;
+      btn.textContent = 'Đang kích hoạt...';
+      try {
+        const payload = {
+          ...cfg,
+          activeMode: 'manual',
+          activeThemeId: targetPreset.id,
+          theme: targetPreset
+        };
+        await writeThemeSettingsToFirestore(payload);
+        toast(`Đã kích hoạt và phát sóng Theme "${targetPreset.name}" thành công!`);
+        adminThemeEditingState = { ...targetPreset };
+        renderThemeTab(container);
+      } catch (err) {
+        alert("Lỗi kích hoạt theme: " + err.message);
+        renderThemeTab(container);
       }
     };
   });

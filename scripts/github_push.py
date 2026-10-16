@@ -44,9 +44,10 @@ def main():
     base_tree_sha = latest_commit["tree"]["sha"]
     print(f"   Base Tree SHA: {base_tree_sha}")
 
-    # Chỉ đẩy các tệp thay đổi trong bản cập nhật v5.7.10 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
+    # Chỉ đẩy các tệp thay đổi trong bản cập nhật v5.7.12 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
     files_to_push = [
         "index.html",
+        "admin.js",
         "package.json",
         "sw.js",
         "scripts/github_push.py"
@@ -83,7 +84,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "feat(theme): add Halloween Ky Bi preset with 3D witch hat, spiderwebs, pumpkin embers & 9 distinct stickers (v5.7.11)"
+    commit_message = "feat(theme): add Halloween Ky Bi preset with instant activate button, remove Focus Exam & Tet presets (v5.7.12)"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
