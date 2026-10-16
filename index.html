@@ -108,6 +108,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.16',
+        date: '2026-10-16T21:15:00+07:00',
+        title: 'Tái Thiết Kế Giao Diện Điều Khiển Hạt Rơi & Hiệu Ứng Chuyển Đổi Mật Độ Mượt Mà (Cinematic Particle Transition)',
+        items: [
+          { type: 'improved', text: 'Tái thiết kế toàn diện cụm điều khiển Hạt Rơi trong Cài đặt hiển thị: Thay thế toàn bộ biểu tượng emoji thô ráp bằng hệ thống Micro-SVG icons tinh tế (đồng hồ đo tốc độ lướt gió, thước đo 3 vạch tối giản, cụm sao tinh thể), track điều khiển phân đoạn sang trọng, nhãn badge font mono hiện đại hòa quyện với phong cách Editorial.' },
+          { type: 'feature', text: 'Hiệu ứng chuyển đổi mật độ hạt mượt mà (Cinematic Density Transition): Khi thay đổi mật độ hạt (Nhẹ nhàng 40% ↔ Chuẩn 100% ↔ Rực rỡ 160%), số lượng hạt không còn bị giật cục hay reset đột ngột; các hạt mới được sinh thêm sẽ từ từ mờ ảo hiện rõ (fade-in), các hạt thừa sẽ nhẹ nhàng tan biến (dissolve out) hoàn toàn tự nhiên và êm dịu.' },
+          { type: 'improved', text: 'Đồng bộ chuyển đổi độ trong suốt hạt (particleAlpha) trên tất cả các phong cách lễ hội (Tuyết rơi Giáng sinh, Hoa xuân Tết sum vầy, Nắng biển Mùa hè, Lá rụng Mùa thu, Tàn lửa & Đàn dơi Halloween, Ánh sao Lấp lánh).' }
+        ]
+      },
+      {
         version: 'v5.7.15',
         date: '2026-10-16T21:00:00+07:00',
         title: 'Bộ Điều Khiển Mật Độ Hạt Rơi & Tốc Độ Linh Hoạt (Particle Density & Speed Control)',
@@ -5140,46 +5150,84 @@
                   </div>
 
                   <!-- BỘ ĐIỀU KHIỂN HẠT RƠI (TỐC ĐỘ & SỐ LƯỢNG HẠT) -->
-                  <div id="particleControlsBox" class="p-2.5 rounded-xl bg-[#F2F0EB]/60 dark:bg-[#111317]/60 border border-[#E7E5DF] dark:border-[#262C36] mt-1 space-y-2.5">
+                  <div id="particleControlsBox" class="p-2.5 rounded-xl bg-[#F6F5F2] dark:bg-[#14171D] border border-[#E7E5DF] dark:border-[#262C36] mt-2 space-y-2.5 shadow-2xs">
                     
-                    <!-- Hàng: Tốc độ rơi -->
+                    <!-- Hàng: Tốc độ chuyển động -->
                     <div>
-                      <div class="flex items-center justify-between text-[11px] mb-1.5">
-                        <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
-                          <span>⚡</span> Tốc độ rơi:
+                      <div class="flex items-center justify-between text-[11px] mb-1.5 px-0.5">
+                        <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
+                          <svg class="w-3.5 h-3.5 text-indigo-500/90 dark:text-indigo-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2v2"/>
+                            <path d="m4.93 4.93 1.41 1.41"/>
+                            <path d="M20 12h2"/>
+                            <path d="m19.07 4.93-1.41 1.41"/>
+                            <path d="M15.95 9.05 18 7"/>
+                            <path d="M3.4 17a10 10 0 1 1 17.2 0"/>
+                            <circle cx="12" cy="12" r="2"/>
+                          </svg>
+                          <span>Tốc độ chuyển động</span>
                         </span>
-                        <span id="particleSpeedLabel" class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 font-mono">Vừa (1.0x)</span>
+                        <span id="particleSpeedLabel" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">Vừa • 1.0x</span>
                       </div>
-                      <div class="grid grid-cols-3 gap-1 bg-white dark:bg-[#181B20] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[11px]">
-                        <button type="button" data-particle-speed="slow" class="btn-particle-speed py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Chậm rãi - Êm dịu, nhẹ nhàng thư thái">
-                          <span>🐢</span> Chậm
+                      <div class="grid grid-cols-3 gap-1 bg-[#E8E6E0] dark:bg-[#1B1E26] p-1 rounded-lg border border-[#E0DED7] dark:border-[#282F3C] text-[11px]">
+                        <button type="button" data-particle-speed="slow" class="btn-particle-speed py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]" title="Chậm rãi (0.6x) - Lãng đãng, êm dịu, thư thái">
+                          <svg class="w-3 h-3 text-current shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/>
+                            <path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
+                            <path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+                          </svg>
+                          <span>Chậm</span>
                         </button>
-                        <button type="button" data-particle-speed="normal" class="btn-particle-speed py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1" title="Vừa - Tự nhiên, cân bằng">
-                          <span>⚡</span> Vừa
+                        <button type="button" data-particle-speed="normal" class="btn-particle-speed py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-semibold bg-white dark:bg-[#262C38] text-indigo-700 dark:text-indigo-300 shadow-xs border border-black/5 dark:border-white/10" title="Vừa (1.0x) - Tự nhiên, hài hòa">
+                          <svg class="w-3 h-3 text-current shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                          </svg>
+                          <span>Vừa</span>
                         </button>
-                        <button type="button" data-particle-speed="fast" class="btn-particle-speed py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Nhanh - Sống động, năng động">
-                          <span>🚀</span> Nhanh
+                        <button type="button" data-particle-speed="fast" class="btn-particle-speed py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]" title="Nhanh (1.5x) - Sống động, năng động">
+                          <svg class="w-3 h-3 text-current shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                          </svg>
+                          <span>Nhanh</span>
                         </button>
                       </div>
                     </div>
 
                     <!-- Hàng: Mật độ / Số lượng hạt -->
                     <div>
-                      <div class="flex items-center justify-between text-[11px] mb-1.5">
-                        <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
-                          <span>✨</span> Số lượng hạt:
+                      <div class="flex items-center justify-between text-[11px] mb-1.5 px-0.5">
+                        <span class="font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
+                          <svg class="w-3.5 h-3.5 text-amber-500/90 dark:text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
+                          </svg>
+                          <span>Mật độ & số lượng</span>
                         </span>
-                        <span id="particleDensityLabel" class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 font-mono">Tiêu chuẩn</span>
+                        <span id="particleDensityLabel" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">Chuẩn • 100%</span>
                       </div>
-                      <div class="grid grid-cols-3 gap-1 bg-white dark:bg-[#181B20] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[11px]">
-                        <button type="button" data-particle-density="light" class="btn-particle-density py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Nhẹ nhàng - Ít hạt, tối ưu máy yếu & tiết kiệm pin">
-                          <span>🍃</span> Nhẹ
+                      <div class="grid grid-cols-3 gap-1 bg-[#E8E6E0] dark:bg-[#1B1E26] p-1 rounded-lg border border-[#E0DED7] dark:border-[#282F3C] text-[11px]">
+                        <button type="button" data-particle-density="light" class="btn-particle-density py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]" title="Nhẹ nhàng (40%) - Tối ưu máy yếu & tiết kiệm pin">
+                          <svg class="w-3 h-3 text-current shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                          </svg>
+                          <span>Nhẹ</span>
                         </button>
-                        <button type="button" data-particle-density="standard" class="btn-particle-density py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1" title="Tiêu chuẩn - Cân bằng thẩm mỹ và mượt mà">
-                          <span>🌟</span> Vừa
+                        <button type="button" data-particle-density="standard" class="btn-particle-density py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-semibold bg-white dark:bg-[#262C38] text-indigo-700 dark:text-indigo-300 shadow-xs border border-black/5 dark:border-white/10" title="Tiêu chuẩn (100%) - Cân bằng thẩm mỹ và mượt mà">
+                          <svg class="w-3 h-3 text-current shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="8" cy="15" r="2.2" fill="currentColor"/>
+                            <circle cx="16" cy="9" r="2.8" fill="currentColor"/>
+                          </svg>
+                          <span>Chuẩn</span>
                         </button>
-                        <button type="button" data-particle-density="dense" class="btn-particle-density py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1" title="Rực rỡ - Dày đặc, sinh động mãn nhãn">
-                          <span>✨</span> Rực rỡ
+                        <button type="button" data-particle-density="dense" class="btn-particle-density py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]" title="Rực rỡ (160%) - Dày đặc, sinh động mãn nhãn">
+                          <svg class="w-3 h-3 text-current shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="6" cy="16" r="1.8" fill="currentColor"/>
+                            <circle cx="12" cy="8" r="2.6" fill="currentColor"/>
+                            <circle cx="18" cy="15" r="2" fill="currentColor"/>
+                          </svg>
+                          <span>Rực rỡ</span>
                         </button>
                       </div>
                     </div>
@@ -5666,7 +5714,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.15 • build 16/10/2026 21:00</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.16 • build 16/10/2026 21:15</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -6403,7 +6451,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.15 • build 16/10/2026 21:00</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.16 • build 16/10/2026 21:15</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -11882,17 +11930,17 @@
       // 1. Cập nhật nhãn Tốc độ rơi
       const speedLabel = document.getElementById('particleSpeedLabel');
       if (speedLabel) {
-        if (curSpeed === 'slow') speedLabel.textContent = 'Chậm (0.6x)';
-        else if (curSpeed === 'fast') speedLabel.textContent = 'Nhanh (1.5x)';
-        else speedLabel.textContent = 'Vừa (1.0x)';
+        if (curSpeed === 'slow') speedLabel.textContent = 'Chậm • 0.6x';
+        else if (curSpeed === 'fast') speedLabel.textContent = 'Nhanh • 1.5x';
+        else speedLabel.textContent = 'Vừa • 1.0x';
       }
 
       // 2. Cập nhật nhãn Mật độ hạt
       const densityLabel = document.getElementById('particleDensityLabel');
       if (densityLabel) {
-        if (curDensity === 'light') densityLabel.textContent = 'Nhẹ (40%)';
-        else if (curDensity === 'dense') densityLabel.textContent = 'Rực rỡ (160%)';
-        else densityLabel.textContent = 'Tiêu chuẩn (100%)';
+        if (curDensity === 'light') densityLabel.textContent = 'Nhẹ • 40%';
+        else if (curDensity === 'dense') densityLabel.textContent = 'Rực rỡ • 160%';
+        else densityLabel.textContent = 'Chuẩn • 100%';
       }
 
       // 3. Cập nhật nút bấm Speed
@@ -11900,9 +11948,9 @@
         const spd = btn.getAttribute('data-particle-speed');
         const isActive = spd === curSpeed;
         if (isActive) {
-          btn.className = 'btn-particle-speed py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1';
+          btn.className = 'btn-particle-speed py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-semibold bg-white dark:bg-[#262C38] text-indigo-700 dark:text-indigo-300 shadow-xs border border-black/5 dark:border-white/10';
         } else {
-          btn.className = 'btn-particle-speed py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1';
+          btn.className = 'btn-particle-speed py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] border border-transparent';
         }
       });
 
@@ -11911,9 +11959,9 @@
         const den = btn.getAttribute('data-particle-density');
         const isActive = den === curDensity;
         if (isActive) {
-          btn.className = 'btn-particle-density py-1 px-1.5 rounded-md font-semibold text-center transition cursor-pointer bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-2xs flex items-center justify-center gap-1';
+          btn.className = 'btn-particle-density py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-semibold bg-white dark:bg-[#262C38] text-indigo-700 dark:text-indigo-300 shadow-xs border border-black/5 dark:border-white/10';
         } else {
-          btn.className = 'btn-particle-density py-1 px-1.5 rounded-md font-medium text-center transition cursor-pointer text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white flex items-center justify-center gap-1';
+          btn.className = 'btn-particle-density py-1.5 px-1.5 rounded-md text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] border border-transparent';
         }
       });
     }
@@ -14474,14 +14522,53 @@
         } catch (_) {}
       }
 
+      getTargetCount(isModal = false) {
+        const isMobile = window.innerWidth < 768;
+        const baseCount = isModal ? (isMobile ? 30 : 50) : (isMobile ? 36 : 80);
+        const mult = this.getDensityMultiplier(this.densityMode);
+        const minCount = isModal ? (isMobile ? 10 : 18) : (isMobile ? 12 : 24);
+        return Math.max(minCount, Math.round(baseCount * mult));
+      }
+
       setDensity(mode) {
         if (!['light', 'standard', 'dense'].includes(mode)) mode = 'standard';
         this.densityMode = mode;
         try {
           localStorage.setItem('thuvienhtml_particle_density', mode);
         } catch (_) {}
+        // Chuyển tiếp mượt mà: nếu đang chạy thì không wipe mảng mà để loop() tự động sinh/mờ dần hạt
         if (this.isRunning && this.effect !== 'none') {
-          this.initParticles(this.effect);
+          if (this.ambientParticles.length === 0) {
+            this.initParticles(this.effect);
+          }
+          if (this.isModalActive && this.modalParticles.length === 0) {
+            this.initModalParticles(this.effect);
+          }
+        }
+      }
+
+      updateParticleListTransition(list, isFullWidth) {
+        if (!list || !this.isRunning || this.effect === 'none') return;
+        const targetCount = this.getTargetCount(isFullWidth);
+        const currentCount = list.length;
+
+        if (currentCount < targetCount) {
+          // Sinh dần 1-2 hạt mỗi frame để tăng tự nhiên từ từ
+          const toAdd = Math.min(2, targetCount - currentCount);
+          for (let k = 0; k < toAdd; k++) {
+            const p = this.createParticle(this.effect, false, isFullWidth);
+            p.alphaMultiplier = 0.0;
+            list.push(p);
+          }
+        } else if (currentCount > targetCount) {
+          // Đánh dấu hạt thừa để mờ dần (dissolve out)
+          let excess = currentCount - targetCount;
+          for (let i = list.length - 1; i >= 0 && excess > 0; i--) {
+            if (!list[i].isDying) {
+              list[i].isDying = true;
+              excess--;
+            }
+          }
         }
       }
 
@@ -14525,11 +14612,7 @@
 
       initParticles(effect) {
         this.effect = effect;
-        const isMobile = window.innerWidth < 768;
-        const baseCount = isMobile ? 36 : 80;
-        const mult = this.getDensityMultiplier(this.densityMode);
-        const minCount = isMobile ? 12 : 24;
-        const count = Math.max(minCount, Math.round(baseCount * mult));
+        const count = this.getTargetCount(false);
 
         this.ambientParticles = [];
         for (let i = 0; i < count; i++) {
@@ -14542,11 +14625,7 @@
       }
 
       initModalParticles(effect) {
-        const isMobile = window.innerWidth < 768;
-        const baseCount = isMobile ? 30 : 50;
-        const mult = this.getDensityMultiplier(this.densityMode);
-        const minCount = isMobile ? 10 : 18;
-        const count = Math.max(minCount, Math.round(baseCount * mult));
+        const count = this.getTargetCount(true);
         this.modalParticles = [];
         for (let i = 0; i < count; i++) {
           this.modalParticles.push(this.createParticle(effect, true, true));
@@ -14564,6 +14643,8 @@
           speedY: Math.random() * 0.85 + 0.45,
           speedX: (Math.random() - 0.5) * 0.6,
           opacity: Math.random() * 0.55 + 0.35,
+          alphaMultiplier: randomY ? 1.0 : 0.0,
+          isDying: false,
           swing: Math.random() * Math.PI * 2,
           swingSpeed: Math.random() * 0.02 + 0.01,
           type: effect,
@@ -14764,19 +14845,43 @@
         }
 
         const spd = this.speedMultiplier || 1.0;
+        const targetCount = this.getTargetCount(isFullWidth);
 
         for (let i = 0; i < list.length; i++) {
           const p = list[i];
+
+          // Chuyển động tăng/giảm độ trong suốt mượt mà khi đổi mật độ hạt
+          if (p.isDying) {
+            p.alphaMultiplier = (p.alphaMultiplier !== undefined ? p.alphaMultiplier : 1.0) - 0.025 * spd;
+            if (p.alphaMultiplier <= 0.02) {
+              list.splice(i, 1);
+              i--;
+              continue;
+            }
+          } else if (p.alphaMultiplier !== undefined && p.alphaMultiplier < 1.0) {
+            p.alphaMultiplier = Math.min(1.0, p.alphaMultiplier + 0.035 * spd);
+          }
+
           p.y += p.speedY * spd;
           p.swing += p.swingSpeed * spd;
           p.x += (Math.sin(p.swing) * 0.65 + p.speedX) * spd;
 
           if (p.speedY < 0 && p.y < -20) {
+            if (list.length > targetCount) {
+              list.splice(i, 1);
+              i--;
+              continue;
+            }
             const newP = this.createParticle(this.effect, false, isFullWidth);
             newP.y = this.height + 15;
             list[i] = newP;
             continue;
           } else if (p.speedY >= 0 && p.y > this.height + 20) {
+            if (list.length > targetCount) {
+              list.splice(i, 1);
+              i--;
+              continue;
+            }
             list[i] = this.createParticle(this.effect, false, isFullWidth);
             continue;
           }
@@ -14786,13 +14891,16 @@
             continue;
           }
 
+          const transAlpha = p.alphaMultiplier !== undefined ? p.alphaMultiplier : 1.0;
+          const particleAlpha = p.opacity * transAlpha;
+
           ctx.save();
           if (p.type === 'snow') {
             if (p.isCrystal) {
               p.rotation += (p.rotSpeed || 0.01) * spd;
               ctx.translate(p.x, p.y);
               ctx.rotate(p.rotation);
-              ctx.strokeStyle = `rgba(255, 255, 255, ${p.opacity * 0.95})`;
+              ctx.strokeStyle = `rgba(255, 255, 255, ${particleAlpha * 0.95})`;
               ctx.lineWidth = 1.1;
               ctx.beginPath();
               const r = p.size;
@@ -14811,14 +14919,14 @@
                 ctx.lineTo(cos * bDist + pCos * bLen, sin * bDist + pSin * bLen);
               }
               ctx.shadowBlur = 5;
-              ctx.shadowColor = 'rgba(186, 230, 253, 0.6)';
+              ctx.shadowColor = `rgba(186, 230, 253, ${0.6 * transAlpha})`;
               ctx.stroke();
             } else {
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+              ctx.fillStyle = `rgba(255, 255, 255, ${particleAlpha})`;
               ctx.shadowBlur = 4;
-              ctx.shadowColor = 'rgba(186, 230, 253, 0.45)';
+              ctx.shadowColor = `rgba(186, 230, 253, ${0.45 * transAlpha})`;
               ctx.fill();
             }
           } else if (p.type === 'spring_blossom' || p.type === 'tet_blossom') {
@@ -14836,7 +14944,7 @@
               ctx.quadraticCurveTo(-p.size * 0.8, -p.size * 0.2, 0, -p.size);
             }
             ctx.fillStyle = p.color;
-            ctx.globalAlpha = p.opacity;
+            ctx.globalAlpha = particleAlpha;
             if (p.glowColor) {
               ctx.shadowBlur = 4;
               ctx.shadowColor = p.glowColor;
@@ -14848,7 +14956,7 @@
               const currentAlpha = Math.max(0.15, Math.min(1, Math.sin(p.twinkle) * 0.5 + 0.5));
               ctx.translate(p.x, p.y);
               ctx.fillStyle = p.color;
-              ctx.globalAlpha = currentAlpha * p.opacity;
+              ctx.globalAlpha = currentAlpha * particleAlpha;
               ctx.shadowBlur = 6;
               ctx.shadowColor = p.glowColor;
               ctx.beginPath();
@@ -14866,17 +14974,17 @@
             } else if (p.subType === 'aquabubble') {
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-              ctx.fillStyle = 'rgba(45, 212, 191, 0.2)';
-              ctx.strokeStyle = `rgba(204, 251, 241, ${p.opacity * 0.9})`;
+              ctx.fillStyle = `rgba(45, 212, 191, ${0.2 * transAlpha})`;
+              ctx.strokeStyle = `rgba(204, 251, 241, ${particleAlpha * 0.9})`;
               ctx.lineWidth = 1.1;
               ctx.shadowBlur = 4;
-              ctx.shadowColor = 'rgba(45, 212, 191, 0.4)';
+              ctx.shadowColor = `rgba(45, 212, 191, ${0.4 * transAlpha})`;
               ctx.fill();
               ctx.stroke();
               // Chấm sáng bóng nước
               ctx.beginPath();
               ctx.arc(p.x - p.size * 0.35, p.y - p.size * 0.35, p.size * 0.22, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * 0.85})`;
+              ctx.fillStyle = `rgba(255, 255, 255, ${particleAlpha * 0.85})`;
               ctx.fill();
             } else {
               // firefly
@@ -14885,7 +14993,7 @@
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
               ctx.fillStyle = p.color;
-              ctx.globalAlpha = currentAlpha * p.opacity;
+              ctx.globalAlpha = currentAlpha * particleAlpha;
               ctx.shadowBlur = 7;
               ctx.shadowColor = p.glowColor;
               ctx.fill();
@@ -14899,7 +15007,7 @@
             ctx.quadraticCurveTo(p.size, 0, 0, p.size);
             ctx.quadraticCurveTo(-p.size, 0, 0, -p.size);
             ctx.fillStyle = p.color;
-            ctx.globalAlpha = p.opacity;
+            ctx.globalAlpha = particleAlpha;
             ctx.fill();
           } else if (p.type === 'sparkles') {
             p.twinkle = (p.twinkle || 0) + 0.05 * spd;
@@ -14907,7 +15015,7 @@
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
             ctx.fillStyle = p.color;
-            ctx.globalAlpha = currentAlpha * p.opacity;
+            ctx.globalAlpha = currentAlpha * particleAlpha;
             ctx.shadowBlur = 6;
             ctx.shadowColor = p.color;
             ctx.fill();
@@ -14917,7 +15025,7 @@
               const flap = Math.sin(p.wingFlap);
               ctx.translate(p.x, p.y);
               ctx.fillStyle = p.color || '#1E1B4B';
-              ctx.globalAlpha = p.opacity * 0.85;
+              ctx.globalAlpha = particleAlpha * 0.85;
               ctx.beginPath();
               const bs = p.size;
               // Thân dơi
@@ -14937,7 +15045,7 @@
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
               ctx.fillStyle = p.color;
-              ctx.globalAlpha = currentAlpha * p.opacity;
+              ctx.globalAlpha = currentAlpha * particleAlpha;
               ctx.shadowBlur = 6;
               ctx.shadowColor = p.glowColor || p.color;
               ctx.fill();
@@ -14948,7 +15056,7 @@
               ctx.beginPath();
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
               ctx.fillStyle = p.color;
-              ctx.globalAlpha = currentAlpha * p.opacity * 0.75;
+              ctx.globalAlpha = currentAlpha * particleAlpha * 0.75;
               ctx.shadowBlur = 8;
               ctx.shadowColor = p.glowColor || p.color;
               ctx.fill();
@@ -14963,6 +15071,12 @@
         if (document.hidden || (typeof state !== 'undefined' && state.focusMode)) {
           this.pause();
           return;
+        }
+
+        // Cập nhật chuyển tiếp mật độ hạt mượt mà (density transition)
+        this.updateParticleListTransition(this.ambientParticles, false);
+        if (this.isModalActive) {
+          this.updateParticleListTransition(this.modalParticles, true);
         }
 
         // 1. Vẽ ambient canvas ngoài nền (bảo vệ khu vực đọc)
