@@ -108,6 +108,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.3',
+        date: '2026-10-17T01:25:00+07:00',
+        title: 'Tích Hợp Tiện Ích Giờ Hà Nội & Lịch Tương Tác Chuẩn Editorial Trên Header Và Thanh Chế Độ Tập Trung',
+        items: [
+          { type: 'feature', text: 'Tiện ích Giờ Hà Nội trên Header: Tọa lạc trang nhã tại khoảng trống giữa thanh Tìm kiếm và Thư Viện Prompt với hiệu ứng nhấc nhẹ 1.5px, viền sáng tím chàm, chấm xanh pulsing thời gian thực và đồng hồ hiển thị từng giây.' },
+          { type: 'feature', text: 'Tiện ích Giờ Hà Nội trên Focus Bar: Bố trí hài hòa tại cụm tiện ích bên phải thanh Chế độ Tập trung, giúp độc giả và người học theo dõi giờ giấc chuẩn GMT+7 mà không bị gián đoạn trải nghiệm đọc.' },
+          { type: 'feature', text: 'Cửa sổ Modal Giờ & Lịch Tương Tác: Khối Hero hiển thị giờ Hà Nội to bản, lời chào theo buổi (Sáng/Trưa/Chiều/Tối/Đêm), thứ ngày tháng dương lịch, ngày âm lịch Việt Nam (Can Chi), số ngày và tuần trong năm.' },
+          { type: 'improved', text: 'Lịch tháng trực quan: Cho phép chuyển tháng tới/lui hoặc bấm "Hôm nay", hiển thị ngày thứ 2 đến chủ nhật và tính toán khoảng cách ngày được chọn.' }
+        ]
+      },
+      {
         version: 'v5.8.2',
         date: '2026-10-17T00:25:00+07:00',
         title: 'Nâng Cấp Hiệu Ứng Di Chuột Tinh Tế Cho Cặp Nút Sao Chép & Nhận Prompt Trong Thư Viện Prompt AI',
@@ -4504,6 +4515,46 @@
       transform: translateY(0) scale(0.96) !important;
     }
 
+    /* ============================================================
+       HANOI CLOCK & CALENDAR: EDITORIAL WIDGET & HOVER EFFECTS
+       ============================================================ */
+
+    .hanoi-clock-trigger {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  color 0.2s ease !important;
+      position: relative;
+    }
+    .hanoi-clock-trigger:hover {
+      transform: translateY(-1.5px);
+      background-color: #FFFFFF !important;
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      color: #1C1917 !important;
+      box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.16), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+    }
+    .dark .hanoi-clock-trigger:hover {
+      background-color: #1A1E26 !important;
+      border-color: rgba(129, 140, 248, 0.4) !important;
+      color: #EDECE8 !important;
+      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.5) !important;
+    }
+    .hanoi-clock-trigger svg.clock-icon {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
+    }
+    .hanoi-clock-trigger:hover svg.clock-icon {
+      transform: scale(1.15) rotate(15deg);
+      color: #4F46E5 !important;
+    }
+    .dark .hanoi-clock-trigger:hover svg.clock-icon {
+      color: #818CF8 !important;
+    }
+    .hanoi-clock-trigger:active {
+      transform: translateY(0) scale(0.96) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+    }
+
     /* In-Article Search Bar smooth entry */
     #inArticleSearchBar:not(.hidden) {
       animation: inArticleSearchSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -6220,6 +6271,21 @@
           <svg class="w-4 h-4 sm:w-5 sm:h-5"><use href="#s-search"></use></svg>
         </button>
 
+        <!-- Tiện ích Giờ Hà Nội & Lịch (Ảnh 1: Khoảng trống giữa Thanh tìm kiếm và Thư Viện Prompt) -->
+        <button id="btnHanoiClockHeader" type="button" class="hanoi-clock-trigger hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB]/90 dark:bg-[#16181E]/90 hover:bg-white dark:hover:bg-[#1A1E26] text-[#1C1917] dark:text-[#EDECE8] text-xs font-mono font-medium shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <svg class="clock-icon w-3.5 h-3.5 text-stone-500 dark:text-stone-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span class="hidden xl:inline text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400">Hà Nội</span>
+          <span id="hanoiHeaderClockText" class="font-mono font-bold text-xs tracking-tight tabular-nums text-stone-800 dark:text-stone-200">--:--:--</span>
+          <svg class="w-2.5 h-2.5 opacity-40 group-hover:opacity-100 group-hover:translate-y-0.5 transition-all shrink-0"><use href="#icon-chevron-down"></use></svg>
+        </button>
+
         <!-- Nút Thư Viện Prompt AI (Hiển thị từ sm trở lên, trên mobile có trong Menu Tài khoản) -->
         <button id="btnPromptLibrary" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg border border-violet-200/90 dark:border-violet-500/30 bg-gradient-to-r from-violet-50/90 via-purple-50/60 to-indigo-50/80 dark:from-violet-950/40 dark:via-purple-950/30 dark:to-indigo-950/40 hover:from-violet-100 hover:to-indigo-100 dark:hover:from-violet-900/50 dark:hover:to-indigo-900/50 text-[#1C1917] dark:text-[#EDECE8] hover:border-violet-300 dark:hover:border-violet-600 active:scale-95 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Thư Viện Prompt AI chuyên sâu cho học tập & nghiên cứu" aria-label="Thư Viện Prompt AI">
           <svg class="w-3.5 h-3.5 text-violet-600 dark:text-violet-400 group-hover:rotate-12 transition-transform duration-200 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -6928,7 +6994,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.2 • build 17/10/2026 00:25</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.3 • build 17/10/2026 01:25</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7665,7 +7731,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.2 • build 17/10/2026 00:25</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.3 • build 17/10/2026 01:25</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -9971,6 +10037,20 @@
 
       <!-- CỤM 3: CÀI ĐẶT & NÚT THOÁT FOCUS MODE -->
       <div class="flex items-center gap-1.5 shrink-0">
+        <!-- Tiện ích Giờ Hà Nội trên thanh Chế độ Tập trung (Ảnh 2) -->
+        <button id="btnHanoiClockFocus" type="button" class="hanoi-clock-trigger touch-target flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#161A22] hover:bg-stone-50 dark:hover:bg-[#202530] text-[#1C1917] dark:text-[#EDECE8] text-xs font-mono font-medium shadow-2xs hover:shadow-xs transition-all shrink-0 cursor-pointer select-none group" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <svg class="clock-icon w-3.5 h-3.5 text-stone-500 dark:text-stone-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span class="hidden sm:inline text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400">Hà Nội</span>
+          <span id="hanoiFocusClockText" class="font-mono font-bold text-xs tracking-tight tabular-nums text-stone-800 dark:text-stone-200">--:--:--</span>
+        </button>
+
         <button id="btnPomoSettingsTop" type="button" class="touch-target w-9 h-9 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#161A22] hover:bg-stone-50 dark:hover:bg-[#202530] text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white flex items-center justify-center transition cursor-pointer shadow-2xs" title="Cài đặt Pomodoro">
           <svg class="w-4 h-4"><use href="#icon-sliders"></use></svg>
         </button>
@@ -12163,6 +12243,137 @@
           </form>
         </div>
 
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: GIỜ HÀ NỘI & LỊCH THÁNG (HANOI CLOCK & CALENDAR MODAL) -->
+  <!-- ========================================================================= -->
+  <div id="hanoiClockCalendarModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[75] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="hanoiModalTitle">
+    <div class="bg-[#FAF9F5] dark:bg-[#12151B] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[26px] sm:rounded-[26px] w-full max-w-xl max-h-[92dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#F4F2EC]/80 dark:bg-[#161922]/80 backdrop-blur-md">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-indigo-500/10 dark:bg-indigo-400/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-2xs">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="hanoiModalTitle" class="text-sm font-bold text-[#1C1917] dark:text-[#EDECE8] tracking-tight">Hà Nội • Thời Gian & Lịch</h2>
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                ICT (GMT+7)
+              </span>
+            </div>
+            <p class="text-[11px] text-[#78756D] dark:text-[#9AA3B2] mt-0.5">Giờ chuẩn Việt Nam & Lịch vạn niên tương tác</p>
+          </div>
+        </div>
+        <button type="button" onclick="hideModalAnimated('hanoiClockCalendarModal')" class="touch-target w-8 h-8 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#1A1E26] hover:bg-stone-100 dark:hover:bg-[#222732] text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 flex items-center justify-center transition cursor-pointer shadow-2xs" aria-label="Đóng cửa sổ">
+          <svg class="w-4 h-4"><use href="#s-close"></use></svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4">
+        
+        <!-- CARD 1: HERO TIME DISPLAY -->
+        <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-white via-[#FCFBF8] to-[#F5F2EB] dark:from-[#171A22] dark:via-[#15171E] dark:to-[#101217] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs">
+          <!-- Background decoration pattern -->
+          <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-indigo-500/5 dark:bg-indigo-400/5 blur-2xl pointer-events-none"></div>
+
+          <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+            <div>
+              <span id="hanoiModalGreeting" class="inline-block text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Chào bạn • Giờ Hà Nội</span>
+              <div id="hanoiModalClockBig" class="text-4xl sm:text-5xl font-mono font-extrabold tracking-tight tabular-nums text-stone-900 dark:text-white my-1">
+                --:--:--
+              </div>
+            </div>
+            <div class="sm:text-right">
+              <div id="hanoiModalDateFull" class="text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200">
+                --
+              </div>
+              <div id="hanoiModalLunarText" class="text-[11px] text-amber-700 dark:text-amber-300 font-medium mt-0.5 inline-flex items-center gap-1">
+                <span>🏮</span>
+                <span id="hanoiModalLunarVal">Âm lịch: Đang tải...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-stone-200/60 dark:border-stone-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-stone-500 dark:text-stone-400">
+            <span id="hanoiModalDayOfYear">Ngày -- / 365 trong năm</span>
+            <span id="hanoiModalWeekOfYear">Tuần --</span>
+            <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300">Asia/Ho_Chi_Minh</span>
+          </div>
+        </div>
+
+        <!-- CARD 2: INTERACTIVE CALENDAR -->
+        <div class="rounded-2xl p-4 sm:p-5 bg-white dark:bg-[#161922] border border-[#E7E5DF] dark:border-[#262C36] shadow-xs">
+          <!-- Calendar Header & Navigation -->
+          <div class="flex items-center justify-between mb-3.5">
+            <div class="flex items-center gap-2">
+              <h3 id="hanoiCalMonthYearLabel" class="text-sm font-bold text-stone-900 dark:text-stone-100">
+                Tháng --, ----
+              </h3>
+              <button id="btnHanoiCalToday" type="button" class="text-[11px] px-2 py-0.5 rounded-lg border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition cursor-pointer shadow-2xs">
+                Hôm nay
+              </button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button id="btnHanoiCalPrev" type="button" class="touch-target w-7 h-7 rounded-lg border border-stone-200 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1E26] hover:bg-stone-100 dark:hover:bg-[#222732] text-stone-600 dark:text-stone-300 flex items-center justify-center transition cursor-pointer" aria-label="Tháng trước">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button id="btnHanoiCalNext" type="button" class="touch-target w-7 h-7 rounded-lg border border-stone-200 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#1A1E26] hover:bg-stone-100 dark:hover:bg-[#222732] text-stone-600 dark:text-stone-300 flex items-center justify-center transition cursor-pointer" aria-label="Tháng sau">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Day names header (T2 -> CN) -->
+          <div class="grid grid-cols-7 gap-1 text-center mb-1.5 text-[11px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+            <div>T2</div>
+            <div>T3</div>
+            <div>T4</div>
+            <div>T5</div>
+            <div>T6</div>
+            <div class="text-indigo-500 dark:text-indigo-400">T7</div>
+            <div class="text-rose-500 dark:text-rose-400">CN</div>
+          </div>
+
+          <!-- Calendar Days Grid (7 columns) -->
+          <div id="hanoiCalDaysGrid" class="grid grid-cols-7 gap-1 text-center text-xs">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Selected Day Detail Footer inside Calendar -->
+          <div id="hanoiCalSelectedBar" class="mt-3.5 pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-xs text-stone-600 dark:text-stone-300">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span id="hanoiCalSelectedDesc" class="font-medium text-[11px] sm:text-xs">--</span>
+            </div>
+            <span id="hanoiCalSelectedDistance" class="text-[10px] text-stone-400 font-mono">--</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between bg-[#F4F2EC]/60 dark:bg-[#161922]/60">
+        <span class="text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-1">
+          <svg class="w-3.5 h-3.5 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Múi giờ chuẩn Hà Nội (GMT+7)
+        </span>
+        <button type="button" onclick="hideModalAnimated('hanoiClockCalendarModal')" class="px-3 py-1.5 rounded-xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition cursor-pointer">
+          Đóng
+        </button>
       </div>
 
     </div>
@@ -46666,10 +46877,295 @@ QUY TẮC:
       initPromptLibraryFirestoreSync();
     }
 
+    // =========================================================================
+    // TIỆN ÍCH GIỜ HÀ NỘI & LỊCH THÁNG TƯƠNG TÁC (HANOI CLOCK & CALENDAR)
+    // =========================================================================
+    function initHanoiClockAndCalendar() {
+      let calViewDate = new Date();
+      let calSelectedDate = new Date();
+
+      const canList = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+      const chiList = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+
+      function getLunarInfo(date) {
+        try {
+          const parts = new Intl.DateTimeFormat('vi-VN-u-ca-chinese', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+          }).formatToParts(date);
+
+          let d = '', m = '', yVal = date.getFullYear();
+          for (const p of parts) {
+            if (p.type === 'day') d = parseInt(p.value, 10);
+            if (p.type === 'month') m = parseInt(p.value, 10);
+            if (p.type === 'relatedYear') yVal = parseInt(p.value, 10);
+          }
+
+          const can = canList[(yVal - 4) % 10];
+          const chi = chiList[(yVal - 4) % 12];
+          const yearName = `${can} ${chi}`;
+          return {
+            day: d,
+            month: m,
+            year: yVal,
+            yearName: yearName,
+            fullText: `Ngày ${d} tháng ${m} năm ${yearName}`
+          };
+        } catch (e) {
+          return { day: '', month: '', year: '', yearName: '', fullText: 'Âm lịch ICT' };
+        }
+      }
+
+      function getGreeting(hour) {
+        if (hour >= 5 && hour < 11) return 'Chào buổi sáng • Giờ Hà Nội';
+        if (hour >= 11 && hour < 14) return 'Chào buổi trưa • Giờ Hà Nội';
+        if (hour >= 14 && hour < 18) return 'Chào buổi chiều • Giờ Hà Nội';
+        if (hour >= 18 && hour < 22) return 'Chào buổi tối • Giờ Hà Nội';
+        return 'Chào đêm muộn • Giờ Hà Nội';
+      }
+
+      function updateLiveClocks() {
+        const now = new Date();
+        const timeStr = new Intl.DateTimeFormat('vi-VN', {
+          timeZone: 'Asia/Ho_Chi_Minh',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).format(now);
+
+        const elHeader = document.getElementById('hanoiHeaderClockText');
+        if (elHeader) elHeader.textContent = timeStr;
+
+        const elFocus = document.getElementById('hanoiFocusClockText');
+        if (elFocus) elFocus.textContent = timeStr;
+
+        const elBig = document.getElementById('hanoiModalClockBig');
+        if (elBig) elBig.textContent = timeStr;
+
+        const modal = document.getElementById('hanoiClockCalendarModal');
+        if (modal && !modal.classList.contains('hidden')) {
+          const hanoiHour = parseInt(new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            hour: 'numeric',
+            hour12: false
+          }).format(now), 10);
+
+          const elGreeting = document.getElementById('hanoiModalGreeting');
+          if (elGreeting) elGreeting.textContent = getGreeting(hanoiHour);
+
+          const elDateFull = document.getElementById('hanoiModalDateFull');
+          if (elDateFull) {
+            elDateFull.textContent = new Intl.DateTimeFormat('vi-VN', {
+              timeZone: 'Asia/Ho_Chi_Minh',
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            }).format(now);
+          }
+
+          const elLunarVal = document.getElementById('hanoiModalLunarVal');
+          if (elLunarVal) {
+            const lunar = getLunarInfo(now);
+            elLunarVal.textContent = `Âm lịch: ${lunar.fullText}`;
+          }
+
+          const startOfYear = new Date(now.getFullYear(), 0, 1);
+          const diffDays = Math.floor((now - startOfYear) / 86400000) + 1;
+          const isLeap = (now.getFullYear() % 4 === 0 && now.getFullYear() % 100 !== 0) || (now.getFullYear() % 400 === 0);
+          const totalYearDays = isLeap ? 366 : 365;
+          const weekNum = Math.ceil(diffDays / 7);
+
+          const elDayOfYear = document.getElementById('hanoiModalDayOfYear');
+          if (elDayOfYear) elDayOfYear.textContent = `Ngày ${diffDays} / ${totalYearDays} trong năm`;
+
+          const elWeekOfYear = document.getElementById('hanoiModalWeekOfYear');
+          if (elWeekOfYear) elWeekOfYear.textContent = `Tuần ${weekNum}`;
+        }
+      }
+
+      function updateSelectedDetail() {
+        const descEl = document.getElementById('hanoiCalSelectedDesc');
+        const distEl = document.getElementById('hanoiCalSelectedDistance');
+        if (!descEl || !distEl) return;
+
+        const dateStr = new Intl.DateTimeFormat('vi-VN', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric'
+        }).format(calSelectedDate);
+
+        const lunar = getLunarInfo(calSelectedDate);
+        descEl.textContent = `${dateStr} (ÂL: ${lunar.day}/${lunar.month})`;
+
+        const today = new Date();
+        const t1 = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+        const t2 = new Date(calSelectedDate.getFullYear(), calSelectedDate.getMonth(), calSelectedDate.getDate()).getTime();
+        const diffDays = Math.round((t2 - t1) / 86400000);
+
+        if (diffDays === 0) {
+          distEl.textContent = 'Hôm nay';
+        } else if (diffDays > 0) {
+          distEl.textContent = `${diffDays} ngày tới`;
+        } else {
+          distEl.textContent = `${Math.abs(diffDays)} ngày trước`;
+        }
+      }
+
+      function renderCalendar() {
+        const year = calViewDate.getFullYear();
+        const month = calViewDate.getMonth();
+
+        const monthLabel = document.getElementById('hanoiCalMonthYearLabel');
+        if (monthLabel) {
+          monthLabel.textContent = `Tháng ${month + 1}, ${year}`;
+        }
+
+        const grid = document.getElementById('hanoiCalDaysGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const today = new Date();
+        const isCurrentMonthView = today.getFullYear() === year && today.getMonth() === month;
+
+        const firstDayOfMonth = new Date(year, month, 1);
+        const startCol = (firstDayOfMonth.getDay() + 6) % 7;
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+        for (let i = startCol - 1; i >= 0; i--) {
+          const dNum = daysInPrevMonth - i;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'py-2 rounded-xl text-stone-300 dark:text-stone-600 cursor-pointer hover:bg-stone-100/60 dark:hover:bg-stone-800/40 transition select-none text-xs';
+          btn.textContent = dNum;
+          btn.addEventListener('click', () => {
+            calViewDate = new Date(year, month - 1, dNum);
+            calSelectedDate = new Date(year, month - 1, dNum);
+            renderCalendar();
+          });
+          grid.appendChild(btn);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const thisDate = new Date(year, month, day);
+          const isToday = isCurrentMonthView && day === today.getDate();
+          const isSelected = calSelectedDate.getFullYear() === year &&
+                             calSelectedDate.getMonth() === month &&
+                             calSelectedDate.getDate() === day;
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.dataset.day = day;
+
+          let baseClasses = 'py-2 rounded-xl transition cursor-pointer select-none text-xs relative font-medium ';
+          if (isSelected) {
+            baseClasses += 'bg-indigo-600 text-white font-bold shadow-xs hover:bg-indigo-700';
+          } else if (isToday) {
+            baseClasses += 'text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/60';
+          } else {
+            baseClasses += 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800';
+          }
+
+          btn.className = baseClasses;
+          btn.textContent = day;
+
+          if (isToday && !isSelected) {
+            const dot = document.createElement('span');
+            dot.className = 'absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400';
+            btn.appendChild(dot);
+          }
+
+          btn.addEventListener('click', () => {
+            calSelectedDate = thisDate;
+            renderCalendar();
+          });
+
+          grid.appendChild(btn);
+        }
+
+        const totalCells = startCol + daysInMonth;
+        const nextMonthCells = (7 - (totalCells % 7)) % 7;
+        for (let i = 1; i <= nextMonthCells; i++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'py-2 rounded-xl text-stone-300 dark:text-stone-600 cursor-pointer hover:bg-stone-100/60 dark:hover:bg-stone-800/40 transition select-none text-xs';
+          btn.textContent = i;
+          btn.addEventListener('click', () => {
+            calViewDate = new Date(year, month + 1, i);
+            calSelectedDate = new Date(year, month + 1, i);
+            renderCalendar();
+          });
+          grid.appendChild(btn);
+        }
+
+        updateSelectedDetail();
+      }
+
+      const btnPrev = document.getElementById('btnHanoiCalPrev');
+      if (btnPrev) {
+        btnPrev.addEventListener('click', () => {
+          calViewDate.setMonth(calViewDate.getMonth() - 1);
+          renderCalendar();
+        });
+      }
+
+      const btnNext = document.getElementById('btnHanoiCalNext');
+      if (btnNext) {
+        btnNext.addEventListener('click', () => {
+          calViewDate.setMonth(calViewDate.getMonth() + 1);
+          renderCalendar();
+        });
+      }
+
+      const btnToday = document.getElementById('btnHanoiCalToday');
+      if (btnToday) {
+        btnToday.addEventListener('click', () => {
+          calViewDate = new Date();
+          calSelectedDate = new Date();
+          renderCalendar();
+        });
+      }
+
+      function openModal() {
+        calViewDate = new Date();
+        calSelectedDate = new Date();
+        renderCalendar();
+        updateLiveClocks();
+        if (typeof showModalAnimated === 'function') {
+          showModalAnimated('hanoiClockCalendarModal');
+        }
+      }
+
+      window.openHanoiClockCalendar = openModal;
+
+      const btnHeader = document.getElementById('btnHanoiClockHeader');
+      if (btnHeader) {
+        btnHeader.addEventListener('click', openModal);
+      }
+
+      const btnFocus = document.getElementById('btnHanoiClockFocus');
+      if (btnFocus) {
+        btnFocus.addEventListener('click', openModal);
+      }
+
+      updateLiveClocks();
+      setInterval(updateLiveClocks, 1000);
+    }
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initPromptLibraryListeners);
+      document.addEventListener('DOMContentLoaded', () => {
+        initPromptLibraryListeners();
+        initHanoiClockAndCalendar();
+      });
     } else {
       initPromptLibraryListeners();
+      initHanoiClockAndCalendar();
     }
     window.renderPromptLibrary = renderPromptLibrary;
     window.openPromptLibrary = () => {
@@ -46685,7 +47181,7 @@ QUY TẮC:
       }
     };
 
-    console.log("%c Thư viện Sách HTML v5.1.2 - build 12/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.3 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
