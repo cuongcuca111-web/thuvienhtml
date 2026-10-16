@@ -108,6 +108,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.7.10',
+        date: '2026-10-16T18:45:00+07:00',
+        title: 'Tối Ưu Vị Trí Sticker Bánh Gừng & Bố Cục Thềm Tuyết Menu Tài Khoản (Không Che Chữ Pro)',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi Sticker che huy hiệu gói [👑 Pro]: Bổ sung thềm tuyết riêng biệt (padding-top: 36px) cho Menu người dùng khi bật theme Giáng sinh, nâng vị trí chú bánh gừng (Gingerbread Man) lên mái tuyết góc phải cách đỉnh card 16px, giải phóng 100% không gian hiển thị huy hiệu Pro và thông tin người dùng.' },
+          { type: 'improved', text: 'Tối ưu kích thước & tọa độ sticker cho Popover (Hiển thị & AI): Tinh chỉnh sticker Popover sang góc phải bên cạnh nút đóng X với tỷ lệ 32px cân đối, không che khuất nút thao tác hay tiêu đề.' }
+        ]
+      },
+      {
         version: 'v5.7.9',
         date: '2026-10-16T18:30:00+07:00',
         title: 'Tinh Chỉnh Mũ Noel Ngoại Khung, Vị Trí Quả Chuông, Bỏ Phát Sáng Dải Tuyết & Bộ Sticker Giáng Sinh Đa Dạng',
@@ -2850,17 +2859,42 @@
       position: absolute;
       top: 4px;
       right: 56px;
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       pointer-events: none !important;
       z-index: 55;
       filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
       transform-origin: center bottom;
       animation: stickerFloat 4s ease-in-out infinite;
     }
+    .festival-popup-sticker svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
     .festival-popup-sticker--popover {
-      right: 16px;
-      top: 6px;
+      right: 52px;
+      top: 5px;
+      width: 32px;
+      height: 32px;
+    }
+    /* Chú bánh gừng trên Menu Người dùng: Đặt trên thềm tuyết riêng biệt, không che huy hiệu Pro */
+    .festival-popup-sticker--user-dropdown {
+      top: 4px;
+      right: 54px;
+      width: 28px;
+      height: 28px;
+    }
+    @media (min-width: 640px) {
+      .festival-popup-sticker--user-dropdown {
+        top: 4px;
+        right: 18px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+    #userDropdown.has-festival-decor {
+      padding-top: 36px !important;
     }
     @keyframes stickerFloat {
       0%, 100% { transform: translateY(0) rotate(-2deg); }
@@ -5062,7 +5096,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.9 • build 16/10/2026 18:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.10 • build 16/10/2026 18:45</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -5799,7 +5833,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.9 • build 16/10/2026 18:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.10 • build 16/10/2026 18:45</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -11610,9 +11644,15 @@
     }
 
     // Helper sinh SVG Sticker Giáng Sinh đa dạng theo từng loại
-    function createChristmasStickerHTML(stickerType, isPopover = false) {
+    function createChristmasStickerHTML(stickerType, placementType = 'modal') {
       const sticker = document.createElement('div');
-      sticker.className = `festival-popup-sticker ${isPopover ? 'festival-popup-sticker--popover' : ''}`;
+      let modifierClass = '';
+      if (placementType === 'user-dropdown') {
+        modifierClass = 'festival-popup-sticker--user-dropdown';
+      } else if (placementType === 'popover') {
+        modifierClass = 'festival-popup-sticker--popover';
+      }
+      sticker.className = `festival-popup-sticker ${modifierClass}`.trim();
       sticker.setAttribute('aria-hidden', 'true');
 
       let svg = '';
@@ -11822,6 +11862,7 @@
     function updateThemeDecorCaps(enabled, effectType) {
       if (!enabled) {
         document.querySelectorAll('.festival-top-snow-cap, .decor-corner-cap, .christmas-santa-hat, .festival-header-fairy-lights, .festival-header-snow-bottom, .festival-sidebar-snow-cap, .festival-btn-snow-cap, .festival-reader-snow-edge, .festival-popup-sticker').forEach(el => el.remove());
+        document.querySelectorAll('.has-festival-decor').forEach(el => el.classList.remove('has-festival-decor'));
         return;
       }
 
@@ -11884,9 +11925,15 @@
 
           // Gắn Sticker Giáng Sinh độc bản cho từng Popup
           if (!container.querySelector(':scope > .festival-popup-sticker')) {
-            const isPopover = container.id === 'displaySettingsPopover' || container.id === 'userDropdown';
+            let placement = 'modal';
+            if (container.id === 'userDropdown') {
+              placement = 'user-dropdown';
+              container.classList.add('has-festival-decor');
+            } else if (container.id === 'displaySettingsPopover' || container.id === 'aiResultPopover') {
+              placement = 'popover';
+            }
             const stickerType = resolvePopupStickerType(container);
-            container.appendChild(createChristmasStickerHTML(stickerType, isPopover));
+            container.appendChild(createChristmasStickerHTML(stickerType, placement));
           }
         });
 
@@ -11895,6 +11942,7 @@
 
       // Xử lý hiệu ứng khác (Tết hoặc Mùa Thu): Corner cap truyền thống
       document.querySelectorAll('.festival-top-snow-cap, .christmas-santa-hat, .festival-header-fairy-lights, .festival-header-snow-bottom, .festival-sidebar-snow-cap, .festival-btn-snow-cap, .festival-reader-snow-edge, .festival-popup-sticker').forEach(el => el.remove());
+      document.querySelectorAll('.has-festival-decor').forEach(el => el.classList.remove('has-festival-decor'));
       document.querySelectorAll('.decor-corner-cap').forEach(el => el.remove());
 
       let svgContent = '';
