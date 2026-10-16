@@ -108,6 +108,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.1',
+        date: '2026-10-17T00:10:00+07:00',
+        title: 'Khắc Phục Hoàn Toàn Lỗi Icon Thẻ Nhãn Bị Cắt Cụt / Ẩn Sau Chevron Trên Nút Lọc Nhãn',
+        items: [
+          { type: 'fix', text: 'Sửa dứt điểm toạ độ SVG biểu tượng Thẻ nhãn (#icon-tag): Thay thế đường cong vượt ngưỡng 24.3px thành toạ độ chuẩn nằm gọn trong khung viewBox 24x24 (tối đa 21.29px), khôi phục nguyên vẹn mũi nhọn và lỗ khuyên của nhãn.' },
+          { type: 'fix', text: 'Triệt tiêu hiện tượng icon bị che khuất / ẩn đằng sau khi di chuột: Loại bỏ thuộc tính truncate gây overflow:hidden trên nút bấm và thẻ bọc span cha, mở overflow:visible cho toàn bộ biểu tượng và chevron.' },
+          { type: 'improved', text: 'Tối ưu hiệu ứng hover nút Lọc nhãn: Chuyển sang hiệu ứng phóng to cân xứng 1.12x giữ nguyên trục đứng, tăng khoảng đệm thoáng đãng giữa icon nhãn và mũi tên chỉ xuống.' }
+        ]
+      },
+      {
         version: 'v5.7.20',
         date: '2026-10-16T23:58:00+07:00',
         title: 'Nâng Cấp Hiệu Ứng Di Chuột Toàn Bộ Thanh Công Cụ Sidebar, Bộ Lọc Bài & Cụm Danh Mục',
@@ -4058,6 +4068,7 @@
 
     /* Dropdown Lọc nhãn */
     #btnTagFilterDropdown {
+      overflow: visible !important;
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
                   box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
                   background-color 0.2s ease,
@@ -4078,16 +4089,18 @@
       box-shadow: 0 3px 12px -2px rgba(0, 0, 0, 0.4) !important;
     }
     #btnTagFilterDropdown span svg {
+      overflow: visible !important;
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
     }
     #btnTagFilterDropdown:hover span svg {
-      transform: scale(1.15) rotate(-8deg);
+      transform: scale(1.12);
       color: #4F46E5 !important;
     }
     .dark #btnTagFilterDropdown:hover span svg {
       color: #818CF8 !important;
     }
     #btnTagFilterDropdown > svg {
+      overflow: visible !important;
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     #btnTagFilterDropdown:hover > svg {
@@ -5647,9 +5660,8 @@
       <path d="M7 21L21 7L17 3L3 17L7 21Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M11 13L15 17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M22 21H7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-        <symbol id="icon-tag" viewBox="0 0 24 24">
-      <path d="M12 2H2V12L14.3 24.3C14.7 24.7 15.3 24.7 15.7 24.3L23.3 16.7C23.7 16.3 23.7 15.7 23.3 15.3L12 2Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    <symbol id="icon-tag" viewBox="0 0 24 24">
+      <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
     </symbol>
     <symbol id="icon-grip-vertical" viewBox="0 0 24 24">
@@ -6542,12 +6554,12 @@
 
         <!-- Dropdown Lọc nhãn -->
         <div class="relative flex-1 min-w-0">
-          <button id="btnTagFilterDropdown" class="w-full h-10 px-2.5 rounded-[10px] bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[12px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-between gap-1 transition truncate cursor-pointer" title="Lọc bài theo nhãn">
-            <span class="flex items-center gap-1.5 min-w-0 truncate">
-              <svg class="w-3.5 h-3.5 text-indigo-500 shrink-0"><use href="#icon-tag"></use></svg>
+          <button id="btnTagFilterDropdown" class="w-full h-10 px-2 rounded-[10px] bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] text-[12px] font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-between gap-1 transition cursor-pointer overflow-visible" title="Lọc bài theo nhãn">
+            <span class="flex items-center gap-1.5 min-w-0 flex-1 overflow-visible">
+              <svg class="w-3.5 h-3.5 text-indigo-500 shrink-0 overflow-visible" style="overflow: visible;"><use href="#icon-tag"></use></svg>
               <span id="tagFilterButtonLabel" class="truncate whitespace-nowrap">Tất cả</span>
             </span>
-            <svg class="w-2.5 h-2.5 opacity-60 shrink-0"><use href="#icon-chevron-down"></use></svg>
+            <svg class="w-2.5 h-2.5 opacity-60 shrink-0 overflow-visible" style="overflow: visible;"><use href="#icon-chevron-down"></use></svg>
           </button>
           <!-- Popover chọn nhãn -->
           <div id="tagFilterDropdownMenu" class="hidden absolute left-0 top-full mt-1 w-52 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-2 space-y-1 text-xs">
@@ -6715,7 +6727,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.7.20 • build 16/10/2026 23:58</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.1 • build 17/10/2026 00:10</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7452,7 +7464,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.7.20 • build 16/10/2026 23:58</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.1 • build 17/10/2026 00:10</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
