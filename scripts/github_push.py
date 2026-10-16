@@ -84,7 +84,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "fix(hanoi-clock): redesign trigger widget to editorial style and fix modal close error (v5.8.5)"
+    commit_message = "style(hanoi-clock): redesign horology widget to match prompt library button height (v5.8.6)"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,

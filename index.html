@@ -129,6 +129,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.6',
+        date: '2026-10-17T01:58:00+07:00',
+        title: 'Nâng Cấp Thiết Kế Đồng Hồ Hà Nội Horology Tinh Hoa & Chuẩn Hóa Chiều Cao Đồng Bộ Thư Viện Prompt',
+        items: [
+          { type: 'improved', text: 'Thiết kế lại hoàn toàn widget Giờ Hà Nội theo phong cách Editorial Horology: kết hợp biểu tượng đồng hồ viền hổ phách, đèn ngọc emerald nhấp nháy góc biểu tượng, cùng huy hiệu GMT+7 sắc nét.' },
+          { type: 'improved', text: 'Đồng bộ tuyệt đối chiều cao và độ bo góc (px-2.5 py-1.5 rounded-lg text-xs) ngang bằng với nút Thư Viện Prompt AI và Tạo link nhanh, mang lại sự liền mạch và cân bằng thị giác hoàn hảo trên thanh điều hướng.' },
+          { type: 'improved', text: 'Hiệu ứng vi tương tác Amber Glow sang trọng khi rê chuột (xoay biểu tượng đồng hồ 16° và phát sáng êm dịu).' }
+        ]
+      },
+      {
         version: 'v5.8.5',
         date: '2026-10-17T01:45:00+07:00',
         title: 'Thiết Kế Lại Tiện Ích Giờ Hà Nội Chuẩn Editorial & Khắc Phục Triệt Để Lỗi Đóng Modal Lịch',
@@ -4575,35 +4585,34 @@
 
     /* ============================================================
        HANOI CLOCK & CALENDAR: EDITORIAL WIDGET & HOVER EFFECTS
+       Thiết kế chuẩn Editorial Horology tinh tế, chiều cao đồng bộ nút Prompt Library
        ============================================================ */
 
     .hanoi-clock-trigger {
-      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  background-color 0.2s ease,
-                  border-color 0.2s ease !important;
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
       position: relative;
     }
     .hanoi-clock-trigger:hover {
       transform: translateY(-1.5px);
-      box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.16), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+      box-shadow: 0 6px 16px -2px rgba(217, 119, 6, 0.2), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(245, 158, 11, 0.7) !important;
     }
     .dark .hanoi-clock-trigger:hover {
-      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.45) !important;
+      box-shadow: 0 6px 20px -2px rgba(217, 119, 6, 0.22), 0 2px 6px -1px rgba(0, 0, 0, 0.5) !important;
+      border-color: rgba(245, 158, 11, 0.5) !important;
+    }
+    .hanoi-clock-trigger:active {
+      transform: translateY(0) scale(0.96) !important;
     }
     .hanoi-clock-trigger svg.clock-icon {
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease !important;
     }
     .hanoi-clock-trigger:hover svg.clock-icon {
-      transform: scale(1.15) rotate(15deg);
-      color: #4F46E5 !important;
+      transform: scale(1.15) rotate(16deg);
+      color: #D97706 !important;
     }
     .dark .hanoi-clock-trigger:hover svg.clock-icon {
-      color: #818CF8 !important;
-    }
-    .hanoi-clock-trigger:active {
-      transform: translateY(0) scale(0.96) !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+      color: #FBBF24 !important;
     }
 
     /* In-Article Search Bar smooth entry */
@@ -6326,20 +6335,22 @@
           <svg class="w-4 h-4 sm:w-5 sm:h-5"><use href="#s-search"></use></svg>
         </button>
 
-        <!-- Tiện ích Giờ Hà Nội & Lịch (Ảnh 1: Khoảng trống giữa Thanh tìm kiếm và Thư Viện Prompt) -->
-        <button id="btnHanoiClockHeader" type="button" class="hanoi-clock-trigger touch-target hidden sm:inline-flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-3 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 hover:border-indigo-500/40 text-[#6E6B65] dark:text-[#979DA8] text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap cursor-pointer group active:scale-95" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
-          <span class="relative flex h-2 w-2 shrink-0 items-center justify-center">
-            <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 opacity-60"></span>
-            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]"></span>
+        <!-- Tiện ích Giờ Hà Nội & Lịch (Thiết kế Horology tinh tế, chiều cao đồng bộ chuẩn xác với Thư Viện Prompt) -->
+        <button id="btnHanoiClockHeader" type="button" class="hanoi-clock-trigger hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg border border-amber-200/90 dark:border-amber-500/30 bg-gradient-to-r from-amber-50/80 via-stone-50/90 to-amber-50/60 dark:from-stone-900/90 dark:via-[#171A21] dark:to-stone-900/90 hover:from-amber-100/90 hover:to-amber-50 dark:hover:from-stone-800/90 dark:hover:to-stone-800/90 text-[#1C1917] dark:text-[#EDECE8] hover:border-amber-300 dark:hover:border-amber-500/50 active:scale-95 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all shrink-0 whitespace-nowrap cursor-pointer select-none group" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
+          <span class="relative flex items-center justify-center shrink-0">
+            <svg class="clock-icon w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <polyline points="12 6 12 12 15 14"/>
+            </svg>
+            <span class="absolute -top-1 -right-1 flex h-1.5 w-1.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.8)]"></span>
+            </span>
           </span>
-          <svg class="clock-icon w-3.5 h-3.5 text-stone-400 dark:text-stone-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="9"/>
-            <polyline points="12 6 12 12 15 14"/>
-          </svg>
-          <span class="hidden md:inline whitespace-nowrap font-medium text-stone-600 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">Hà Nội</span>
-          <span class="hidden md:inline w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-700 shrink-0"></span>
-          <span id="hanoiHeaderClockText" class="font-mono font-semibold text-xs tracking-tight tabular-nums text-stone-900 dark:text-stone-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">--:--:--</span>
-          <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0 text-[#6E6B65] dark:text-[#979DA8] transition-transform duration-200 group-hover:translate-y-0.5"><use href="#icon-chevron-down"></use></svg>
+          <span class="hidden min-[1180px]:inline font-medium text-stone-700 dark:text-stone-300">Hà Nội</span>
+          <span class="hidden min-[1180px]:inline text-stone-300 dark:text-stone-700 select-none">•</span>
+          <span id="hanoiHeaderClockText" class="font-mono font-bold text-xs tracking-tight tabular-nums text-stone-900 dark:text-stone-100 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">--:--:--</span>
+          <span class="hidden sm:inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-600/10 dark:bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-200/90 dark:border-amber-700/50">GMT+7</span>
         </button>
 
         <!-- Nút Thư Viện Prompt AI (Hiển thị từ sm trở lên, trên mobile có trong Menu Tài khoản) -->
@@ -7050,7 +7061,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.5 • build 17/10/2026 01:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.6 • build 17/10/2026 01:58</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7787,7 +7798,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.5 • build 17/10/2026 01:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.6 • build 17/10/2026 01:58</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -10093,20 +10104,22 @@
 
       <!-- CỤM 3: CÀI ĐẶT & NÚT THOÁT FOCUS MODE -->
       <div class="flex items-center gap-1.5 shrink-0">
-        <!-- Tiện ích Giờ Hà Nội trên thanh Chế độ Tập trung (Ảnh 2) -->
-        <button id="btnHanoiClockFocus" type="button" class="hanoi-clock-trigger touch-target flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-3 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-[#FAF9F5] dark:bg-[#16181E] hover:bg-black/5 dark:hover:bg-white/5 hover:border-indigo-500/40 text-[#6E6B65] dark:text-[#979DA8] text-xs font-medium transition shadow-2xs shrink-0 whitespace-nowrap cursor-pointer select-none group active:scale-95" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
-          <span class="relative flex h-2 w-2 shrink-0 items-center justify-center">
-            <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 opacity-60"></span>
-            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]"></span>
+        <!-- Tiện ích Giờ Hà Nội trên thanh Chế độ Tập trung (Thiết kế Horology tinh tế đồng bộ) -->
+        <button id="btnHanoiClockFocus" type="button" class="hanoi-clock-trigger flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg border border-amber-200/90 dark:border-amber-500/30 bg-gradient-to-r from-amber-50/80 via-stone-50/90 to-amber-50/60 dark:from-stone-900/90 dark:via-[#171A21] dark:to-stone-900/90 hover:from-amber-100/90 hover:to-amber-50 dark:hover:from-stone-800/90 dark:hover:to-stone-800/90 text-[#1C1917] dark:text-[#EDECE8] hover:border-amber-300 dark:hover:border-amber-500/50 active:scale-95 text-xs font-semibold shadow-2xs hover:shadow-xs transition-all shrink-0 whitespace-nowrap cursor-pointer select-none group" title="Giờ Hà Nội (GMT+7) • Bấm để xem Lịch & Ngày tháng" aria-label="Xem Giờ Hà Nội và Lịch">
+          <span class="relative flex items-center justify-center shrink-0">
+            <svg class="clock-icon w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <polyline points="12 6 12 12 15 14"/>
+            </svg>
+            <span class="absolute -top-1 -right-1 flex h-1.5 w-1.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.8)]"></span>
+            </span>
           </span>
-          <svg class="clock-icon w-3.5 h-3.5 text-stone-400 dark:text-stone-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="9"/>
-            <polyline points="12 6 12 12 15 14"/>
-          </svg>
-          <span class="hidden sm:inline whitespace-nowrap font-medium text-stone-600 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">Hà Nội</span>
-          <span class="hidden sm:inline w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-700 shrink-0"></span>
-          <span id="hanoiFocusClockText" class="font-mono font-semibold text-xs tracking-tight tabular-nums text-stone-900 dark:text-stone-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">--:--:--</span>
-          <svg class="w-3 h-3 opacity-60 hidden sm:inline shrink-0 text-[#6E6B65] dark:text-[#979DA8] transition-transform duration-200 group-hover:translate-y-0.5"><use href="#icon-chevron-down"></use></svg>
+          <span class="hidden sm:inline font-medium text-stone-700 dark:text-stone-300">Hà Nội</span>
+          <span class="hidden sm:inline text-stone-300 dark:text-stone-700 select-none">•</span>
+          <span id="hanoiFocusClockText" class="font-mono font-bold text-xs tracking-tight tabular-nums text-stone-900 dark:text-stone-100 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">--:--:--</span>
+          <span class="hidden sm:inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-600/10 dark:bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-200/90 dark:border-amber-700/50">GMT+7</span>
         </button>
 
         <button id="btnPomoSettingsTop" type="button" class="touch-target w-9 h-9 rounded-xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-[#161A22] hover:bg-stone-50 dark:hover:bg-[#202530] text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-white flex items-center justify-center transition cursor-pointer shadow-2xs" title="Cài đặt Pomodoro">
@@ -47300,7 +47313,7 @@ QUY TẮC:
       }
     };
 
-    console.log("%c Thư viện Sách HTML v5.8.5 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.6 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
