@@ -44,11 +44,15 @@ def main():
     base_tree_sha = latest_commit["tree"]["sha"]
     print(f"   Base Tree SHA: {base_tree_sha}")
 
-    # Chỉ đẩy các tệp thay đổi trong bản vá v5.7.2 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
+    # Chỉ đẩy các tệp thay đổi trong bản vá v5.7.7 để tăng tốc độ và bảo toàn toàn bộ cây thư mục
     files_to_push = [
         "index.html",
         "package.json",
         "sw.js",
+        "admin.js",
+        "api/ai/explain.js",
+        "lib/call-ai.js",
+        "lib/plans-validator.js",
         "scripts/github_push.py"
     ]
 
@@ -83,7 +87,7 @@ def main():
     new_tree_sha = new_tree["sha"]
     print(f"   New Tree SHA: {new_tree_sha}")
 
-    commit_message = "feat(v5.7.6): redesign Aa typography logo with luxury editorial serif vector"
+    commit_message = "fix(settings): persist ai assistant and learned badge toggle across page reloads (v5.7.7)"
     print(f"4. Tạo Git Commit: '{commit_message}'...")
     new_commit = gh_api("/git/commits", method="POST", data={
         "message": commit_message,
