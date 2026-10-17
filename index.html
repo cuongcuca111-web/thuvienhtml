@@ -129,6 +129,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.7',
+        date: '2026-10-17T10:15:00+07:00',
+        title: 'Nâng Cấp Hiệu Ứng Rê Chuột (Hover) Cho Toàn Bộ Menu Tài Khoản Chuẩn Vibe Học Thuật The Codex',
+        items: [
+          { type: 'improved', text: 'Tái thiết kế toàn diện hiệu ứng rê chuột (.user-menu-item) cho toàn bộ danh mục tài khoản (Quản lý tài khoản, Thống kê học tập, Lịch sử mua hàng, Nhập mã, Link chia sẻ, Sao lưu & Khôi phục, Có gì mới, Đăng xuất).' },
+          { type: 'feature', text: 'Hiệu ứng trượt ngang vi mô (translateX 4px) mượt mà mô phỏng thao tác rút thẻ mục lục sách, chuyển màu nền giấy da ngà (warm parchment) / slate bóng bẩy ở chế độ tối, và độ nảy cơ học êm ái khi nhấp chuột.' },
+          { type: 'improved', text: 'Hiệu ứng vi tương tác biểu tượng (icon scale 1.15x, chìa khóa xoay nhẹ 12°, đăng xuất trượt phải) cùng mũi tên chỉ hướng (›) lướt vào tinh tế cho các mục không có huy hiệu.' }
+        ]
+      },
+      {
         version: 'v5.8.6',
         date: '2026-10-17T01:58:00+07:00',
         title: 'Nâng Cấp Thiết Kế Đồng Hồ Hà Nội Horology Tinh Hoa & Chuẩn Hóa Chiều Cao Đồng Bộ Thư Viện Prompt',
@@ -2204,6 +2214,137 @@
     @keyframes userDropdownOut {
       from { opacity: 1; transform: translateY(0) scale(1); }
       to { opacity: 0; transform: translateY(-6px) scale(0.96); }
+    }
+
+    /* =========================================================================
+       USER DROPDOWN MENU ITEMS - SCHOLARLY EDITORIAL HOVER INTERACTIONS
+       ========================================================================= */
+    .user-menu-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.5rem 0.625rem;
+      border-radius: 0.625rem;
+      border: 1px solid transparent;
+      background-color: transparent;
+      color: #1F2937;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, color 0.18s ease;
+      outline: none;
+      margin-bottom: 0.125rem;
+      text-align: left;
+    }
+    html.dark .user-menu-item {
+      color: #ECEEF2;
+    }
+
+    /* Hover: Warm parchment in light mode, deep slate in dark mode, gentle tactile shift */
+    .user-menu-item:hover {
+      background-color: #F4F1EA;
+      border-color: #E6E1D6;
+      color: #111827;
+      transform: translateX(4px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    html.dark .user-menu-item:hover {
+      background-color: #1E232D;
+      border-color: #2D3544;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Active pressed state */
+    .user-menu-item:active {
+      transform: translateX(2px) scale(0.985);
+    }
+
+    /* Menu item icons */
+    .user-menu-item .menu-item-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
+    }
+    .user-menu-item:hover .menu-item-icon {
+      transform: scale(1.15);
+    }
+    .user-menu-item:hover .menu-item-icon.icon-key {
+      transform: scale(1.15) rotate(12deg);
+    }
+
+    /* Menu item label */
+    .user-menu-item .menu-item-title {
+      transition: color 0.18s ease;
+    }
+    .user-menu-item:hover .menu-item-title {
+      color: #111827;
+    }
+    html.dark .user-menu-item:hover .menu-item-title {
+      color: #FFFFFF;
+    }
+
+    /* Trailing arrow indicator for items without right badge */
+    .user-menu-item .menu-item-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateX(-4px);
+      color: #9CA3AF;
+      transition: opacity 0.18s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease;
+      flex-shrink: 0;
+    }
+    .user-menu-item:hover .menu-item-arrow {
+      opacity: 0.75;
+      transform: translateX(0);
+      color: #6366F1;
+    }
+    html.dark .user-menu-item:hover .menu-item-arrow {
+      color: #818CF8;
+    }
+
+    /* Badges inside menu items */
+    .user-menu-item .menu-item-badge {
+      transition: all 0.18s ease;
+      flex-shrink: 0;
+    }
+    .user-menu-item:hover .menu-item-badge {
+      transform: scale(1.03);
+      border-color: rgba(99, 102, 241, 0.45);
+      box-shadow: 0 1px 3px rgba(99, 102, 241, 0.12);
+    }
+
+    /* Distinctive Danger/Logout item */
+    .user-menu-item.item-logout {
+      color: #E11D48;
+    }
+    html.dark .user-menu-item.item-logout {
+      color: #FB7185;
+    }
+    .user-menu-item.item-logout:hover {
+      background-color: #FFF1F2;
+      border-color: #FFE4E6;
+      color: #BE123C;
+      box-shadow: 0 1px 3px rgba(225, 29, 72, 0.08);
+    }
+    html.dark .user-menu-item.item-logout:hover {
+      background-color: rgba(136, 19, 55, 0.22);
+      border-color: rgba(225, 29, 72, 0.35);
+      color: #FDA4AF;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.15);
+    }
+    .user-menu-item.item-logout:hover .menu-item-icon {
+      transform: translateX(2.5px) scale(1.12);
+      color: #BE123C;
+    }
+    html.dark .user-menu-item.item-logout:hover .menu-item-icon {
+      color: #FDA4AF;
     }
 
     /* Toast Notification slide in spring */
@@ -7061,7 +7202,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.6 • build 17/10/2026 01:58</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.7 • build 17/10/2026 10:15</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -7612,7 +7753,7 @@
     </div>
 
     <!-- KHỐI PROFILE HEADER CHUYÊN NGHIỆP & KHOA HỌC (Cân đối hoàn hảo, không lãng phí diện tích) -->
-    <div id="userProfileHeaderCard" class="p-3 rounded-2xl bg-[#F8F7F4] dark:bg-[#1C2028] border border-[#E6E6E1] dark:border-[#262C36] mb-2.5 space-y-2.5 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-800 transition cursor-pointer" title="Bấm để mở Quản lý Tài khoản">
+    <div id="userProfileHeaderCard" class="p-3 rounded-2xl bg-[#F8F7F4] dark:bg-[#1C2028] border border-[#E6E6E1] dark:border-[#262C36] hover:bg-[#F3EFE6] dark:hover:bg-[#1E232E] hover:border-indigo-300 dark:hover:border-indigo-700/70 mb-2.5 space-y-2.5 shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer active:scale-[0.99] group" title="Bấm để mở Quản lý Tài khoản">
       
       <!-- HÀNG 1: Avatar + Tên + Huy hiệu gói & Trạng thái tài khoản -->
       <div class="flex items-center gap-2.5">
@@ -7662,7 +7803,7 @@
     </div>
 
     <!-- MỤC NÂNG CẤP GÓI NỔI BẬT (Ngay trên mục Hồ sơ & Thống kê) -->
-    <button id="btnOpenUpgradeModal" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100/70 dark:from-indigo-950/40 dark:to-indigo-900/40 hover:from-indigo-100 hover:to-indigo-200/70 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/60 border border-indigo-200/80 dark:border-indigo-800/60 text-indigo-950 dark:text-indigo-200 mb-2 transition shadow-xs cursor-pointer group">
+    <button id="btnOpenUpgradeModal" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100/70 dark:from-indigo-950/40 dark:to-indigo-900/40 hover:from-indigo-100 hover:to-indigo-200/80 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/60 border border-indigo-200/80 dark:border-indigo-800/60 hover:border-indigo-300 dark:hover:border-indigo-600/70 text-indigo-950 dark:text-indigo-200 mb-2 transition shadow-xs hover:shadow-sm cursor-pointer group active:scale-[0.99]">
       <div class="flex items-center gap-2.5 min-w-0 pr-2">
         <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
           <svg class="w-4 h-4"><use href="#icon-upgrade-sparkle"></use></svg>
@@ -7682,64 +7823,110 @@
     </button>
 
     <!-- Nút Mở Trung tâm Quản lý Tài khoản (Hồ sơ, Đổi tên, Avatar, Bảo mật) -->
-    <button id="btnOpenAccountCenterModal" type="button" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-semibold mb-0.5 transition cursor-pointer group">
+    <button id="btnOpenAccountCenterModal" type="button" class="user-menu-item group" title="Quản lý Tài khoản (Hồ sơ, Avatar, Bảo mật)">
       <div class="flex items-center gap-2.5">
-        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <span>Quản lý Tài khoản</span>
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </span>
+        <span class="menu-item-title font-semibold">Quản lý Tài khoản</span>
       </div>
-      <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200/60 dark:border-indigo-800/60">Hồ sơ &amp; Bảo mật</span>
+      <span class="menu-item-badge text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-200/60 dark:border-indigo-800/60">Hồ sơ &amp; Bảo mật</span>
     </button>
 
     <!-- Mục Hồ sơ & Thống kê học tập -->
-    <button id="btnUserProfile" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition">
-      <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-bar-chart"></use></svg>
-      <span>Thống kê học tập</span>
+    <button id="btnUserProfile" type="button" class="user-menu-item group" title="Thống kê học tập & Chuỗi ngày học">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-bar-chart"></use></svg>
+        </span>
+        <span class="menu-item-title">Thống kê học tập</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- Mục Lịch sử mua hàng / Đơn hàng -->
-    <button id="btnOpenBillingHistoryModal" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition cursor-pointer">
-      <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-      </svg>
-      <span>Lịch sử mua hàng</span>
+    <button id="btnOpenBillingHistoryModal" type="button" class="user-menu-item group" title="Lịch sử mua hàng & Hóa đơn">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </span>
+        <span class="menu-item-title">Lịch sử mua hàng</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- Mục Nhập mã kích hoạt nhanh -->
-    <button id="btnOpenRedeemCodeModal" onclick="openRedeemCodeModal()" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition cursor-pointer">
-      <svg class="w-4 h-4 text-amber-500 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-      </svg>
-      <span>Nhập mã kích hoạt</span>
+    <button id="btnOpenRedeemCodeModal" type="button" onclick="openRedeemCodeModal()" class="user-menu-item group" title="Nhập mã kích hoạt gói">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon icon-key text-amber-500 dark:text-amber-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+          </svg>
+        </span>
+        <span class="menu-item-title">Nhập mã kích hoạt</span>
+      </div>
+      <span class="menu-item-arrow text-amber-400/80 dark:text-amber-400/80" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- Nút mở Quản trị (CHỈ hiện khi tài khoản có claim Admin) -->
-    <button id="btnOpenAdminPanel" class="hidden w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-semibold mb-0.5 transition">
-      <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
-      <span>Quản trị hệ thống</span>
+    <button id="btnOpenAdminPanel" type="button" class="hidden user-menu-item group text-indigo-600 dark:text-indigo-400" title="Bảng quản trị hệ thống">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
+        </span>
+        <span class="menu-item-title font-semibold">Quản trị hệ thống</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- Nút mở Thư viện Prompt AI dành riêng cho mobile khi thu gọn trên Header -->
-    <button id="btnMenuPromptLibrary" onclick="if(typeof openPromptLibrary==='function')openPromptLibrary();" class="sm:hidden w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition cursor-pointer">
+    <button id="btnMenuPromptLibrary" type="button" onclick="if(typeof openPromptLibrary==='function')openPromptLibrary();" class="sm:hidden user-menu-item group" title="Thư Viện Prompt AI">
       <div class="flex items-center gap-2.5">
-        <svg class="w-4 h-4 text-violet-600 dark:text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
-        <span>Thư Viện Prompt AI</span>
+        <span class="menu-item-icon text-violet-600 dark:text-violet-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
+        </span>
+        <span class="menu-item-title">Thư Viện Prompt AI</span>
       </div>
-      <span class="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">AI</span>
+      <span class="menu-item-badge text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">AI</span>
     </button>
 
     <!-- Nút tạo link nhanh dành riêng cho mobile khi thu gọn -->
-    <button id="btnOpenSharedLinksModal" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium mb-0.5 transition">
-      <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-share-2"></use></svg>
-      <span>Link đã chia sẻ</span>
+    <button id="btnOpenSharedLinksModal" type="button" class="user-menu-item group" title="Danh sách các liên kết đã chia sẻ">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-share-2"></use></svg>
+        </span>
+        <span class="menu-item-title">Link đã chia sẻ</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
-    <button id="btnMenuQuickShare" class="sm:hidden w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-medium mb-1.5">
-      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-link"></use></svg>
-      <span>Tạo link chia sẻ 7 ngày</span>
+    <button id="btnMenuQuickShare" type="button" class="sm:hidden user-menu-item group text-[#4F46E5] dark:text-[#818CF8]" title="Tạo liên kết chia sẻ tạm thời">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-link"></use></svg>
+        </span>
+        <span class="menu-item-title">Tạo link chia sẻ 7 ngày</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- Cụm chỉnh cỡ chữ thu nhỏ trong Menu cho mobile -->
@@ -7761,44 +7948,61 @@
       </button>
     </div>
 
-        <!-- // HANGMUC-3: Nút mở Quản lý Sao lưu & Khôi phục -->
-    <button id="btnOpenBackupRestoreModal" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] font-medium transition">
+    <!-- // HANGMUC-3: Nút mở Quản lý Sao lưu & Khôi phục -->
+    <button id="btnOpenBackupRestoreModal" type="button" class="user-menu-item group" title="Sao lưu & Khôi phục dữ liệu">
       <div class="flex items-center gap-2.5">
-        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
-        <span>Sao lưu &amp; Khôi phục</span>
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-shield-check"></use></svg>
+        </span>
+        <span class="menu-item-title">Sao lưu &amp; Khôi phục</span>
       </div>
-      <span id="snapshotCountBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">0 bản</span>
+      <span id="snapshotCountBadge" class="menu-item-badge text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">0 bản</span>
     </button>
 
-
     <!-- Cài đặt app PWA trên mobile -->
-    <button id="btnMenuPwaInstall" class="sm:hidden w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2]">
-      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-download"></use></svg>
-      <span>Cài app lên màn hình chính</span>
+    <button id="btnMenuPwaInstall" type="button" class="sm:hidden user-menu-item group" title="Cài đặt ứng dụng PWA">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-download"></use></svg>
+        </span>
+        <span class="menu-item-title">Cài app lên màn hình chính</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- Xem Có gì mới & Lịch sử cập nhật -->
-    <button id="btnMenuWhatsNew" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left hover:bg-black/5 dark:hover:bg-white/5 text-[#1A1A1A] dark:text-[#ECEEF2] transition cursor-pointer">
+    <button id="btnMenuWhatsNew" type="button" class="user-menu-item group" title="Xem Có gì mới & Lịch sử cập nhật">
       <div class="flex items-center gap-2.5">
-        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#version-glyph"></use></svg>
-        <span>Có gì mới &amp; Lịch sử</span>
+        <span class="menu-item-icon text-indigo-600 dark:text-indigo-400">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#version-glyph"></use></svg>
+        </span>
+        <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v4.9.1</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.7</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
 
     <!-- Nút Đăng xuất màu đỏ nhạt, đặt cuối (Ẩn khi ở Chế độ Khách) -->
-    <button id="btnLogout" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium transition">
-      <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-log-out"></use></svg>
-      <span>Đăng xuất</span>
+    <button id="btnLogout" type="button" class="user-menu-item item-logout group" title="Đăng xuất khỏi tài khoản">
+      <div class="flex items-center gap-2.5">
+        <span class="menu-item-icon">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#icon-log-out"></use></svg>
+        </span>
+        <span class="menu-item-title font-medium">Đăng xuất</span>
+      </div>
+      <span class="menu-item-arrow" aria-hidden="true">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
     </button>
 
     <!-- // FIX: Hiển thị phiên bản build app & bấm xem lịch sử cập nhật -->
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.6 • build 17/10/2026 01:58</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.7 • build 17/10/2026 10:15</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -47313,7 +47517,7 @@ QUY TẮC:
       }
     };
 
-    console.log("%c Thư viện Sách HTML v5.8.6 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.7 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
