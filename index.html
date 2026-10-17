@@ -40,6 +40,18 @@
     window.escapeHtml = escapeHtml;
     window.escapeAttr = escapeAttr;
 
+    // Tự động tính toán và cập nhật chính xác chiều cao viewport visual trên thiết bị di động (chống hở đáy trên iOS Safari/PWA)
+    function updateAppViewportHeight() {
+      try {
+        const vh = window.innerHeight;
+        document.documentElement.style.setProperty('--app-height', vh + 'px');
+      } catch (_) {}
+    }
+    updateAppViewportHeight();
+    window.addEventListener('resize', updateAppViewportHeight, { passive: true });
+    window.addEventListener('orientationchange', updateAppViewportHeight, { passive: true });
+    window.updateAppViewportHeight = updateAppViewportHeight;
+
     // // FIX: Khai báo sớm hàm đóng/mở modal toàn cục trên window với rAF mượt mà không gây giật khung hình
     window.showModalAnimated = function(target) {
       const el = typeof target === 'string' ? document.getElementById(target) : target;
@@ -1681,6 +1693,7 @@
       overflow-x: hidden;
       overflow-y: hidden;
       height: 100%;
+      height: -webkit-fill-available;
       width: 100%;
       max-width: 100vw;
       touch-action: manipulation;
@@ -1693,12 +1706,23 @@
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       touch-action: manipulation;
-      height: 100dvh;
-      min-height: 100dvh;
+      height: 100%;
+      height: -webkit-fill-available;
+      height: var(--app-height, 100dvh);
+      min-height: 100%;
+      min-height: -webkit-fill-available;
+      min-height: var(--app-height, 100dvh);
       width: 100%;
       max-width: 100vw;
       overflow: hidden !important;
       position: relative;
+    }
+
+    /* Đảm bảo toàn bộ chiều cao trên iOS Safari & PWA standalone không bị hở đáy */
+    @supports (-webkit-touch-callout: none) {
+      html, body {
+        height: -webkit-fill-available !important;
+      }
     }
 
     #aiResultPopover {
@@ -2160,18 +2184,19 @@
 
     @media (max-width: 640px) {
       .modal-animated.is-bottom-sheet > div {
-        transform: translateY(100%) translateZ(0);
-        opacity: 1;
-        transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(12px) scale(0.96) translateZ(0);
+        opacity: 0;
+        will-change: transform, opacity;
+        transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), opacity 190ms cubic-bezier(0.16, 1, 0.3, 1);
       }
       .modal-animated.is-bottom-sheet.modal-active > div {
-        transform: translateY(0) translateZ(0);
+        transform: translateY(0) scale(1) translateZ(0);
         opacity: 1;
       }
       .modal-animated.is-bottom-sheet.modal-closing > div {
-        transform: translateY(100%) translateZ(0);
-        opacity: 1;
-        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(10px) scale(0.96) translateZ(0);
+        opacity: 0;
+        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
       }
     }
 
@@ -2244,10 +2269,10 @@
     }
     @media (max-width: 639px) {
       #displaySettingsPopover:not(.hidden) {
-        animation: popoverSlideUp 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: popoverScaleIn 190ms cubic-bezier(0.16, 1, 0.3, 1) both;
       }
       #displaySettingsPopover.display-settings-closing {
-        animation: popoverSlideDown 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: popoverScaleOut 170ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     }
     @keyframes popoverScaleIn {
@@ -2272,6 +2297,12 @@
       transform-origin: top right;
       z-index: 65;
     }
+    #userDropdown.user-menu-active {
+      animation: userDropdownIn 200ms var(--ease-out) both;
+    }
+    #userDropdown.user-menu-closing {
+      animation: userDropdownOut 180ms var(--ease-out) forwards;
+    }
     @media (min-width: 640px) {
       #userDropdown {
         position: fixed;
@@ -2282,11 +2313,21 @@
         border-radius: 14px;
         box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.18), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
       }
-      #userDropdown.user-menu-active {
-        animation: userDropdownIn 200ms var(--ease-out) both;
+    }
+    @media (max-width: 639px) {
+      #userDropdown {
+        position: fixed;
+        top: 64px;
+        right: 8px;
+        left: auto;
+        bottom: auto;
+        width: min(320px, calc(100vw - 16px));
+        border-radius: 16px;
+        box-shadow: 0 20px 40px -6px rgba(0, 0, 0, 0.28), 0 8px 16px -4px rgba(0, 0, 0, 0.12);
+        border: 1px solid #E6E6E1;
       }
-      #userDropdown.user-menu-closing {
-        animation: userDropdownOut 180ms var(--ease-out) forwards;
+      .dark #userDropdown {
+        border-color: #262C36;
       }
     }
     @keyframes userDropdownIn {
@@ -6016,7 +6057,7 @@
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
-<body class="h-[100dvh] flex flex-col overflow-hidden antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
+<body class="h-full min-h-full flex flex-col overflow-hidden antialiased selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-950 dark:selection:text-indigo-200">
   <!-- CANVAS HIỆU ỨNG MÙA LỄ HỘI NGOÀI NỀN (AMBIENT FESTIVAL CANVAS - ZERO DISTRACTION) -->
   <canvas id="ambientFestivalCanvas" class="fixed inset-0 pointer-events-none z-[35] hidden transition-opacity duration-700 opacity-0" aria-hidden="true"></canvas>
   <!-- CANVAS HIỆU ỨNG TUYẾT RƠI TRÊN TẤT CẢ POPUP & MODAL (MODAL FESTIVAL CANVAS) -->
@@ -7375,23 +7416,6 @@
                   <button id="btnReadingSettings" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 font-semibold transition text-xs shrink-0 cursor-pointer select-none">
                     <span>Mở bảng (Aa)</span>
                   </button>
-                </div>
-
-                <!-- Hàng 2: Vuốt chuyển bài -->
-                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
-                  <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="row-icon-box w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                      <svg class="w-4 h-4"><use href="#icon-ds-swipe"></use></svg>
-                    </div>
-                    <div class="min-w-0">
-                      <div class="font-medium text-[#1C1917] dark:text-[#EDECE8] truncate">Vuốt chuyển bài</div>
-                      <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Vuốt sang trái/phải trên màn hình</div>
-                    </div>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                    <input id="toggleSwipeGesture" type="checkbox" class="sr-only peer" checked>
-                    <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
-                  </label>
                 </div>
 
                 <!-- Hàng 3: Chế độ tập trung (Pomodoro) -->
@@ -17646,10 +17670,18 @@
     function openUpgradeModal(preSelectedPlan) {
       if (state.user && state.user.isAnonymous) {
         showToast("Vui lòng đăng ký hoặc đăng nhập tài khoản trước khi nâng cấp gói.");
-        const authModal = document.getElementById('authModal');
-        if (authModal) {
-          authModal.classList.remove('hidden');
-          authModal.classList.add('modal-active');
+        if (typeof openAuthModal === 'function') {
+          openAuthModal('login');
+        } else {
+          const authModal = document.getElementById('authModal');
+          if (authModal) {
+            if (typeof showModalAnimated === 'function') {
+              showModalAnimated(authModal);
+            } else {
+              authModal.classList.remove('hidden');
+              authModal.classList.add('modal-active');
+            }
+          }
         }
         return;
       }
@@ -18931,10 +18963,18 @@
     async function openBillingHistoryModal(showPendingBanner = false) {
       if (state.user && state.user.isAnonymous) {
         showToast("Vui lòng đăng ký hoặc đăng nhập tài khoản để xem lịch sử mua hàng.");
-        const authModal = document.getElementById('authModal');
-        if (authModal) {
-          authModal.classList.remove('hidden');
-          authModal.classList.add('modal-active');
+        if (typeof openAuthModal === 'function') {
+          openAuthModal('login');
+        } else {
+          const authModal = document.getElementById('authModal');
+          if (authModal) {
+            if (typeof showModalAnimated === 'function') {
+              showModalAnimated(authModal);
+            } else {
+              authModal.classList.remove('hidden');
+              authModal.classList.add('modal-active');
+            }
+          }
         }
         return;
       }
@@ -21243,14 +21283,24 @@
         // Render danh sách chi tiết
         renderConflictDetailsList(conflictReport);
 
-        modal.classList.remove('hidden');
+        if (typeof showModalAnimated === 'function') {
+          showModalAnimated(modal);
+        } else {
+          modal.classList.remove('hidden');
+        }
         if (typeof refreshIcons === 'function') refreshIcons(modal);
       });
     }
 
     function closeSyncConflictModal() {
       const modal = document.getElementById('syncConflictModal');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        if (typeof hideModalAnimated === 'function') {
+          hideModalAnimated(modal);
+        } else {
+          modal.classList.add('hidden');
+        }
+      }
       isConflictModalOpen = false;
     }
 
@@ -21830,13 +21880,13 @@
       if (!modal) return;
       const settings = getEffectiveReadingSettings();
       syncReadingSettingsModalUI(settings);
-      modal.classList.remove('hidden');
+      showModalAnimated(modal);
     }
 
     // Đóng Bảng Tùy chỉnh đọc
     function closeReadingSettingsModal() {
       const modal = document.getElementById('readingSettingsModal');
-      if (modal) modal.classList.add('hidden');
+      if (modal) hideModalAnimated(modal);
     }
 
     // Đặt lại mặc định
@@ -23370,27 +23420,6 @@
     }, '*');
   });
 
-  let tStartX = 0, tStartY = 0;
-  window.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      tStartX = e.touches[0].clientX;
-      tStartY = e.touches[0].clientY;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', (e) => {
-    if (e.changedTouches.length === 1) {
-      const dx = e.changedTouches[0].clientX - tStartX;
-      const dy = e.changedTouches[0].clientY - tStartY;
-      if (Math.abs(dx) > 60 && Math.abs(dy) < 50) {
-        window.parent.postMessage({
-          type: 'FORWARD_SWIPE',
-          direction: dx < 0 ? 'next' : 'prev'
-        }, '*');
-      }
-    }
-  }, { passive: true });
-
   // 6. Trích xuất Readable Chunks cho TTS
   function extractTTSChunks() {
     const chunks = [];
@@ -24380,13 +24409,6 @@
           break;
         }
 
-        case 'FORWARD_SWIPE': {
-          if (state.swipeEnabled && typeof goToAdjacentLesson === 'function') {
-            goToAdjacentLesson(msg.direction === 'next' ? 1 : -1);
-          }
-          break;
-        }
-
 
 
         case 'SEARCH_RESULT': {
@@ -25197,15 +25219,15 @@
       closeUserMenu();
       const modal = document.getElementById('backupRestoreModal');
       if (modal) {
-        modal.classList.remove('hidden');
         renderBackupRestoreModal();
+        showModalAnimated(modal);
       }
     }
 
     function closeBackupRestoreModal() {
       const modal = document.getElementById('backupRestoreModal');
       if (modal) {
-        modal.classList.add('hidden');
+        hideModalAnimated(modal);
       }
     }
 
@@ -27304,12 +27326,6 @@
         toggleFrames.checked = localStorage.getItem('setting_show_text_frames') !== 'false';
       }
 
-      // 7. Vuốt chuyển bài
-      const toggleSwipe = document.getElementById('toggleSwipeGesture');
-      if (toggleSwipe) {
-        toggleSwipe.checked = state.swipeEnabled !== false;
-      }
-
       // 8. Trợ lý AI đọc bài
       if (typeof syncAiToggleState === 'function') {
         syncAiToggleState();
@@ -27440,15 +27456,6 @@
         const iframe = document.getElementById('lessonIframe');
         const _iDoc = typeof getSafeIframeDocument === 'function' ? getSafeIframeDocument(iframe) : null;
         if (_iDoc && typeof applyFrameSettingsToDoc === 'function') applyFrameSettingsToDoc(iframe.contentDocument);
-
-        // 6. Vuốt chuyển bài
-        if (merged.swipeGestureEnabled !== undefined) {
-          state.swipeEnabled = !!merged.swipeGestureEnabled;
-        }
-        const cbSwipe = document.getElementById('toggleSwipeGesture');
-        if (cbSwipe) {
-          cbSwipe.checked = state.swipeEnabled !== false;
-        }
 
         // 7. Trợ lý AI đọc bài - Bảo toàn đúng trạng thái đã bật của người dùng
         let aiAssistantEnabled;
@@ -29401,73 +29408,8 @@
       });
     }
 
-
-        // // FEATURE-9: VUỐT CHUYỂN BÀI VÀ BẢNG PHÍM TẮT
+    // BẢNG PHÍM TẮT
     // =========================================================================
-    function setupSwipeGestures() {
-      const readingArea = document.getElementById('readingArea');
-      if (!readingArea) return;
-
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let touchStartTime = 0;
-
-      const handleTouchStart = (e) => {
-        if (state.swipeEnabled === false) return;
-        if (e.touches.length !== 1) return;
-        // Bỏ qua nếu người dùng đang có vùng chọn/bôi đen chữ
-        if (window.getSelection()?.toString().trim()) return;
-
-        const t = e.touches[0];
-        touchStartX = t.clientX;
-        touchStartY = t.clientY;
-        touchStartTime = Date.now();
-      };
-
-      const handleTouchEnd = (e) => {
-        if (state.swipeEnabled === false) return;
-        if (e.changedTouches.length !== 1) return;
-        const t = e.changedTouches[0];
-        const dx = t.clientX - touchStartX;
-        const dy = t.clientY - touchStartY;
-        const dt = Date.now() - touchStartTime;
-
-        // Phải lướt nhanh (< 450ms), khoảng cách đủ lớn (>= 60px), góc nghiêng ngang áp đảo (|dx| > |dy| * 1.6)
-        if (dt > 450 || Math.abs(dx) < 60) return;
-        if (Math.abs(dx) <= Math.abs(dy) * 1.6) return;
-
-        // Không kích hoạt nếu chạm vào vùng có thanh cuộn ngang
-        let node = e.target;
-        while (node && node !== readingArea && node !== document.body) {
-          if (node.scrollWidth > node.clientWidth && (node.scrollLeft > 0 || (dx < 0 && node.scrollLeft + node.clientWidth < node.scrollWidth))) {
-            return;
-          }
-          node = node.parentElement;
-        }
-
-        if (dx < -60) {
-          stepLesson(1); // Vuốt sang trái -> Bài tiếp theo
-        } else if (dx > 60) {
-          stepLesson(-1); // Vuốt sang phải -> Bài trước đó
-        }
-      };
-
-      readingArea.addEventListener('touchstart', handleTouchStart, { passive: true });
-      readingArea.addEventListener('touchend', handleTouchEnd, { passive: true });
-    }
-
-    setupSwipeGestures();
-
-    // Toggle switch vuốt chuyển bài trong menu Hiển thị
-    const toggleSwipeGesture = document.getElementById('toggleSwipeGesture');
-    if (toggleSwipeGesture) {
-      toggleSwipeGesture.addEventListener('change', (e) => {
-        state.swipeEnabled = e.target.checked;
-        saveUserSettings();
-        showToast(state.swipeEnabled ? 'Đã bật vuốt chuyển bài' : 'Đã tắt vuốt chuyển bài');
-      });
-    }
-
     // Modal Bảng phím tắt (Phím ?)
     const shortcutsModal = document.getElementById('shortcutsModal');
     const btnCloseShortcutsModal = document.getElementById('btnCloseShortcutsModal');
@@ -35338,11 +35280,6 @@
           openMobileSidebar();
           return;
         }
-        // Vuốt chuyển bài
-        if (Math.abs(deltaX) > 75 && Math.abs(deltaY) < 50) {
-          if (deltaX > 0) stepLesson(-1);
-          else stepLesson(1);
-        }
       }, { passive: true });
 
       readingArea.addEventListener('scroll', () => {
@@ -38100,17 +38037,17 @@
       const screenW = window.innerWidth || document.documentElement.clientWidth;
       const isMobile = screenW < 640;
       if (isMobile) {
-        // Bottom sheet trên điện thoại (< 640px)
+        // Popover thả nổi thanh lịch ngay dưới nút trên mobile giống máy tính
+        const btnRect = btnDisplaySettingsToggle ? btnDisplaySettingsToggle.getBoundingClientRect() : null;
         displaySettingsPopover.style.setProperty('position', 'fixed', 'important');
-        displaySettingsPopover.style.setProperty('top', 'auto', 'important');
-        displaySettingsPopover.style.setProperty('bottom', '0px', 'important');
-        displaySettingsPopover.style.setProperty('left', '0px', 'important');
-        displaySettingsPopover.style.setProperty('right', '0px', 'important');
-        displaySettingsPopover.style.setProperty('width', '100vw', 'important');
-        displaySettingsPopover.style.setProperty('max-width', '100vw', 'important');
-        displaySettingsPopover.style.setProperty('border-bottom-left-radius', '0px', 'important');
-        displaySettingsPopover.style.setProperty('border-bottom-right-radius', '0px', 'important');
-        displaySettingsPopover.style.setProperty('z-index', '100', 'important');
+        displaySettingsPopover.style.setProperty('top', btnRect ? `${Math.min(btnRect.bottom + 8, 70)}px` : '64px', 'important');
+        displaySettingsPopover.style.setProperty('bottom', 'auto', 'important');
+        displaySettingsPopover.style.setProperty('left', 'auto', 'important');
+        displaySettingsPopover.style.setProperty('right', '8px', 'important');
+        displaySettingsPopover.style.setProperty('width', 'calc(100vw - 16px)', 'important');
+        displaySettingsPopover.style.setProperty('max-width', '360px', 'important');
+        displaySettingsPopover.style.setProperty('border-radius', '16px', 'important');
+        displaySettingsPopover.style.setProperty('z-index', '999', 'important');
       } else {
         // Desktop / Tablet: căn lề phải thẳng hàng với nút, cách 8px phía dưới nút
         const btnRect = btnDisplaySettingsToggle ? btnDisplaySettingsToggle.getBoundingClientRect() : null;
@@ -40833,8 +40770,19 @@
       if (btn) {
         btn.addEventListener('click', () => {
           closeAiResultPopover();
-          const loginModal = document.getElementById('loginModal');
-          if (loginModal) loginModal.classList.remove('hidden');
+          if (typeof openAuthModal === 'function') {
+            openAuthModal('login');
+          } else {
+            const authModal = document.getElementById('authModal');
+            if (authModal) {
+              if (typeof showModalAnimated === 'function') {
+                showModalAnimated(authModal);
+              } else {
+                authModal.classList.remove('hidden');
+                authModal.classList.add('modal-active');
+              }
+            }
+          }
         });
       }
     }
