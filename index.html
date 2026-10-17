@@ -129,6 +129,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.9',
+        date: '2026-10-17T10:35:00+07:00',
+        title: 'Nâng Cấp Hiệu Ứng Rê Chuột (Hover) Cho Nút Thùng Rác & Tải File Ở Chân Sidebar Chuẩn Vibe The Codex',
+        items: [
+          { type: 'improved', text: 'Thiết kế hiệu ứng vi tương tác xúc giác cao cấp (Tactile Elevation) dạng pill gọn gàng cho cặp nút Thùng rác (#btnOpenTrash) và Tải file (#btnSidebarQuickUpload) ở chân Sidebar, loại bỏ hoàn toàn gạch chân hyperlink cũ.' },
+          { type: 'improved', text: 'Nút Thùng rác: Khi rê chuột nhấc nhẹ 1.5px, viền sáng hồng đỏ tinh tế, đổ bóng mềm mại, biểu tượng thùng rác nghiêng nhẹ -9° tự nhiên sinh động.' },
+          { type: 'feature', text: 'Nút Tải file: Khi rê chuột nhấc nhẹ 1.5px, nền tím chàm indigo êm dịu, viền sáng trang nhã, biểu tượng tải file lướt nhẹ lên trên 2px tạo cảm xúc nâng trang sách trực quan.' },
+          { type: 'improved', text: 'Cải thiện độ nảy phản hồi cơ học (active:scale-95) và bố cục nhóm hành động gọn gàng ở góc chân Sidebar.' }
+        ]
+      },
+      {
         version: 'v5.8.8',
         date: '2026-10-17T10:25:00+07:00',
         title: 'Nâng Cấp Toàn Diện Hiệu Ứng Rê Chuột (Hover) Cho Bảng Tùy Chọn Hiển Thị Chuẩn The Codex',
@@ -2683,6 +2694,90 @@
     }
     #displaySettingsPopover label input:not(:disabled) + div {
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ==========================================================================
+       SIDEBAR FOOTER ACTION BUTTONS (Thùng rác & Tải file)
+       Tactile, scholarly micro-interactions with gentle elevation & icon motions
+       ========================================================================== */
+    #btnOpenTrash {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnOpenTrash:hover {
+      background-color: rgba(254, 242, 242, 0.88) !important;
+      border-color: rgba(248, 113, 113, 0.45) !important;
+      color: #DC2626 !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 3px 8px -1px rgba(220, 38, 38, 0.16) !important;
+    }
+    html.dark #btnOpenTrash:hover {
+      background-color: rgba(69, 10, 10, 0.38) !important;
+      border-color: rgba(239, 68, 68, 0.4) !important;
+      color: #F87171 !important;
+      box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnOpenTrash svg {
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
+    }
+    #btnOpenTrash:hover svg {
+      transform: translateY(-0.5px) rotate(-9deg) scale(1.14);
+      color: #DC2626;
+    }
+    html.dark #btnOpenTrash:hover svg {
+      color: #F87171;
+    }
+    #btnOpenTrash:hover #trashCountBadge {
+      transform: scale(1.1);
+    }
+    #btnOpenTrash:active {
+      transform: translateY(0) scale(0.95) !important;
+    }
+
+    #btnSidebarQuickUpload {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      text-decoration: none !important;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnSidebarQuickUpload:hover {
+      background-color: rgba(238, 242, 255, 0.92) !important;
+      border-color: rgba(129, 140, 248, 0.5) !important;
+      color: #4338CA !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 3px 8px -1px rgba(79, 70, 229, 0.2) !important;
+    }
+    html.dark #btnSidebarQuickUpload:hover {
+      background-color: rgba(49, 46, 129, 0.38) !important;
+      border-color: rgba(129, 140, 248, 0.45) !important;
+      color: #A5B4FC !important;
+      box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnSidebarQuickUpload svg {
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
+    }
+    #btnSidebarQuickUpload:hover svg {
+      transform: translateY(-2px) scale(1.14);
+      color: #4338CA;
+    }
+    html.dark #btnSidebarQuickUpload:hover svg {
+      color: #A5B4FC;
+    }
+    #btnSidebarQuickUpload:active {
+      transform: translateY(0) scale(0.95) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #btnOpenTrash,
+      #btnOpenTrash svg,
+      #btnSidebarQuickUpload,
+      #btnSidebarQuickUpload svg {
+        transform: none !important;
+        transition: none !important;
+      }
     }
 
     /* Toast Notification slide in spring */
@@ -7525,22 +7620,24 @@
       <div id="categoriesList" class="flex-1 overflow-y-auto min-h-0 px-2 py-3 space-y-3"></div>
 
       <!-- Chân sidebar -->
-      <div class="p-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-xs text-[#6E6B65] dark:text-[#979DA8] bg-[#FAF9F5]/70 dark:bg-[#111317]/50">
-        <span id="statsSummary" class="font-medium text-[11px]">0 mục • 0 bài</span>
-        <button id="btnOpenTrash" class="touch-target font-medium text-[#6E6B65] dark:text-[#979DA8] hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 transition" title="Thùng rác">
-            <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+      <div class="p-2.5 sm:p-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-xs text-[#6E6B65] dark:text-[#979DA8] bg-[#FAF9F5]/70 dark:bg-[#111317]/50 select-none">
+        <span id="statsSummary" class="font-medium text-[11px] truncate mr-2 text-[#78756D] dark:text-[#9AA3B2]">0 mục • 0 bài</span>
+        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <button id="btnOpenTrash" type="button" class="group touch-target font-medium text-xs text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-transparent transition-all cursor-pointer" title="Mở Thùng rác bài học">
+            <svg class="w-3.5 h-3.5 shrink-0 transition-transform"><use href="#icon-trash-2"></use></svg>
             <span>Thùng rác</span>
-            <span id="trashCountBadge" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">0</span>
+            <span id="trashCountBadge" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 transition-transform">0</span>
           </button>
-          <button id="btnSidebarQuickUpload" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5 py-1">
-          <svg class="w-3.5 h-3.5"><use href="#icon-upload"></use></svg>
-          <span>Tải file</span>
-        </button>
+          <button id="btnSidebarQuickUpload" type="button" class="group font-medium text-xs text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-transparent transition-all cursor-pointer" title="Nạp bài học mới (Tải file)">
+            <svg class="w-3.5 h-3.5 shrink-0 transition-transform"><use href="#icon-upload"></use></svg>
+            <span>Tải file</span>
+          </button>
+        </div>
       </div>
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.8 • build 17/10/2026 10:25</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.9 • build 17/10/2026 10:35</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -8318,7 +8415,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.7</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.9</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -8340,7 +8437,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.8 • build 17/10/2026 10:25</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.9 • build 17/10/2026 10:35</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -47872,7 +47969,7 @@ QUY TẮC:
       }
     };
 
-    console.log("%c Thư viện Sách HTML v5.8.8 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.9 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
