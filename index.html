@@ -129,6 +129,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.8',
+        date: '2026-10-17T10:25:00+07:00',
+        title: 'Nâng Cấp Toàn Diện Hiệu Ứng Rê Chuột (Hover) Cho Bảng Tùy Chọn Hiển Thị Chuẩn The Codex',
+        items: [
+          { type: 'feature', text: 'Thiết kế hiệu ứng vi tương tác xúc giác cao cấp (Tactile Elevation) cho toàn bộ các nút trong bảng "Tùy chọn hiển thị": cụm tăng giảm cỡ chữ (A- / 100% / A+), chuyển chế độ sáng/tối, phân đoạn tốc độ & mật độ hạt, kiểu bài đã học, và cụm nút thao tác (Ẩn thanh công cụ, Mở bảng Aa, Chế độ tập trung Pomodoro).' },
+          { type: 'improved', text: 'Hiệu ứng nâng thẻ mềm mại (translateY -1.5px), bóng đổ màu sắc tự nhiên theo nhóm chức năng (indigo, amber, emerald, sky, rose) và chuyển động micro-interaction biểu tượng (mặt trăng/mặt trời xoay góc linh hoạt, tên lửa nghiêng sống động, tâm ngắm xoay góc tinh xảo).' },
+          { type: 'improved', text: 'Tối ưu trải nghiệm: hỗ trợ nhấp trực tiếp vào nhãn "100%" để đặt lại cỡ chữ nhanh chóng, hiệu ứng vầng sáng cho công tắc gạt và nảy nhẹ các hàng tùy chọn.' }
+        ]
+      },
+      {
         version: 'v5.8.7',
         date: '2026-10-17T10:15:00+07:00',
         title: 'Nâng Cấp Hiệu Ứng Rê Chuột (Hover) Cho Toàn Bộ Menu Tài Khoản Chuẩn Vibe Học Thuật The Codex',
@@ -2345,6 +2355,334 @@
     }
     html.dark .user-menu-item.item-logout:hover .menu-item-icon {
       color: #FDA4AF;
+    }
+
+    /* =========================================================================
+       DISPLAY SETTINGS POPOVER - SCHOLARLY EDITORIAL HOVER INTERACTIONS (The Codex)
+       ========================================================================= */
+    /* 1. Nút Đóng bảng Tùy chọn hiển thị */
+    #btnCloseDisplaySettings {
+      transition: background-color 0.18s ease, color 0.18s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #btnCloseDisplaySettings:hover {
+      background-color: rgba(0, 0, 0, 0.06) !important;
+      color: #1C1917 !important;
+      transform: scale(1.05);
+    }
+    html.dark #btnCloseDisplaySettings:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: #FFFFFF !important;
+    }
+    #btnCloseDisplaySettings svg {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #btnCloseDisplaySettings:hover svg {
+      transform: rotate(90deg);
+    }
+    #btnCloseDisplaySettings:active {
+      transform: scale(0.92) !important;
+    }
+
+    /* 2. Tương tác vi mô từng hàng tùy chọn */
+    .display-settings-row {
+      border: 1px solid transparent;
+      transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .display-settings-row:hover {
+      background-color: rgba(0, 0, 0, 0.025);
+      border-color: rgba(0, 0, 0, 0.04);
+    }
+    html.dark .display-settings-row:hover {
+      background-color: rgba(255, 255, 255, 0.025);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+    .display-settings-row .row-icon-box {
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+    }
+    .display-settings-row:hover .row-icon-box {
+      transform: scale(1.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    html.dark .display-settings-row:hover .row-icon-box {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 3. Nút Cỡ chữ bài viết (A- / 100% / A+) */
+    #btnFontDec, #btnFontInc {
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnFontDec:hover, #btnFontInc:hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(0, 0, 0, 0.06) !important;
+      color: #4F46E5 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+    }
+    html.dark #btnFontDec:hover, html.dark #btnFontInc:hover {
+      background-color: #20242D !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+      color: #818CF8 !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+    }
+    #btnFontDec:active, #btnFontInc:active {
+      transform: translateY(0) scale(0.92) !important;
+    }
+    #fontScaleDisplay {
+      cursor: pointer;
+      border-radius: 0.375rem;
+      border: 1px solid transparent;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+    }
+    #fontScaleDisplay:hover {
+      background-color: rgba(79, 70, 229, 0.1);
+      border-color: rgba(79, 70, 229, 0.2);
+      transform: scale(1.06);
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.12);
+    }
+    html.dark #fontScaleDisplay:hover {
+      background-color: rgba(129, 140, 248, 0.16);
+      border-color: rgba(129, 140, 248, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    #fontScaleDisplay:active {
+      transform: scale(0.95);
+    }
+
+    /* 4. Nút Giao diện sáng / tối (#btnThemeToggle) */
+    #btnThemeToggle {
+      cursor: pointer;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnThemeToggle:hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(245, 158, 11, 0.5) !important;
+      color: #D97706 !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 10px -2px rgba(245, 158, 11, 0.22) !important;
+    }
+    html.dark #btnThemeToggle:hover {
+      background-color: #20242D !important;
+      border-color: rgba(129, 140, 248, 0.5) !important;
+      color: #A5B4FC !important;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnThemeToggle svg {
+      transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
+    }
+    #btnThemeToggle:hover svg:not(.dark\:block) {
+      transform: rotate(-15deg) scale(1.18);
+    }
+    html.dark #btnThemeToggle:hover svg.dark\:block {
+      transform: rotate(45deg) scale(1.18);
+      color: #FBBF24 !important;
+    }
+    #btnThemeToggle:active {
+      transform: translateY(0) scale(0.92) !important;
+    }
+
+    /* 5. Nút Phân đoạn Tốc độ & Mật độ hạt (.btn-particle-speed, .btn-particle-density) */
+    .btn-particle-speed, .btn-particle-density {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    .btn-particle-speed:not(.font-semibold):hover,
+    .btn-particle-density:not(.font-semibold):hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+      color: #1F2937 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06) !important;
+    }
+    html.dark .btn-particle-speed:not(.font-semibold):hover,
+    html.dark .btn-particle-density:not(.font-semibold):hover {
+      background-color: #252B36 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+    }
+    .btn-particle-speed.font-semibold:hover,
+    .btn-particle-density.font-semibold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px -1px rgba(79, 70, 229, 0.28) !important;
+    }
+    .btn-particle-speed:active,
+    .btn-particle-density:active {
+      transform: translateY(0) scale(0.94) !important;
+    }
+    .btn-particle-speed svg,
+    .btn-particle-density svg {
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-particle-speed:hover svg,
+    .btn-particle-density:hover svg {
+      transform: scale(1.18);
+    }
+    .btn-particle-speed[data-particle-speed="slow"]:hover svg {
+      transform: scale(1.18) translateX(-1px);
+    }
+    .btn-particle-speed[data-particle-speed="fast"]:hover svg {
+      transform: scale(1.22) rotate(-10deg);
+    }
+
+    /* 6. Nút Kiểu bài đã học (#btnStyleBorder, #btnStyleDim, #btnStyleStrike) */
+    #btnStyleBorder, #btnStyleDim, #btnStyleStrike {
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid transparent;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnStyleBorder:not(.font-semibold):hover,
+    #btnStyleDim:not(.font-semibold):hover,
+    #btnStyleStrike:not(.font-semibold):hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(16, 185, 129, 0.25) !important;
+      color: #065F46 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06) !important;
+    }
+    html.dark #btnStyleBorder:not(.font-semibold):hover,
+    html.dark #btnStyleDim:not(.font-semibold):hover,
+    html.dark #btnStyleStrike:not(.font-semibold):hover {
+      background-color: #20242D !important;
+      border-color: rgba(52, 211, 153, 0.3) !important;
+      color: #A7F3D0 !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+    }
+    #btnStyleBorder.font-semibold:hover,
+    #btnStyleDim.font-semibold:hover,
+    #btnStyleStrike.font-semibold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px -1px rgba(16, 185, 129, 0.28) !important;
+    }
+    #btnStyleBorder:active, #btnStyleDim:active, #btnStyleStrike:active {
+      transform: translateY(0) scale(0.94) !important;
+    }
+
+    /* 7. Nút Thao tác chức năng (Ẩn thanh công cụ, Tùy chỉnh đọc chuyên sâu, Chế độ tập trung) */
+    #btnFullscreen {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnFullscreen:hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(14, 165, 233, 0.5) !important;
+      color: #0284C7 !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 3px 8px -1px rgba(14, 165, 233, 0.22) !important;
+    }
+    html.dark #btnFullscreen:hover {
+      background-color: #1E232D !important;
+      border-color: rgba(56, 189, 248, 0.45) !important;
+      color: #38BDF8 !important;
+      box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnFullscreen svg {
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #btnFullscreen:hover svg {
+      transform: scale(1.18) translate(0.5px, -0.5px);
+      color: #0284C7;
+    }
+    html.dark #btnFullscreen:hover svg {
+      color: #38BDF8;
+    }
+    #btnFullscreen:active {
+      transform: translateY(0) scale(0.94) !important;
+    }
+
+    #btnReadingSettings {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnReadingSettings:hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(99, 102, 241, 0.5) !important;
+      color: #4338CA !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 3px 8px -1px rgba(99, 102, 241, 0.22) !important;
+    }
+    html.dark #btnReadingSettings:hover {
+      background-color: #1E232D !important;
+      border-color: rgba(129, 140, 248, 0.5) !important;
+      color: #A5B4FC !important;
+      box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnReadingSettings:active {
+      transform: translateY(0) scale(0.94) !important;
+    }
+
+    #btnDisplaySettingsFocus {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    #btnDisplaySettingsFocus:hover {
+      background-color: #FFE4E6 !important;
+      border-color: rgba(244, 63, 94, 0.6) !important;
+      color: #BE123C !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 3px 8px -1px rgba(244, 63, 94, 0.28) !important;
+    }
+    html.dark #btnDisplaySettingsFocus:hover {
+      background-color: rgba(244, 63, 94, 0.25) !important;
+      border-color: rgba(251, 113, 133, 0.55) !important;
+      color: #FDA4AF !important;
+      box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.45) !important;
+    }
+    #btnDisplaySettingsFocus svg {
+      transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #btnDisplaySettingsFocus:hover svg {
+      transform: rotate(25deg) scale(1.22);
+      color: #BE123C;
+    }
+    html.dark #btnDisplaySettingsFocus:hover svg {
+      color: #FDA4AF;
+    }
+    #btnDisplaySettingsFocus:active {
+      transform: translateY(0) scale(0.94) !important;
+    }
+
+    /* 8. Nút Chủ đề cài sẵn của Admin (.btn-theme-preset) */
+    .btn-theme-preset {
+      cursor: pointer;
+      transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease !important;
+    }
+    .btn-theme-preset:hover {
+      background-color: #FFFFFF !important;
+      border-color: rgba(99, 102, 241, 0.45) !important;
+      transform: translateY(-1px) translateX(2px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    }
+    html.dark .btn-theme-preset:hover {
+      background-color: #20242D !important;
+      border-color: rgba(129, 140, 248, 0.45) !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+    }
+    .btn-theme-preset span:first-child {
+      display: inline-block;
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-theme-preset:hover span:first-child {
+      transform: scale(1.25);
+    }
+    .btn-theme-preset:active {
+      transform: translateY(0) scale(0.95) !important;
+    }
+
+    /* 9. Công tắc Toggle switches */
+    #displaySettingsPopover label:hover input:not(:disabled) + div {
+      filter: brightness(1.08);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    #displaySettingsPopover label input:not(:disabled) + div {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* Toast Notification slide in spring */
@@ -6567,9 +6905,9 @@
               <div class="space-y-2">
                 
                 <!-- Hàng 1: Cỡ chữ bài viết -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-font-size"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6578,11 +6916,11 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-1 bg-[#F2F0EB] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] rounded-lg p-0.5 shrink-0">
-                    <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="touch-target px-2.5 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#1C1917] dark:text-[#EDECE8] font-bold text-xs transition">
+                    <button id="btnFontDec" title="Giảm cỡ chữ (A-)" class="touch-target px-2.5 py-1 rounded-md text-[#1C1917] dark:text-[#EDECE8] font-bold text-xs transition cursor-pointer select-none">
                       A-
                     </button>
-                    <span id="fontScaleDisplay" class="font-mono font-semibold text-[11px] text-indigo-600 dark:text-indigo-400 px-1 select-none">100%</span>
-                    <button id="btnFontInc" title="Tăng cỡ chữ (A+)" class="touch-target px-2.5 py-1 rounded-md hover:bg-white dark:hover:bg-[#20242D] text-[#1C1917] dark:text-[#EDECE8] font-bold text-xs transition">
+                    <span id="fontScaleDisplay" title="Nhấn để đặt lại cỡ chữ 100% (Mặc định)" class="font-mono font-semibold text-[11px] text-indigo-600 dark:text-indigo-400 px-1 select-none cursor-pointer">100%</span>
+                    <button id="btnFontInc" title="Tăng cỡ chữ (A+)" class="touch-target px-2.5 py-1 rounded-md text-[#1C1917] dark:text-[#EDECE8] font-bold text-xs transition cursor-pointer select-none">
                       A+
                     </button>
                   </div>
@@ -6599,9 +6937,9 @@
               <div class="space-y-2">
                 
                 <!-- Hàng 1: Chế độ Sáng / Tối -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-theme"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6609,7 +6947,7 @@
                       <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Chỉ đổi khung app, giữ màu gốc bài</div>
                     </div>
                   </div>
-                  <button id="btnThemeToggle" aria-label="Chuyển chế độ sáng/tối" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] transition shrink-0">
+                  <button id="btnThemeToggle" aria-label="Chuyển chế độ sáng/tối" class="touch-target p-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] text-[#6E6B65] dark:text-[#979DA8] transition shrink-0 cursor-pointer">
                     <svg class="w-4 h-4 dark:hidden"><use href="#icon-moon"></use></svg>
                     <svg class="w-4 h-4 hidden dark:block"><use href="#icon-sun"></use></svg>
                   </button>
@@ -6618,9 +6956,9 @@
                 <!-- KHỐI CHỦ ĐỀ GIAO DIỆN / LỄ HỘI CÔNG KHAI -->
                 <div id="festivalThemeSettingsWrapper" class="hidden border-t border-[#E7E5DF]/70 dark:border-[#262C36]/70 pt-1.5 mt-0.5 space-y-1">
                   <!-- Hàng: Tắt / Mở Chủ đề Công khai (Người dùng có thể bật/tắt khi Admin công khai theme) -->
-                  <div id="publicThemeToggleRow" class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                  <div id="publicThemeToggleRow" class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                     <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                      <div id="publicThemeIconContainer" class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                      <div id="publicThemeIconContainer" class="row-icon-box w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                         <span id="publicThemeIcon" class="text-sm">❄️</span>
                       </div>
                       <div class="min-w-0">
@@ -6761,9 +7099,9 @@
                 </div>
 
                 <!-- Hàng: Thẻ "Tiếp tục học" ở Sidebar -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-play"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6778,9 +7116,9 @@
                 </div>
 
                 <!-- Hàng 2: Kiểu hiển thị bài đã học -->
-                <div class="p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 mb-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-learned-style"></use></svg>
                     </div>
                     <div>
@@ -6789,22 +7127,22 @@
                     </div>
                   </div>
                   <div class="grid grid-cols-3 gap-1 bg-[#F2F0EB] dark:bg-[#111317] p-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36]">
-                    <button id="btnStyleBorder" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-0.5 bg-white dark:bg-[#20242D] text-emerald-600 dark:text-emerald-400 shadow-xs" title="Viền xanh emerald bao quanh thẻ">
+                    <button id="btnStyleBorder" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-semibold text-center transition flex items-center justify-center gap-0.5 bg-white dark:bg-[#20242D] text-emerald-600 dark:text-emerald-400 shadow-xs cursor-pointer select-none" title="Viền xanh emerald bao quanh thẻ">
                       <span>Viền xanh</span>
                     </button>
-                    <button id="btnStyleDim" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Làm mờ dịu mắt">
+                    <button id="btnStyleDim" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5 cursor-pointer select-none" title="Làm mờ dịu mắt">
                       <span>Làm mờ</span>
                     </button>
-                    <button id="btnStyleStrike" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5" title="Gạch ngang tiêu đề">
+                    <button id="btnStyleStrike" type="button" class="py-1 px-1.5 rounded-md text-[11px] font-medium text-center text-[#6E6B65] dark:text-[#979DA8] hover:text-[#1C1917] dark:hover:text-[#EDECE8] transition flex items-center justify-center gap-0.5 cursor-pointer select-none" title="Gạch ngang tiêu đề">
                       <span>Gạch ngang</span>
                     </button>
                   </div>
                 </div>
 
                 <!-- Hàng 3: Huy hiệu "Đã học" -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-learned-badge"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6821,9 +7159,9 @@
 
 
                 <!-- Hàng 5: Hiện khung đánh dấu (VIỆC 4) -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#frame-glyph"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6847,9 +7185,9 @@
               <div class="space-y-2">
                 
                 <!-- Hàng 1: Ẩn thanh công cụ (F) -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-hide-toolbar"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6857,15 +7195,15 @@
                       <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Tập trung đọc, ẩn header &amp; điều hướng</div>
                     </div>
                   </div>
-                  <button id="btnFullscreen" aria-label="Ẩn thanh công cụ (F)" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition text-xs shrink-0">
+                  <button id="btnFullscreen" aria-label="Ẩn thanh công cụ (F)" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1 font-medium transition text-xs shrink-0 cursor-pointer select-none">
                     <svg class="w-3.5 h-3.5"><use href="#icon-maximize-2"></use></svg>
                     <span>Bật (F)</span>
                   </button>
                 </div>
                 <!-- Hàng 3: Tùy chỉnh đọc chuyên sâu (Aa) -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#textsize-glyph"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6873,15 +7211,15 @@
                       <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Phông chữ, giãn dòng, lề trang &amp; màu giấy</div>
                     </div>
                   </div>
-                  <button id="btnReadingSettings" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] hover:bg-black/5 dark:hover:bg-white/5 text-indigo-600 dark:text-indigo-400 flex items-center gap-1 font-semibold transition text-xs shrink-0 cursor-pointer">
+                  <button id="btnReadingSettings" class="touch-target px-2.5 py-1 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-[#F2F0EB] dark:bg-[#111317] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 font-semibold transition text-xs shrink-0 cursor-pointer select-none">
                     <span>Mở bảng (Aa)</span>
                   </button>
                 </div>
 
                 <!-- Hàng 2: Vuốt chuyển bài -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-swipe"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6896,9 +7234,9 @@
                 </div>
 
                 <!-- Hàng 3: Chế độ tập trung (Pomodoro) -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4"><use href="#icon-ds-pomodoro"></use></svg>
                     </div>
                     <div class="min-w-0">
@@ -6906,16 +7244,16 @@
                       <div class="text-[10px] text-[#6E6B65] dark:text-[#979DA8] truncate">Ẩn giao diện, hẹn giờ Pomodoro</div>
                     </div>
                   </div>
-                  <button id="btnDisplaySettingsFocus" class="touch-target px-2.5 py-1 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold transition text-xs hover:bg-rose-100 shrink-0">
+                  <button id="btnDisplaySettingsFocus" class="touch-target px-2.5 py-1 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold transition text-xs shrink-0 cursor-pointer select-none">
                     <svg class="w-3.5 h-3.5"><use href="#icon-focus"></use></svg>
                     <span>Bật</span>
                   </button>
                 </div>
 
                 <!-- Hàng 4: Trợ lý AI đọc bài (Giải thích, Ví dụ, Dịch) - ĐẶC QUYỀN GÓI PRO -->
-                <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition">
+                <div class="display-settings-row flex items-center justify-between p-1.5 rounded-xl transition">
                   <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <div class="row-icon-box w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17.5 3.5C17.5 5.7 15.5 7.5 13.5 7.5C15.5 7.5 17.5 9.3 17.5 11.5C17.5 9.3 19.5 7.5 21.5 7.5C19.5 7.5 17.5 5.7 17.5 3.5Z"></path>
                         <path d="M4 14C4 10.5 7.5 9.5 11 10C14.5 10.5 17 12.5 17 15C17 17.5 14 19 10 19C6 19 4 16.5 4 14Z"></path>
@@ -7202,7 +7540,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.7 • build 17/10/2026 10:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.8 • build 17/10/2026 10:25</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -8002,7 +8340,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.7 • build 17/10/2026 10:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.8 • build 17/10/2026 10:25</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -34524,6 +34862,23 @@
     on('#fsBtnFontDec', 'click', () => adjustFontSize(-1));
     on('#fsBtnFontInc', 'click', () => adjustFontSize(1));
 
+    function resetFontSizeToDefault() {
+      if (state.fontSizeOffset !== 0) {
+        state.fontSizeOffset = 0;
+        updateFontSizeDisplay();
+        applyTextScalingToArticleHeaders();
+        applyFontSizeToIframe();
+        saveUserSettings();
+        showToast('Đã đặt lại cỡ chữ: 100% (Mặc định)');
+      } else {
+        showToast('Cỡ chữ hiện đang ở mức 100% mặc định');
+      }
+    }
+    window.resetFontSizeToDefault = resetFontSizeToDefault;
+    on('#fontScaleDisplay', 'click', resetFontSizeToDefault);
+    on('#menuFontScaleDisplay', 'click', resetFontSizeToDefault);
+    on('#fsFontScaleDisplay', 'click', resetFontSizeToDefault);
+
     function applyTheme(isDark) {
       if (isDark) {
         document.documentElement.classList.add('dark');
@@ -47517,7 +47872,7 @@ QUY TẮC:
       }
     };
 
-    console.log("%c Thư viện Sách HTML v5.8.7 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.8 - build 17/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
