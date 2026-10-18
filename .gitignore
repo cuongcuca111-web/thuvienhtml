@@ -9,6 +9,7 @@ package-lock.json
 
 # Python & Scratch Scripts
 *.py
+!scripts/*.py
 *.pyc
 __pycache__/
 *.bak
