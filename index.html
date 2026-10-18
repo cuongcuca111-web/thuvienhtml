@@ -2038,9 +2038,9 @@
       <div id="mobileSearchResultsDropdown" class="hidden mt-2 max-h-72 overflow-y-auto bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl p-2 text-sm"></div>
     </div>
 
-    <!-- // REDESIGN: THANH TIẾN ĐỘ ĐỌC GẮN DÍNH NGAY DƯỚI TOPBAR (2.5px gradient mảnh dẻ) -->
+    <!-- // REDESIGN: THANH TIẾN ĐỘ ĐỌC GẮN DÍNH NGAY DƯỚI TOPBAR (2.5px gradient mảnh dẻ, GPU scaleX) -->
     <div class="w-full h-[2.5px] bg-[#E7E5DF]/40 dark:bg-[#262C36]/40 overflow-hidden">
-      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 w-0"></div>
+      <div id="readingProgressBar" class="h-full w-full origin-left will-change-transform bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500" style="transform: scaleX(0);"></div>
     </div>
   </div>
   <!-- THÂN ỨNG DỤNG (FLEX-1, TỰ ĐỘNG LẤY PHẦN CÒN LẠI CỦA 100dvh) -->
@@ -5409,8 +5409,8 @@
 
     </div>
 
-    <!-- Thanh tiến độ đọc mảnh chạy ngay sát dưới mép thanh toolbar -->
-    <div id="focusProgressBar" class="absolute bottom-0 left-0 h-[2.5px] w-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 transition-all duration-100"></div>
+    <!-- Thanh tiến độ đọc mảnh chạy ngay sát dưới mép thanh toolbar (GPU scaleX) -->
+    <div id="focusProgressBar" class="absolute bottom-0 left-0 h-[2.5px] w-full origin-left will-change-transform bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 transition-transform duration-100" style="transform: scaleX(0);"></div>
   </header>
 
   <!-- // FEATURE-1: Modal Cài đặt Pomodoro -->
@@ -11994,35 +11994,66 @@
         checkPopupRaf = requestAnimationFrame(checkPopupState);
       };
 
+      // Helper kiểm tra nhanh xem phần tử có phải là Modal / Popup / Popover không để tránh kích hoạt khi cuộn trang hoặc cập nhật đồng hồ
+      const isLikelyPopupElement = (el) => {
+        if (!el || el.nodeType !== 1) return false;
+        const id = el.id || '';
+        if (
+          id === 'readingProgressBar' ||
+          id === 'focusProgressBar' ||
+          id === 'ambientFestivalCanvas' ||
+          id === 'modalFestivalCanvas' ||
+          id === 'hanoiHeaderClockText' ||
+          id === 'hanoiFocusClockText' ||
+          id === 'hanoiModalClockBig' ||
+          id === 'readingArea'
+        ) {
+          return false;
+        }
+        const cls = el.classList;
+        if (cls && (
+          cls.contains('festival-top-snow-cap') ||
+          cls.contains('festival-top-halloween-cap') ||
+          cls.contains('festival-top-spring-cap') ||
+          cls.contains('festival-top-summer-cap') ||
+          cls.contains('festival-popup-sticker') ||
+          cls.contains('decor-corner-cap') ||
+          cls.contains('lesson-item-row') ||
+          cls.contains('lesson-active-indicator')
+        )) {
+          return false;
+        }
+        if (cls && (cls.contains('modal-animated') || cls.contains('modal-active') || cls.contains('fixed'))) {
+          return true;
+        }
+        if (id && /modal|popup|popover|dropdown|dialog|overlay|sheet|menu|lightbox/i.test(id)) {
+          return true;
+        }
+        const role = el.getAttribute && el.getAttribute('role');
+        if (role === 'dialog' || role === 'menu') return true;
+        return false;
+      };
+
       popupFestivalObserver = new MutationObserver((mutations) => {
         let shouldCheck = false;
         for (const m of mutations) {
-          // Bỏ qua các thay đổi do chính canvas lễ hội hoặc decor caps tạo ra để không tạo vòng lặp mutation
-          if (m.target && (
-            m.target.id === 'ambientFestivalCanvas' ||
-            m.target.id === 'modalFestivalCanvas' ||
-            (m.target.classList && (
-              m.target.classList.contains('festival-top-snow-cap') ||
-              m.target.classList.contains('festival-popup-sticker') ||
-              m.target.classList.contains('decor-corner-cap')
-            ))
-          )) {
-            continue;
-          }
           if (m.type === 'attributes' && (m.attributeName === 'class' || m.attributeName === 'style')) {
-            shouldCheck = true;
-            break;
+            if (isLikelyPopupElement(m.target)) {
+              shouldCheck = true;
+              break;
+            }
+            continue;
           }
           if (m.type === 'childList') {
             for (const n of m.addedNodes) {
-              if (n.nodeType === 1 && !n.classList?.contains('festival-top-snow-cap') && !n.classList?.contains('festival-popup-sticker')) {
+              if (isLikelyPopupElement(n)) {
                 shouldCheck = true;
                 break;
               }
             }
             if (shouldCheck) break;
             for (const n of m.removedNodes) {
-              if (n.nodeType === 1 && !n.classList?.contains('festival-top-snow-cap') && !n.classList?.contains('festival-popup-sticker')) {
+              if (isLikelyPopupElement(n)) {
                 shouldCheck = true;
                 break;
               }
@@ -23438,6 +23469,40 @@
       return t.finished.catch(() => {});
     }
 
+    // Fast-path cập nhật dòng bài học đang active trên Sidebar mà không cần render lại toàn bộ DOM #categoriesList
+    function updateSidebarActiveLessonFast(lessonId) {
+      if (state.isSharedMode || state.sortOrder === 'recent') return false;
+      const container = document.getElementById('categoriesList');
+      if (!container) return false;
+      const escapedId = (typeof CSS !== 'undefined' && typeof CSS.escape === 'function')
+        ? CSS.escape(String(lessonId))
+        : String(lessonId).replace(/["\\]/g, '\\$&');
+      const targetRow = container.querySelector(`.lesson-item-row[data-lesson-id="${escapedId}"]`);
+      if (!targetRow) return false;
+
+      // Bỏ trạng thái active của bài cũ
+      container.querySelectorAll('.lesson-item-row.is-active').forEach(row => {
+        if (row === targetRow) return;
+        row.classList.remove('is-active', 'bg-[#4F46E5]/10', 'dark:bg-[#818CF8]/15', 'text-indigo-900', 'dark:text-indigo-200');
+        row.classList.add('hover:bg-black/5', 'dark:hover:bg-white/5');
+        const ind = row.querySelector('.lesson-active-indicator');
+        if (ind) {
+          ind.classList.remove('scale-y-100', 'opacity-100');
+          ind.classList.add('scale-y-0', 'opacity-0');
+        }
+      });
+
+      // Bật trạng thái active cho bài mới
+      targetRow.classList.remove('hover:bg-black/5', 'dark:hover:bg-white/5');
+      targetRow.classList.add('is-active', 'bg-[#4F46E5]/10', 'dark:bg-[#818CF8]/15', 'text-indigo-900', 'dark:text-indigo-200');
+      const targetInd = targetRow.querySelector('.lesson-active-indicator');
+      if (targetInd) {
+        targetInd.classList.remove('scale-y-0', 'opacity-0');
+        targetInd.classList.add('scale-y-100', 'opacity-100');
+      }
+      return true;
+    }
+
     function selectLesson(lessonId) {
       if (!lessonId) return Promise.resolve();
       if (typeof stopTTS === 'function') stopTTS();
@@ -23460,7 +23525,9 @@
         if (floatingNav) floatingNav.classList.add('hidden');
         postMessageToLessonIframe({ type: 'CLEAR_BOX_OVERLAY' });
 
-        renderCategoriesAndLessons();
+        if (!updateSidebarActiveLessonFast(lessonId)) {
+          renderCategoriesAndLessons();
+        }
         renderActiveLesson();
         saveUserSettings();
         const ra = document.getElementById('readingArea');
@@ -24853,26 +24920,36 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Bảng nhớ tạm từng ký tự tiếng Việt để chuẩn hóa 1-1 siêu tốc (< 0.5ms cho 100KB văn bản)
+    const _vnCharNormCache = new Map([['đ', 'd'], ['Đ', 'D']]);
+
     // Chuẩn hóa tiếng Việt 1-1 ký tự (đảm bảo index của chuỗi không đổi)
     function normalizeVietnamese1to1(text) {
       if (!text) return '';
       const nfc = text.normalize('NFC');
-      const res = [];
+      let out = '';
       for (let i = 0; i < nfc.length; i++) {
+        const code = nfc.charCodeAt(i);
+        // Fast-path cho ký tự ASCII thuần (< 128): không cần gọi normalize('NFD')
+        if (code < 128) {
+          out += nfc[i];
+          continue;
+        }
         const ch = nfc[i];
-        if (ch === 'đ') res.push('d');
-        else if (ch === 'Đ') res.push('D');
-        else {
+        let mapped = _vnCharNormCache.get(ch);
+        if (mapped === undefined) {
           const nfd = ch.normalize('NFD');
           let stripped = '';
           for (let j = 0; j < nfd.length; j++) {
-            const code = nfd.charCodeAt(j);
-            if (code < 0x0300 || code > 0x036F) stripped += nfd[j];
+            const c = nfd.charCodeAt(j);
+            if (c < 0x0300 || c > 0x036F) stripped += nfd[j];
           }
-          res.push(stripped || ch);
+          mapped = stripped || ch;
+          _vnCharNormCache.set(ch, mapped);
         }
+        out += mapped;
       }
-      return res.join('');
+      return out;
     }
 
     // Trích xuất văn bản thuần sạch loại bỏ script, style, noscript, thẻ ẩn
@@ -24891,10 +24968,11 @@
     // Lập chỉ mục cho 1 bài học (Tự động nạp IndexedDB nếu chưa có htmlContent trong bộ nhớ)
     async function indexLesson(lesson) {
       if (!lesson || !lesson.id) return null;
-      const cacheKey = `${lesson.id}_${lesson.updatedAt || lesson.createdAt || 0}`;
+      const contentLen = lesson.htmlContent ? lesson.htmlContent.length : 0;
+      const cacheKey = `${lesson.id}_${lesson.updatedAt || lesson.createdAt || 0}_${contentLen}`;
       if (searchIndexCache.has(lesson.id)) {
         const cached = searchIndexCache.get(lesson.id);
-        if (cached.key === cacheKey && cached.plainText && cached.plainText.length > 0) {
+        if (cached.key === cacheKey && typeof cached.plainText === 'string') {
           return cached;
         }
       }
@@ -24910,6 +24988,14 @@
         }
       }
 
+      const finalCacheKey = `${lesson.id}_${lesson.updatedAt || lesson.createdAt || 0}_${html ? html.length : 0}`;
+      if (searchIndexCache.has(lesson.id)) {
+        const cached = searchIndexCache.get(lesson.id);
+        if (cached.key === finalCacheKey && typeof cached.plainText === 'string') {
+          return cached;
+        }
+      }
+
       const plain = extractCleanTextFromHtml(html || '');
       const normText = normalizeVietnamese1to1(plain).toLowerCase();
       const normTitle = normalizeVietnamese1to1(lesson.title || '').toLowerCase();
@@ -24917,7 +25003,7 @@
 
       const entry = {
         id: lesson.id,
-        key: cacheKey,
+        key: finalCacheKey,
         title: lesson.title || 'Bài chưa đặt tên',
         normTitle,
         description: lesson.description || '',
@@ -24932,28 +25018,34 @@
       return entry;
     }
 
-    // Lập chỉ mục lười chạy nền (Background Idle Indexing)
+    // Lập chỉ mục lười chạy nền khi trình duyệt rảnh (Background Idle Indexing via requestIdleCallback)
     async function scheduleBackgroundIndexing() {
       if (isIndexingActive || !state.lessons || state.lessons.length === 0) return;
       isIndexingActive = true;
       const nonTrashed = state.lessons.filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
       searchDebugLog("Bắt đầu lập chỉ mục nền cho", nonTrashed.length, "bài học.");
 
+      const waitIdle = () => new Promise(resolve => {
+        if (typeof window.requestIdleCallback === 'function') {
+          window.requestIdleCallback(() => resolve(), { timeout: 200 });
+        } else {
+          setTimeout(resolve, 24);
+        }
+      });
+
       for (let i = 0; i < nonTrashed.length; i++) {
         try {
           await indexLesson(nonTrashed[i]);
         } catch (_) {}
-        // Tạm nghỉ nhỏ giữa các bài để không chiếm luồng chính
-        if (i % 3 === 0) {
-          await new Promise(r => setTimeout(r, 16));
-        }
+        // Nhường luồng chính sau mỗi bài để giữ mượt 60/120fps
+        await waitIdle();
       }
       isIndexingActive = false;
       searchDebugLog("Hoàn tất lập chỉ mục nền.");
     }
 
     // Gọi lập chỉ mục nền khi app rảnh rỗi
-    setTimeout(scheduleBackgroundIndexing, 1200);
+    setTimeout(scheduleBackgroundIndexing, 1500);
 
     // Nhảy tới đúng vị trí kết quả và gửi thông điệp vẽ khung nổi bật
     function jumpToSearchMatch(lessonId, occurrenceIndex, prefix, suffix, keyword) {
@@ -25109,7 +25201,7 @@
       // Đảm bảo tất cả các bài được lập chỉ mục (nạp nội dung từ IndexedDB nếu cần)
       let unindexedCount = 0;
       targetLessons.forEach(l => {
-        if (!searchIndexCache.has(l.id) || !searchIndexCache.get(l.id).plainText) unindexedCount++;
+        if (!searchIndexCache.has(l.id) || typeof searchIndexCache.get(l.id).plainText !== 'string') unindexedCount++;
       });
 
       if (unindexedCount > 0) {
@@ -28065,14 +28157,6 @@
           return;
         }
       }, { passive: true });
-
-      readingArea.addEventListener('scroll', () => {
-        const sTop = readingArea.scrollTop;
-        const sHeight = readingArea.scrollHeight - readingArea.clientHeight;
-        const pct = sHeight > 0 ? (sTop / sHeight) * 100 : 0;
-        const bar = document.getElementById('readingProgressBar');
-        if (bar) bar.style.width = `${pct}%`;
-      });
     }
 
     const sidebar = document.getElementById('mainSidebar');
@@ -31035,6 +31119,7 @@
     // // FEATURE-1: NHỚ VỊ TRÍ ĐỌC VÀ NÚT "TIẾP TỤC HỌC"
     // -------------------------------------------------------------------------
     let scrollSaveTimer = null;
+    let readingScrollRaf = null;
     const readingAreaEl = document.getElementById('readingArea');
     const resumePillEl = document.getElementById('resumePositionPill');
     const resumePillText = document.getElementById('resumePositionText');
@@ -31043,25 +31128,35 @@
 
     if (readingAreaEl) {
       readingAreaEl.addEventListener('scroll', () => {
-        if (!state.activeLessonId || state.isSharedMode) return;
-        const sTop = readingAreaEl.scrollTop;
-        const sHeight = readingAreaEl.scrollHeight - readingAreaEl.clientHeight;
-        const pct = sHeight > 0 ? Math.min(100, Math.max(0, (sTop / sHeight) * 100)) : 0;
-        const rounded = Math.round(pct);
+        if (readingScrollRaf) return;
+        readingScrollRaf = requestAnimationFrame(() => {
+          readingScrollRaf = null;
+          const sTop = readingAreaEl.scrollTop;
+          const sHeight = readingAreaEl.scrollHeight - readingAreaEl.clientHeight;
+          const ratio = sHeight > 0 ? Math.min(1, Math.max(0, sTop / sHeight)) : 0;
 
-        const bar = document.getElementById('readingProgressBar');
-        if (bar) bar.style.width = `${pct}%`;
+          const bar = document.getElementById('readingProgressBar');
+          if (bar) bar.style.transform = `scaleX(${ratio})`;
 
-        if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
-        scrollSaveTimer = setTimeout(() => {
-          state.learningData.readingProgress[state.activeLessonId] = {
-            percent: rounded,
-            scrollTop: sTop,
-            updatedAt: Date.now()
-          };
-          saveLearningData();
-          updateContinueLearningCards();
-        }, 150);
+          if (state.focusMode) {
+            const focusBar = document.getElementById('focusProgressBar');
+            if (focusBar) focusBar.style.transform = `scaleX(${ratio})`;
+          }
+
+          if (!state.activeLessonId || state.isSharedMode) return;
+          const rounded = Math.round(ratio * 100);
+
+          if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
+          scrollSaveTimer = setTimeout(() => {
+            state.learningData.readingProgress[state.activeLessonId] = {
+              percent: rounded,
+              scrollTop: sTop,
+              updatedAt: Date.now()
+            };
+            saveLearningData();
+            updateContinueLearningCards();
+          }, 150);
+        });
       }, { passive: true });
     }
 
@@ -35863,11 +35958,13 @@
     let lastEngagementTime = Date.now();
 
     function recordUserEngagement() {
+      const now = Date.now();
+      if (now - lastEngagementTime < 2000) return;
       isUserEngaged = true;
-      lastEngagementTime = Date.now();
+      lastEngagementTime = now;
     }
 
-    ['scroll', 'click', 'mousemove', 'keydown', 'touchstart'].forEach(evt => {
+    ['scroll', 'click', 'pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(evt => {
       window.addEventListener(evt, recordUserEngagement, { passive: true });
     });
 
@@ -36565,8 +36662,8 @@
       if (!readingArea || !focusProgressBar) return;
       const sTop = readingArea.scrollTop;
       const sHeight = readingArea.scrollHeight - readingArea.clientHeight;
-      const pct = sHeight > 0 ? Math.min(100, Math.max(0, (sTop / sHeight) * 100)) : 0;
-      focusProgressBar.style.width = `${pct}%`;
+      const ratio = sHeight > 0 ? Math.min(1, Math.max(0, sTop / sHeight)) : 0;
+      focusProgressBar.style.transform = `scaleX(${ratio})`;
     }
 
     // Pomodoro Timer Engine (Đếm chính xác theo timestamp + xử lý tab nền)
@@ -36841,14 +36938,6 @@
         tickPomodoro();
       }
     });
-
-    // Sự kiện cuộn để cập nhật thanh tiến độ mỏng trong Focus Mode
-    const readingAreaForFocus = document.getElementById('readingArea');
-    if (readingAreaForFocus) {
-      readingAreaForFocus.addEventListener('scroll', () => {
-        if (state.focusMode) updateFocusProgressBar();
-      }, { passive: true });
-    }
 
     // Phím tắt Esc để thoát Focus Mode hoặc đóng popover
     window.addEventListener('keydown', (e) => {
@@ -40873,14 +40962,53 @@ QUY TẮC:
       const canList = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
       const chiList = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
 
-      function getLunarInfo(date) {
+      // Khởi tạo sẵn các bộ định dạng Intl.DateTimeFormat một lần duy nhất để tránh cấp phát bộ nhớ mỗi giây
+      const lunarFormatter = (() => {
         try {
-          const parts = new Intl.DateTimeFormat('vi-VN-u-ca-chinese', {
+          return new Intl.DateTimeFormat('vi-VN-u-ca-chinese', {
             timeZone: 'Asia/Ho_Chi_Minh',
             day: 'numeric',
             month: 'numeric',
             year: 'numeric'
-          }).formatToParts(date);
+          });
+        } catch (e) {
+          return null;
+        }
+      })();
+
+      const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
+      const hourFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: 'numeric',
+        hour12: false
+      });
+
+      const fullDateFormatter = new Intl.DateTimeFormat('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+
+      const selectedDateFormatter = new Intl.DateTimeFormat('vi-VN', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+      });
+
+      function getLunarInfo(date) {
+        try {
+          if (!lunarFormatter) throw new Error('No lunar formatter');
+          const parts = lunarFormatter.formatToParts(date);
 
           let d = '', m = '', yVal = date.getFullYear();
           for (const p of parts) {
@@ -40912,48 +41040,38 @@ QUY TẮC:
         return 'Chào đêm muộn • Giờ Hà Nội';
       }
 
-      function updateLiveClocks() {
+      const elHeader = document.getElementById('hanoiHeaderClockText');
+      const elFocus = document.getElementById('hanoiFocusClockText');
+      const elBig = document.getElementById('hanoiModalClockBig');
+      const modal = document.getElementById('hanoiClockCalendarModal');
+      const elGreeting = document.getElementById('hanoiModalGreeting');
+      const elDateFull = document.getElementById('hanoiModalDateFull');
+      const elLunarVal = document.getElementById('hanoiModalLunarVal');
+      const elDayOfYear = document.getElementById('hanoiModalDayOfYear');
+      const elWeekOfYear = document.getElementById('hanoiModalWeekOfYear');
+
+      let lastModalMinuteKey = '';
+
+      function updateLiveClocks(forceModalUpdate = false) {
+        if (document.hidden && !forceModalUpdate) return;
+
         const now = new Date();
-        const timeStr = new Intl.DateTimeFormat('vi-VN', {
-          timeZone: 'Asia/Ho_Chi_Minh',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
-        }).format(now);
+        const timeStr = timeFormatter.format(now);
 
-        const elHeader = document.getElementById('hanoiHeaderClockText');
-        if (elHeader) elHeader.textContent = timeStr;
+        if (elHeader && elHeader.textContent !== timeStr) elHeader.textContent = timeStr;
+        if (elFocus && elFocus.textContent !== timeStr) elFocus.textContent = timeStr;
+        if (elBig && elBig.textContent !== timeStr) elBig.textContent = timeStr;
 
-        const elFocus = document.getElementById('hanoiFocusClockText');
-        if (elFocus) elFocus.textContent = timeStr;
-
-        const elBig = document.getElementById('hanoiModalClockBig');
-        if (elBig) elBig.textContent = timeStr;
-
-        const modal = document.getElementById('hanoiClockCalendarModal');
         if (modal && !modal.classList.contains('hidden')) {
-          const hanoiHour = parseInt(new Intl.DateTimeFormat('en-US', {
-            timeZone: 'Asia/Ho_Chi_Minh',
-            hour: 'numeric',
-            hour12: false
-          }).format(now), 10);
+          const minuteKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}`;
+          if (!forceModalUpdate && minuteKey === lastModalMinuteKey) return;
+          lastModalMinuteKey = minuteKey;
 
-          const elGreeting = document.getElementById('hanoiModalGreeting');
+          const hanoiHour = parseInt(hourFormatter.format(now), 10);
+
           if (elGreeting) elGreeting.textContent = getGreeting(hanoiHour);
+          if (elDateFull) elDateFull.textContent = fullDateFormatter.format(now);
 
-          const elDateFull = document.getElementById('hanoiModalDateFull');
-          if (elDateFull) {
-            elDateFull.textContent = new Intl.DateTimeFormat('vi-VN', {
-              timeZone: 'Asia/Ho_Chi_Minh',
-              weekday: 'long',
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-            }).format(now);
-          }
-
-          const elLunarVal = document.getElementById('hanoiModalLunarVal');
           if (elLunarVal) {
             const lunar = getLunarInfo(now);
             elLunarVal.textContent = `Âm lịch: ${lunar.fullText}`;
@@ -40965,10 +41083,7 @@ QUY TẮC:
           const totalYearDays = isLeap ? 366 : 365;
           const weekNum = Math.ceil(diffDays / 7);
 
-          const elDayOfYear = document.getElementById('hanoiModalDayOfYear');
           if (elDayOfYear) elDayOfYear.textContent = `Ngày ${diffDays} / ${totalYearDays} trong năm`;
-
-          const elWeekOfYear = document.getElementById('hanoiModalWeekOfYear');
           if (elWeekOfYear) elWeekOfYear.textContent = `Tuần ${weekNum}`;
         }
       }
@@ -40978,12 +41093,7 @@ QUY TẮC:
         const distEl = document.getElementById('hanoiCalSelectedDistance');
         if (!descEl || !distEl) return;
 
-        const dateStr = new Intl.DateTimeFormat('vi-VN', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric'
-        }).format(calSelectedDate);
+        const dateStr = selectedDateFormatter.format(calSelectedDate);
 
         const lunar = getLunarInfo(calSelectedDate);
         descEl.textContent = `${dateStr} (ÂL: ${lunar.day}/${lunar.month})`;
@@ -41024,6 +41134,8 @@ QUY TẮC:
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const daysInPrevMonth = new Date(year, month, 0).getDate();
 
+        const frag = document.createDocumentFragment();
+
         for (let i = startCol - 1; i >= 0; i--) {
           const dNum = daysInPrevMonth - i;
           const btn = document.createElement('button');
@@ -41035,7 +41147,7 @@ QUY TẮC:
             calSelectedDate = new Date(year, month - 1, dNum);
             renderCalendar();
           });
-          grid.appendChild(btn);
+          frag.appendChild(btn);
         }
 
         for (let day = 1; day <= daysInMonth; day++) {
@@ -41072,7 +41184,7 @@ QUY TẮC:
             renderCalendar();
           });
 
-          grid.appendChild(btn);
+          frag.appendChild(btn);
         }
 
         const totalCells = startCol + daysInMonth;
@@ -41087,9 +41199,10 @@ QUY TẮC:
             calSelectedDate = new Date(year, month + 1, i);
             renderCalendar();
           });
-          grid.appendChild(btn);
+          frag.appendChild(btn);
         }
 
+        grid.appendChild(frag);
         updateSelectedDetail();
       }
 
@@ -41122,7 +41235,7 @@ QUY TẮC:
         calViewDate = new Date();
         calSelectedDate = new Date();
         renderCalendar();
-        updateLiveClocks();
+        updateLiveClocks(true);
         if (typeof showModalAnimated === 'function') {
           showModalAnimated('hanoiClockCalendarModal');
         } else if (typeof window.showModalAnimated === 'function') {
@@ -41193,8 +41306,12 @@ QUY TẮC:
         }
       });
 
-      updateLiveClocks();
-      setInterval(updateLiveClocks, 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) updateLiveClocks(true);
+      });
+
+      updateLiveClocks(true);
+      setInterval(() => updateLiveClocks(false), 1000);
     }
 
     if (document.readyState === 'loading') {
