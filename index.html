@@ -152,6 +152,7 @@
         date: '2026-10-18T16:00:00+07:00',
         title: 'Triệt Tiêu Hoàn Toàn Hiện Tượng Tự Động Refresh / Chớp Nháy Trong Thư Viện Prompt AI',
         items: [
+          { type: 'improved', text: 'Tối ưu thao tác "Hủy link" chia sẻ bài học: Hủy liên kết trực tiếp ngay lập tức khi bấm, loại bỏ hoàn toàn hộp thoại popup xác nhận trình duyệt.' },
           { type: 'fix', text: 'Khắc phục triệt để hiện tượng thư viện prompt tự động refresh/chớp giật sau 1-2s: So sánh sâu dữ liệu (Deep Equality Check) và khóa chống vẽ lại (Idempotency Guard) khi nội dung thẻ không thay đổi.' },
           { type: 'improved', text: 'Tối ưu cơ chế đồng bộ nền Cloud API & Firestore: Kiểm soát tần suất tải ngầm thông minh (3 phút throttle), triệt tiêu việc re-render và cuộn trang ngoài ý muốn khi người dùng đang đọc prompt.' }
         ]
@@ -45039,11 +45040,9 @@
       if (shareExpirySelectArea) shareExpirySelectArea.classList.add('opacity-40', 'pointer-events-none');
       if (btnCreateNewShareLink) btnCreateNewShareLink.classList.add('hidden');
 
-      // // FIX-2: Xử lý sự kiện Hủy link đang hoạt động
+      // // FIX-2: Xử lý sự kiện Hủy link đang hoạt động (Hủy trực tiếp, không hiện popup xác nhận)
       const handleRevoke = async () => {
         if (!activeLink || !activeLink.id) return;
-        const confirmMsg = "Bạn có chắc chắn muốn hủy liên kết chia sẻ này không?\n\nSau khi hủy, người nhận sẽ không thể truy cập tài liệu qua link này nữa và bạn có thể tạo link mới.";
-        if (!confirm(confirmMsg)) return;
 
         const allRevokeBtns = [btnRevokeActiveShareLink, btnRevokeActiveShareNotice, btnFooterRevokeShareLink].filter(Boolean);
         allRevokeBtns.forEach(btn => {
@@ -45068,9 +45067,18 @@
             <span>Đang hủy...</span>
           `;
         }
+        if (btnFooterRevokeShareLink) {
+          btnFooterRevokeShareLink.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin text-rose-600 dark:text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Đang hủy...</span>
+          `;
+        }
 
         try {
-          await new Promise(r => setTimeout(r, 500));
+          await new Promise(r => setTimeout(r, 350));
           await revokeShareLink(activeLink.id);
         } finally {
           allRevokeBtns.forEach(btn => {
