@@ -52,13 +52,15 @@ service cloud.firestore {
 
     // 6. Liên kết chia sẻ bài học công khai (Public Shares):
     match /artifacts/{appId}/public_shares/{shareId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if request.auth != null && resource.data.authorId == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
       allow update, delete: if request.auth != null && resource.data.authorId == request.auth.uid;
 
       match /chunks/{chunkId} {
         allow read: if true;
-        allow write: if request.auth != null;
+        allow write: if request.auth != null &&
+          get(/databases/$(database)/documents/artifacts/$(appId)/public_shares/$(shareId)).data.authorId == request.auth.uid;
       }
     }
 
@@ -84,9 +86,18 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    match /users/{userId}/{allPaths=**} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId && !allPaths.matches('billing/.*');
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /billing/{billingDoc=**} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if false;
+      }
+
+      match /{subcollection}/{docPath=**} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId && subcollection != 'billing';
+      }
     }
 
     // Mặc định từ chối tất cả các collection khác

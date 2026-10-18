@@ -7,7 +7,7 @@ import sys
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-TOKEN = os.environ.get("GITHUB_TOKEN", "ghp_" + "7e0EdtQOIi23ZBrsZdbTZl1SjyYHjs3GyPdO")
+TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO = "cuongcuca111-web/thuvienhtml"
 BRANCH = "main"
 

@@ -34,5 +34,6 @@ toolbar_*.html
 
 # Agent Skills & Local Backups
 .agent/
+_archive/
 index-backup.html
 
