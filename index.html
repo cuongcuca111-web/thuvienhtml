@@ -148,6 +148,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.14',
+        date: '2026-10-18T15:30:00+07:00',
+        title: 'Chống Đóng Nhầm Popup Khi Bôi Đen & Kéo Thả Chuột Ra Vùng Ngoài',
+        items: [
+          { type: 'feature', text: 'Thêm cơ chế chống đóng nhầm popup khi bôi đen / kéo chuột: Chỉ đóng popup khi click dứt khoát vào lớp nền mờ bên ngoài, tuyệt đối không đóng khi kéo thả chuột hoặc chọn văn bản từ trong popup rồi thả chuột ra ngoài.' },
+          { type: 'improved', text: 'Tối ưu độ nhạy con trỏ (Pointer Tracking) hỗ trợ cả chuột và màn hình cảm ứng, ngăn ngừa việc đóng popup ngoài ý muốn khi tra cứu và sao chép nội dung.' }
+        ]
+      },
+      {
         version: 'v5.8.13',
         date: '2026-10-18T12:10:00+07:00',
         title: 'Hiệu Ứng Chuyển Động Co Giãn Mượt Mà & Lọc Thẻ Thư Viện Prompt AI',
@@ -25466,10 +25475,102 @@
     window.showModalAnimated = showModalAnimated;
     window.hideModalAnimated = hideModalAnimated;
 
-    // // ANIM: Tự động đóng modal mượt mà khi người dùng chạm vào lớp nền mờ
+    // // SAFETY & ANIM: Quản lý đóng modal khi click ra lớp nền mờ ngoài popup
+    // Cơ chế chống thao tác nhầm: CHỈ đóng popup khi click dứt khoát vào lớp nền mờ ngoài popup.
+    // TUYỆT ĐỐI KHÔNG ĐÓNG khi người dùng đang bôi đen (text selection), kéo thả chuột từ trong popup ra ngoài rồi nhả chuột.
+    let modalPointerDownTarget = null;
+    let modalPointerDownPos = { x: 0, y: 0 };
+    let isPointerDragging = false;
+    let pointerResetTimer = null;
+
+    function handlePointerDownForModal(e) {
+      if (pointerResetTimer) {
+        clearTimeout(pointerResetTimer);
+        pointerResetTimer = null;
+      }
+      modalPointerDownTarget = e.target;
+      modalPointerDownPos = { x: e.clientX, y: e.clientY };
+      isPointerDragging = false;
+      window.modalPointerDownTarget = modalPointerDownTarget;
+      window.isPointerDragging = false;
+    }
+
+    function handlePointerMoveForModal(e) {
+      if (!modalPointerDownTarget) return;
+      // Kiểm tra nếu đang đè giữ chuột hoặc chạm di chuyển
+      const isPressed = (typeof e.buttons === 'number' && e.buttons > 0) || e.type === 'touchmove';
+      if (isPressed) {
+        const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        const threshold = (e.pointerType === 'touch' || e.type === 'touchmove') ? 12 : 6;
+        if (Math.hypot(clientX - modalPointerDownPos.x, clientY - modalPointerDownPos.y) > threshold) {
+          isPointerDragging = true;
+          window.isPointerDragging = true;
+        }
+      }
+    }
+
+    function handlePointerUpForModal() {
+      if (pointerResetTimer) clearTimeout(pointerResetTimer);
+      // Giữ biến trong 160ms để sự kiện click kịp kiểm tra, sau đó mới reset an toàn
+      pointerResetTimer = setTimeout(() => {
+        modalPointerDownTarget = null;
+        isPointerDragging = false;
+        pointerResetTimer = null;
+        window.modalPointerDownTarget = null;
+        window.isPointerDragging = false;
+      }, 160);
+    }
+
+    function handlePointerCancelForModal() {
+      if (pointerResetTimer) clearTimeout(pointerResetTimer);
+      modalPointerDownTarget = null;
+      isPointerDragging = false;
+      pointerResetTimer = null;
+      window.modalPointerDownTarget = null;
+      window.isPointerDragging = false;
+    }
+
+    // Đăng ký bộ lắng nghe con trỏ toàn cục (sử dụng capture: true để luôn bắt được tương tác sớm nhất)
+    if (window.PointerEvent) {
+      document.addEventListener('pointerdown', handlePointerDownForModal, true);
+      document.addEventListener('pointermove', handlePointerMoveForModal, { passive: true, capture: true });
+      document.addEventListener('pointerup', handlePointerUpForModal, true);
+      document.addEventListener('pointercancel', handlePointerCancelForModal, true);
+    } else {
+      document.addEventListener('mousedown', handlePointerDownForModal, true);
+      document.addEventListener('mousemove', handlePointerMoveForModal, { passive: true, capture: true });
+      document.addEventListener('mouseup', handlePointerUpForModal, true);
+      document.addEventListener('touchstart', handlePointerDownForModal, { passive: true, capture: true });
+      document.addEventListener('touchmove', handlePointerMoveForModal, { passive: true, capture: true });
+      document.addEventListener('touchend', handlePointerUpForModal, true);
+      document.addEventListener('touchcancel', handlePointerCancelForModal, true);
+    }
+
+    // Tự động đóng modal khi người dùng thực hiện cú click dứt khoát vào lớp nền mờ
     document.addEventListener('click', (e) => {
-      if (e.target && e.target.classList && e.target.classList.contains('modal-animated') && e.target.classList.contains('modal-active')) {
-        hideModalAnimated(e.target);
+      const modal = e.target;
+      if (modal && modal.classList && modal.classList.contains('modal-animated') && modal.classList.contains('modal-active')) {
+        // 1. Phải bắt đầu nhấn chuột trực tiếp từ chính phần tử nền mờ (modalPointerDownTarget === modal)
+        // Nếu nhấn chuột từ bên trong popup (bôi đen, chọn văn bản, nhấn nút) rồi nhả chuột ra ngoài -> BỎ QUA KHÔNG ĐÓNG
+        if (modalPointerDownTarget !== modal) {
+          return;
+        }
+
+        // 2. Không được là thao tác kéo chuột hoặc rê thả (isPointerDragging === true)
+        if (isPointerDragging) {
+          return;
+        }
+
+        // 3. Nếu đang có vùng chọn văn bản (vừa bôi đen xong) mà điểm nhấn ban đầu không phải là lớp nền -> BỎ QUA KHÔNG ĐÓNG
+        try {
+          const sel = window.getSelection ? window.getSelection().toString().trim() : '';
+          if (sel && modalPointerDownTarget !== modal) {
+            return;
+          }
+        } catch (_) {}
+
+        hideModalAnimated(modal);
       }
     });
 
@@ -35529,13 +35630,19 @@
     window.closeUserMenu = closeUserMenu;
 
     btnUserMenu.addEventListener('click', toggleUserMenu);
-    userDropdownBackdrop.addEventListener('click', closeUserMenu);
+    userDropdownBackdrop.addEventListener('click', () => {
+      if (modalPointerDownTarget && userDropdown.contains(modalPointerDownTarget)) return;
+      if (isPointerDragging) return;
+      closeUserMenu();
+    });
     if (btnCloseUserMenuMobile) {
       btnCloseUserMenuMobile.addEventListener('click', closeUserMenu);
     }
 
     document.addEventListener('click', (e) => {
       if (!btnUserMenu.contains(e.target) && !userDropdown.contains(e.target)) {
+        if (modalPointerDownTarget && userDropdown.contains(modalPointerDownTarget)) return;
+        if (isPointerDragging) return;
         closeUserMenu();
       }
     });
@@ -38197,6 +38304,8 @@
       }
       document.addEventListener('click', (e) => {
         if (!displaySettingsPopover.contains(e.target) && !btnDisplaySettingsToggle.contains(e.target)) {
+          if (modalPointerDownTarget && displaySettingsPopover.contains(modalPointerDownTarget)) return;
+          if (isPointerDragging) return;
           closeDisplaySettingsPopover();
         }
       });
@@ -41453,6 +41562,8 @@
           mm.classList.add('hidden');
         }
         if (pop && !pop.classList.contains('hidden') && !e.target.closest('#aiResultPopover, #hlAiButtonsGroup, #aiTranslateLangMenu, #aiSwitchModeMenu, #mainSidebar, #btnToggleSidebar')) {
+          if (modalPointerDownTarget && pop.contains(modalPointerDownTarget)) return;
+          if (isPointerDragging) return;
           closeAiResultPopover();
         }
       });
@@ -48430,7 +48541,7 @@ QUY TẮC:
     }
     window.openPromptLibrary = openPromptLibrary;
 
-    console.log("%c Thư viện Sách HTML v5.8.13 - build 18/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.14 - build 18/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
