@@ -148,6 +148,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.12',
+        date: '2026-10-18T11:05:00+07:00',
+        title: 'Bổ Sung Nút Hủy / Thu Hồi Link Chia Sẻ Trực Tiếp Khi Đang Hoạt Động',
+        items: [
+          { type: 'feature', text: 'Bổ sung nút Hủy liên kết nổi bật ngay trong Modal Chia Sẻ Bài Học khi tài liệu đang có link hoạt động, cho phép hủy link cũ để tạo link mới ngay mà không cần rời modal.' },
+          { type: 'feature', text: 'Tích hợp nút Hủy link nhanh ngay trong thông báo cảnh báo và thanh chân trang của popup chia sẻ, có xác nhận an toàn và hiệu ứng tải trạng thái thu hồi.' },
+          { type: 'improved', text: 'Tự động làm mới giao diện về trạng thái tạo mới ngay khi thu hồi link thành công, đồng bộ tức thời với cơ sở dữ liệu đám mây.' }
+        ]
+      },
+      {
         version: 'v5.8.11',
         date: '2026-10-17T11:28:00+07:00',
         title: 'Tối Ưu Siêu Nhẹ & Siêu Mượt Hiệu Ứng Tuyết Rơi Giáng Sinh (GPU Texture Blit 60/120fps)',
@@ -8561,13 +8571,19 @@
       </div>
 
       <div class="overflow-y-auto flex-1 space-y-3.5 pr-1">
-        <!-- // FIX-2: Thông báo tài liệu đã có link đang hoạt động -->
-        <div id="shareExistingNotice" class="hidden p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
-          <svg class="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"><use href="#icon-alert-circle"></use></svg>
-          <div class="space-y-1">
-            <p class="font-bold text-xs">Tài liệu này đã có link đang hoạt động.</p>
-            <p class="text-[11px] leading-relaxed text-amber-700 dark:text-amber-300/90">Bạn có thể tạo link mới sau khi link hiện tại hết hạn hoặc sau khi thu hồi link cũ.</p>
+        <!-- // FIX-2: Thông báo tài liệu đã có link đang hoạt động & Nút hủy link nhanh -->
+        <div id="shareExistingNotice" class="hidden p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-center justify-between gap-2.5">
+          <div class="flex items-start gap-2.5 min-w-0">
+            <svg class="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"><use href="#icon-alert-circle"></use></svg>
+            <div class="space-y-0.5 min-w-0">
+              <p class="font-bold text-xs">Tài liệu này đã có link đang hoạt động.</p>
+              <p class="text-[11px] leading-relaxed text-amber-700 dark:text-amber-300/90">Bạn có thể hủy link cũ để tạo liên kết mới bất cứ lúc nào.</p>
+            </div>
           </div>
+          <button id="btnRevokeActiveShareNotice" type="button" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 dark:text-rose-300 font-semibold text-[11px] transition flex items-center gap-1 cursor-pointer" title="Hủy liên kết này">
+            <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+            <span>Hủy link</span>
+          </button>
         </div>
 
         <!-- // FIX-1 & FIX-2: Lựa chọn thời hạn chia sẻ (1, 7, 30 ngày) -->
@@ -8613,11 +8629,15 @@
           </div>
         </div>
 
-        <!-- Nút hành động Tạo link -->
-        <div id="shareActionButtonsArea">
+        <!-- Nút hành động Tạo link / Hủy link -->
+        <div id="shareActionButtonsArea" class="space-y-2">
           <button id="btnCreateNewShareLink" type="button" class="w-full touch-target px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
             <svg class="w-3.5 h-3.5"><use href="#icon-share-2"></use></svg>
             <span id="btnCreateNewShareLinkLabel">Tạo link chia sẻ</span>
+          </button>
+          <button id="btnRevokeActiveShareLink" type="button" class="hidden w-full touch-target px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-98 text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer" title="Hủy liên kết đang hoạt động này">
+            <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
+            <span id="btnRevokeActiveShareLinkLabel">Hủy liên kết đang hoạt động</span>
           </button>
         </div>
 
@@ -8675,10 +8695,16 @@
 
       <div class="mt-3 pt-3 border-t border-[#E6E6E1] dark:border-[#262C36] flex items-center justify-between text-xs shrink-0">
         <span class="text-[#6B6B66] dark:text-[#9AA3B2] truncate mr-2" id="shareStatusNote">Sẵn sàng</span>
-        <button id="btnTestOpenShareUrl" class="text-[#4F46E5] dark:text-[#818CF8] font-medium hover:underline flex items-center gap-1 shrink-0 py-1 cursor-pointer">
-          <span>Xem thử</span>
-          <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#icon-external-link"></use></svg>
-        </button>
+        <div class="flex items-center gap-3 shrink-0">
+          <button id="btnFooterRevokeShareLink" type="button" class="hidden text-rose-600 dark:text-rose-400 font-medium hover:underline flex items-center gap-1 py-1 cursor-pointer" title="Hủy liên kết này">
+            <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+            <span>Hủy link</span>
+          </button>
+          <button id="btnTestOpenShareUrl" class="text-[#4F46E5] dark:text-[#818CF8] font-medium hover:underline flex items-center gap-1 shrink-0 py-1 cursor-pointer">
+            <span>Xem thử</span>
+            <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#icon-external-link"></use></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -44806,6 +44832,9 @@
       const shareExpiryRealInfo = document.getElementById('shareExpiryRealInfo');
       const shareErrorMessage = document.getElementById('shareErrorMessage');
       const btnTestOpenShareUrl = document.getElementById('btnTestOpenShareUrl');
+      const btnRevokeActiveShareLink = document.getElementById('btnRevokeActiveShareLink');
+      const btnRevokeActiveShareNotice = document.getElementById('btnRevokeActiveShareNotice');
+      const btnFooterRevokeShareLink = document.getElementById('btnFooterRevokeShareLink');
 
       if (shareErrorMessage) {
         shareErrorMessage.classList.add('hidden');
@@ -44816,6 +44845,72 @@
       if (shareExistingNotice) shareExistingNotice.classList.remove('hidden');
       if (shareExpirySelectArea) shareExpirySelectArea.classList.add('opacity-40', 'pointer-events-none');
       if (btnCreateNewShareLink) btnCreateNewShareLink.classList.add('hidden');
+
+      // // FIX-2: Xử lý sự kiện Hủy link đang hoạt động
+      const handleRevoke = async () => {
+        if (!activeLink || !activeLink.id) return;
+        const confirmMsg = "Bạn có chắc chắn muốn hủy liên kết chia sẻ này không?\n\nSau khi hủy, người nhận sẽ không thể truy cập tài liệu qua link này nữa và bạn có thể tạo link mới.";
+        if (!confirm(confirmMsg)) return;
+
+        const allRevokeBtns = [btnRevokeActiveShareLink, btnRevokeActiveShareNotice, btnFooterRevokeShareLink].filter(Boolean);
+        allRevokeBtns.forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('opacity-75', 'cursor-not-allowed');
+        });
+        if (btnRevokeActiveShareLink) {
+          btnRevokeActiveShareLink.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin text-white shrink-0" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Đang hủy link...</span>
+          `;
+        }
+        if (btnRevokeActiveShareNotice) {
+          btnRevokeActiveShareNotice.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin text-rose-600 dark:text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Đang hủy...</span>
+          `;
+        }
+
+        try {
+          await new Promise(r => setTimeout(r, 500));
+          await revokeShareLink(activeLink.id);
+        } finally {
+          allRevokeBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+          });
+        }
+      };
+
+      if (btnRevokeActiveShareLink) {
+        btnRevokeActiveShareLink.classList.remove('hidden');
+        btnRevokeActiveShareLink.innerHTML = `
+          <svg class="w-4 h-4"><use href="#icon-trash-2"></use></svg>
+          <span id="btnRevokeActiveShareLinkLabel">Hủy liên kết đang hoạt động</span>
+        `;
+        btnRevokeActiveShareLink.onclick = handleRevoke;
+      }
+      if (btnRevokeActiveShareNotice) {
+        btnRevokeActiveShareNotice.classList.remove('hidden');
+        btnRevokeActiveShareNotice.innerHTML = `
+          <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+          <span>Hủy link</span>
+        `;
+        btnRevokeActiveShareNotice.onclick = handleRevoke;
+      }
+      if (btnFooterRevokeShareLink) {
+        btnFooterRevokeShareLink.classList.remove('hidden');
+        btnFooterRevokeShareLink.innerHTML = `
+          <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+          <span>Hủy link</span>
+        `;
+        btnFooterRevokeShareLink.onclick = handleRevoke;
+      }
 
       const now = Date.now();
       const effectiveExp = activeLink.expiresAt || (activeLink.createdAt ? activeLink.createdAt + 7 * 86400000 : now);
@@ -44850,6 +44945,13 @@
       const btnCreateNewShareLink = document.getElementById('btnCreateNewShareLink');
       const shareExpiryRealInfo = document.getElementById('shareExpiryRealInfo');
       const shareErrorMessage = document.getElementById('shareErrorMessage');
+      const btnRevokeActiveShareLink = document.getElementById('btnRevokeActiveShareLink');
+      const btnRevokeActiveShareNotice = document.getElementById('btnRevokeActiveShareNotice');
+      const btnFooterRevokeShareLink = document.getElementById('btnFooterRevokeShareLink');
+
+      if (btnRevokeActiveShareLink) btnRevokeActiveShareLink.classList.add('hidden');
+      if (btnRevokeActiveShareNotice) btnRevokeActiveShareNotice.classList.add('hidden');
+      if (btnFooterRevokeShareLink) btnFooterRevokeShareLink.classList.add('hidden');
 
       if (shareExistingNotice) shareExistingNotice.classList.add('hidden');
       if (shareExpirySelectArea) shareExpirySelectArea.classList.remove('opacity-40', 'pointer-events-none');
@@ -45268,28 +45370,9 @@
         state.sharedLinks.unshift(linkEntry);
         saveSharedLinks();
 
-        // Hiển thị link và ngày giờ hết hạn thật sự
-        if (shareGeneratedUrlInput) shareGeneratedUrlInput.value = shareUrl;
-
-        const expDate = new Date(expiresAt);
-        const expHours = String(expDate.getHours()).padStart(2, '0');
-        const expMins = String(expDate.getMinutes()).padStart(2, '0');
-        const expD = String(expDate.getDate()).padStart(2, '0');
-        const expM = String(expDate.getMonth() + 1).padStart(2, '0');
-        const expY = expDate.getFullYear();
-        const expStr = `Hết hạn lúc ${expHours}:${expMins} ngày ${expD}/${expM}/${expY} (Còn ~${durationDays} ngày)`;
-
+        // Hiển thị ngay trạng thái link đang hoạt động và kích hoạt nút hủy link
+        displayExistingActiveShareLinkUI(linkEntry);
         if (shareStatusNote) shareStatusNote.innerText = `Đã tạo và kiểm tra thành công!`;
-        if (shareExpiryRealInfo) {
-          shareExpiryRealInfo.innerHTML = `
-            <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-clock"></use></svg>
-            <span>${expStr}</span>
-          `;
-        }
-
-        if (btnTestOpenShareUrl) {
-          btnTestOpenShareUrl.onclick = () => window.open(shareUrl, '_blank');
-        }
 
         try {
           await navigator.clipboard.writeText(shareUrl);
@@ -45597,12 +45680,17 @@
         }
       } catch (_) {}
 
-      // Nếu đang mở modal chia sẻ cho chính bài học này, reset UI để cho phép tạo link mới ngay
+      // Nếu đang mở modal chia sẻ cho chính bài học này hoặc file hiện tại, reset UI để cho phép tạo link mới ngay
       if (currentShareTargetLesson) {
         const docKey = currentShareTargetLesson.docKey || ('lesson_' + currentShareTargetLesson.id);
         const linkDocKey = link ? (link.docKey || (link.lessonId ? ('lesson_' + link.lessonId) : null)) : null;
-        if (docKey === linkDocKey) {
+        if (!linkDocKey || docKey === linkDocKey) {
           resetShareModalUIForNew(currentShareTargetLesson.title);
+        }
+      } else {
+        const quickModal = document.getElementById('quickShareModal');
+        if (quickModal && !quickModal.classList.contains('hidden')) {
+          resetShareModalUIForNew('');
         }
       }
 
