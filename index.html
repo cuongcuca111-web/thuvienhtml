@@ -148,6 +148,15 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.15',
+        date: '2026-10-18T16:00:00+07:00',
+        title: 'Triệt Tiêu Hoàn Toàn Hiện Tượng Tự Động Refresh / Chớp Nháy Trong Thư Viện Prompt AI',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để hiện tượng thư viện prompt tự động refresh/chớp giật sau 1-2s: So sánh sâu dữ liệu (Deep Equality Check) và khóa chống vẽ lại (Idempotency Guard) khi nội dung thẻ không thay đổi.' },
+          { type: 'improved', text: 'Tối ưu cơ chế đồng bộ nền Cloud API & Firestore: Kiểm soát tần suất tải ngầm thông minh (3 phút throttle), triệt tiêu việc re-render và cuộn trang ngoài ý muốn khi người dùng đang đọc prompt.' }
+        ]
+      },
+      {
         version: 'v5.8.14',
         date: '2026-10-18T15:30:00+07:00',
         title: 'Chống Đóng Nhầm Popup Khi Bôi Đen & Kéo Thả Chuột Ra Vùng Ngoài',
@@ -26914,7 +26923,10 @@
           try { updateCustomColorBadges(); } catch (_) {}
         }
         if (typeof renderPromptLibrary === 'function') {
-          try { renderPromptLibrary(); } catch (_) {}
+          const promptModal = document.getElementById('promptLibraryModal');
+          if (promptModal && !promptModal.classList.contains('hidden') && promptModal.classList.contains('modal-active')) {
+            try { renderPromptLibrary(); } catch (_) {}
+          }
         }
         if (typeof updateFestivalThemeAdminUI === 'function') {
           try { updateFestivalThemeAdminUI(); } catch (_) {}
@@ -47146,9 +47158,37 @@ QUY TẮC:
       return promptLibraryCache;
     }
 
+    // Hàm so sánh sâu 2 danh sách prompt xem có thực sự khác nhau hay không
+    function arePromptListsEqual(a, b) {
+      if (a === b) return true;
+      if (!Array.isArray(a) || !Array.isArray(b)) return false;
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        const p1 = a[i];
+        const p2 = b[i];
+        if (!p1 || !p2) return false;
+        if (p1.id !== p2.id) return false;
+        if (p1.title !== p2.title) return false;
+        if (p1.description !== p2.description) return false;
+        if (p1.promptText !== p2.promptText) return false;
+        if (p1.requiredTier !== p2.requiredTier) return false;
+        if (p1.category !== p2.category) return false;
+        if (p1.displayImage !== p2.displayImage) return false;
+        if (p1.updatedAt !== p2.updatedAt) return false;
+        const tags1 = Array.isArray(p1.tags) ? p1.tags.join('|') : '';
+        const tags2 = Array.isArray(p2.tags) ? p2.tags.join('|') : '';
+        if (tags1 !== tags2) return false;
+      }
+      return true;
+    }
+    window.arePromptListsEqual = arePromptListsEqual;
+
+    let isPromptFirestoreSyncInitialized = false;
+
     // Lắng nghe dữ liệu Prompt thời gian thực từ Firestore (giúp tất cả người dùng thấy ngay prompt Admin lưu)
     function initPromptLibraryFirestoreSync() {
       try {
+        if (isPromptFirestoreSyncInitialized && unsubscribePromptsListener) return;
         if (db && typeof onSnapshot === 'function' && typeof doc === 'function') {
           if (unsubscribePromptsListener) unsubscribePromptsListener();
           const promptsDocRef = doc(db, 'config', 'prompts');
@@ -47156,7 +47196,6 @@ QUY TẮC:
             if (docSnap.exists()) {
               const remoteData = docSnap.data();
               if (remoteData && Array.isArray(remoteData.items) && remoteData.items.length > 0) {
-                promptLibraryCache = remoteData.items;
                 isPromptLibraryCloudSynced = true;
                 savePromptLibraryData(remoteData.items, true);
               }
@@ -47165,6 +47204,7 @@ QUY TẮC:
             console.warn("[PromptLibrary] Lỗi onSnapshot config/prompts, dùng fallback API:", err.message);
             fetchPromptsFromApiFallback();
           });
+          isPromptFirestoreSyncInitialized = true;
         } else {
           fetchPromptsFromApiFallback();
         }
@@ -47175,14 +47215,25 @@ QUY TẮC:
     }
     window.initPromptLibraryFirestoreSync = initPromptLibraryFirestoreSync;
 
-    // Nạp dự phòng từ API công khai /api/prompts
-    async function fetchPromptsFromApiFallback() {
+    let _lastPromptApiFetchTime = 0;
+    let _isPromptApiFetching = false;
+
+    // Nạp dự phòng từ API công khai /api/prompts với cơ chế throttle thông minh
+    async function fetchPromptsFromApiFallback(options = {}) {
+      const force = Boolean(options && options.force);
+      const now = Date.now();
+      // Nếu vừa tải trong vòng 3 phút và cache đã có dữ liệu hợp lệ thì không tải lại (tránh tải trùng)
+      if (!force && (now - _lastPromptApiFetchTime < 180000) && promptLibraryCache && promptLibraryCache.length > 0) {
+        return promptLibraryCache;
+      }
+      if (_isPromptApiFetching) return null;
+      _isPromptApiFetching = true;
       try {
         const res = await fetch('/api/prompts');
+        _lastPromptApiFetchTime = Date.now();
         if (res.ok) {
           const data = await res.json();
           if (data && data.success && Array.isArray(data.items) && data.items.length > 0) {
-            promptLibraryCache = data.items;
             isPromptLibraryCloudSynced = true;
             savePromptLibraryData(data.items, true);
             return data.items;
@@ -47190,6 +47241,8 @@ QUY TẮC:
         }
       } catch (e) {
         // Fallback im lặng về cache hiện tại
+      } finally {
+        _isPromptApiFetching = false;
       }
       return null;
     }
@@ -47212,9 +47265,12 @@ QUY TẮC:
     }
     window.isPromptAdminAuthorized = isPromptAdminAuthorized;
 
-    function savePromptLibraryData(items, isCloud = true) {
+    function savePromptLibraryData(items, isCloud = true, forceDispatch = false) {
       try {
-        promptLibraryCache = Array.isArray(items) ? items : [];
+        const newItems = Array.isArray(items) ? items : [];
+        const isDataIdentical = arePromptListsEqual(promptLibraryCache, newItems);
+
+        promptLibraryCache = newItems;
         if (isCloud) isPromptLibraryCloudSynced = true;
         localStorage.setItem('antigravity_prompt_library_v2', JSON.stringify({
           version: 2,
@@ -47223,7 +47279,12 @@ QUY TẮC:
           items: promptLibraryCache
         }));
         try { localStorage.removeItem('antigravity_prompt_library'); } catch (_) {}
-        window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: promptLibraryCache }));
+
+        // CHỈ dispatch sự kiện và yêu cầu UI vẽ lại khi dữ liệu THỰC SỰ THAY ĐỔI hoặc forceDispatch = true
+        // Triệt tiêu hoàn toàn việc phát sự kiện làm UI re-render sau 1-2s khi dữ liệu từ Cloud hoàn toàn giống cache
+        if (!isDataIdentical || forceDispatch) {
+          window.dispatchEvent(new CustomEvent('prompt-library-updated', { detail: promptLibraryCache }));
+        }
       } catch (e) {
         console.warn('[PromptLibrary] Lỗi lưu dữ liệu vào localStorage v2:', e);
       }
@@ -47264,7 +47325,7 @@ QUY TẮC:
 
     let promptLibraryHeightTimer = null;
 
-    function doRenderPromptLibraryContent() {
+    function doRenderPromptLibraryContent(options = {}) {
       const grid = document.getElementById('promptLibraryGrid');
       const emptyState = document.getElementById('promptLibraryEmptyState');
       const countSummary = document.getElementById('promptLibraryCountSummary');
@@ -47353,10 +47414,13 @@ QUY TẮC:
       if (emptyState) emptyState.classList.add('hidden');
       grid.classList.remove('hidden');
 
+      const isInitialOpen = Boolean(options && options.isInitialOpen);
+
       grid.innerHTML = filtered.map((prompt, idx) => {
         const hasAccess = canUserAccessPrompt(prompt);
         const reqTier = (prompt.requiredTier || 'free').toLowerCase();
-        const staggerDelay = Math.min(idx * 35, 210);
+        const staggerDelay = isInitialOpen ? Math.min(idx * 35, 210) : 0;
+        const animStyle = isInitialOpen ? `animation-delay: ${staggerDelay}ms;` : `animation: none !important;`;
         
         let tierBadgeHtml = '';
         if (typeof window.tierBadge === 'function') {
@@ -47404,7 +47468,7 @@ QUY TẮC:
         }
 
         return `
-          <div class="prompt-card-item bg-white dark:bg-[#161921] rounded-2xl border border-stone-200/80 dark:border-stone-800/80 shadow-2xs flex flex-col justify-between overflow-hidden group" style="animation-delay: ${staggerDelay}ms;">
+          <div class="prompt-card-item bg-white dark:bg-[#161921] rounded-2xl border border-stone-200/80 dark:border-stone-800/80 shadow-2xs flex flex-col justify-between overflow-hidden group" style="${animStyle}">
             <div>
               <!-- Ảnh Display Mẫu -->
               <div class="aspect-video w-full overflow-hidden relative bg-stone-100 dark:bg-stone-900 border-b border-stone-200/60 dark:border-stone-800/60">
@@ -47462,12 +47526,44 @@ QUY TẮC:
       }).join('');
     }
 
+    let _lastRenderedPromptSignature = '';
+
     function renderPromptLibrary(options = {}) {
       try {
         const modal = document.getElementById('promptLibraryModal');
         const dialog = document.getElementById('promptLibraryModalDialog');
         const isModalVisible = modal && !modal.classList.contains('hidden') && modal.classList.contains('modal-active');
         const isInitialOpen = Boolean(options && options.isInitialOpen);
+        const force = Boolean(options && options.force);
+
+        const allPrompts = getPromptLibraryData();
+        const term = (currentPromptSearchTerm || '').trim().toLowerCase();
+        const userKey = (state && state.user && state.user.uid) ? state.user.uid : 'anon';
+        const userTierKey = (state && state.userTier) ? state.userTier : 'free';
+        const isAdminKey = Boolean(state && state.isAdmin);
+        const isGuestKey = !state || !state.user || Boolean(state.user.isAnonymous);
+
+        const currentSignature = [
+          currentPromptCategory,
+          currentPromptTierFilter,
+          term,
+          userKey,
+          userTierKey,
+          isAdminKey,
+          isGuestKey,
+          allPrompts.length,
+          allPrompts.map(p => p.id + ':' + (p.updatedAt || '') + ':' + (p.requiredTier || '')).join(';')
+        ].join('||');
+
+        const grid = document.getElementById('promptLibraryGrid');
+        const alreadyHasContent = grid && grid.children && grid.children.length > 0;
+
+        // Nếu dữ liệu, bộ lọc và trạng thái người dùng không hề thay đổi so với lần render trước,
+        // và không có cờ ép buộc (force), thì bỏ qua việc vẽ lại DOM -> triệt tiêu hoàn toàn hiện tượng chớp/refresh sau 1-2s!
+        if (!force && !isInitialOpen && alreadyHasContent && currentSignature === _lastRenderedPromptSignature) {
+          return;
+        }
+        _lastRenderedPromptSignature = currentSignature;
 
         // Lưu chiều cao hộp thoại trước khi cập nhật DOM (chỉ khi modal đang mở sẵn)
         let prevHeight = 0;
@@ -47476,12 +47572,14 @@ QUY TẮC:
         }
 
         // Cập nhật DOM nội dung thẻ & empty state
-        doRenderPromptLibraryContent();
+        doRenderPromptLibraryContent(options);
 
-        // Cuộn mượt lên đỉnh nếu danh sách đang ở vị trí cuộn sâu khi lọc
-        const scrollBody = document.getElementById('promptLibraryScrollBody');
-        if (scrollBody && scrollBody.scrollTop > 40) {
-          scrollBody.scrollTo({ top: 0, behavior: 'smooth' });
+        // Cuộn mượt lên đỉnh CHỈ KHI người dùng chủ động thao tác lọc hoặc tìm kiếm
+        if (options && options.isUserFilterAction) {
+          const scrollBody = document.getElementById('promptLibraryScrollBody');
+          if (scrollBody && scrollBody.scrollTop > 40) {
+            scrollBody.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }
 
         // Thực hiện hiệu ứng FLIP chiều cao cho hộp thoại modal để co giãn nhẹ nhàng
@@ -48080,7 +48178,7 @@ QUY TẮC:
           clearTimeout(debounceTimer);
           debounceTimer = setTimeout(() => {
             currentPromptSearchTerm = val;
-            renderPromptLibrary();
+            renderPromptLibrary({ isUserFilterAction: true });
           }, 150);
         });
       }
@@ -48090,7 +48188,7 @@ QUY TẮC:
             searchInput.value = '';
             clearBtn.classList.add('hidden');
             currentPromptSearchTerm = '';
-            renderPromptLibrary();
+            renderPromptLibrary({ isUserFilterAction: true });
           }
         });
       }
@@ -48104,7 +48202,7 @@ QUY TẮC:
             b.className = 'prompt-cat-filter-btn px-3 py-1 rounded-full whitespace-nowrap font-medium transition text-stone-600 dark:text-stone-400 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer';
           });
           e.currentTarget.className = 'prompt-cat-filter-btn px-3 py-1 rounded-full whitespace-nowrap font-medium transition text-white bg-violet-600 dark:bg-violet-500 shadow-2xs cursor-pointer';
-          renderPromptLibrary();
+          renderPromptLibrary({ isUserFilterAction: true });
         });
       });
 
@@ -48117,7 +48215,7 @@ QUY TẮC:
             b.className = 'prompt-tier-filter-btn px-2.5 py-1 rounded-lg text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer transition';
           });
           e.currentTarget.className = 'prompt-tier-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-[#202531] shadow-2xs text-violet-600 dark:text-violet-400 cursor-pointer transition';
-          renderPromptLibrary();
+          renderPromptLibrary({ isUserFilterAction: true });
         });
       });
 
@@ -48147,7 +48245,7 @@ QUY TẮC:
             }
           });
 
-          renderPromptLibrary();
+          renderPromptLibrary({ isUserFilterAction: true });
         });
       }
 
@@ -48530,18 +48628,21 @@ QUY TẮC:
         dialog.style.transition = '';
         dialog.style.height = '';
       }
-      renderPromptLibrary({ isInitialOpen: true });
+      renderPromptLibrary({ isInitialOpen: true, force: true });
       if (typeof showModalAnimated === 'function') {
         showModalAnimated('promptLibraryModal');
       }
-      // Làm mới dữ liệu ngầm từ Cloud API để luôn đảm bảo đồng bộ mới nhất
+      // Chỉ tải ngầm từ Cloud API nếu chưa có dữ liệu hoặc đã quá 5 phút chưa đồng bộ (không ép tải lại gây giật/refresh sau 1-2s)
       if (typeof fetchPromptsFromApiFallback === 'function') {
-        fetchPromptsFromApiFallback();
+        const shouldFetch = (!promptLibraryCache || promptLibraryCache.length === 0 || (Date.now() - _lastPromptApiFetchTime > 300000));
+        if (shouldFetch) {
+          fetchPromptsFromApiFallback();
+        }
       }
     }
     window.openPromptLibrary = openPromptLibrary;
 
-    console.log("%c Thư viện Sách HTML v5.8.14 - build 18/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
+    console.log("%c Thư viện Sách HTML v5.8.15 - build 18/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
   </script>
 </body>
