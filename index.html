@@ -148,6 +148,17 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.16',
+        date: '2026-10-18T21:30:00+07:00',
+        title: 'Triệt Tiêu Hoàn Toàn Lỗi Tự Động Tạo Lịch Ôn Tập / Lịch Thi Khi Đánh Dấu Đã Học',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi tự động tạo lịch ôn tập ngắt quãng (Spaced Repetition) khi học bài: Loại bỏ lời gọi tự động kích hoạt lịch ôn ngầm từ nút "Đánh dấu đã học", chỉ tạo lịch khi người dùng chủ động nhấn Bật.' },
+          { type: 'feature', text: 'Bổ sung nút "Tắt nhắc ôn" trực tiếp trong banner thông báo lịch ôn trên đầu bài học, cho phép tắt nhanh và xóa triệt để lịch ôn chỉ với 1 thao tác.' },
+          { type: 'improved', text: 'Tối ưu cơ chế Tắt lịch ôn: Xóa sạch hoàn toàn lịch ôn của bài học khỏi LocalStorage, khôi phục trạng thái bài học về "Chưa bật nhắc ôn" thay vì chỉ vô hiệu hóa tạm thời.' },
+          { type: 'improved', text: 'Ngăn chặn việc vô tình kích hoạt bật/tắt lịch ôn khi nhấp chuột vào vùng trống của chip/badge trạng thái nhắc ôn.' }
+        ]
+      },
+      {
         version: 'v5.8.15',
         date: '2026-10-18T16:00:00+07:00',
         title: 'Triệt Tiêu Hoàn Toàn Hiện Tượng Tự Động Refresh / Chớp Nháy Trong Thư Viện Prompt AI',
@@ -8059,10 +8070,13 @@
                 <span>Bài này đến hạn ôn lại hôm nay (<span id="spacedReviewStageLabel" class="underline decoration-amber-500/50">Mốc 1 ngày</span>)</span>
               </div>
               <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                <button id="btnSpacedReviewForgot" class="touch-target min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 text-amber-950 dark:text-amber-100 font-semibold transition" aria-label="Chưa nhớ bài này">
+                <button id="btnSpacedReviewDismiss" type="button" class="touch-target px-2.5 py-1.5 text-amber-800 dark:text-amber-200 hover:text-rose-600 dark:hover:text-rose-400 font-medium transition cursor-pointer" title="Tắt và xóa lịch nhắc ôn của bài này">
+                  Tắt nhắc ôn
+                </button>
+                <button id="btnSpacedReviewForgot" type="button" class="touch-target min-h-[44px] sm:min-h-0 px-3.5 py-2 rounded-xl bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 text-amber-950 dark:text-amber-100 font-semibold transition cursor-pointer" aria-label="Chưa nhớ bài này">
                   Chưa nhớ
                 </button>
-                <button id="btnSpacedReviewRemember" class="touch-target min-h-[44px] px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs transition" aria-label="Đã nhớ bài này">
+                <button id="btnSpacedReviewRemember" type="button" class="touch-target min-h-[44px] sm:min-h-0 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs transition cursor-pointer" aria-label="Đã nhớ bài này">
                   Nhớ rồi
                 </button>
               </div>
@@ -35118,7 +35132,6 @@
           triggerGroupCompletedCelebration(cur.categoryId);
         }
         try {
-          scheduleSpacedRepetition(cur.id);
           const today = getTodayDateStr();
           if (!state.learningData.analytics.dailyActivity[today]) {
             state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
@@ -42907,16 +42920,20 @@
       const sched = state.learningData.reviewSchedule[state.activeLessonId];
       const today = getTodayDateStr();
 
-      if (sched) {
-        if (metaBadge) metaBadge.classList.remove('hidden');
+      if (sched && sched.enabled !== false) {
+        if (metaBadge) {
+          metaBadge.classList.remove('hidden');
+          metaBadge.classList.add('border-amber-300', 'bg-amber-50/50', 'dark:bg-amber-950/20');
+        }
         if (metaText) {
-          metaText.innerText = sched.enabled === false ? "Chưa bật nhắc ôn" : `Ôn tiếp: ${sched.nextReviewDate} • Lần ${sched.reviewCount || 1}`;
+          metaText.innerText = `Ôn tiếp: ${sched.nextReviewDate} • Lần ${sched.reviewCount || 1}`;
         }
         if (toggleBtn) {
-          toggleBtn.innerText = sched.enabled === false ? "Bật" : "Tắt";
+          toggleBtn.innerText = "Tắt";
+          toggleBtn.className = "ml-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer";
         }
 
-        if (sched.enabled !== false && sched.nextReviewDate && sched.nextReviewDate <= today) {
+        if (sched.nextReviewDate && sched.nextReviewDate <= today) {
           if (banner) {
             banner.classList.remove('hidden');
             if (stageLabel) stageLabel.innerText = `Mốc ${REVIEW_INTERVALS[sched.stage || 0]} ngày`;
@@ -42926,19 +42943,28 @@
         }
       } else {
         if (banner) banner.classList.add('hidden');
-        if (metaBadge) metaBadge.classList.remove('hidden');
+        if (metaBadge) {
+          metaBadge.classList.remove('hidden', 'border-amber-300', 'bg-amber-50/50', 'dark:bg-amber-950/20');
+        }
         if (metaText) metaText.innerText = "Chưa bật nhắc ôn";
-        if (toggleBtn) toggleBtn.innerText = "Bật";
+        if (toggleBtn) {
+          toggleBtn.innerText = "Bật";
+          toggleBtn.className = "ml-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer";
+        }
       }
     }
 
     const btnToggleSpacedReview = document.getElementById('btnToggleSpacedReview');
     if (btnToggleSpacedReview) {
-      btnToggleSpacedReview.addEventListener('click', () => {
+      btnToggleSpacedReview.addEventListener('click', (e) => {
+        if (e) e.stopPropagation();
         if (!state.activeLessonId) return;
+        if (!state.learningData.reviewSchedule) state.learningData.reviewSchedule = {};
         const sched = state.learningData.reviewSchedule[state.activeLessonId];
-        if (sched) {
-          sched.enabled = sched.enabled === false ? true : false;
+        if (sched && sched.enabled !== false) {
+          // Xóa hoàn toàn lịch ôn của bài này khi bấm Tắt
+          delete state.learningData.reviewSchedule[state.activeLessonId];
+          showToast("Đã tắt và xóa lịch nhắc ôn của bài học này");
         } else {
           scheduleSpacedRepetition(state.activeLessonId);
         }
@@ -42947,14 +42973,23 @@
       });
     }
 
-    const spacedReviewMetaBadge = document.getElementById('spacedReviewMetaBadge');
-    if (spacedReviewMetaBadge) {
-      spacedReviewMetaBadge.style.cursor = 'pointer';
-      spacedReviewMetaBadge.addEventListener('click', (e) => {
-        if (e.target !== btnToggleSpacedReview && !btnToggleSpacedReview.contains(e.target)) {
-          if (btnToggleSpacedReview) btnToggleSpacedReview.click();
+    const btnSpacedReviewDismiss = document.getElementById('btnSpacedReviewDismiss');
+    if (btnSpacedReviewDismiss) {
+      btnSpacedReviewDismiss.addEventListener('click', () => {
+        if (!state.activeLessonId) return;
+        if (state.learningData.reviewSchedule) {
+          delete state.learningData.reviewSchedule[state.activeLessonId];
+          saveLearningData();
+          updateSpacedReviewDueUI();
+          showToast("Đã tắt và xóa lịch nhắc ôn của bài học này");
         }
       });
+    }
+
+    const spacedReviewMetaBadge = document.getElementById('spacedReviewMetaBadge');
+    if (spacedReviewMetaBadge) {
+      spacedReviewMetaBadge.style.cursor = 'default';
+      // Không gán click forwarder trên toàn bộ badge để tránh vô tình bật lịch ôn khi bấm nhầm
     }
 
     const btnMenuToggleSpacedReview = document.getElementById('btnMenuToggleSpacedReview');
