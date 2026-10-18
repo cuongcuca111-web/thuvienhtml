@@ -148,6 +148,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.17',
+        date: '2026-10-18T21:55:00+07:00',
+        title: 'Tái Thiết Kế Chân Sidebar: Hiển Thị Trọn Vẹn Thống Kê & Cân Đối Nút Thao Tác',
+        items: [
+          { type: 'improved', text: 'Tái cấu trúc chân Sidebar thành bố cục 2 tầng tinh tế: Tách riêng dòng hiển thị thống kê tổng quan số lượng mục và bài học lên hàng trên, loại bỏ hoàn toàn tình trạng cắt ngắn chữ hoặc dấu ba chấm.' },
+          { type: 'improved', text: 'Cân đối thanh thao tác: Đặt hai nút "Thùng rác" và "Tải file" thành lưới 2 cột (grid-cols-2) cân xứng, giao diện xúc giác tactile cao cấp dễ bấm trên cả máy tính lẫn điện thoại.' },
+          { type: 'improved', text: 'Cập nhật định dạng hiển thị đầy đủ "X mục • Y bài học" trực quan, rõ ràng và đồng bộ theo trạng thái dữ liệu thời gian thực.' }
+        ]
+      },
+      {
         version: 'v5.8.16',
         date: '2026-10-18T21:40:00+07:00',
         title: 'Khắc Phục Lỗi Hiển Thị Popup "Có Gì Mới" & Lịch Sử Cập Nhật Bị Tối / Bị Ẩn',
@@ -7822,18 +7832,27 @@
       <!-- Danh sách Mục & Bài học (Scrollable vùng giữa) -->
       <div id="categoriesList" class="flex-1 overflow-y-auto min-h-0 px-2 py-3 space-y-3"></div>
 
-      <!-- Chân sidebar -->
-      <div class="p-2.5 sm:p-3 border-t border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between text-xs text-[#6E6B65] dark:text-[#979DA8] bg-[#FAF9F5]/70 dark:bg-[#111317]/50 select-none">
-        <span id="statsSummary" class="font-medium text-[11px] truncate mr-2 text-[#78756D] dark:text-[#9AA3B2]">0 mục • 0 bài</span>
-        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <button id="btnOpenTrash" type="button" class="group touch-target font-medium text-xs text-[#6E6B65] dark:text-[#979DA8] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-transparent transition-all cursor-pointer" title="Mở Thùng rác bài học">
+      <!-- Chân sidebar: Thống kê số lượng & Thao tác nhanh -->
+      <div class="border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/85 dark:bg-[#111317]/60 select-none">
+        <!-- Hàng 1: Thống kê tổng số lượng mục & bài học rõ ràng, không bao giờ bị cắt ngắn -->
+        <div class="px-3 pt-2.5 pb-2 flex items-center justify-between text-xs border-b border-[#E7E5DF]/50 dark:border-[#262C36]/50">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" aria-hidden="true"><use href="#icon-folder"></use></svg>
+            <span id="statsSummary" class="font-semibold text-[11px] text-[#44403C] dark:text-[#E7E5E4] whitespace-nowrap">0 mục • 0 bài học</span>
+          </div>
+          <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800/80 text-stone-500 dark:text-stone-400">Tổng quan</span>
+        </div>
+
+        <!-- Hàng 2: Hai nút Thao tác nhanh (Thùng rác & Tải file) cân đối, dễ bấm -->
+        <div class="p-2 grid grid-cols-2 gap-1.5">
+          <button id="btnOpenTrash" type="button" class="group touch-target font-medium text-xs text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] bg-white/80 dark:bg-[#181B20]/80 hover:bg-red-50/80 dark:hover:bg-red-950/30 transition-all cursor-pointer shadow-2xs" title="Mở Thùng rác bài học">
             <svg class="w-3.5 h-3.5 shrink-0 transition-transform"><use href="#icon-trash-2"></use></svg>
-            <span>Thùng rác</span>
+            <span class="whitespace-nowrap">Thùng rác</span>
             <span id="trashCountBadge" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 transition-transform">0</span>
           </button>
-          <button id="btnSidebarQuickUpload" type="button" class="group font-medium text-xs text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-transparent transition-all cursor-pointer" title="Nạp bài học mới (Tải file)">
+          <button id="btnSidebarQuickUpload" type="button" class="group touch-target font-medium text-xs text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg border border-indigo-200/70 dark:border-indigo-800/60 bg-indigo-50/70 dark:bg-indigo-950/40 hover:bg-indigo-100/90 dark:hover:bg-indigo-900/60 transition-all cursor-pointer shadow-2xs" title="Nạp bài học mới (Tải file)">
             <svg class="w-3.5 h-3.5 shrink-0 transition-transform"><use href="#icon-upload"></use></svg>
-            <span>Tải file</span>
+            <span class="whitespace-nowrap">Tải file</span>
           </button>
         </div>
       </div>
@@ -29744,7 +29763,7 @@
       const container = document.getElementById('categoriesList');
       const statsSummary = document.getElementById('statsSummary');
       if (statsSummary) {
-        statsSummary.innerText = `${state.categories.length} mục • ${state.lessons.length} bài`;
+        statsSummary.innerText = `${state.categories.length} mục • ${state.lessons.length} bài học`;
       }
 
       // Helper sắp xếp bài học theo lựa chọn
