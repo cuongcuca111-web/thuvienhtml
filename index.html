@@ -149,9 +149,10 @@
     const CHANGELOG = [
       {
         version: 'v5.8.16',
-        date: '2026-10-18T21:30:00+07:00',
-        title: 'Triệt Tiêu Hoàn Toàn Lỗi Tự Động Tạo Lịch Ôn Tập / Lịch Thi Khi Đánh Dấu Đã Học',
+        date: '2026-10-18T21:40:00+07:00',
+        title: 'Khắc Phục Lỗi Hiển Thị Popup "Có Gì Mới" & Lịch Sử Cập Nhật Bị Tối / Bị Ẩn',
         items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi Popup "Có gì mới & Lịch sử cập nhật" bị tối/bị ẩn dưới lớp nền mờ: Tự động đóng menu tài khoản ngay lập tức khi mở và nâng lớp hiển thị (z-index 10005) lên cao nhất, đảm bảo popup luôn sáng rõ, sắc nét và nổi bật ở chính giữa màn hình.' },
           { type: 'fix', text: 'Khắc phục triệt để lỗi tự động tạo lịch ôn tập ngắt quãng (Spaced Repetition) khi học bài: Loại bỏ lời gọi tự động kích hoạt lịch ôn ngầm từ nút "Đánh dấu đã học", chỉ tạo lịch khi người dùng chủ động nhấn Bật.' },
           { type: 'feature', text: 'Bổ sung nút "Tắt nhắc ôn" trực tiếp trong banner thông báo lịch ôn trên đầu bài học, cho phép tắt nhanh và xóa triệt để lịch ôn chỉ với 1 thao tác.' },
           { type: 'improved', text: 'Tối ưu cơ chế Tắt lịch ôn: Xóa sạch hoàn toàn lịch ôn của bài học khỏi LocalStorage, khôi phục trạng thái bài học về "Chưa bật nhắc ôn" thay vì chỉ vô hiệu hóa tạm thời.' },
@@ -11596,7 +11597,7 @@
   <!-- // ========================================================================= -->
   <!-- // MODAL: CÓ GÌ MỚI (WHAT'S NEW NOTIFICATION MODAL) - HIỆN ĐÚNG 1 LẦN KHI CẬP NHẬT -->
   <!-- // ========================================================================= -->
-  <div id="whatsNewModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
+  <div id="whatsNewModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[10005] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
     <div id="whatsNewModalCard" class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-[480px] max-h-[90dvh] overflow-y-auto overscroll-contain shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <!-- Header -->
       <div class="flex items-start gap-3 pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3">
@@ -11653,7 +11654,7 @@
   <!-- // ========================================================================= -->
   <!-- // MODAL: LỊCH SỬ CẬP NHẬT (FULL CHANGELOG ACCORDION MODAL) -->
   <!-- // ========================================================================= -->
-  <div id="changelogModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="changelogModalTitle">
+  <div id="changelogModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[10005] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" style="z-index: 10005;" role="dialog" aria-modal="true" aria-labelledby="changelogModalTitle">
     <div id="changelogModalCard" class="bg-white dark:bg-[#161A20] border-t sm:border border-[#E6E6E1] dark:border-[#262C36] rounded-t-2xl sm:rounded-2xl w-full max-w-lg max-h-[90dvh] overflow-hidden shadow-2xl p-4 sm:p-5 flex flex-col pb-[max(1.25rem,env(safe-area-inset-bottom,0px))]" style="-webkit-overflow-scrolling: touch;">
       <!-- Header -->
       <div class="flex items-center justify-between pb-3 border-b border-[#E6E6E1] dark:border-[#262C36] mb-3 shrink-0">
@@ -46602,6 +46603,22 @@
       const modal = document.getElementById('whatsNewModal');
       if (!modal || !versionData) return;
 
+      // Đóng dropdown menu tài khoản ngay lập tức nếu đang mở
+      try {
+        if (typeof closeUserMenu === 'function') closeUserMenu(true);
+        else if (typeof window.closeUserMenu === 'function') window.closeUserMenu(true);
+      } catch (_) {}
+      const uDrop = document.getElementById('userDropdown');
+      const uBack = document.getElementById('userDropdownBackdrop');
+      if (uDrop) {
+        uDrop.classList.add('hidden');
+        uDrop.classList.remove('user-menu-active', 'user-menu-closing');
+      }
+      if (uBack) {
+        uBack.classList.add('hidden');
+        uBack.classList.remove('backdrop-active');
+      }
+
       whatsNewPreviousFocus = document.activeElement;
 
       // Cập nhật nội dung modal
@@ -46708,6 +46725,22 @@
       const changelogModal = document.getElementById('changelogModal');
       if (!changelogModal) return;
 
+      // Đóng dropdown menu tài khoản ngay lập tức nếu đang mở
+      try {
+        if (typeof closeUserMenu === 'function') closeUserMenu(true);
+        else if (typeof window.closeUserMenu === 'function') window.closeUserMenu(true);
+      } catch (_) {}
+      const uDrop = document.getElementById('userDropdown');
+      const uBack = document.getElementById('userDropdownBackdrop');
+      if (uDrop) {
+        uDrop.classList.add('hidden');
+        uDrop.classList.remove('user-menu-active', 'user-menu-closing');
+      }
+      if (uBack) {
+        uBack.classList.add('hidden');
+        uBack.classList.remove('backdrop-active');
+      }
+
       if (!whatsNewPreviousFocus) {
         whatsNewPreviousFocus = document.activeElement;
       }
@@ -46732,7 +46765,11 @@
       if (!modal) return;
       hideModalAnimated(modal);
       if (whatsNewPreviousFocus && typeof whatsNewPreviousFocus.focus === 'function') {
-        try { whatsNewPreviousFocus.focus(); } catch (_) {}
+        try {
+          if (!whatsNewPreviousFocus.closest('#userDropdown')) {
+            whatsNewPreviousFocus.focus();
+          }
+        } catch (_) {}
         whatsNewPreviousFocus = null;
       }
     }
@@ -46825,15 +46862,25 @@
         }
         const btnMobileVer = document.getElementById('btnMobileVersionChangelog');
         if (btnMobileVer) {
-          btnMobileVer.addEventListener('click', () => openChangelogModal());
+          btnMobileVer.addEventListener('click', (e) => {
+            if (e) e.stopPropagation();
+            try {
+              if (typeof closeUserMenu === 'function') closeUserMenu(true);
+              else if (typeof window.closeUserMenu === 'function') window.closeUserMenu(true);
+            } catch (_) {}
+            openChangelogModal();
+          });
         }
 
         // Mục trong menu Dropdown tài khoản
         const btnMenuWhatsNew = document.getElementById('btnMenuWhatsNew');
         if (btnMenuWhatsNew) {
-          btnMenuWhatsNew.addEventListener('click', () => {
-            const backdrop = document.getElementById('userDropdownBackdrop');
-            if (backdrop) backdrop.click();
+          btnMenuWhatsNew.addEventListener('click', (e) => {
+            if (e) e.stopPropagation();
+            try {
+              if (typeof closeUserMenu === 'function') closeUserMenu(true);
+              else if (typeof window.closeUserMenu === 'function') window.closeUserMenu(true);
+            } catch (_) {}
             openChangelogModal();
           });
         }
