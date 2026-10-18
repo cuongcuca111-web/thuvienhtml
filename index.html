@@ -148,6 +148,16 @@
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     const CHANGELOG = [
       {
+        version: 'v5.8.13',
+        date: '2026-10-18T12:10:00+07:00',
+        title: 'Hiệu Ứng Chuyển Động Co Giãn Mượt Mà & Lọc Thẻ Thư Viện Prompt AI',
+        items: [
+          { type: 'feature', text: 'Hiệu ứng chuyển động (transition) co giãn siêu êm ái cho Popup Thư Viện Prompt AI khi chuyển đổi số lượng thẻ, tìm kiếm hoặc hiển thị trạng thái trống.' },
+          { type: 'feature', text: 'Hiệu ứng lọc thẻ xếp tầng (staggered cascade animation) nhẹ nhàng khi tìm kiếm, lọc theo danh mục hoặc theo gói (Thường, Plus, Pro).' },
+          { type: 'improved', text: 'Tối ưu chuyển động cho trạng thái trống (empty state) và tương tác phản hồi xúc giác (micro-interactions) trên các nút lọc.' }
+        ]
+      },
+      {
         version: 'v5.8.12',
         date: '2026-10-18T11:05:00+07:00',
         title: 'Bổ Sung Nút Hủy / Thu Hồi Link Chia Sẻ Trực Tiếp Khi Đang Hoạt Động',
@@ -2208,6 +2218,66 @@
         opacity: 0;
         transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
       }
+    }
+
+    /* // ANIM: Hiệu ứng chuyển động mượt mà cho Thư Viện Prompt AI (Co giãn hộp thoại & Lọc thẻ) */
+    .prompt-library-dialog {
+      will-change: height;
+      transform-origin: center center;
+    }
+    @media (max-width: 640px) {
+      .prompt-library-dialog {
+        transform-origin: bottom center;
+      }
+    }
+
+    @keyframes promptCardIn {
+      0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.975);
+      }
+      60% {
+        opacity: 0.9;
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .prompt-card-item {
+      animation: promptCardIn 300ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease;
+      will-change: transform, opacity;
+    }
+    .prompt-card-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 6px 12px -4px rgba(0, 0, 0, 0.04);
+    }
+    html.dark .prompt-card-item:hover {
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.45), 0 6px 12px -4px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes promptEmptyIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    #promptLibraryEmptyState:not(.hidden) {
+      animation: promptEmptyIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Hiệu ứng chuyển động mượt mà cho các nút lọc danh mục và gói */
+    .prompt-cat-filter-btn, .prompt-tier-filter-btn {
+      transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease, transform 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .prompt-cat-filter-btn:active, .prompt-tier-filter-btn:active {
+      transform: scale(0.95);
     }
 
     /* Dropdown / User menu & Sidebar drawer */
@@ -13209,7 +13279,7 @@
   <!-- MODAL: THƯ VIỆN PROMPT (PROMPT LIBRARY MODAL) -->
   <!-- ========================================================================= -->
   <div id="promptLibraryModal" class="modal-animated is-bottom-sheet fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="promptLibraryModalTitle">
-    <div class="bg-[#FAF9F5] dark:bg-[#12151B] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[22px] sm:rounded-[22px] w-full max-w-5xl max-h-[94dvh] sm:max-h-[90dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
+    <div id="promptLibraryModalDialog" class="prompt-library-dialog bg-[#FAF9F5] dark:bg-[#12151B] border-t sm:border border-[#E0DED7] dark:border-[#262C36] rounded-t-[22px] sm:rounded-[22px] w-full max-w-5xl max-h-[94dvh] sm:max-h-[90dvh] overflow-hidden shadow-2xl flex flex-col pb-[max(1rem,env(safe-area-inset-bottom,0px))] transition-colors">
       
       <!-- Header Modal -->
       <div class="flex items-center justify-between px-5 sm:px-7 py-4 sm:py-5 border-b border-[#EBE8E1] dark:border-[#232833] shrink-0">
@@ -47081,202 +47151,259 @@ QUY TẮC:
     const PROMPT_FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 340'><rect width='600' height='340' fill='%236366f1'/><circle cx='300' cy='170' r='90' fill='%238b5cf6'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-size='24' font-weight='bold'>AI Prompt</text></svg>";
     window.PROMPT_FALLBACK_SVG = PROMPT_FALLBACK_SVG;
 
-    function renderPromptLibrary() {
-      try {
-        const grid = document.getElementById('promptLibraryGrid');
-        const emptyState = document.getElementById('promptLibraryEmptyState');
-        const countSummary = document.getElementById('promptLibraryCountSummary');
-        const btnAdminAdd = document.getElementById('btnAdminAddPrompt');
-        if (!grid) return;
+    let promptLibraryHeightTimer = null;
 
-        // Kiểm tra quyền tài khoản: Chế độ khách (chưa tạo tài khoản) phải tạo tài khoản mới vào được
-        const isGuest = !state.user || Boolean(state.user.isAnonymous);
-        if (isGuest) {
-          if (countSummary) countSummary.textContent = 'Yêu cầu tài khoản';
-          if (emptyState) emptyState.classList.add('hidden');
-          grid.classList.remove('hidden');
-          grid.innerHTML = `
-            <div class="col-span-full py-10 px-4 sm:px-6 text-center max-w-md mx-auto flex flex-col items-center justify-center">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-500/20 via-indigo-500/20 to-purple-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-4 ring-1 ring-violet-500/30 shadow-xs">
-                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              </div>
-              <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1C1B18] dark:text-[#E8E6E1] mb-2">
-                Tạo tài khoản để vào Thư Viện Prompt AI
-              </h4>
-              <p class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] mb-6 leading-relaxed">
-                Thư viện Prompt AI chứa các câu lệnh chuyên sâu tối ưu cho học tập, ôn thi &amp; nghiên cứu. Bạn chỉ cần tạo một tài khoản miễn phí để truy cập toàn bộ kho câu lệnh.
-              </p>
-              <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-xs sm:max-w-sm">
-                <button type="button" onclick="if(typeof hideModalAnimated==='function')hideModalAnimated('promptLibraryModal');if(typeof openAuthModal==='function')openAuthModal('register');" class="w-full py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-semibold text-xs sm:text-sm transition shadow-xs cursor-pointer flex items-center justify-center gap-2">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-                  <span>Tạo tài khoản miễn phí</span>
-                </button>
-                <button type="button" onclick="if(typeof hideModalAnimated==='function')hideModalAnimated('promptLibraryModal');if(typeof openAuthModal==='function')openAuthModal('login');" class="w-full py-2.5 px-4 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-[#1C1B18] dark:text-[#E8E6E1] font-semibold text-xs sm:text-sm transition cursor-pointer">
-                  Đăng nhập
-                </button>
-              </div>
-            </div>
-          `;
-          return;
-        }
+    function doRenderPromptLibraryContent() {
+      const grid = document.getElementById('promptLibraryGrid');
+      const emptyState = document.getElementById('promptLibraryEmptyState');
+      const countSummary = document.getElementById('promptLibraryCountSummary');
+      const btnAdminAdd = document.getElementById('btnAdminAddPrompt');
+      if (!grid) return;
 
-        // Cập nhật hiển thị nút Admin
-        const isAdmin = Boolean(state && state.isAdmin);
-        if (btnAdminAdd) {
-          btnAdminAdd.classList.toggle('hidden', !isAdmin);
-        }
-
-        const allPrompts = getPromptLibraryData();
-        const term = (currentPromptSearchTerm || '').trim().toLowerCase();
-
-        // Lọc danh sách
-        const filtered = allPrompts.filter(item => {
-          // Lọc theo gói
-          if (currentPromptTierFilter !== 'all') {
-            if ((item.requiredTier || 'free').toLowerCase() !== currentPromptTierFilter) {
-              return false;
-            }
-          }
-          // Lọc theo danh mục
-          if (currentPromptCategory !== 'all') {
-            if ((item.category || '').toLowerCase() !== currentPromptCategory) {
-              return false;
-            }
-          }
-          // Lọc theo từ khóa tìm kiếm
-          if (term) {
-            const titleMatch = (item.title || '').toLowerCase().includes(term);
-            const descMatch = (item.description || '').toLowerCase().includes(term);
-            const textMatch = (item.promptText || '').toLowerCase().includes(term);
-            const tagsMatch = (item.tags || []).some(t => String(t).toLowerCase().includes(term));
-            if (!titleMatch && !descMatch && !textMatch && !tagsMatch) return false;
-          }
-          return true;
-        });
-
-        if (countSummary) {
-          countSummary.textContent = `Đang hiển thị ${filtered.length} / ${allPrompts.length} prompt`;
-        }
-
-        if (filtered.length === 0) {
-          grid.innerHTML = '';
-          grid.classList.add('hidden');
-          if (emptyState) emptyState.classList.remove('hidden');
-          return;
-        }
-
+      // Kiểm tra quyền tài khoản: Chế độ khách (chưa tạo tài khoản) phải tạo tài khoản mới vào được
+      const isGuest = !state.user || Boolean(state.user.isAnonymous);
+      if (isGuest) {
+        if (countSummary) countSummary.textContent = 'Yêu cầu tài khoản';
         if (emptyState) emptyState.classList.add('hidden');
         grid.classList.remove('hidden');
-
-        grid.innerHTML = filtered.map(prompt => {
-          const hasAccess = canUserAccessPrompt(prompt);
-          const reqTier = (prompt.requiredTier || 'free').toLowerCase();
-          
-          let tierBadgeHtml = '';
-          if (typeof window.tierBadge === 'function') {
-            tierBadgeHtml = window.tierBadge(reqTier, { size: 'sm', variant: hasAccess ? 'plan' : 'requires' });
-          } else {
-            tierBadgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-stone-100 text-stone-800">${reqTier}</span>`;
-          }
-
-          const tagsHtml = (prompt.tags || []).map(t => 
-            `<span class="px-1.5 py-0.5 rounded-md text-[10px] bg-black/5 dark:bg-white/5 text-stone-600 dark:text-stone-400 font-medium">#${escapeHtml(t)}</span>`
-          ).join('');
-
-          const adminButtonsHtml = isAdmin ? `
-            <div class="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-xs p-1 rounded-lg">
-              <button type="button" onclick="event.stopPropagation(); window.openAdminPromptEditor('${prompt.id}')" class="p-1 rounded text-white hover:text-amber-300 transition" title="Sửa prompt này (Admin)">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        grid.innerHTML = `
+          <div class="col-span-full py-10 px-4 sm:px-6 text-center max-w-md mx-auto flex flex-col items-center justify-center">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-500/20 via-indigo-500/20 to-purple-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-4 ring-1 ring-violet-500/30 shadow-xs">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h4 class="font-serif font-bold text-lg sm:text-xl text-[#1C1B18] dark:text-[#E8E6E1] mb-2">
+              Tạo tài khoản để vào Thư Viện Prompt AI
+            </h4>
+            <p class="text-xs sm:text-sm text-[#78756D] dark:text-[#9AA3B2] mb-6 leading-relaxed">
+              Thư viện Prompt AI chứa các câu lệnh chuyên sâu tối ưu cho học tập, ôn thi &amp; nghiên cứu. Bạn chỉ cần tạo một tài khoản miễn phí để truy cập toàn bộ kho câu lệnh.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-xs sm:max-w-sm">
+              <button type="button" onclick="if(typeof hideModalAnimated==='function')hideModalAnimated('promptLibraryModal');if(typeof openAuthModal==='function')openAuthModal('register');" class="w-full py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-semibold text-xs sm:text-sm transition shadow-xs cursor-pointer flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                <span>Tạo tài khoản miễn phí</span>
               </button>
-              <button type="button" onclick="event.stopPropagation(); window.deletePrompt('${prompt.id}')" class="p-1 rounded text-white hover:text-rose-400 transition" title="Xóa prompt này (Admin)">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              <button type="button" onclick="if(typeof hideModalAnimated==='function')hideModalAnimated('promptLibraryModal');if(typeof openAuthModal==='function')openAuthModal('login');" class="w-full py-2.5 px-4 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-[#1C1B18] dark:text-[#E8E6E1] font-semibold text-xs sm:text-sm transition cursor-pointer">
+                Đăng nhập
               </button>
             </div>
-          ` : '';
+          </div>
+        `;
+        return;
+      }
 
-          // Khung preview nội dung câu lệnh
-          let previewContentHtml = '';
-          if (hasAccess) {
-            previewContentHtml = `
-              <div class="relative bg-stone-100 dark:bg-[#161920] border border-stone-200/80 dark:border-stone-800/80 p-2.5 rounded-xl text-[11px] font-mono text-stone-700 dark:text-stone-300 leading-relaxed line-clamp-3 select-all mb-3.5">
+      // Cập nhật hiển thị nút Admin
+      const isAdmin = Boolean(state && state.isAdmin);
+      if (btnAdminAdd) {
+        btnAdminAdd.classList.toggle('hidden', !isAdmin);
+      }
+
+      const allPrompts = getPromptLibraryData();
+      const term = (currentPromptSearchTerm || '').trim().toLowerCase();
+
+      // Lọc danh sách
+      const filtered = allPrompts.filter(item => {
+        // Lọc theo gói
+        if (currentPromptTierFilter !== 'all') {
+          if ((item.requiredTier || 'free').toLowerCase() !== currentPromptTierFilter) {
+            return false;
+          }
+        }
+        // Lọc theo danh mục
+        if (currentPromptCategory !== 'all') {
+          if ((item.category || '').toLowerCase() !== currentPromptCategory) {
+            return false;
+          }
+        }
+        // Lọc theo từ khóa tìm kiếm
+        if (term) {
+          const titleMatch = (item.title || '').toLowerCase().includes(term);
+          const descMatch = (item.description || '').toLowerCase().includes(term);
+          const textMatch = (item.promptText || '').toLowerCase().includes(term);
+          const tagsMatch = (item.tags || []).some(t => String(t).toLowerCase().includes(term));
+          if (!titleMatch && !descMatch && !textMatch && !tagsMatch) return false;
+        }
+        return true;
+      });
+
+      if (countSummary) {
+        countSummary.textContent = `Đang hiển thị ${filtered.length} / ${allPrompts.length} prompt`;
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        grid.classList.add('hidden');
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+      grid.classList.remove('hidden');
+
+      grid.innerHTML = filtered.map((prompt, idx) => {
+        const hasAccess = canUserAccessPrompt(prompt);
+        const reqTier = (prompt.requiredTier || 'free').toLowerCase();
+        const staggerDelay = Math.min(idx * 35, 210);
+        
+        let tierBadgeHtml = '';
+        if (typeof window.tierBadge === 'function') {
+          tierBadgeHtml = window.tierBadge(reqTier, { size: 'sm', variant: hasAccess ? 'plan' : 'requires' });
+        } else {
+          tierBadgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-stone-100 text-stone-800">${reqTier}</span>`;
+        }
+
+        const tagsHtml = (prompt.tags || []).map(t => 
+          `<span class="px-1.5 py-0.5 rounded-md text-[10px] bg-black/5 dark:bg-white/5 text-stone-600 dark:text-stone-400 font-medium">#${escapeHtml(t)}</span>`
+        ).join('');
+
+        const adminButtonsHtml = isAdmin ? `
+          <div class="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-xs p-1 rounded-lg">
+            <button type="button" onclick="event.stopPropagation(); window.openAdminPromptEditor('${prompt.id}')" class="p-1 rounded text-white hover:text-amber-300 transition" title="Sửa prompt này (Admin)">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            </button>
+            <button type="button" onclick="event.stopPropagation(); window.deletePrompt('${prompt.id}')" class="p-1 rounded text-white hover:text-rose-400 transition" title="Xóa prompt này (Admin)">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+          </div>
+        ` : '';
+
+        // Khung preview nội dung câu lệnh
+        let previewContentHtml = '';
+        if (hasAccess) {
+          previewContentHtml = `
+            <div class="relative bg-stone-100 dark:bg-[#161920] border border-stone-200/80 dark:border-stone-800/80 p-2.5 rounded-xl text-[11px] font-mono text-stone-700 dark:text-stone-300 leading-relaxed line-clamp-3 select-all mb-3.5">
+              ${escapeHtml(prompt.promptText || '')}
+            </div>
+          `;
+        } else {
+          const reqTierLabel = reqTier === 'pro' ? 'Pro' : 'Plus';
+          previewContentHtml = `
+            <div class="relative overflow-hidden rounded-xl border border-stone-200/80 dark:border-stone-800/80 mb-3.5 cursor-pointer" onclick="window.handlePromptLockedClick('${reqTier}')" title="Bấm để nâng cấp mở khóa">
+              <div class="bg-stone-100 dark:bg-[#161920] p-2.5 text-[11px] font-mono text-stone-700 dark:text-stone-300 leading-relaxed line-clamp-3 blur-[3.5px] select-none opacity-50">
                 ${escapeHtml(prompt.promptText || '')}
               </div>
-            `;
-          } else {
-            const reqTierLabel = reqTier === 'pro' ? 'Pro' : 'Plus';
-            previewContentHtml = `
-              <div class="relative overflow-hidden rounded-xl border border-stone-200/80 dark:border-stone-800/80 mb-3.5 cursor-pointer" onclick="window.handlePromptLockedClick('${reqTier}')" title="Bấm để nâng cấp mở khóa">
-                <div class="bg-stone-100 dark:bg-[#161920] p-2.5 text-[11px] font-mono text-stone-700 dark:text-stone-300 leading-relaxed line-clamp-3 blur-[3.5px] select-none opacity-50">
-                  ${escapeHtml(prompt.promptText || '')}
-                </div>
-                <div class="absolute inset-0 bg-black/40 backdrop-blur-2xs flex items-center justify-center gap-1.5 text-white font-semibold text-xs px-2 text-center">
-                  <svg class="w-3.5 h-3.5 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <span>Mở khóa với gói ${reqTierLabel}</span>
-                </div>
-              </div>
-            `;
-          }
-
-          return `
-            <div class="prompt-card-item bg-white dark:bg-[#161921] rounded-2xl border border-stone-200/80 dark:border-stone-800/80 shadow-2xs flex flex-col justify-between overflow-hidden group">
-              <div>
-                <!-- Ảnh Display Mẫu -->
-                <div class="aspect-video w-full overflow-hidden relative bg-stone-100 dark:bg-stone-900 border-b border-stone-200/60 dark:border-stone-800/60">
-                  <img src="${escapeAttr(prompt.displayImage || PROMPT_FALLBACK_SVG)}" onerror="this.onerror=null;this.src=window.PROMPT_FALLBACK_SVG;" alt="${escapeAttr(prompt.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
-                  
-                  <!-- Huy hiệu gói góc trái trên ảnh -->
-                  <div class="absolute top-2.5 left-2.5 z-10 pointer-events-auto">
-                    ${tierBadgeHtml}
-                  </div>
-
-                  <!-- Tag Danh mục góc trái dưới ảnh -->
-                  <div class="absolute bottom-2 left-2.5 z-10">
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-black/60 backdrop-blur-xs text-white">
-                      ${escapeHtml(prompt.categoryName || 'Học tập')}
-                    </span>
-                  </div>
-
-                  ${adminButtonsHtml}
-                </div>
-
-                <!-- Thân thông tin -->
-                <div class="p-4 sm:p-5">
-                  <h4 class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-snug mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                    ${escapeHtml(prompt.title || 'Prompt không tiêu đề')}
-                  </h4>
-                  <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed mb-3">
-                    ${escapeHtml(prompt.description || '')}
-                  </p>
-
-                  <!-- Preview Box -->
-                  ${previewContentHtml}
-
-                  <!-- Tags -->
-                  <div class="flex items-center gap-1 flex-wrap mb-1">
-                    ${tagsHtml}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Nút hành động đáy Card -->
-              <div class="px-4 sm:px-5 pb-4 pt-1 flex items-center gap-2">
-                <button type="button" onclick="window.handleCopyPromptCard('${prompt.id}')" class="btn-prompt-card-copy px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-[#1C1917] dark:text-[#EDECE8] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer" title="Sao chép câu lệnh prompt">
-                  <svg class="w-3.5 h-3.5 text-stone-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                  <span>Sao chép</span>
-                </button>
-
-                <button type="button" onclick="window.handleGetPromptCard('${prompt.id}')" class="btn-prompt-card-get flex-1 py-2 px-3 rounded-xl bg-violet-600 text-white text-xs font-semibold shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer">
-                  <svg class="w-3.5 h-3.5 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
-                  <span>Nhận prompt</span>
-                </button>
+              <div class="absolute inset-0 bg-black/40 backdrop-blur-2xs flex items-center justify-center gap-1.5 text-white font-semibold text-xs px-2 text-center">
+                <svg class="w-3.5 h-3.5 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Mở khóa với gói ${reqTierLabel}</span>
               </div>
             </div>
           `;
-        }).join('');
+        }
+
+        return `
+          <div class="prompt-card-item bg-white dark:bg-[#161921] rounded-2xl border border-stone-200/80 dark:border-stone-800/80 shadow-2xs flex flex-col justify-between overflow-hidden group" style="animation-delay: ${staggerDelay}ms;">
+            <div>
+              <!-- Ảnh Display Mẫu -->
+              <div class="aspect-video w-full overflow-hidden relative bg-stone-100 dark:bg-stone-900 border-b border-stone-200/60 dark:border-stone-800/60">
+                <img src="${escapeAttr(prompt.displayImage || PROMPT_FALLBACK_SVG)}" onerror="this.onerror=null;this.src=window.PROMPT_FALLBACK_SVG;" alt="${escapeAttr(prompt.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                
+                <!-- Huy hiệu gói góc trái trên ảnh -->
+                <div class="absolute top-2.5 left-2.5 z-10 pointer-events-auto">
+                  ${tierBadgeHtml}
+                </div>
+
+                <!-- Tag Danh mục góc trái dưới ảnh -->
+                <div class="absolute bottom-2 left-2.5 z-10">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-black/60 backdrop-blur-xs text-white">
+                    ${escapeHtml(prompt.categoryName || 'Học tập')}
+                  </span>
+                </div>
+
+                ${adminButtonsHtml}
+              </div>
+
+              <!-- Thân thông tin -->
+              <div class="p-4 sm:p-5">
+                <h4 class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8] leading-snug mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                  ${escapeHtml(prompt.title || 'Prompt không tiêu đề')}
+                </h4>
+                <p class="text-xs text-[#6E6B65] dark:text-[#979DA8] line-clamp-2 leading-relaxed mb-3">
+                  ${escapeHtml(prompt.description || '')}
+                </p>
+
+                <!-- Preview Box -->
+                ${previewContentHtml}
+
+                <!-- Tags -->
+                <div class="flex items-center gap-1 flex-wrap mb-1">
+                  ${tagsHtml}
+                </div>
+              </div>
+            </div>
+
+            <!-- Nút hành động đáy Card -->
+            <div class="px-4 sm:px-5 pb-4 pt-1 flex items-center gap-2">
+              <button type="button" onclick="window.handleCopyPromptCard('${prompt.id}')" class="btn-prompt-card-copy px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-[#1C1917] dark:text-[#EDECE8] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer" title="Sao chép câu lệnh prompt">
+                <svg class="w-3.5 h-3.5 text-stone-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span>Sao chép</span>
+              </button>
+
+              <button type="button" onclick="window.handleGetPromptCard('${prompt.id}')" class="btn-prompt-card-get flex-1 py-2 px-3 rounded-xl bg-violet-600 text-white text-xs font-semibold shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
+                <span>Nhận prompt</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPromptLibrary(options = {}) {
+      try {
+        const modal = document.getElementById('promptLibraryModal');
+        const dialog = document.getElementById('promptLibraryModalDialog');
+        const isModalVisible = modal && !modal.classList.contains('hidden') && modal.classList.contains('modal-active');
+        const isInitialOpen = Boolean(options && options.isInitialOpen);
+
+        // Lưu chiều cao hộp thoại trước khi cập nhật DOM (chỉ khi modal đang mở sẵn)
+        let prevHeight = 0;
+        if (isModalVisible && dialog && !isInitialOpen) {
+          prevHeight = dialog.getBoundingClientRect().height;
+        }
+
+        // Cập nhật DOM nội dung thẻ & empty state
+        doRenderPromptLibraryContent();
+
+        // Cuộn mượt lên đỉnh nếu danh sách đang ở vị trí cuộn sâu khi lọc
+        const scrollBody = document.getElementById('promptLibraryScrollBody');
+        if (scrollBody && scrollBody.scrollTop > 40) {
+          scrollBody.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Thực hiện hiệu ứng FLIP chiều cao cho hộp thoại modal để co giãn nhẹ nhàng
+        if (isModalVisible && dialog && prevHeight > 100 && !isInitialOpen) {
+          if (promptLibraryHeightTimer) {
+            clearTimeout(promptLibraryHeightTimer);
+            promptLibraryHeightTimer = null;
+          }
+
+          // Đo chiều cao tự nhiên mới
+          dialog.style.transition = 'none';
+          dialog.style.height = 'auto';
+          const targetHeight = dialog.getBoundingClientRect().height;
+
+          // Chỉ áp dụng transition khi chiều cao thực tế thay đổi đáng kể (> 3px)
+          if (Math.abs(prevHeight - targetHeight) > 3) {
+            dialog.style.height = prevHeight + 'px';
+            void dialog.offsetHeight; // Force reflow
+            dialog.style.transition = 'height 340ms cubic-bezier(0.16, 1, 0.3, 1)';
+            dialog.style.height = targetHeight + 'px';
+
+            promptLibraryHeightTimer = setTimeout(() => {
+              if (dialog) {
+                dialog.style.transition = '';
+                dialog.style.height = '';
+              }
+              promptLibraryHeightTimer = null;
+            }, 360);
+          } else {
+            dialog.style.transition = '';
+            dialog.style.height = '';
+          }
+        }
       } catch (err) {
         console.error('[PromptLibrary] Lỗi render danh sách prompt:', err);
       }
@@ -48287,10 +48414,15 @@ QUY TẮC:
 
       const libModal = document.getElementById('promptLibraryModal');
       if (libModal) libModal.style.display = '';
+      const dialog = document.getElementById('promptLibraryModalDialog');
+      if (dialog) {
+        dialog.style.transition = '';
+        dialog.style.height = '';
+      }
+      renderPromptLibrary({ isInitialOpen: true });
       if (typeof showModalAnimated === 'function') {
         showModalAnimated('promptLibraryModal');
       }
-      renderPromptLibrary();
       // Làm mới dữ liệu ngầm từ Cloud API để luôn đảm bảo đồng bộ mới nhất
       if (typeof fetchPromptsFromApiFallback === 'function') {
         fetchPromptsFromApiFallback();
