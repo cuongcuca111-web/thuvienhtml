@@ -22107,64 +22107,62 @@
       showToast(`Đã xóa vĩnh viễn`);
     }
 
-    function emptyTrashAll() {
+    async function emptyTrashAll() {
       if (!state.trash || state.trash.length === 0) return;
-      askConfirmDelete('Bạn có chắc muốn dọn sạch toàn bộ Thùng rác? Hành động này sẽ xóa vĩnh viễn và không thể hoàn tác.', async () => {
-        // // HANGMUC-3: Chụp bản sao an toàn trước khi dọn sạch thùng rác
-        await captureSnapshot('Trước khi dọn sạch thùng rác');
-        const toDelete = [...state.trash];
-        state.trash = [];
-        saveLocalTrash();
-        updateTrashUIBadge();
-        renderTrashModalView();
+      // Dọn sạch toàn bộ Thùng rác ngay lập tức không cần xác nhận
+      await captureSnapshot('Trước khi dọn sạch thùng rác');
+      const toDelete = [...state.trash];
+      state.trash = [];
+      saveLocalTrash();
+      updateTrashUIBadge();
+      renderTrashModalView();
 
-        for (const item of toDelete) {
-          if (item.type === 'lesson' && item.item) {
-            const lId = item.item.id;
-            addTombstone(lId);
-            if (state.learningData) {
-              if (state.learningData.highlights) delete state.learningData.highlights[lId];
-              if (state.learningData.readingProgress) delete state.learningData.readingProgress[lId];
-              if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[lId];
-              if (state.learningData.flashcards) {
-                state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== lId);
+      for (const item of toDelete) {
+        if (item.type === 'lesson' && item.item) {
+          const lId = item.item.id;
+          addTombstone(lId);
+          if (state.learningData) {
+            if (state.learningData.highlights) delete state.learningData.highlights[lId];
+            if (state.learningData.readingProgress) delete state.learningData.readingProgress[lId];
+            if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[lId];
+            if (state.learningData.flashcards) {
+              state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== lId);
+            }
+          }
+          if (!state.useLocalFallback && db && state.userId) {
+            try {
+              await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lId));
+            } catch (_) {}
+          }
+        } else if (item.type === 'category' && item.item) {
+          addTombstone(item.item.id);
+          if (!state.useLocalFallback && db && state.userId) {
+            try {
+              await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', item.item.id));
+            } catch (_) {}
+          }
+          if (item.relatedLessons && Array.isArray(item.relatedLessons)) {
+            for (const rel of item.relatedLessons) {
+              addTombstone(rel.id);
+              if (state.learningData) {
+                if (state.learningData.highlights) delete state.learningData.highlights[rel.id];
+                if (state.learningData.readingProgress) delete state.learningData.readingProgress[rel.id];
+                if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[rel.id];
+                if (state.learningData.flashcards) {
+                  state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== rel.id);
+                }
               }
-            }
-            if (!state.useLocalFallback && db && state.userId) {
-              try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lId));
-              } catch (_) {}
-            }
-          } else if (item.type === 'category' && item.item) {
-            addTombstone(item.item.id);
-            if (!state.useLocalFallback && db && state.userId) {
-              try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', item.item.id));
-              } catch (_) {}
-            }
-            if (item.relatedLessons && Array.isArray(item.relatedLessons)) {
-              for (const rel of item.relatedLessons) {
-                addTombstone(rel.id);
-                if (state.learningData) {
-                  if (state.learningData.highlights) delete state.learningData.highlights[rel.id];
-                  if (state.learningData.readingProgress) delete state.learningData.readingProgress[rel.id];
-                  if (state.learningData.reviewSchedules) delete state.learningData.reviewSchedules[rel.id];
-                  if (state.learningData.flashcards) {
-                    state.learningData.flashcards = state.learningData.flashcards.filter(f => f.lessonId !== rel.id);
-                  }
-                }
-                if (!state.useLocalFallback && db && state.userId) {
-                  try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', rel.id));
-                  } catch (_) {}
-                }
+              if (!state.useLocalFallback && db && state.userId) {
+                try {
+                  await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', rel.id));
+                } catch (_) {}
               }
             }
           }
         }
-        if (state.learningData) saveLearningData();
-        showToast('Đã dọn sạch thùng rác');
-      });
+      }
+      if (state.learningData) saveLearningData();
+      showToast('Đã dọn sạch thùng rác');
     }
 
     const trashModal = document.getElementById('trashModal');
@@ -22212,6 +22210,13 @@
 
       // Sắp xếp mới xóa nhất lên đầu
       const items = (state.trash || []).slice().sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
+      if (btnEmptyTrashAll) {
+        const hasItems = items.length > 0;
+        btnEmptyTrashAll.disabled = !hasItems;
+        btnEmptyTrashAll.classList.toggle('opacity-40', !hasItems);
+        btnEmptyTrashAll.classList.toggle('pointer-events-none', !hasItems);
+        btnEmptyTrashAll.classList.toggle('cursor-not-allowed', !hasItems);
+      }
       if (subtitle) {
         subtitle.innerText = items.length > 0
           ? `${items.length} mục trong thùng rác • Các mục sẽ tự xóa sau 7 ngày`
