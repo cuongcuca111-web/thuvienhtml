@@ -15096,6 +15096,7 @@
     window.restoreFramesForLesson = restoreFramesForLesson;
     window.moveLessonOrder = moveLessonOrder;
     window.moveCategoryOrder = moveCategoryOrder;
+    window.reorderCategory = reorderCategory;
     window.recalculateOrdersForCategory = recalculateOrdersForCategory;
     window.jumpToHighlight = jumpToHighlight;
     window.autoMigrateLessonOrders = autoMigrateLessonOrders;
@@ -18780,6 +18781,7 @@
         const trashCatIds = new Set((state.trash || []).filter(t => t.type === 'category' && t.item).map(t => t.item.id));
 
         state.categories = rawCats.filter(c => c && !tombstones[c.id] && !trashCatIds.has(c.id));
+        state.categories.sort((a, b) => (a.order || 0) - (b.order || 0));
         state.lessons = rawLessons.filter(l => l && !tombstones[l.id] && !trashLessonIds.has(l.id));
 
         try {
@@ -21602,6 +21604,8 @@
     // // LỖI 1: THỨ TỰ BÀI TRONG MỤC & THỨ TỰ MỤC (ORDER, MIGRATION, DRAG & DROP)
     // =========================================================================
     let draggedLessonId = null;
+    let draggedCategoryId = null;
+    let wasCategoryDragging = false;
 
     function autoMigrateLessonOrders() {
       let modified = false;
@@ -21732,6 +21736,59 @@
         }
       }
     }
+
+    async function reorderCategory(draggedCatId, targetCatId, isAfter = false) {
+      if (!draggedCatId || !targetCatId || draggedCatId === targetCatId) return;
+      if (draggedCatId === '__uncategorized__') return;
+
+      const fromIdx = state.categories.findIndex(c => c.id === draggedCatId);
+      if (fromIdx === -1) return;
+
+      let toIdx;
+      if (targetCatId === '__uncategorized__') {
+        toIdx = state.categories.length - 1;
+      } else {
+        toIdx = state.categories.findIndex(c => c.id === targetCatId);
+      }
+      if (toIdx === -1) return;
+
+      const [item] = state.categories.splice(fromIdx, 1);
+      if (targetCatId === '__uncategorized__') {
+        state.categories.push(item);
+      } else {
+        let newToIdx = state.categories.findIndex(c => c.id === targetCatId);
+        if (isAfter) newToIdx++;
+        if (newToIdx < 0) newToIdx = 0;
+        if (newToIdx > state.categories.length) newToIdx = state.categories.length;
+        state.categories.splice(newToIdx, 0, item);
+      }
+
+      state.categories.forEach((c, i) => {
+        c.order = (i + 1) * 10;
+      });
+
+      saveLocalCategories();
+      renderCategoriesAndLessons();
+      showToast('Đã sắp xếp lại thứ tự mục');
+
+      if (state.userId && !state.useLocalFallback && db) {
+        state.isReordering = true;
+        try {
+          const promises = state.categories.map(c => 
+            updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', c.id), {
+              order: c.order,
+              updatedAt: Date.now()
+            })
+          );
+          await Promise.allSettled(promises);
+        } catch (err) {
+          console.warn('Lỗi đồng bộ Firestore order mục:', err);
+        } finally {
+          setTimeout(() => { state.isReordering = false; }, 800);
+        }
+      }
+    }
+    window.reorderCategory = reorderCategory;
 
 
     // =========================================================================
@@ -22520,10 +22577,13 @@
         logSidebarDebug(`RENDER: ${cat.id} applying ${isExpanded ? 'open' : 'closed'}`);
 
         html += `
-          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category transition-all duration-200 ${progressPercent === 100 && totalCount > 0 ? 'is-group-completed' : ''}" data-cat-id="${cat.id}">
+          <div class="border border-[#E6E6E1] dark:border-[#262C36] rounded-card bg-white dark:bg-[#161A20] overflow-hidden group/cat drop-target-category category-item-card transition-all duration-200 ${progressPercent === 100 && totalCount > 0 ? 'is-group-completed' : ''}" data-cat-id="${cat.id}">
             <div class="p-2.5 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition cat-header ${isExpanded ? 'is-expanded' : ''}" data-toggle-cat="${cat.id}" role="button" tabindex="0" aria-expanded="${isExpanded ? 'true' : 'false'}" aria-controls="cat-grid-${cat.id}">
               <div class="flex items-center gap-1.5 flex-1 min-w-0 pr-1">
-                <div class="flex items-center text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
+                <div class="flex items-center gap-0.5 text-gray-300 dark:text-gray-600 hover:text-gray-500 shrink-0">
+                  <div class="cat-drag-handle touch-none cursor-grab text-gray-400 dark:text-gray-500 hover:text-indigo-600 p-0.5 shrink-0 opacity-40 hover:opacity-100 transition" data-cat-id="${cat.id}" title="Giữ và kéo để sắp xếp mục">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-grip-vertical"></use></svg>
+                  </div>
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-up="${cat.id}" title="Di chuyển mục lên"><svg class="w-3 h-3"><use href="#icon-arrow-up"></use></svg></button>
                   <button class="p-0.5 hover:text-indigo-600" data-move-cat-down="${cat.id}" title="Di chuyển mục xuống"><svg class="w-3 h-3"><use href="#icon-arrow-down"></use></svg></button>
                 </div>
@@ -22690,6 +22750,8 @@
       container.querySelectorAll('[data-toggle-cat]').forEach(el => {
         el.addEventListener('click', (e) => {
           if (e.target.closest('button')) return;
+          if (e.target.closest('.cat-drag-handle')) return;
+          if (wasCategoryDragging) return;
           const catId = el.getAttribute('data-toggle-cat');
           const gridEl = container.querySelector(`[data-cat-grid="${catId}"]`);
           const currentlyExpanded = isSectionOpen(catId);
@@ -22845,7 +22907,9 @@
       // // FEATURE-7: Kéo thả HTML5 Drag and Drop & Touch Events (Mobile)
       container.querySelectorAll('.lesson-draggable-item').forEach(dragEl => {
         dragEl.addEventListener('dragstart', (e) => {
+          e.stopPropagation();
           draggedLessonId = dragEl.getAttribute('data-lesson-id');
+          draggedCategoryId = null;
           e.dataTransfer.setData('text/plain', draggedLessonId);
           dragEl.classList.add('opacity-40');
         });
@@ -22973,16 +23037,219 @@
         });
       });
 
-      // Kéo bài thả vào tiêu đề Danh mục khác
+      // Kéo thả và giữ sắp xếp thứ tự Danh mục (Category Drag & Drop & Touch Hold)
+      container.querySelectorAll('.category-item-card').forEach(catEl => {
+        const catId = catEl.getAttribute('data-cat-id');
+        const handle = catEl.querySelector('.cat-drag-handle');
+        const header = catEl.querySelector('.cat-header');
+
+        // Bật draggable khi chuột hover / mousedown vào handle hoặc giữ lâu trên header
+        if (handle) {
+          handle.addEventListener('mousedown', () => {
+            catEl.setAttribute('draggable', 'true');
+          });
+        }
+
+        let catHeaderHoldTimer = null;
+        if (header) {
+          header.addEventListener('mousedown', (e) => {
+            if (e.target.closest('button, input, select, textarea, .cat-drag-handle')) return;
+            catHeaderHoldTimer = setTimeout(() => {
+              catEl.setAttribute('draggable', 'true');
+            }, 250);
+          });
+          const clearCatHold = () => {
+            if (catHeaderHoldTimer) {
+              clearTimeout(catHeaderHoldTimer);
+              catHeaderHoldTimer = null;
+            }
+          };
+          header.addEventListener('mouseup', clearCatHold);
+          header.addEventListener('mouseleave', clearCatHold);
+        }
+
+        // HTML5 dragstart cho danh mục
+        catEl.addEventListener('dragstart', (e) => {
+          if (draggedLessonId) {
+            e.preventDefault();
+            return;
+          }
+          draggedCategoryId = catId;
+          wasCategoryDragging = true;
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', catId);
+          catEl.classList.add('opacity-40', 'scale-[0.99]', 'shadow-lg');
+        });
+
+        // HTML5 dragend cho danh mục
+        catEl.addEventListener('dragend', () => {
+          catEl.classList.remove('opacity-40', 'scale-[0.99]', 'shadow-lg');
+          catEl.removeAttribute('draggable');
+          container.querySelectorAll('.drop-target-category').forEach(el => {
+            el.classList.remove('border-t-2', 'border-b-2', 'border-indigo-500', 'ring-2', 'ring-indigo-400');
+          });
+          setTimeout(() => {
+            draggedCategoryId = null;
+            wasCategoryDragging = false;
+          }, 150);
+        });
+
+        // Touch drag & Long-press ("Giữ kéo thả") cho Mobile / Tablet
+        let touchTimer = null;
+        let isTouchHolding = false;
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let currentTouchOverEl = null;
+        let isAfterTouchTarget = false;
+
+        const startTouchDrag = () => {
+          isTouchHolding = true;
+          wasCategoryDragging = true;
+          catEl.classList.add('opacity-50', 'ring-2', 'ring-indigo-500');
+          if (navigator.vibrate) navigator.vibrate(40);
+        };
+
+        if (handle) {
+          handle.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            startTouchDrag();
+          }, { passive: false });
+        }
+
+        if (header) {
+          header.addEventListener('touchstart', (e) => {
+            if (e.target.closest('button, input, select, textarea, .cat-drag-handle')) return;
+            const t = e.touches[0];
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            touchTimer = setTimeout(startTouchDrag, 280);
+          }, { passive: true });
+
+          header.addEventListener('touchmove', (e) => {
+            if (!isTouchHolding) {
+              const t = e.touches[0];
+              if (Math.abs(t.clientY - touchStartY) > 8 || Math.abs(t.clientX - touchStartX) > 8) {
+                if (touchTimer) {
+                  clearTimeout(touchTimer);
+                  touchTimer = null;
+                }
+              }
+              return;
+            }
+
+            e.preventDefault();
+            const touch = e.touches[0];
+            const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const targetCard = elemBelow ? elemBelow.closest('.category-item-card, .drop-target-category') : null;
+
+            if (currentTouchOverEl && currentTouchOverEl !== targetCard) {
+              currentTouchOverEl.classList.remove('border-t-2', 'border-b-2', 'border-indigo-500');
+            }
+
+            currentTouchOverEl = targetCard;
+            if (targetCard && targetCard !== catEl) {
+              const rect = targetCard.getBoundingClientRect();
+              isAfterTouchTarget = (touch.clientY - rect.top) > (rect.height / 2);
+              if (isAfterTouchTarget) {
+                targetCard.classList.remove('border-t-2');
+                targetCard.classList.add('border-b-2', 'border-indigo-500');
+              } else {
+                targetCard.classList.remove('border-b-2');
+                targetCard.classList.add('border-t-2', 'border-indigo-500');
+              }
+            }
+          }, { passive: false });
+
+          const cleanupTouch = () => {
+            if (touchTimer) {
+              clearTimeout(touchTimer);
+              touchTimer = null;
+            }
+            if (currentTouchOverEl) {
+              currentTouchOverEl.classList.remove('border-t-2', 'border-b-2', 'border-indigo-500');
+              currentTouchOverEl = null;
+            }
+            catEl.classList.remove('opacity-50', 'ring-2', 'ring-indigo-500');
+          };
+
+          header.addEventListener('touchend', async () => {
+            if (touchTimer) {
+              clearTimeout(touchTimer);
+              touchTimer = null;
+            }
+            if (isTouchHolding) {
+              if (currentTouchOverEl && currentTouchOverEl !== catEl) {
+                const targetCatId = currentTouchOverEl.getAttribute('data-cat-id');
+                cleanupTouch();
+                if (targetCatId && targetCatId !== catId) {
+                  await reorderCategory(catId, targetCatId, isAfterTouchTarget);
+                }
+              } else {
+                cleanupTouch();
+              }
+              setTimeout(() => {
+                isTouchHolding = false;
+                wasCategoryDragging = false;
+              }, 200);
+            } else {
+              cleanupTouch();
+            }
+          });
+
+          header.addEventListener('touchcancel', () => {
+            cleanupTouch();
+            isTouchHolding = false;
+            wasCategoryDragging = false;
+          });
+        }
+      });
+
+      // Kéo bài thả vào tiêu đề Danh mục khác (hoặc thả Danh mục để đổi thứ tự)
       container.querySelectorAll('.drop-target-category').forEach(catEl => {
         catEl.addEventListener('dragover', (e) => {
           e.preventDefault();
+          const targetCatId = catEl.getAttribute('data-cat-id');
+          if (draggedCategoryId) {
+            if (targetCatId && targetCatId !== draggedCategoryId) {
+              const rect = catEl.getBoundingClientRect();
+              const isAfter = (e.clientY - rect.top) > (rect.height / 2);
+              if (isAfter) {
+                catEl.classList.remove('border-t-2');
+                catEl.classList.add('border-b-2', 'border-indigo-500');
+              } else {
+                catEl.classList.remove('border-b-2');
+                catEl.classList.add('border-t-2', 'border-indigo-500');
+              }
+            }
+          } else if (draggedLessonId) {
+            catEl.classList.add('ring-2', 'ring-indigo-400');
+          }
+        });
+
+        catEl.addEventListener('dragleave', () => {
+          catEl.classList.remove('border-t-2', 'border-b-2', 'border-indigo-500', 'ring-2', 'ring-indigo-400');
         });
 
         catEl.addEventListener('drop', async (e) => {
+          catEl.classList.remove('border-t-2', 'border-b-2', 'border-indigo-500', 'ring-2', 'ring-indigo-400');
           if (e.target.closest('.lesson-draggable-item')) return;
           e.preventDefault();
           const targetCatId = catEl.getAttribute('data-cat-id');
+
+          // Trường hợp 1: Đang kéo danh mục để sắp xếp thứ tự
+          if (draggedCategoryId) {
+            if (targetCatId && targetCatId !== draggedCategoryId) {
+              const rect = catEl.getBoundingClientRect();
+              const isAfter = (e.clientY - rect.top) > (rect.height / 2);
+              const sourceCatId = draggedCategoryId;
+              draggedCategoryId = null;
+              await reorderCategory(sourceCatId, targetCatId, isAfter);
+            }
+            draggedCategoryId = null;
+            return;
+          }
+
+          // Trường hợp 2: Đang kéo bài học chuyển sang danh mục này
           if (draggedLessonId) {
             const les = state.lessons.find(l => l.id === draggedLessonId);
             if (les) {
