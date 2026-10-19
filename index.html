@@ -20081,6 +20081,7 @@
       isDarkMode: false,
       readingWidth: 'full',
       desktopSidebarOpen: true,
+      sortOrder: 'manual',
       festivalThemeEnabled: true,
       showContinueLearning: true,
       learnedStyle: 'border',
@@ -20188,6 +20189,7 @@
         if (merged.sortOrder) {
           state.sortOrder = merged.sortOrder;
           localStorage.setItem('local_sort_order', merged.sortOrder);
+          if (typeof updateSortOrderUI === 'function') updateSortOrderUI(state.sortOrder);
         }
         if (merged.aiPreferredStyle) {
           currentAiPreferredStyle = merged.aiPreferredStyle;
@@ -20387,6 +20389,7 @@
         isDarkMode: !!state.isDarkMode,
         lastActiveLessonId: state.activeLessonId || null,
         lastActiveCategoryId: state.activeCategoryId || null,
+        sortOrder: state.sortOrder || 'manual',
         preserveOriginalTheme: state.preserveOriginalTheme !== false,
         readingWidth: state.readingWidth || 'full',
         desktopSidebarOpen: state.desktopSidebarOpen !== false,
@@ -20882,10 +20885,42 @@
       }
     }
 
+    function updateSortOrderUI(currentSort) {
+      const sortVal = currentSort || state.sortOrder || 'manual';
+      const menu = document.getElementById('sortOrderDropdownMenu');
+      if (menu) {
+        menu.querySelectorAll('.sort-option-btn').forEach(b => {
+          const isMatch = b.getAttribute('data-sort') === sortVal;
+          const check = b.querySelector('.sort-check');
+          if (check) check.classList.toggle('hidden', !isMatch);
+        });
+      }
+
+      const names = {
+        manual: 'Thủ công (mặc định)',
+        newest: 'Mới thêm',
+        recent: 'Mở gần đây',
+        unlearned: 'Chưa học trước',
+        name: 'Theo tên (A-Z)'
+      };
+
+      const sortBtn = document.getElementById('btnSortOrderDropdown');
+      if (sortBtn) {
+        const sortName = names[sortVal] || 'Sắp xếp';
+        sortBtn.title = `Sắp xếp bài học: ${sortName}`;
+        sortBtn.setAttribute('aria-label', `Sắp xếp bài học: ${sortName}`);
+      }
+
+      const sortOrderButtonLabel = document.getElementById('sortOrderButtonLabel');
+      if (sortOrderButtonLabel) {
+        sortOrderButtonLabel.innerText = names[sortVal] || 'Sắp xếp';
+      }
+    }
+    window.updateSortOrderUI = updateSortOrderUI;
+
     // Dropdown chọn Sắp xếp
     const btnSortOrderDropdown = document.getElementById('btnSortOrderDropdown');
     const sortOrderMenu = document.getElementById('sortOrderDropdownMenu');
-    const sortOrderButtonLabel = document.getElementById('sortOrderButtonLabel');
 
     if (btnSortOrderDropdown && sortOrderMenu) {
       btnSortOrderDropdown.addEventListener('click', (e) => {
@@ -20902,32 +20937,18 @@
 
       sortOrderMenu.querySelectorAll('.sort-option-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          const sortVal = btn.getAttribute('data-sort') || 'newest';
+          const sortVal = btn.getAttribute('data-sort') || 'manual';
           state.sortOrder = sortVal;
           localStorage.setItem('local_sort_order', sortVal);
           saveUserSettings();
-
-          // Cập nhật UI checkmarks
-          sortOrderMenu.querySelectorAll('.sort-option-btn').forEach(b => {
-            const isMatch = b.getAttribute('data-sort') === sortVal;
-            const check = b.querySelector('.sort-check');
-            if (check) check.classList.toggle('hidden', !isMatch);
-          });
-
-          // Cập nhật nhãn nút
-          const names = {
-            manual: 'Thủ công',
-            newest: 'Mới thêm',
-            recent: 'Mở gần đây',
-            unlearned: 'Chưa học trước',
-            name: 'Theo tên (A-Z)'
-          };
-          if (sortOrderButtonLabel) sortOrderButtonLabel.innerText = names[sortVal] || 'Sắp xếp';
-
+          updateSortOrderUI(sortVal);
           sortOrderMenu.classList.add('hidden');
           renderCategoriesAndLessons();
         });
       });
+
+      // Đồng bộ ngay trạng thái ban đầu của Sort Order Dropdown từ state / localStorage
+      updateSortOrderUI(state.sortOrder);
     }
 
     const btnArticleManageTags = document.getElementById('btnArticleManageTags');
@@ -21669,6 +21690,8 @@
 
         state.sortOrder = 'manual';
         localStorage.setItem('local_sort_order', 'manual');
+        if (typeof updateSortOrderUI === 'function') updateSortOrderUI('manual');
+        saveUserSettings();
         saveLocalLessons();
         renderCategoriesAndLessons();
         await syncAffectedLessonsOrder(affected);
@@ -22862,6 +22885,8 @@
 
               state.sortOrder = 'manual';
               localStorage.setItem('local_sort_order', 'manual');
+              if (typeof updateSortOrderUI === 'function') updateSortOrderUI('manual');
+              saveUserSettings();
               saveLocalLessons();
               renderCategoriesAndLessons();
               showToast('Đã sắp xếp lại vị trí bài học');
@@ -22924,6 +22949,8 @@
 
                 state.sortOrder = 'manual';
                 localStorage.setItem('local_sort_order', 'manual');
+                if (typeof updateSortOrderUI === 'function') updateSortOrderUI('manual');
+                saveUserSettings();
                 saveLocalLessons();
                 renderCategoriesAndLessons();
                 showToast('Đã sắp xếp lại vị trí bài học');
@@ -22970,6 +22997,8 @@
 
               state.sortOrder = 'manual';
               localStorage.setItem('local_sort_order', 'manual');
+              if (typeof updateSortOrderUI === 'function') updateSortOrderUI('manual');
+              saveUserSettings();
               saveLocalLessons();
               renderCategoriesAndLessons();
               showToast('Đã chuyển bài sang mục mới');
@@ -28481,6 +28510,8 @@
         }
         if (data.settings && data.settings.sortOrder) {
           state.sortOrder = data.settings.sortOrder;
+          localStorage.setItem('local_sort_order', state.sortOrder);
+          if (typeof updateSortOrderUI === 'function') updateSortOrderUI(state.sortOrder);
         }
         if (data.sharedLinks && Array.isArray(data.sharedLinks)) {
           state.sharedLinks = data.sharedLinks;
@@ -38945,6 +38976,7 @@
       on('#btnSidebarQuickUpload', 'click', openUploadModal);
       if (typeof loadSidebarSectionState === 'function') loadSidebarSectionState();
       if (typeof initSecretAdminSeals === 'function') initSecretAdminSeals();
+      if (typeof updateSortOrderUI === 'function') updateSortOrderUI(state.sortOrder);
     }
 
     function initReader() {
