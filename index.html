@@ -2119,7 +2119,7 @@
               <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
             <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-[#6E6B65] dark:text-[#979DA8] flex items-center justify-between cursor-pointer" data-sort="name">
-              <span>Theo tên (A-Z)</span>
+              <span>Theo tên & số (1, 2, 10...)</span>
               <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
           </div>
@@ -4917,6 +4917,10 @@
         <button id="btnCatMenuAddLesson" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
           <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-plus"></use></svg>
           <span class="flex-1">Thêm bài vào mục</span>
+        </button>
+        <button id="btnCatMenuSortNatural" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-[#1C1917] dark:text-[#EDECE8] font-medium transition text-left min-h-[44px]">
+          <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0"><use href="#icon-sort"></use></svg>
+          <span class="flex-1">Sắp xếp bài theo tên & số (1, 2, 10...)</span>
         </button>
         <div class="grid grid-cols-2 gap-1.5 pt-0.5">
           <button id="btnCatMenuMoveUp" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1917] dark:text-[#EDECE8] font-medium transition min-h-[44px]">
@@ -20900,7 +20904,7 @@
         newest: 'Mới thêm',
         recent: 'Mở gần đây',
         unlearned: 'Chưa học trước',
-        name: 'Theo tên (A-Z)'
+        name: 'Theo tên & số (1, 2, 10...)'
       };
 
       const sortBtn = document.getElementById('btnSortOrderDropdown');
@@ -21471,6 +21475,41 @@
         closeActiveMenu();
         state.activeCategoryId = cId;
         openUploadModal();
+      });
+    }
+
+    const btnCatMenuSortNatural = document.getElementById('btnCatMenuSortNatural');
+    if (btnCatMenuSortNatural) {
+      btnCatMenuSortNatural.addEventListener('click', async () => {
+        const cId = currentMenuCatId;
+        closeActiveMenu();
+        if (!cId) return;
+
+        // Lấy tất cả bài trong mục này
+        const catLessons = (state.lessons || []).filter(l => l.categoryId === cId);
+        if (catLessons.length <= 1) {
+          showToast('Mục không có đủ bài học để sắp xếp');
+          return;
+        }
+
+        // Sắp xếp tự nhiên theo tên (1, 2, 10, Câu 1, Câu 2...)
+        catLessons.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi', { numeric: true, sensitivity: 'base' }));
+
+        // Cập nhật lại order tuần tự
+        const affected = [];
+        catLessons.forEach((l, idx) => {
+          l.order = (idx + 1) * 10;
+          affected.push(l);
+        });
+
+        state.sortOrder = 'manual';
+        localStorage.setItem('local_sort_order', 'manual');
+        if (typeof updateSortOrderUI === 'function') updateSortOrderUI('manual');
+        saveUserSettings();
+        saveLocalLessons();
+        renderCategoriesAndLessons();
+        showToast('Đã sắp xếp thứ tự bài học theo tên & số');
+        await syncAffectedLessonsOrder(affected);
       });
     }
 
@@ -22437,7 +22476,7 @@
         } else if (order === 'unlearned') {
           sorted.sort((a, b) => (a.isCompleted ? 1 : 0) - (b.isCompleted ? 1 : 0));
         } else if (order === 'name') {
-          sorted.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi'));
+          sorted.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi', { numeric: true, sensitivity: 'base' }));
         } else if (order === 'newest') {
           sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         } else {
@@ -27127,7 +27166,9 @@
           return;
         }
 
-        const filesArr = Array.from(files);
+        const filesArr = Array.from(files).sort((a, b) => 
+          (a.name || '').localeCompare(b.name || '', 'vi', { numeric: true, sensitivity: 'base' })
+        );
         if (filesArr.length > availableSlots) {
           const userPlan = (state.user && state.user.plan) ? state.user.plan : (state.userId ? 'free' : 'guest');
           if (userPlan === 'guest') {
@@ -27138,7 +27179,13 @@
             if (typeof openUpgradeModal === 'function') openUpgradeModal(userPlan === 'plus' ? 'pro' : 'plus');
           }
           files = filesArr.slice(0, availableSlots);
+        } else {
+          files = filesArr;
         }
+      } else {
+        files = Array.from(files).sort((a, b) => 
+          (a.name || '').localeCompare(b.name || '', 'vi', { numeric: true, sensitivity: 'base' })
+        );
       }
 
       for (const file of files) {
