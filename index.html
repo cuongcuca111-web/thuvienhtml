@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.19"></script>
+  <script src="./changelog.js?v=5.8.20"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.19',
+        version: 'v5.8.20',
         date: '2026-10-18T23:55:00+07:00',
         title: 'Nâng Cấp Bảo Mật Hệ Thống, Tối Ưu Kiến Trúc Tải Trang & Phóng To Hình Ảnh Bài Học (Lightbox Zoom)',
         items: [
@@ -192,7 +192,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.19';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.20';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -606,8 +606,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.19">
-  <script src="./bridge.js?v=5.8.19"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.20">
+  <script src="./bridge.js?v=5.8.20"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2290,7 +2290,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.19 • build 20/10/2026 17:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.20 • build 20/10/2026 17:55</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3071,7 +3071,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.19</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.20</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3093,7 +3093,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.19 • build 20/10/2026 17:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.20 • build 20/10/2026 17:55</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6057,8 +6057,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.19</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.19</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.20</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.20</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -20983,6 +20983,7 @@
           updateSortOrderUI(sortVal);
           sortOrderMenu.classList.add('hidden');
           renderCategoriesAndLessons();
+          renderActiveLesson();
         });
       });
 
@@ -21544,6 +21545,7 @@
         saveUserSettings();
         saveLocalLessons();
         renderCategoriesAndLessons();
+        renderActiveLesson();
         showToast('Đã sắp xếp thứ tự bài học theo tên & số');
         await syncAffectedLessonsOrder(affected);
       });
@@ -22610,6 +22612,83 @@
 
 
 
+    // =========================================================================
+    // HELPER: SẮP XẾP & LỌC BÀI HỌC ĐỒNG BỘ TOÀN ỨNG DỤNG (SIDEBAR & READER)
+    // =========================================================================
+    function sortLessonsList(list) {
+      if (!list || !Array.isArray(list)) return [];
+      const sorted = [...list];
+      const order = state.sortOrder || 'manual';
+      if (order === 'manual') {
+        sorted.sort((a, b) => (a.order || 0) - (b.order || 0));
+      } else if (order === 'recent') {
+        sorted.sort((a, b) => (b.lastOpenedAt || 0) - (a.lastOpenedAt || 0));
+      } else if (order === 'unlearned') {
+        sorted.sort((a, b) => (a.isCompleted ? 1 : 0) - (b.isCompleted ? 1 : 0));
+      } else if (order === 'name') {
+        sorted.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi', { numeric: true, sensitivity: 'base' }));
+      } else if (order === 'newest') {
+        sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      } else {
+        sorted.sort((a, b) => (a.order || 0) - (b.order || 0));
+      }
+      return sorted;
+    }
+    window.sortLessonsList = sortLessonsList;
+
+    function filterLessonsList(list) {
+      if (!list || !Array.isArray(list)) return [];
+      let res = list;
+      // Lọc theo Tab (all / favorites / unread)
+      if (state.activeFilter === 'favorites') {
+        res = res.filter(l => l.isFavorite);
+      } else if (state.activeFilter === 'unread') {
+        res = res.filter(l => !l.isCompleted);
+      }
+
+      // // FEATURE-6: Lọc theo Nhãn đã chọn
+      if (state.selectedTagIds && state.selectedTagIds.length > 0) {
+        res = res.filter(l => l.tagIds && l.tagIds.some(tId => state.selectedTagIds.includes(tId)));
+      }
+
+      return sortLessonsList(res);
+    }
+    window.filterLessonsList = filterLessonsList;
+
+    function getEffectiveCategoryLessons(targetLessonOrCatId, applyFilter = true) {
+      let catId = null;
+      let targetLessonId = null;
+      if (typeof targetLessonOrCatId === 'string') {
+        catId = targetLessonOrCatId;
+      } else if (targetLessonOrCatId && typeof targetLessonOrCatId === 'object') {
+        catId = targetLessonOrCatId.categoryId || null;
+        targetLessonId = targetLessonOrCatId.id || null;
+      } else if (state.activeCategoryId) {
+        catId = state.activeCategoryId;
+      }
+
+      const isRealCat = Boolean(catId && state.categories.some(c => c.id === catId));
+      let rawList = [];
+      if (isRealCat) {
+        rawList = (state.lessons || []).filter(l => l.categoryId === catId);
+      } else {
+        rawList = (state.lessons || []).filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
+      }
+      if (rawList.length === 0) {
+        rawList = state.lessons || [];
+      }
+
+      if (applyFilter) {
+        const filtered = filterLessonsList(rawList);
+        if (!targetLessonId || filtered.some(l => l.id === targetLessonId)) {
+          return filtered;
+        }
+      }
+
+      return sortLessonsList(rawList);
+    }
+    window.getEffectiveCategoryLessons = getEffectiveCategoryLessons;
+
     function renderCategoriesAndLessons() {
       const container = document.getElementById('categoriesList');
       const statsSummary = document.getElementById('statsSummary');
@@ -23650,43 +23729,36 @@
         btnBottomPrev.disabled = true;
         btnBottomNext.disabled = true;
       } else {
-        // FIX: Hỗ trợ tính số thứ tự bài học chuẩn xác ngay cả khi bài chưa có danh mục
-        let catLessons = [];
-        if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
-          catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
-        } else {
-          catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
-        }
-        if (catLessons.length === 0) catLessons = state.lessons;
-
-        let currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
-        if (currentIndex === -1) currentIndex = 0;
+        // ĐỒNG BỘ CHUẨN XÁC: Lấy danh sách bài học theo đúng thứ tự sắp xếp và bộ lọc hiện tại của mục
+        const catLessons = getEffectiveCategoryLessons(currentLesson, true);
+        const currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
+        const validIndex = currentIndex !== -1 ? currentIndex : 0;
         const totalInCat = catLessons.length;
 
-        indexBadge.innerText = `${currentIndex + 1} / ${totalInCat}`;
+        indexBadge.innerText = `${validIndex + 1} / ${totalInCat}`;
         indexBadge.classList.remove('counter-tick');
         void indexBadge.offsetWidth;
         indexBadge.classList.add('counter-tick');
 
-        if (fsLessonNumber) fsLessonNumber.innerText = `Bài ${currentIndex + 1} / ${totalInCat}`;
-        jumpInput.value = currentIndex + 1;
+        if (fsLessonNumber) fsLessonNumber.innerText = `Bài ${validIndex + 1} / ${totalInCat}`;
+        jumpInput.value = validIndex + 1;
         jumpInput.max = totalInCat;
 
         slider.min = 0;
         slider.max = Math.max(0, totalInCat - 1);
-        slider.value = Math.max(0, currentIndex);
-        sliderTooltip.innerText = `${currentIndex + 1}/${totalInCat}`;
+        slider.value = Math.max(0, validIndex);
+        sliderTooltip.innerText = `${validIndex + 1}/${totalInCat}`;
 
         const headerProgBar = document.getElementById('readerHeaderProgressBar');
         if (headerProgBar) {
-          const pct = totalInCat > 0 ? Math.round(((currentIndex + 1) / totalInCat) * 100) : 0;
+          const pct = totalInCat > 0 ? Math.round(((validIndex + 1) / totalInCat) * 100) : 0;
           headerProgBar.style.width = `${pct}%`;
         }
 
-        btnPrev.disabled = currentIndex <= 0;
-        btnNext.disabled = currentIndex >= totalInCat - 1;
-        btnBottomPrev.disabled = currentIndex <= 0;
-        btnBottomNext.disabled = currentIndex >= totalInCat - 1;
+        btnPrev.disabled = validIndex <= 0;
+        btnNext.disabled = validIndex >= totalInCat - 1;
+        btnBottomPrev.disabled = validIndex <= 0;
+        btnBottomNext.disabled = validIndex >= totalInCat - 1;
       }
       // // FIX: Đóng khối else tính thứ tự bài học
 
@@ -24046,16 +24118,11 @@
       if (navLock || state.isSharedMode) return Promise.resolve();
       const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
       if (!currentLesson) return Promise.resolve();
-      // FIX: Chuyển bài hỗ trợ cả bài trong mục và bài chưa phân loại
-      let catLessons = [];
-      if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
-        catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
-      } else {
-        catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
-      }
-      if (catLessons.length === 0) catLessons = state.lessons;
 
+      // ĐỒNG BỘ CHUẨN XÁC: Chuyển bài theo đúng thứ tự sắp xếp và bộ lọc hiển thị của mục
+      const catLessons = getEffectiveCategoryLessons(currentLesson, true);
       const currentIndex = catLessons.findIndex(l => l.id === currentLesson.id);
+      if (currentIndex === -1) return Promise.resolve();
       const nextIndex = currentIndex + delta;
 
       if (nextIndex < 0 || nextIndex >= catLessons.length) return Promise.resolve();
@@ -28235,15 +28302,7 @@
       if (state.isSharedMode) return;
       const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
       if (!currentLesson) return;
-      // FIX: Tìm bài học theo nhóm danh mục hoặc bài chưa phân loại
-      let catLessons = [];
-      if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
-        catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
-      } else {
-        catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
-      }
-      if (catLessons.length === 0) catLessons = state.lessons;
-
+      const catLessons = getEffectiveCategoryLessons(currentLesson, true);
       const target = catLessons[val];
       if (target) {
         selectLesson(target.id);
@@ -28285,14 +28344,7 @@
         const num = parseInt(e.target.value, 10);
         const currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
         if (!currentLesson) return;
-        // FIX: Nhảy bài theo nhóm danh mục hoặc bài chưa phân loại
-        let catLessons = [];
-        if (currentLesson.categoryId && state.categories.some(c => c.id === currentLesson.categoryId)) {
-          catLessons = state.lessons.filter(l => l.categoryId === currentLesson.categoryId);
-        } else {
-          catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
-        }
-        if (catLessons.length === 0) catLessons = state.lessons;
+        const catLessons = getEffectiveCategoryLessons(currentLesson, true);
 
         if (num >= 1 && num <= catLessons.length) {
           selectLesson(catLessons[num - 1].id);
@@ -28561,6 +28613,7 @@
         btn.className = "filter-tab py-1 text-center font-medium rounded transition bg-white dark:bg-[#161A20] text-[#1A1A1A] dark:text-[#ECEEF2] shadow-sm";
 
         renderCategoriesAndLessons();
+        renderActiveLesson();
       });
     });
 
@@ -31774,14 +31827,7 @@
       let nextLesson = null;
       let isLast = false;
       if (percent >= 100) {
-        let catLessons = [];
-        if (targetLesson.categoryId && state.categories.some(c => c.id === targetLesson.categoryId)) {
-          catLessons = state.lessons.filter(l => l.categoryId === targetLesson.categoryId);
-        } else {
-          catLessons = state.lessons.filter(l => !l.categoryId || !state.categories.some(c => c.id === l.categoryId));
-        }
-        if (catLessons.length === 0) catLessons = state.lessons;
-
+        const catLessons = getEffectiveCategoryLessons(targetLesson, true);
         const curIdx = catLessons.findIndex(l => l.id === targetLesson.id);
         if (curIdx !== -1 && curIdx < catLessons.length - 1) {
           nextLesson = catLessons[curIdx + 1];

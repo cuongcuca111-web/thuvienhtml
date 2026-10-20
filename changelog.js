@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.20',
+        date: '2026-10-20T17:55:00+07:00',
+        title: 'Đồng Bộ Hóa Hoàn Toàn Thứ Tự Bài Học Giữa Mục Lục Sidebar & Thanh Điều Hướng Reader',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi lệch số thứ tự trên thanh điều hướng Reader (Ảnh 3): Thống nhất hàm getEffectiveCategoryLessons dùng chung quy tắc sắp xếp (A-Z, tên & số tự nhiên, cũ/mới) và bộ lọc với Sidebar.' },
+          { type: 'improved', text: 'Đồng bộ hóa 100% các nút chuyển bài Trước/Sau, thanh trượt Slider, ô gõ số nhảy bài và tự động chuyển bài tiếp theo theo đúng thứ tự trực quan đang hiển thị trên cây thư mục.' },
+          { type: 'improved', text: 'Tự động cập nhật lại vị trí bài học (ví dụ 1/14) ngay tức thì khi người dùng thay đổi chế độ sắp xếp hoặc bộ lọc mà không cần tải lại trang.' }
+        ]
+      },
+      {
         version: 'v5.8.19',
         date: '2026-10-20T17:30:00+07:00',
         title: 'Triệt Tiêu Hiện Tượng Chớp Nháy / Giật Khung Hình Khi Reset Trang (Zero-Jitter Startup)',
