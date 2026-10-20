@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.23',
+        date: '2026-10-20T20:50:00+07:00',
+        title: 'Thêm Tính Năng Tải Xuống File Đang Xem Ngay Trên Thanh Công Cụ Reader',
+        items: [
+          { type: 'feature', text: 'Bổ sung nút "Tải xuống file hiện tại" ngay cạnh nút "Đã học" trên thanh công cụ Reader với thiết kế đồng bộ chuẩn vibe giao diện của thư viện.' },
+          { type: 'improved', text: 'Hiệu ứng tương tác mượt mà (Micro-interaction): Nền chuyển sắc Indigo, biểu tượng mũi tên tải chuyển động nhún nhẹ (downloadArrowBounce) khi di chuột và phản hồi co giãn xúc giác khi nhấn.' },
+          { type: 'improved', text: 'Hỗ trợ tải chuẩn mọi định dạng bài học (.html, .md, .txt) với tên file gốc nguyên bản và cơ chế nạp dự phòng thông minh từ Cloud.' }
+        ]
+      },
+      {
         version: 'v5.8.22',
         date: '2026-10-20T18:50:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Không Tải Được File & Kẹt Màn Hình Trắng Trên Điện Thoại (iOS Safari)',

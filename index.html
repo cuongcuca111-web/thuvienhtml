@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.22"></script>
+  <script src="./changelog.js?v=5.8.23"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.22',
+        version: 'v5.8.23',
         date: '2026-10-18T23:55:00+07:00',
         title: 'Nâng Cấp Bảo Mật Hệ Thống, Tối Ưu Kiến Trúc Tải Trang & Phóng To Hình Ảnh Bài Học (Lightbox Zoom)',
         items: [
@@ -192,7 +192,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.22';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.23';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -606,8 +606,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.22">
-  <script src="./bridge.js?v=5.8.22"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.23">
+  <script src="./bridge.js?v=5.8.23"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2290,7 +2290,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.22 • build 20/10/2026 18:50</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.23 • build 20/10/2026 20:50</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -2379,6 +2379,14 @@
           <button id="btnToggleLearned" class="reader-ctrl-btn touch-target min-h-[44px] sm:min-h-[36px] sm:h-9 px-3.5 rounded-[10px] font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shadow-2xs border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] hover:border-emerald-400 active:scale-95 shrink-0 cursor-pointer select-none" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
             <svg id="learnedIcon" class="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" aria-hidden="true"><use href="#icon-circle"></use></svg>
             <span id="learnedLabel" class="inline">Đã học</span>
+          </button>
+
+          <!-- Nút Tải xuống file hiện tại -->
+          <button id="btnDownloadCurrentLesson" type="button" class="reader-ctrl-btn group/btn-dl touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] sm:h-9 sm:w-9 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 hover:border-indigo-300 dark:hover:border-indigo-700/60 text-[#1C1917] dark:text-[#EDECE8] hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-all duration-200 shadow-2xs active:scale-90 shrink-0 cursor-pointer select-none relative overflow-hidden" title="Tải xuống file hiện tại (.html / .md / .txt)" aria-label="Tải xuống file hiện tại">
+            <svg class="w-4 h-4 text-stone-500 dark:text-stone-400 group-hover/btn-dl:text-indigo-600 dark:group-hover/btn-dl:text-indigo-400 transition-all duration-200 group-hover/btn-dl:translate-y-0.5 group-hover/btn-dl:scale-110 shrink-0" aria-hidden="true">
+              <use href="#icon-download"></use>
+            </svg>
+            <span class="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover/btn-dl:opacity-100 transition-opacity duration-200 pointer-events-none rounded-[9px]"></span>
           </button>
 
           <!-- Nút Yêu thích -->
@@ -3071,7 +3079,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.22</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.23</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3093,7 +3101,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.22 • build 20/10/2026 18:50</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.23 • build 20/10/2026 20:50</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6057,8 +6065,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.22</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.22</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.23</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.23</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -28633,6 +28641,110 @@
     on('#btnToggleFavorite', 'click', async () => {
       const cur = state.lessons.find(l => l.id === state.activeLessonId);
       if (cur) await updateLessonField(cur.id, { isFavorite: !cur.isFavorite });
+    });
+
+    async function downloadCurrentLessonFile() {
+      let currentLesson = null;
+      if (state.isSharedMode) {
+        currentLesson = state.sharedLessonData;
+      } else {
+        currentLesson = state.lessons.find(l => l.id === state.activeLessonId);
+      }
+      if (!currentLesson) {
+        showToast("Không tìm thấy bài học để tải xuống!", "warning");
+        return;
+      }
+
+      const btnDl = document.getElementById('btnDownloadCurrentLesson');
+      if (btnDl) {
+        btnDl.classList.add('pointer-events-none', 'scale-95');
+      }
+
+      try {
+        let content = currentLesson.htmlContent;
+        if (!content && currentLesson.id) {
+          content = await getLessonContentFromIDB(currentLesson.id);
+          if (content) {
+            currentLesson.htmlContent = content;
+          } else if (db && state.userId && !state.useLocalFallback) {
+            try {
+              const docSnap = await getDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', currentLesson.id));
+              if (docSnap.exists() && docSnap.data().htmlContent) {
+                content = docSnap.data().htmlContent;
+                currentLesson.htmlContent = content;
+                if (typeof putLessonContentToIDB === 'function') {
+                  putLessonContentToIDB(currentLesson.id, content).catch(() => {});
+                }
+              }
+            } catch (fsErr) {
+              console.warn("Lỗi tải nội dung khi download:", fsErr);
+            }
+          }
+        }
+
+        if (!content) {
+          showToast("Nội dung bài học rỗng hoặc chưa sẵn sàng!", "warning");
+          return;
+        }
+
+        // Xác định định dạng và phần mở rộng file
+        const isMarkdown = currentLesson.sourceType === 'markdown';
+        const isText = currentLesson.sourceType === 'text';
+
+        let fileData = content;
+        let mimeType = 'text/html;charset=utf-8';
+        let defaultExt = '.html';
+
+        if (isMarkdown) {
+          fileData = currentLesson.rawSource || content;
+          mimeType = 'text/markdown;charset=utf-8';
+          defaultExt = '.md';
+        } else if (isText) {
+          fileData = currentLesson.rawSource || content;
+          mimeType = 'text/plain;charset=utf-8';
+          defaultExt = '.txt';
+        }
+
+        // Xác định tên file tải về
+        let fileName = (currentLesson.originalFileName || '').trim();
+        if (!fileName) {
+          const safeTitle = (currentLesson.title || 'bai_hoc')
+            .replace(/[\\/:*?"<>|]/g, '_')
+            .replace(/\s+/g, '_')
+            .substring(0, 80);
+          fileName = `${safeTitle}${defaultExt}`;
+        } else if (!fileName.toLowerCase().endsWith(defaultExt)) {
+          fileName += defaultExt;
+        }
+
+        // Tạo Blob và kích hoạt tải xuống
+        const blob = new Blob([fileData], { type: mimeType });
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(downloadUrl), 2000);
+
+        if (btnDl && typeof shootMicroConfetti === 'function') {
+          shootMicroConfetti(btnDl);
+        }
+        showToast(`Đã tải xuống: ${fileName}`);
+      } catch (err) {
+        console.error("Lỗi tải file bài học:", err);
+        showToast("Không thể tải xuống file: " + (err.message || 'Lỗi không xác định'), "error");
+      } finally {
+        if (btnDl) {
+          btnDl.classList.remove('pointer-events-none', 'scale-95');
+        }
+      }
+    }
+    window.downloadCurrentLessonFile = downloadCurrentLessonFile;
+
+    on('#btnDownloadCurrentLesson', 'click', async () => {
+      await downloadCurrentLessonFile();
     });
 
 

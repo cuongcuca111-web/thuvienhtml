@@ -4507,3 +4507,17 @@
         transform: none !important;
       }
     }
+
+/* Hiệu ứng nhún nhẹ khi di chuột vào nút Tải xuống bài học */
+#btnDownloadCurrentLesson:hover svg {
+  animation: downloadArrowBounce 0.6s ease-in-out infinite alternate;
+}
+@keyframes downloadArrowBounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #btnDownloadCurrentLesson:hover svg {
+    animation: none !important;
+  }
+}
