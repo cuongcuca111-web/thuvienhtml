@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.20"></script>
+  <script src="./changelog.js?v=5.8.21"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.20',
+        version: 'v5.8.21',
         date: '2026-10-18T23:55:00+07:00',
         title: 'Nâng Cấp Bảo Mật Hệ Thống, Tối Ưu Kiến Trúc Tải Trang & Phóng To Hình Ảnh Bài Học (Lightbox Zoom)',
         items: [
@@ -192,7 +192,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.20';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.21';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -606,8 +606,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.20">
-  <script src="./bridge.js?v=5.8.20"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.21">
+  <script src="./bridge.js?v=5.8.21"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2290,7 +2290,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.20 • build 20/10/2026 17:55</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.21 • build 20/10/2026 18:15</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3071,7 +3071,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.20</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.21</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3093,7 +3093,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.20 • build 20/10/2026 17:55</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.21 • build 20/10/2026 18:15</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6057,8 +6057,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.20</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.20</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.21</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.21</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -20453,6 +20453,7 @@
     }
 
     let pendingSidebarRaf = null;
+    const recentLocalLessonFieldUpdates = new Map(); // lessonId -> timestamp
     function scheduleRenderCategoriesAndLessons() {
       if (pendingSidebarRaf) return;
       pendingSidebarRaf = requestAnimationFrame(() => {
@@ -20587,9 +20588,28 @@
             state.activeLessonId = state.lessons[0].id;
             state.activeCategoryId = state.lessons[0].categoryId;
           }
-          scheduleRenderCategoriesAndLessons();
-          renderActiveLesson();
-          try { renderSidebarPlans(); } catch (_) {}
+
+          // Kiểm tra xem snapshot này có phải chỉ là kết quả phản hồi (echo) từ cập nhật cục bộ vừa thực hiện (Đã học / Yêu thích) hay không
+          const docChanges = (typeof snapshot.docChanges === 'function') ? snapshot.docChanges() : [];
+          const now = Date.now();
+          for (const [id, time] of recentLocalLessonFieldUpdates.entries()) {
+            if (now - time > 12000) recentLocalLessonFieldUpdates.delete(id);
+          }
+
+          const isOnlyOurRecentModifications = docChanges.length > 0 && docChanges.every(change => {
+            return change.type === 'modified' && 
+                   recentLocalLessonFieldUpdates.has(change.doc.id) && 
+                   (now - recentLocalLessonFieldUpdates.get(change.doc.id) < 10000);
+          });
+
+          if (isOnlyOurRecentModifications) {
+            // Đã được cập nhật DOM tại chỗ (in-place) 0ms trước đó, triệt tiêu re-render để không giật lag hoặc tải lại danh mục
+            try { renderSidebarPlans(); } catch (_) {}
+          } else {
+            scheduleRenderCategoriesAndLessons();
+            renderActiveLesson();
+            try { renderSidebarPlans(); } catch (_) {}
+          }
         }
       }, (error) => {
         console.warn("Firestore Lessons error:", error);
@@ -21352,12 +21372,18 @@
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (!lesson) return;
       lesson.isFavorite = !lesson.isFavorite;
+      recentLocalLessonFieldUpdates.set(lessonId, Date.now());
       saveLocalLessons();
       if (state.userId && !state.useLocalFallback && db) {
         updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lesson.id), { isFavorite: lesson.isFavorite }).catch(()=>{});
       }
-      renderCategoriesAndLessons();
-      renderActiveLesson();
+      if (state.activeFilter === 'favorites') {
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+      } else {
+        updateSidebarLessonRowFast(lessonId, { isFavorite: lesson.isFavorite });
+        updateReaderHeaderLessonState(lessonId);
+      }
       showToast(lesson.isFavorite ? 'Đã thêm vào mục Yêu thích' : 'Đã bỏ khỏi mục Yêu thích');
     }
 
@@ -24077,6 +24103,169 @@
       return true;
     }
 
+    // Fast-path cập nhật giao diện thanh Reader Header (nút Đã học & nút Yêu thích)
+    function updateReaderHeaderLessonState(lessonId) {
+      if (state.activeLessonId !== lessonId) return;
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      const btnToggleLearned = document.getElementById('btnToggleLearned');
+      const learnedIcon = document.getElementById('learnedIcon');
+      const learnedLabel = document.getElementById('learnedLabel');
+
+      if (btnToggleLearned) {
+        if (lesson.isCompleted) {
+          btnToggleLearned.className = 'touch-target px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-[13px] border transition shadow-2xs flex items-center gap-1.5 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 active:scale-95';
+        } else {
+          btnToggleLearned.className = 'touch-target px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-[13px] border transition shadow-2xs flex items-center gap-1.5 shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 active:scale-95';
+        }
+      }
+
+      if (learnedIcon) {
+        const useEl = learnedIcon.querySelector('use');
+        if (lesson.isCompleted) {
+          learnedIcon.setAttribute('class', "w-4 h-4 text-white icon-pop-animated shrink-0");
+          if (learnedLabel) learnedLabel.innerText = "Đã xong";
+          if (useEl) useEl.setAttribute('href', '#icon-check-circle-2');
+        } else {
+          learnedIcon.setAttribute('class', "w-4 h-4 text-white/90 shrink-0");
+          if (learnedLabel) learnedLabel.innerText = "Đã học";
+          if (useEl) useEl.setAttribute('href', '#icon-circle');
+        }
+      }
+
+      const favIcon = document.getElementById('favIcon');
+      if (favIcon) {
+        if (lesson.isFavorite) {
+          favIcon.setAttribute('class', "w-4 h-4 text-[#F59E0B] fill-[#F59E0B] icon-pop-animated");
+        } else {
+          favIcon.setAttribute('class', "w-4 h-4 text-[#6B6B66] dark:text-[#9AA3B2] fill-none");
+        }
+      }
+    }
+    window.updateReaderHeaderLessonState = updateReaderHeaderLessonState;
+
+    // Fast-path cập nhật dòng bài học và thanh tiến độ danh mục trên Sidebar mà KHÔNG hủy/tái tạo DOM #categoriesList
+    function updateSidebarLessonRowFast(lessonId, updateFields = {}) {
+      const container = document.getElementById('categoriesList');
+      if (!container) return false;
+
+      const escapedId = (typeof CSS !== 'undefined' && typeof CSS.escape === 'function')
+        ? CSS.escape(String(lessonId))
+        : String(lessonId).replace(/["\\]/g, '\\$&');
+
+      const row = container.querySelector(`.lesson-item-row[data-lesson-id="${escapedId}"]`);
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return false;
+
+      // 1. Cập nhật trạng thái Đã học (isCompleted)
+      if (updateFields.isCompleted !== undefined) {
+        const isDone = !!updateFields.isCompleted;
+
+        if (row) {
+          // A. Class trên hàng
+          row.classList.toggle('is-completed', isDone);
+
+          // B. Nút check tròn
+          const checkBtn = row.querySelector('.lesson-check-btn');
+          if (checkBtn) {
+            checkBtn.classList.toggle('is-checked', isDone);
+            checkBtn.title = isDone ? 'Đã học (Bấm để đổi)' : 'Chưa học (Bấm để đổi)';
+            checkBtn.classList.add('anim-pop');
+            setTimeout(() => {
+              checkBtn.classList.remove('anim-pop');
+            }, 400);
+          }
+
+          // C. Badge "✓ Đã học" trong dòng phụ
+          const titleEl = row.querySelector('.lesson-title-text');
+          const subRow = titleEl ? titleEl.nextElementSibling : null;
+          if (subRow) {
+            let badge = subRow.querySelector('.lesson-learned-badge');
+            if (isDone) {
+              if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'lesson-learned-badge';
+                badge.textContent = '✓ Đã học';
+                const subFile = subRow.querySelector('.lesson-sub-filename');
+                if (subFile && subFile.nextSibling) {
+                  subRow.insertBefore(badge, subFile.nextSibling);
+                } else {
+                  subRow.insertBefore(badge, subRow.firstChild);
+                }
+              }
+            } else {
+              if (badge) badge.remove();
+            }
+          }
+        }
+
+        // D. Cập nhật tiến độ của danh mục cha
+        const catId = lesson.categoryId || '__uncategorized__';
+        const escapedCatId = (typeof CSS !== 'undefined' && typeof CSS.escape === 'function')
+          ? CSS.escape(String(catId))
+          : String(catId).replace(/["\\]/g, '\\$&');
+
+        const catCard = (row && row.closest('.category-item-card')) ||
+                        container.querySelector(`.category-item-card[data-cat-id="${escapedCatId}"]`) ||
+                        container.querySelector(`[data-cat-id="${escapedCatId}"]`);
+
+        if (catCard) {
+          const isUncat = (catId === '__uncategorized__');
+          const allCatLessons = state.lessons.filter(l =>
+            isUncat
+              ? (!l.categoryId || !state.categories.some(c => c.id === l.categoryId))
+              : (l.categoryId === catId)
+          );
+          const totalCount = allCatLessons.length;
+          const completedCount = allCatLessons.filter(l => l.isCompleted).length;
+          const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+          // Cập nhật thẻ số lượng / huy hiệu hoàn thành
+          const countBadge = catCard.querySelector('.cat-count-badge');
+          if (countBadge) {
+            if (progressPercent === 100 && totalCount > 0) {
+              countBadge.className = 'cat-count-badge text-[10px] px-1.5 py-0.5 rounded border transition-colors bg-emerald-600 text-white border-emerald-600 font-semibold shadow-2xs';
+              countBadge.textContent = `✓ ${completedCount}/${totalCount}`;
+            } else {
+              countBadge.className = 'cat-count-badge text-[10px] px-1.5 py-0.5 rounded border transition-colors text-[#6B6B66] dark:text-[#9AA3B2] bg-[#F7F7F5] dark:bg-[#0F1115] border-[#E6E6E1] dark:border-[#262C36] font-medium';
+              countBadge.textContent = `${completedCount}/${totalCount}`;
+            }
+          }
+
+          // Cập nhật thanh tiến độ viền dưới
+          const progressFill = catCard.querySelector('.category-progress-fill');
+          if (progressFill) {
+            progressFill.style.width = `${progressPercent}%`;
+          }
+
+          // Cập nhật class hoàn thành danh mục
+          catCard.classList.toggle('is-group-completed', progressPercent === 100 && totalCount > 0);
+        }
+      }
+
+      // 2. Cập nhật trạng thái Yêu thích (isFavorite)
+      if (updateFields.isFavorite !== undefined && row) {
+        const isFav = !!updateFields.isFavorite;
+        const starBtn = row.querySelector('[data-quick-star]');
+        if (starBtn) {
+          starBtn.title = isFav ? 'Bỏ yêu thích' : 'Yêu thích';
+          if (isFav) {
+            starBtn.className = 'p-1 rounded-md text-amber-500 hover:scale-110 transition block';
+          } else {
+            starBtn.className = 'p-1 rounded-md text-amber-500 hover:scale-110 transition hidden sm:group-hover/item:block text-gray-300 dark:text-gray-600 hover:text-amber-500';
+          }
+          const starSvg = starBtn.querySelector('svg');
+          if (starSvg) {
+            starSvg.classList.toggle('fill-amber-500', isFav);
+          }
+        }
+      }
+
+      return true;
+    }
+    window.updateSidebarLessonRowFast = updateSidebarLessonRowFast;
+
     function selectLesson(lessonId) {
       if (!lessonId) return Promise.resolve();
       if (typeof stopTTS === 'function') stopTTS();
@@ -24204,10 +24393,23 @@
       const lIdx = state.lessons.findIndex(l => l.id === lessonId);
       if (lIdx === -1) return;
 
-      // Cập nhật tại chỗ (in-place)
+      // Cập nhật dữ liệu in-memory
       state.lessons[lIdx] = { ...state.lessons[lIdx], ...updateFields, updatedAt: new Date().toISOString() };
-      renderCategoriesAndLessons();
-      renderActiveLesson();
+      recentLocalLessonFieldUpdates.set(lessonId, Date.now());
+
+      // Kiểm tra xem có thể dùng In-place Fast Path để tránh tải lại toàn bộ sidebar không
+      const fieldKeys = Object.keys(updateFields);
+      const isOnlyToggleFields = fieldKeys.every(k => k === 'isCompleted' || k === 'isFavorite' || k === 'lastOpenedAt' || k === 'updatedAt');
+      const needsFullReorder = (updateFields.isCompleted !== undefined && (state.activeFilter === 'unread' || state.sortOrder === 'unlearned')) ||
+                               (updateFields.isFavorite !== undefined && state.activeFilter === 'favorites');
+
+      if (isOnlyToggleFields && !needsFullReorder) {
+        updateSidebarLessonRowFast(lessonId, updateFields);
+        updateReaderHeaderLessonState(lessonId);
+      } else {
+        renderCategoriesAndLessons();
+        renderActiveLesson();
+      }
       saveLocalLessons();
 
       // Đồng bộ trạng thái đã học với các Kế hoạch học tập tức thời (Live Sync)
@@ -31039,7 +31241,6 @@
       await updateLessonField(lessonId, { isCompleted: targetState });
       renderStudyPlanDetail(plan.id);
       renderStudyPlanWidget();
-      renderCategoriesAndLessons();
     }
 
     function openCreatePlanModal(editingPlan = null) {

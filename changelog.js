@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.21',
+        date: '2026-10-20T18:15:00+07:00',
+        title: 'Cập Nhật Tại Chỗ (In-Place Fast Path) Cho Trạng Thái Đã Học & Triệt Tiêu Tải Lại Danh Mục',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để hiện tượng các file trong thư mục bị tải lại và giật lag máy khi tích chọn "Đã học": Triệt tiêu việc xóa/dựng lại toàn bộ DOM danh mục (#categoriesList) khi thay đổi trạng thái học tập.' },
+          { type: 'performance', text: 'Cập nhật tại chỗ (In-Place DOM Fast Path 0ms): Trực tiếp cập nhật dấu tích xanh, huy hiệu "✓ Đã học", thanh tiến độ danh mục cha (e.g. 1/14) và nút thanh công cụ Reader ngay tức thì mà không gián đoạn giao diện.' },
+          { type: 'performance', text: 'Triệt tiêu vòng lặp re-render từ Firestore Realtime Snapshot: Nhận diện phản hồi đồng bộ cục bộ và bỏ qua lượt render dư thừa, bảo toàn 100% tài nguyên CPU/RAM khi người dùng học bài liên tục.' },
+          { type: 'improved', text: 'Áp dụng đồng bộ cho cả nút tick nhanh ở Sidebar, nút Đã học trên thanh công cụ Reader, menu ngữ cảnh bài học và phím tắt phím L.' }
+        ]
+      },
+      {
         version: 'v5.8.20',
         date: '2026-10-20T17:55:00+07:00',
         title: 'Đồng Bộ Hóa Hoàn Toàn Thứ Tự Bài Học Giữa Mục Lục Sidebar & Thanh Điều Hướng Reader',
