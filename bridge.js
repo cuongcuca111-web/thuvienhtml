@@ -1410,6 +1410,25 @@
     if (!msg || typeof msg !== 'object') return;
 
     switch (msg.type) {
+      // Dọn sạch và giải phóng tài nguyên media, audio, DOM khi chuyển bài (chống tràn RAM iOS/Android)
+      case 'RELEASE_RESOURCES': {
+        try {
+          document.querySelectorAll('audio, video').forEach(media => {
+            try {
+              media.pause();
+              media.removeAttribute('src');
+              media.load();
+            } catch (_) {}
+          });
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+          if (document.body) {
+            document.body.innerHTML = '';
+          }
+        } catch (_) {}
+        break;
+      }
       // // FIX-2: Xóa vùng chọn trong iframe khi hoàn thành thao tác để tắt menu mặc định của iOS
       case 'CLEAR_SELECTION': {
         try {

@@ -533,6 +533,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN (Đã gỡ bỏ Lucide Icons theo yêu cầu) -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <script>
@@ -8098,7 +8100,8 @@
       updateDoc, 
       deleteDoc, 
       onSnapshot, 
-      collection 
+      collection,
+      writeBatch
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'thuvienhtml';
@@ -21689,25 +21692,155 @@
       return affected;
     }
 
+    // ==========================================
+    // TỐI ƯU HÓA: DỌN SẠCH BỘ NHỚ RAM IFRAME KHI CHUYỂN BÀI HỌC
+    // ==========================================
+    window._activeLessonBlobUrls = window._activeLessonBlobUrls || [];
+
+    function cleanUpIframeMemory() {
+      try {
+        // 1. Dừng bộ đọc TTS và hủy Web Speech API
+        if (typeof stopTTS === 'function') {
+          try { stopTTS(); } catch (_) {}
+        }
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch (_) {}
+        }
+
+        // 2. Giải phóng toàn bộ Blob URLs đã cấp phát cho bài học
+        if (window._activeLessonBlobUrls && Array.isArray(window._activeLessonBlobUrls)) {
+          while (window._activeLessonBlobUrls.length > 0) {
+            const u = window._activeLessonBlobUrls.pop();
+            try { URL.revokeObjectURL(u); } catch (_) {}
+          }
+        }
+
+        // 3. Giải phóng tài nguyên DOM, Media, Audio bên trong iframe
+        const iframe = document.getElementById('lessonIframe');
+        if (iframe) {
+          try {
+            if (iframe.contentWindow) {
+              iframe.contentWindow.postMessage({ type: 'RELEASE_RESOURCES' }, '*');
+            }
+          } catch (_) {}
+
+          try {
+            if (iframe.contentDocument && iframe.contentDocument.body) {
+              iframe.contentDocument.body.innerHTML = '';
+            }
+          } catch (_) {}
+
+          // Chủ động gán about:blank để WebKit/Blink GC thu hồi triệt để bộ nhớ
+          iframe.srcdoc = 'about:blank';
+        }
+      } catch (err) {
+        console.warn('[Memory] Lỗi khi dọn dẹp RAM Iframe:', err);
+      }
+    }
+    window.cleanUpIframeMemory = cleanUpIframeMemory;
+
+    // ==========================================
+    // TỐI ƯU HÓA: DEBOUNCE 1.2S & WRITE BATCH KHI KÉO THẢ / SẮP XẾP
+    // ==========================================
+    const PENDING_ORDER_SYNC_DEBOUNCE_MS = 1200;
+    const pendingLessonsOrderMap = new Map(); // id -> { id, order, categoryId }
+    const pendingCategoriesOrderMap = new Map(); // id -> { id, order }
+    let orderSyncDebounceTimer = null;
+
+    async function flushOrderSyncToFirestore() {
+      if (orderSyncDebounceTimer) {
+        clearTimeout(orderSyncDebounceTimer);
+        orderSyncDebounceTimer = null;
+      }
+
+      if (!state.userId || state.useLocalFallback || !db) {
+        pendingLessonsOrderMap.clear();
+        pendingCategoriesOrderMap.clear();
+        return;
+      }
+
+      const lessonsToSync = Array.from(pendingLessonsOrderMap.values());
+      const categoriesToSync = Array.from(pendingCategoriesOrderMap.values());
+
+      if (lessonsToSync.length === 0 && categoriesToSync.length === 0) return;
+
+      pendingLessonsOrderMap.clear();
+      pendingCategoriesOrderMap.clear();
+
+      state.isReordering = true;
+
+      try {
+        const MAX_BATCH_SIZE = 450;
+        const allOps = [];
+
+        for (const l of lessonsToSync) {
+          allOps.push({
+            ref: doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', l.id),
+            data: {
+              order: l.order,
+              categoryId: l.categoryId || null,
+              updatedAt: Date.now()
+            }
+          });
+        }
+
+        for (const c of categoriesToSync) {
+          allOps.push({
+            ref: doc(db, 'artifacts', appId, 'users', state.userId, 'categories', c.id),
+            data: {
+              order: c.order,
+              updatedAt: Date.now()
+            }
+          });
+        }
+
+        for (let b = 0; b < allOps.length; b += MAX_BATCH_SIZE) {
+          const chunk = allOps.slice(b, b + MAX_BATCH_SIZE);
+          const batch = writeBatch(db);
+          for (const op of chunk) {
+            batch.update(op.ref, op.data);
+          }
+          await batch.commit();
+        }
+      } catch (err) {
+        console.warn('[SyncOrder] Lỗi đồng bộ Firestore theo Batch Debounce:', err);
+      } finally {
+        setTimeout(() => {
+          state.isReordering = false;
+        }, 800);
+      }
+    }
+
     async function syncAffectedLessonsOrder(affectedList) {
       if (!affectedList || affectedList.length === 0) return;
       if (!state.userId || state.useLocalFallback || !db) return;
-      state.isReordering = true;
-      try {
-        const promises = affectedList.map(l => 
-          updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', l.id), {
-            order: l.order,
-            categoryId: l.categoryId || null,
-            updatedAt: Date.now()
-          })
-        );
-        await Promise.allSettled(promises);
-      } catch (err) {
-        console.warn('Lỗi đồng bộ Firestore order bài học:', err);
-      } finally {
-        setTimeout(() => { state.isReordering = false; }, 800);
-      }
+
+      affectedList.forEach(l => {
+        pendingLessonsOrderMap.set(l.id, {
+          id: l.id,
+          order: l.order,
+          categoryId: l.categoryId || null
+        });
+      });
+
+      if (orderSyncDebounceTimer) clearTimeout(orderSyncDebounceTimer);
+      orderSyncDebounceTimer = setTimeout(() => {
+        flushOrderSyncToFirestore();
+      }, PENDING_ORDER_SYNC_DEBOUNCE_MS);
     }
+
+    // Đảm bảo không thất thoát dữ liệu thứ tự khi chuyển ứng dụng hoặc đóng tab
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && (pendingLessonsOrderMap.size > 0 || pendingCategoriesOrderMap.size > 0)) {
+        flushOrderSyncToFirestore();
+      }
+    });
+    window.addEventListener('beforeunload', () => {
+      if (pendingLessonsOrderMap.size > 0 || pendingCategoriesOrderMap.size > 0) {
+        flushOrderSyncToFirestore();
+      }
+    });
+
 
     async function moveLessonOrder(lessonId, delta) {
       const idx = state.lessons.findIndex(l => l.id === lessonId);
@@ -21755,20 +21888,13 @@
         renderCategoriesAndLessons();
 
         if (state.userId && !state.useLocalFallback && db) {
-          state.isReordering = true;
-          try {
-            const promises = state.categories.map(c => 
-              updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', c.id), {
-                order: c.order,
-                updatedAt: Date.now()
-              })
-            );
-            await Promise.allSettled(promises);
-          } catch (err) {
-            console.warn('Lỗi đồng bộ Firestore order mục:', err);
-          } finally {
-            setTimeout(() => { state.isReordering = false; }, 800);
-          }
+          state.categories.forEach(c => {
+            pendingCategoriesOrderMap.set(c.id, { id: c.id, order: c.order });
+          });
+          if (orderSyncDebounceTimer) clearTimeout(orderSyncDebounceTimer);
+          orderSyncDebounceTimer = setTimeout(() => {
+            flushOrderSyncToFirestore();
+          }, PENDING_ORDER_SYNC_DEBOUNCE_MS);
         }
       }
     }
@@ -21807,22 +21933,15 @@
       renderCategoriesAndLessons();
       showToast('Đã sắp xếp lại thứ tự mục');
 
-      if (state.userId && !state.useLocalFallback && db) {
-        state.isReordering = true;
-        try {
-          const promises = state.categories.map(c => 
-            updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', c.id), {
-              order: c.order,
-              updatedAt: Date.now()
-            })
-          );
-          await Promise.allSettled(promises);
-        } catch (err) {
-          console.warn('Lỗi đồng bộ Firestore order mục:', err);
-        } finally {
-          setTimeout(() => { state.isReordering = false; }, 800);
+        if (state.userId && !state.useLocalFallback && db) {
+          state.categories.forEach(c => {
+            pendingCategoriesOrderMap.set(c.id, { id: c.id, order: c.order });
+          });
+          if (orderSyncDebounceTimer) clearTimeout(orderSyncDebounceTimer);
+          orderSyncDebounceTimer = setTimeout(() => {
+            flushOrderSyncToFirestore();
+          }, PENDING_ORDER_SYNC_DEBOUNCE_MS);
         }
-      }
     }
     window.reorderCategory = reorderCategory;
 
@@ -23632,6 +23751,9 @@
     }
 
     function loadHtmlIntoIframe(rawHtml) {
+      // Dọn sạch và giải phóng RAM của bài học cũ trước khi nạp bài mới
+      cleanUpIframeMemory();
+
       const iframe = document.getElementById('lessonIframe');
       const skeleton = document.getElementById('iframeLoadingSkeleton');
       const container = document.getElementById('iframeOuterContainer');
@@ -23843,6 +23965,7 @@
     function selectLesson(lessonId) {
       if (!lessonId) return Promise.resolve();
       if (typeof stopTTS === 'function') stopTTS();
+      cleanUpIframeMemory();
       state.activeLessonId = lessonId;
       if (typeof recordRecentLesson === 'function') recordRecentLesson(lessonId);
       const lesson = state.lessons.find(l => l.id === lessonId);
@@ -27667,6 +27790,7 @@
 
       try {
         const addedLessonIds = [];
+        const firestoreLessonsToBatch = [];
         const total = validFiles.length;
 
         for (let i = 0; i < total; i++) {
@@ -27714,11 +27838,25 @@
           addedLessonIds.push(docId);
 
           if (!state.useLocalFallback && db && state.userId) {
+            const lRef = doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', docId);
+            firestoreLessonsToBatch.push({ ref: lRef, data: lessonData });
+          }
+        }
+
+        // Gom Batch Write tối đa 450 bài / 1 lượt gửi lên Firestore (tối ưu hạn ngạch và tốc độ)
+        if (firestoreLessonsToBatch.length > 0) {
+          if (textEl) textEl.innerText = `Đang đồng bộ ${firestoreLessonsToBatch.length} bài lên Cloud…`;
+          const CHUNK_SIZE = 450;
+          for (let c = 0; c < firestoreLessonsToBatch.length; c += CHUNK_SIZE) {
+            const chunk = firestoreLessonsToBatch.slice(c, c + CHUNK_SIZE);
+            const batch = writeBatch(db);
+            for (const item of chunk) {
+              batch.set(item.ref, item.data);
+            }
             try {
-              const lRef = doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', docId);
-              await setDoc(lRef, lessonData);
-            } catch (fsErr) {
-              console.warn("[Upload] Lỗi lưu Firestore:", fsErr);
+              await batch.commit();
+            } catch (batchErr) {
+              console.warn('[Upload] Lỗi commit writeBatch Firestore:', batchErr);
             }
           }
         }

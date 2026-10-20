@@ -49,11 +49,13 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Bỏ qua các request không phải GET hoặc yêu cầu từ Firebase Firestore / Google APIs / Auth / Vercel API
-  if (req.method !== 'GET' || 
+  // Bỏ qua các request không phải GET hoặc yêu cầu từ Firebase Firestore / Google Cloud APIs / Auth / Vercel API
+  // Cho phép lưu đệm phông chữ Google Fonts (fonts.googleapis.com, fonts.gstatic.com) và Tailwind CDN (cdn.tailwindcss.com)
+  const isGoogleApiExcluded = url.hostname.includes('googleapis.com') && !url.hostname.includes('fonts.googleapis.com');
+  if (req.method !== 'GET' ||
       url.pathname.startsWith('/api/') ||
-      url.hostname.includes('firebaseio.com') || 
-      url.hostname.includes('googleapis.com') || 
+      url.hostname.includes('firebaseio.com') ||
+      isGoogleApiExcluded ||
       url.hostname.includes('identitytoolkit')) {
     return;
   }
@@ -89,7 +91,8 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       const fetchPromise = fetch(req).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        // Hỗ trợ lưu đệm cả response 200 và response dạng opaque (cross-origin CDN như Tailwind/Google Fonts)
+        if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
