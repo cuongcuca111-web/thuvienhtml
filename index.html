@@ -1,6 +1,16 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full">
+<html lang="vi" class="h-full app-preload">
 <head>
+  <style id="earlyPreloadStyle">
+    /* Chống chớp giật layout và transitions khi nạp trang */
+    .app-preload, .app-preload * {
+      -webkit-transition: none !important;
+      -moz-transition: none !important;
+      -ms-transition: none !important;
+      -o-transition: none !important;
+      transition: none !important;
+    }
+  </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>Thư viện Sách HTML - Đọc & Ôn tập Chuyên sâu</title>
@@ -80,7 +90,7 @@
       }, 190);
     };
 
-    // Áp dụng sớm trạng thái Huy hiệu "Đã học" và Dark Mode ngay tại <head> để triệt tiêu chớp giật giao diện
+    // Áp dụng sớm trạng thái Dark Mode và Huy hiệu "Đã học" ngay tại <head> để triệt tiêu chớp giật giao diện (0ms)
     (function initEarlyDisplaySettings() {
       try {
         const lastUid = localStorage.getItem('last_auth_user_uid');
@@ -92,6 +102,22 @@
           const raw = localStorage.getItem('user_cfg_guest');
           if (raw) userCfg = JSON.parse(raw);
         }
+
+        // 1. Đồng bộ Dark Mode tức thì (0ms) ngay tại <head> trước khi paint khung hình đầu tiên (triệt tiêu chớp trắng)
+        const directDark = localStorage.getItem('app_dark_mode');
+        const isDark = directDark !== null
+          ? (directDark === 'true')
+          : (userCfg && userCfg.isDarkMode !== undefined
+              ? !!userCfg.isDarkMode
+              : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+
+        // 2. Đồng bộ trạng thái ẩn/hiện Huy hiệu "Đã học"
         const hideBadge = (userCfg && userCfg.showLearnedBadge !== undefined)
           ? !userCfg.showLearnedBadge
           : (localStorage.getItem('cfg_hide_learned_badge') === 'true');
@@ -143,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.18"></script>
+  <script src="./changelog.js?v=5.8.19"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.18',
+        version: 'v5.8.19',
         date: '2026-10-18T23:55:00+07:00',
         title: 'Nâng Cấp Bảo Mật Hệ Thống, Tối Ưu Kiến Trúc Tải Trang & Phóng To Hình Ảnh Bài Học (Lightbox Zoom)',
         items: [
@@ -166,7 +192,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.18';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.19';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -580,8 +606,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.18">
-  <script src="./bridge.js?v=5.8.18"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.19">
+  <script src="./bridge.js?v=5.8.19"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2264,7 +2290,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.18 • build 18/10/2026 23:55</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.19 • build 20/10/2026 17:30</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3045,7 +3071,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.18</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.19</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3067,7 +3093,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.18 • build 18/10/2026 23:55</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.19 • build 20/10/2026 17:30</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6031,8 +6057,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.18</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.18</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.19</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.19</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -18933,10 +18959,9 @@
           state.user = user;
           state.userId = user.uid;
 
-          // 1. NGAY LẬP TỨC: Nạp dữ liệu bộ nhớ đệm cục bộ (0ms) để hiển thị ngay bài học và mục lục, không để người dùng thấy thư viện trống
+          // 1. NGAY LẬP TỨC: Nạp dữ liệu bộ nhớ đệm cục bộ (0ms) để hiển thị ngay bài học và mục lục (loadLocalState đã gọi render một lần duy nhất)
           try {
             loadLocalState();
-            renderCategoriesAndLessons();
           } catch (e) {
             console.warn("[Auth] Lỗi loadLocalState tức thời:", e);
           }
@@ -20427,6 +20452,14 @@
       }
     }
 
+    let pendingSidebarRaf = null;
+    function scheduleRenderCategoriesAndLessons() {
+      if (pendingSidebarRaf) return;
+      pendingSidebarRaf = requestAnimationFrame(() => {
+        pendingSidebarRaf = null;
+        renderCategoriesAndLessons();
+      });
+    }
     function setupRealtimeListeners() {
       if (!state.userId || state.useLocalFallback || !db) {
         loadLocalState();
@@ -20486,7 +20519,7 @@
         hideCloudSyncErrorBanner();
         syncAllUserStatusDots();
         saveLocalCategories();
-        renderCategoriesAndLessons();
+        scheduleRenderCategoriesAndLessons();
       }, (error) => {
         console.warn("Firestore Categories error:", error);
         state.hasSyncError = true;
@@ -20554,7 +20587,7 @@
             state.activeLessonId = state.lessons[0].id;
             state.activeCategoryId = state.lessons[0].categoryId;
           }
-          renderCategoriesAndLessons();
+          scheduleRenderCategoriesAndLessons();
           renderActiveLesson();
           try { renderSidebarPlans(); } catch (_) {}
         }
@@ -23437,7 +23470,7 @@
     }
     window.renderCategoriesAndLessons = renderCategoriesAndLessons;
 
-    async function renderActiveLesson() {
+    async function renderActiveLesson(forceReloadIframe = false) {
       const emptyState = document.getElementById('emptyLessonState');
       const activeContentBox = document.getElementById('activeLessonContentBox');
       const titleEl = document.getElementById('displayLessonTitle');
@@ -23471,6 +23504,7 @@
       }
 
       if (!currentLesson) {
+        state.renderedLessonId = null;
         emptyState.classList.remove('hidden');
         activeContentBox.classList.add('hidden');
         indexBadge.innerText = "0 / 0";
@@ -23521,17 +23555,23 @@
       emptyState.classList.add('hidden');
       activeContentBox.classList.remove('hidden');
 
-      // // ANIM: Kích hoạt hiệu ứng chuyển bài mượt mà theo hướng
-      activeContentBox.classList.remove('lesson-enter-next', 'lesson-enter-prev', 'lesson-enter');
-      void activeContentBox.offsetWidth;
-      if (state.transitionDirection === 1) {
-        activeContentBox.classList.add('lesson-enter-next');
-      } else if (state.transitionDirection === -1) {
-        activeContentBox.classList.add('lesson-enter-prev');
-      } else {
-        activeContentBox.classList.add('lesson-enter');
+      // // SMART GUARD: Nếu bài học đang hiển thị chính là bài này và không bị ép nạp lại,
+      // chỉ cập nhật metadata (tiêu đề, thẻ, nút điều hướng) mà KHÔNG kích hoạt lại hiệu ứng trượt bài hay nạp lại Iframe
+      const isSameLessonAlreadyRendered = (state.renderedLessonId === currentLesson.id) && !forceReloadIframe;
+
+      if (!isSameLessonAlreadyRendered) {
+        // Chỉ kích hoạt hiệu ứng trượt bài khi thực sự chuyển sang bài học khác
+        activeContentBox.classList.remove('lesson-enter-next', 'lesson-enter-prev', 'lesson-enter');
+        void activeContentBox.offsetWidth;
+        if (state.transitionDirection === 1) {
+          activeContentBox.classList.add('lesson-enter-next');
+        } else if (state.transitionDirection === -1) {
+          activeContentBox.classList.add('lesson-enter-prev');
+        } else {
+          activeContentBox.classList.add('lesson-enter');
+        }
+        state.transitionDirection = 0;
       }
-      state.transitionDirection = 0;
 
       titleEl.innerText = currentLesson.title;
       originalFileEl.innerText = currentLesson.originalFileName || 'lesson.html';
@@ -23702,12 +23742,15 @@
         if (btnToggleFav) btnToggleFav.classList.remove('hidden');
       }
 
-      // // HANGMUC-2: Nạp từ IndexedDB nếu nội dung chưa có trong bộ nhớ
-      if (!currentLesson.htmlContent && currentLesson.id) {
-        const idbHtml = await getLessonContentFromIDB(currentLesson.id);
-        if (idbHtml) currentLesson.htmlContent = idbHtml;
+      // // CHỈ nạp lại Iframe nếu thực sự đổi bài học khác hoặc forceReloadIframe
+      if (!isSameLessonAlreadyRendered) {
+        state.renderedLessonId = currentLesson.id;
+        if (!currentLesson.htmlContent && currentLesson.id) {
+          const idbHtml = await getLessonContentFromIDB(currentLesson.id);
+          if (idbHtml) currentLesson.htmlContent = idbHtml;
+        }
+        loadHtmlIntoIframe(currentLesson.htmlContent || '<p>Nội dung rỗng.</p>');
       }
-      loadHtmlIntoIframe(currentLesson.htmlContent || '<p>Nội dung rỗng.</p>');
       refreshIcons();
     }
 
@@ -28486,6 +28529,9 @@
       } else {
         document.documentElement.classList.remove('dark');
       }
+      try {
+        localStorage.setItem('app_dark_mode', isDark ? 'true' : 'false');
+      } catch (_) {}
       refreshIcons();
     }
 
@@ -39621,6 +39667,13 @@
       try { applyReadingWidth(state.readingWidth); } catch (_) {}
       try { refreshIcons(); } catch (_) {}
       try { registerPwaServiceWorker(); } catch (_) {}
+
+      // Mở khóa transitions sau khi các phân hệ đã ổn định vị trí, triệt tiêu rung giật ban đầu
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove('app-preload');
+        });
+      });
     }
 
     // =========================================================================

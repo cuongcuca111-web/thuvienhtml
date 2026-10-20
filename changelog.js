@@ -2,6 +2,18 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.19',
+        date: '2026-10-20T17:30:00+07:00',
+        title: 'Triệt Tiêu Hiện Tượng Chớp Nháy / Giật Khung Hình Khi Reset Trang (Zero-Jitter Startup)',
+        items: [
+          { type: 'performance', text: 'Triệt tiêu hoàn toàn hiện tượng chớp trắng/chuyển màu (Theme FOUC) khi tải lại trang: Đồng bộ Dark Mode tức thì (0ms) ngay tại thẻ <head> trước khi trình duyệt vẽ khung hình đầu tiên.' },
+          { type: 'performance', text: 'Tối ưu Smart Guard trong render bài đọc (renderActiveLesson): Giữ nguyên trạng thái và nội dung khi nhận đồng bộ từ Firestore nếu là bài học đang xem, loại bỏ triệt để việc nạp lại Iframe và hiệu ứng trượt bài lần 2.' },
+          { type: 'performance', text: 'Gộp và lập lịch render Sidebar (renderCategoriesAndLessons) qua requestAnimationFrame, loại bỏ các lượt vẽ lại DOM trùng lặp liên tiếp trong 300ms đầu khi khởi động ứng dụng.' },
+          { type: 'performance', text: 'Khử rung giật chuyển động ban đầu (Initial Transition Jitter): Khóa tạm thời CSS transitions bằng lớp app-preload trong chu kỳ mount đầu tiên và kích hoạt lại mượt mà ngay sau khi layout ổn định.' },
+          { type: 'improved', text: 'Tối ưu hóa độ mượt 60fps khi F5/reset trang trên cả máy tính và điện thoại di động (iOS Safari & Android Chrome).' }
+        ]
+      },
+      {
         version: 'v5.8.18',
         date: '2026-10-18T23:55:00+07:00',
         title: 'Nâng Cấp Bảo Mật Hệ Thống, Tối Ưu Kiến Trúc Tải Trang & Phóng To Hình Ảnh Bài Học (Lightbox Zoom)',
