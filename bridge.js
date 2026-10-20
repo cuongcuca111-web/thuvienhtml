@@ -2036,6 +2036,26 @@
       }, '*');
     } catch (_) {}
   });
+
+  // Tự động thông báo ngay khi Bridge Script tải xong trong Iframe (chủ động giải phóng skeleton ở app cha)
+  function announceReadyImmediate() {
+    try {
+      const chunks = typeof extractTTSChunks === 'function' ? extractTTSChunks() : [];
+      window.parent.postMessage({
+        type: 'BRIDGE_READY',
+        height: Math.max(document.body ? document.body.scrollHeight : 400, 400),
+        bg: typeof getNativeBg === 'function' ? getNativeBg() : '#FFFFFF',
+        ttsChunks: chunks
+      }, '*');
+      if (typeof sendHeight === 'function') sendHeight();
+    } catch (_) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', announceReadyImmediate);
+  } else {
+    announceReadyImmediate();
+  }
 })();
 `;
       return openTag + bridgeJs + closeTag;

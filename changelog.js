@@ -2,6 +2,18 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.22',
+        date: '2026-10-20T18:50:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Không Tải Được File & Kẹt Màn Hình Trắng Trên Điện Thoại (iOS Safari)',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi kẹt Skeleton / màn hình trắng trên điện thoại: Khử bỏ lệnh xóa srcdoc ("about:blank") làm đứt chuỗi nạp (navigation race) trên iOS WebKit, đảo thứ tự gán iframe.onload trước iframe.srcdoc để bắt 100% sự kiện nạp bài.' },
+          { type: 'fix', text: 'Cơ chế Safety Timeout Fallback (800ms): Tự động giải phóng Skeleton và hiện nội dung Iframe nếu sự kiện BRIDGE_READY bị chậm trễ hoặc đánh rơi trên trình duyệt di động.' },
+          { type: 'improved', text: 'Tự động nạp bổ sung nội dung bài học (htmlContent) từ Firestore Cloud về IndexedDB khi mở bài trên thiết bị mới (điện thoại), sửa lỗi Smart Guard hiểu nhầm bài trống là đã render xong.' },
+          { type: 'improved', text: 'Cập nhật định dạng MIME type (text/html, text/plain, text/markdown) cho ô chọn file, cho phép chọn và tải file HTML/Markdown từ ứng dụng Tệp (Files app) trên iPhone/iPad không bị mờ xám.' },
+          { type: 'performance', text: 'Tối ưu hóa kích thước document Firestore khi tải lên: Không nhân đôi dữ liệu rawSource cho file HTML, tránh vượt trần giới hạn 1MB của Firestore.' }
+        ]
+      },
+      {
         version: 'v5.8.21',
         date: '2026-10-20T18:15:00+07:00',
         title: 'Cập Nhật Tại Chỗ (In-Place Fast Path) Cho Trạng Thái Đã Học & Triệt Tiêu Tải Lại Danh Mục',

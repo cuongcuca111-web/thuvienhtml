@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.21"></script>
+  <script src="./changelog.js?v=5.8.22"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.21',
+        version: 'v5.8.22',
         date: '2026-10-18T23:55:00+07:00',
         title: 'Nâng Cấp Bảo Mật Hệ Thống, Tối Ưu Kiến Trúc Tải Trang & Phóng To Hình Ảnh Bài Học (Lightbox Zoom)',
         items: [
@@ -192,7 +192,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.21';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.22';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -606,8 +606,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.21">
-  <script src="./bridge.js?v=5.8.21"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.22">
+  <script src="./bridge.js?v=5.8.22"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2290,7 +2290,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.21 • build 20/10/2026 18:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.22 • build 20/10/2026 18:50</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3071,7 +3071,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.21</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.22</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3093,7 +3093,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.21 • build 20/10/2026 18:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.22 • build 20/10/2026 18:50</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3179,7 +3179,7 @@
         <div id="shareFileUploadArea">
           <label class="block text-xs font-semibold text-[#1A1A1A] dark:text-[#ECEEF2] mb-1.5">Chọn file HTML muốn tạo link:</label>
           <div id="shareDropZone" class="border-2 border-dashed border-[#E6E6E1] dark:border-[#262C36] hover:border-[#4F46E5] rounded-card p-4 text-center cursor-pointer bg-[#F7F7F5]/50 dark:bg-[#0F1115]/50 transition">
-            <input type="file" id="shareFileInput" accept=".html,.htm,.md,.markdown,.txt" class="hidden" />
+            <input type="file" id="shareFileInput" accept=".html,.htm,.md,.markdown,.txt,text/html,text/plain,text/markdown" class="hidden" />
             <svg class="w-6 h-6 mx-auto mb-1 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true"><use href="#icon-upload-cloud"></use></svg>
             <p class="text-xs font-medium text-[#1A1A1A] dark:text-[#ECEEF2]" id="shareFileLabel">Bấm để chọn file HTML hoặc kéo thả vào đây</p>
           </div>
@@ -4139,7 +4139,7 @@
         <div id="tabContentUpload" role="tabpanel" aria-labelledby="tabBtnUpload" class="space-y-3 transition-all duration-200">
           <!-- Vùng thả file duy nhất (~190px) -->
           <div id="dropZone" tabindex="0" role="button" aria-label="Kéo thả hoặc chọn file từ thiết bị" class="group relative min-h-[185px] sm:min-h-[195px] flex flex-col items-center justify-center text-center p-5 border-[1.5px] border-dashed border-[#E7E5DF] dark:border-[#2A2E39] hover:border-indigo-500 dark:hover:border-indigo-400 rounded-2xl bg-[#FAF9F5]/70 dark:bg-[#13161C]/50 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 transition cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-[#161A20]">
-            <input type="file" id="htmlFilesInput" multiple accept=".html,.htm,.md,.markdown,.txt" class="hidden" />
+            <input type="file" id="htmlFilesInput" multiple accept=".html,.htm,.md,.markdown,.txt,text/html,text/plain,text/markdown" class="hidden" />
             
             <!-- Icon Tải file lớn 48px với hiệu ứng nổi nhẹ lặp chậm (±3px, 3s) -->
             <div id="dropZoneIcon" class="w-14 h-14 rounded-2xl bg-white dark:bg-[#1D212A] shadow-xs border border-[#E7E5DF]/70 dark:border-[#2A2E39]/70 flex items-center justify-center text-[#4F46E5] dark:text-[#818CF8] mb-3 upload-float-idle transition-transform duration-200">
@@ -6057,8 +6057,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.21</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.21</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.22</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.22</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -16997,6 +16997,10 @@
 
       switch (msg.type) {
         case 'BRIDGE_READY': {
+          if (window._skeletonFallbackTimer) {
+            clearTimeout(window._skeletonFallbackTimer);
+            window._skeletonFallbackTimer = null;
+          }
           const skeleton = document.getElementById('iframeLoadingSkeleton');
           if (skeleton) {
             skeleton.style.opacity = '0';
@@ -17004,7 +17008,7 @@
           }
           if (iframe) {
             iframe.style.opacity = '1';
-            iframe.style.height = `${msg.height || 400}px`;
+            iframe.style.height = `${Math.max(parseInt(msg.height, 10) || 400, 350)}px`;
           }
           const container = document.getElementById('iframeOuterContainer');
           if (container && msg.bg) {
@@ -21758,7 +21762,7 @@
     // ==========================================
     window._activeLessonBlobUrls = window._activeLessonBlobUrls || [];
 
-    function cleanUpIframeMemory() {
+    function cleanUpIframeMemory(blankIframe = false) {
       try {
         // 1. Dừng bộ đọc TTS và hủy Web Speech API
         if (typeof stopTTS === 'function') {
@@ -21785,14 +21789,16 @@
             }
           } catch (_) {}
 
-          try {
-            if (iframe.contentDocument && iframe.contentDocument.body) {
-              iframe.contentDocument.body.innerHTML = '';
-            }
-          } catch (_) {}
-
-          // Chủ động gán about:blank để WebKit/Blink GC thu hồi triệt để bộ nhớ
-          iframe.srcdoc = 'about:blank';
+          // Chỉ gán about:blank khi thực sự cần làm trống Iframe (ví dụ khi đóng bài học hoặc chưa chọn bài nào)
+          // KHÔNG gán about:blank khi đang chuẩn bị nạp ngay bài học mới để tránh làm đứt chuỗi nạp (navigation race) trên iOS WebKit / Safari
+          if (blankIframe) {
+            try {
+              if (iframe.contentDocument && iframe.contentDocument.body) {
+                iframe.contentDocument.body.innerHTML = '';
+              }
+            } catch (_) {}
+            iframe.srcdoc = 'about:blank';
+          }
         }
       } catch (err) {
         console.warn('[Memory] Lỗi khi dọn dẹp RAM Iframe:', err);
@@ -23662,7 +23668,8 @@
 
       // // SMART GUARD: Nếu bài học đang hiển thị chính là bài này và không bị ép nạp lại,
       // chỉ cập nhật metadata (tiêu đề, thẻ, nút điều hướng) mà KHÔNG kích hoạt lại hiệu ứng trượt bài hay nạp lại Iframe
-      const isSameLessonAlreadyRendered = (state.renderedLessonId === currentLesson.id) && !forceReloadIframe;
+      // LƯU Ý: Nếu bài học chưa có nội dung (htmlContent rỗng), không coi là đã render xong để cho phép nạp lại khi dữ liệu về
+      const isSameLessonAlreadyRendered = (state.renderedLessonId === currentLesson.id) && !forceReloadIframe && Boolean(currentLesson.htmlContent);
 
       if (!isSameLessonAlreadyRendered) {
         // Chỉ kích hoạt hiệu ứng trượt bài khi thực sự chuyển sang bài học khác
@@ -23845,7 +23852,25 @@
         state.renderedLessonId = currentLesson.id;
         if (!currentLesson.htmlContent && currentLesson.id) {
           const idbHtml = await getLessonContentFromIDB(currentLesson.id);
-          if (idbHtml) currentLesson.htmlContent = idbHtml;
+          if (idbHtml) {
+            currentLesson.htmlContent = idbHtml;
+          } else if (db && state.userId && !state.useLocalFallback) {
+            // Tải bổ sung từ Firestore nếu thiết bị mới (như điện thoại) chưa kịp có nội dung trong IndexedDB
+            try {
+              const docSnap = await getDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', currentLesson.id));
+              if (docSnap.exists()) {
+                const d = docSnap.data();
+                if (d.htmlContent) {
+                  currentLesson.htmlContent = d.htmlContent;
+                  if (typeof putLessonContentToIDB === 'function') {
+                    putLessonContentToIDB(currentLesson.id, currentLesson.htmlContent).catch(() => {});
+                  }
+                }
+              }
+            } catch (fsErr) {
+              console.warn("Lỗi tải nội dung bài học từ Firestore:", fsErr);
+            }
+          }
         }
         loadHtmlIntoIframe(currentLesson.htmlContent || '<p>Nội dung rỗng.</p>');
       }
@@ -23892,8 +23917,8 @@
     }
 
     function loadHtmlIntoIframe(rawHtml) {
-      // Dọn sạch và giải phóng RAM của bài học cũ trước khi nạp bài mới
-      cleanUpIframeMemory();
+      // Dọn sạch và giải phóng RAM của bài học cũ trước khi nạp bài mới (không blank để tránh lỗi WebKit)
+      cleanUpIframeMemory(false);
 
       const iframe = document.getElementById('lessonIframe');
       const skeleton = document.getElementById('iframeLoadingSkeleton');
@@ -23917,9 +23942,9 @@
 
       // Tiêm Bridge Script tối thiểu vào cuối bài để đo chiều cao & nhận lệnh
       const sandboxedHtml = injectBridgeAndCspIntoHtml(contentToInject);
-      iframe.srcdoc = sandboxedHtml;
 
-      iframe.onload = () => {
+      // CƠ CHẾ AN TOÀN: Gắn onload TRƯỚC KHI gán srcdoc để không bao giờ bị lỡ sự kiện (race condition) trên Safari iOS
+      const onIframeLoaded = () => {
         // Gửi cấu hình ban đầu vào trong iframe qua postMessage
         const curLesson = state.lessons.find(l => l.id === state.activeLessonId);
         const highlights = curLesson?.highlights || [];
@@ -23955,6 +23980,29 @@
           restoreFramesForLesson(state.activeLessonId);
         }
       };
+
+      iframe.onload = onIframeLoaded;
+      iframe.srcdoc = sandboxedHtml;
+
+      // SAFETY TIMEOUT FALLBACK (Khắc phục triệt để màn hình trắng / kẹt skeleton trên điện thoại):
+      // Nếu sau 800ms mà BRIDGE_READY chưa tới (do mạng, WebKit drop postMessage hoặc script nặng),
+      // cưỡng chế ẩn skeleton và hiển thị nội dung bài học ngay lập tức để người đọc không bị kẹt
+      if (window._skeletonFallbackTimer) clearTimeout(window._skeletonFallbackTimer);
+      window._skeletonFallbackTimer = setTimeout(() => {
+        const sk = document.getElementById('iframeLoadingSkeleton');
+        const ifr = document.getElementById('lessonIframe');
+        if (sk) {
+          sk.style.opacity = '0';
+          setTimeout(() => sk.classList.add('hidden'), 150);
+        }
+        if (ifr) {
+          ifr.style.opacity = '1';
+          if (!ifr.style.height || parseInt(ifr.style.height, 10) < 100) {
+            ifr.style.height = '600px';
+          }
+        }
+        try { onIframeLoaded(); } catch (_) {}
+      }, 800);
     }
     window.loadHtmlIntoIframe = loadHtmlIntoIframe;
 
@@ -28129,7 +28177,7 @@
             originalFileName: item.fileName,
             htmlContent: item.content,
             sourceType: item.sourceType || 'html',
-            rawSource: item.rawSource || '',
+            rawSource: item.sourceType !== 'html' ? (item.rawSource || '') : '',
             isCompleted: false,
             isFavorite: false,
             order: (state.lessons?.length || 0) + i + 1,
