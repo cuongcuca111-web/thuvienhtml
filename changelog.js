@@ -2,6 +2,15 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.30',
+        date: '2026-10-24T13:35:00+07:00',
+        title: 'Thiết Kế Lại Biểu Tượng Chấm Sáng AI & Bóng Đèn Tri Thức Chuẩn Vector SVG',
+        items: [
+          { type: 'improved', text: 'Thiết kế riêng Biểu tượng Chấm Sáng AI (icon-ai-sparkle) Vector SVG: Thay thế hoàn toàn emoji hoạt họa vàng bằng ngôi sao 4 cánh cong chuẩn Gemini / Apple Intelligence với vệ tinh phát quang, hiển thị sắc nét đồng nhất trên mọi thiết bị và màn hình Retina.' },
+          { type: 'improved', text: 'Thiết kế riêng Biểu tượng Bóng Đèn Tri Thức (icon-ai-lightbulb) Vector SVG: Thay thế bóng đèn emoji cũ bằng biểu tượng bóng đèn viền nét thanh mảnh, nằm trong ô gạch kính hổ phách (amber glass badge) ấm áp, làm nổi bật lời giải thích ngữ nghĩa của AI một cách trang nhã và chuyên nghiệp.' }
+        ]
+      },
+      {
         version: 'v5.8.29',
         date: '2026-10-24T11:28:00+07:00',
         title: 'Thiết Kế Lại Biểu Tượng Kính Lúp & Huy Hiệu Đóng Khung Chuẩn Vibe Editorial Cao Cấp',
