@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.51',
+    date: '2026-10-24T20:30:00+07:00',
+    title: 'Khắc Phục Triệt Để Khoảng Trống Đen Ở Cuối Bài Đọc & Ôm Khít Nội Dung Nguyên Bản (Viewer Fit-Content)',
+    items: [
+      { type: 'fix', text: 'Triệt tiêu 100% khoảng trống đen thừa: Khắc phục lỗi vòng lặp phình chiều cao Iframe do CSS min-h-screen/100vh và cơ chế đo đạc tự động ghi đè scrollHeight lên chiều cao thật. Iframe và khung chứa giờ đây tự động co giãn ôm khít chính xác mép dưới của nội dung bài học.' },
+      { type: 'improved', text: 'Tự động dọn dẹp watermark & bảo tồn file gốc nguyên bản: Tự động phát hiện và ẩn các dòng ghi chú watermark do AI sinh ra ở chân trang mà không làm biến dạng hay chỉnh sửa file gốc của người dùng, mang lại trải nghiệm đọc sách thuần khiết, liền mạch.' },
+      { type: 'improved', text: 'Thuật toán đo đạc nội dung đa tầng (Multi-layer True Bottom Measurement): Tự động loại trừ các lớp nền trang trí, hiệu ứng hạt và lớp phủ tuyệt đối (position absolute/fixed), đo chính xác chiều cao bài học ngay sau khi tải phông chữ và đồng bộ mượt mà ở tốc độ 60 FPS.' }
+    ]
+  },
+  {
     version: 'v5.8.50',
     date: '2026-10-24T20:10:00+07:00',
     title: 'Khắc Phục Triệt Để Lỗi Phân Định Dạng Bài: Chỉ Tạo Flashcard & Chỉ Tạo Trắc Nghiệm',

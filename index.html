@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.50"></script>
+  <script src="./changelog.js?v=5.8.51"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.50',
+        version: 'v5.8.51',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.50';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.51';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -624,8 +624,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.50">
-  <script src="./bridge.js?v=5.8.50"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.51">
+  <script src="./bridge.js?v=5.8.51"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2358,7 +2358,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.50 • build 24/10/2026 20:10</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.51 • build 24/10/2026 20:30</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -2724,7 +2724,7 @@
             </div>
 
             <!-- Khung Iframe hiển thị file HTML -->
-            <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-xl border border-[#E7E5DF]/50 dark:border-[#262C36]/50 min-h-[460px] sm:min-h-[calc(100vh-280px)]">
+            <div id="iframeOuterContainer" class="w-full relative transition-colors duration-200 flex flex-col bg-transparent overflow-hidden rounded-xl border border-[#E7E5DF]/50 dark:border-[#262C36]/50 min-h-[200px]">
               <div id="iframeLoadingSkeleton" class="absolute inset-0 bg-white dark:bg-[#161A20] flex flex-col p-6 sm:p-8 gap-3.5 z-10 hidden transition-opacity duration-150">
                 <div class="skeleton-shimmer h-7 w-2/5 rounded-md"></div>
                 <div class="skeleton-shimmer h-4 w-4/5 rounded-md mt-2"></div>
@@ -2741,7 +2741,7 @@
                 sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" 
                 scrolling="no" 
                 class="w-full border-0 transition-opacity duration-150 block" 
-                style="min-height: 460px; background-color: transparent;" 
+                style="min-height: 200px; background-color: transparent;" 
                 title="Nội dung bài học HTML"
               ></iframe>
             </div>
@@ -3150,7 +3150,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.50</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.51</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3172,7 +3172,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.50 • build 24/10/2026 20:10</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.51 • build 24/10/2026 20:30</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6565,8 +6565,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.50</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.50</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.51</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.51</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -17531,11 +17531,14 @@
           }
           if (iframe) {
             iframe.style.opacity = '1';
-            iframe.style.height = `${Math.max(parseInt(msg.height, 10) || 400, 350)}px`;
+            const readyH = Math.max(parseInt(msg.height, 10) || 250, 150);
+            iframe.style.height = `${readyH}px`;
+            iframe.style.minHeight = '0px';
           }
           const container = document.getElementById('iframeOuterContainer');
-          if (container && msg.bg) {
-            container.style.backgroundColor = msg.bg;
+          if (container) {
+            if (msg.bg) container.style.backgroundColor = msg.bg;
+            container.style.minHeight = '0px';
           }
           if (msg.ttsChunks && Array.isArray(msg.ttsChunks)) {
             bridgeReadableChunks = msg.ttsChunks;
@@ -17554,14 +17557,17 @@
 
         case 'BRIDGE_RESIZE': {
           if (iframe && msg.height) {
+            const newH = Math.max(parseInt(msg.height, 10) || 200, 150);
             const currentH = parseInt(iframe.style.height || '0', 10);
-            if (Math.abs(currentH - msg.height) > 4) {
-              iframe.style.height = `${msg.height}px`;
+            if (Math.abs(currentH - newH) > 4) {
+              iframe.style.height = `${newH}px`;
+              iframe.style.minHeight = '0px';
             }
           }
           const container = document.getElementById('iframeOuterContainer');
-          if (container && msg.bg) {
-            container.style.backgroundColor = msg.bg;
+          if (container) {
+            if (msg.bg) container.style.backgroundColor = msg.bg;
+            container.style.minHeight = '0px';
           }
           break;
         }
@@ -24619,6 +24625,7 @@
       if (iframe) {
         iframe.style.opacity = '0';
         iframe.style.transition = 'opacity 250ms var(--ease-out)';
+        iframe.style.height = '300px';
       }
 
       // // FIX-2: HIỂN THỊ NGUYÊN BẢN GỐC 100% - KHÔNG BỌC THÊM HTML/CSS GHI ĐÈ MÀU/FONT/LAYOUT
@@ -24743,11 +24750,15 @@
               const children = b.children;
               for (let i = 0; i < children.length; i++) {
                 const el = children[i];
-                if (el.id === 'ann-layer' || el.id === '__bridge_sandbox_styles' || el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+                if (el.id === 'ann-layer' || el.id === '__bridge_sandbox_styles' || el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'NOSCRIPT') continue;
+                if (el.getAttribute('data-watermark') === 'true') continue;
                 try {
-                  if (window.getComputedStyle(el).position === 'fixed') continue;
+                  const s = window.getComputedStyle(el);
+                  if (s.position === 'fixed' || s.display === 'none' || s.visibility === 'hidden') continue;
+                  if (s.position === 'absolute' && (s.pointerEvents === 'none' || el.getAttribute('aria-hidden') === 'true')) continue;
                 } catch (_) {}
                 const rect = el.getBoundingClientRect();
+                if (rect.height <= 0 && rect.width <= 0) continue;
                 const bottom = (rect.bottom || 0) + (iframe.contentWindow?.scrollY || 0);
                 if (bottom > maxBottom) maxBottom = bottom;
               }
@@ -24759,18 +24770,19 @@
                   const bStyle = window.getComputedStyle(b);
                   naturalHeight += Math.ceil((parseFloat(bStyle.paddingBottom) || 0) + (parseFloat(bStyle.marginBottom) || 0));
                 } catch (_) {}
+                naturalHeight += 16;
               } else {
-                naturalHeight = Math.ceil(Math.max(b.scrollHeight, b.offsetHeight, hDoc.scrollHeight, 300));
+                naturalHeight = Math.ceil(Math.max(b.offsetHeight || 0, 250));
               }
 
-              const totalScrollH = Math.max(b.scrollHeight || 0, hDoc ? hDoc.scrollHeight : 0);
-              if (totalScrollH > naturalHeight) {
-                naturalHeight = totalScrollH;
-              }
+              naturalHeight = Math.max(naturalHeight, 150);
 
               const currentH = parseInt(iframe.style.height || '0', 10);
               if (Math.abs(currentH - naturalHeight) > 4) {
                 iframe.style.height = `${naturalHeight}px`;
+                iframe.style.minHeight = '0px';
+                if (container) container.style.minHeight = '0px';
+              }
               }
             } catch (_) {}
           }, 30);

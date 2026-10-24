@@ -54,10 +54,31 @@
       transition: top 0.15s ease-out, left 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out, opacity 0.3s ease;
     }
 
-    /* Chống vòng lặp phình chiều cao theo viewport iframe */
+    /* Chống vòng lặp phình chiều cao theo viewport iframe & ôm khít nội dung bài học */
     html, body {
       min-height: 0 !important;
       height: auto !important;
+      margin-bottom: 0 !important;
+    }
+    /* Vô hiệu hóa triệt để class min-h-screen, 100vh để iframe ôm sát nội dung bài học */
+    .min-h-screen, .h-screen, [class*="min-h-screen"], [class*="h-screen"], [class*="min-h-dvh"], [class*="h-dvh"], [class*="min-h-[100vh]"], [class*="min-h-[100dvh]"] {
+      min-height: 0 !important;
+      height: auto !important;
+    }
+    /* Khử khoảng trống giãn cách do flex justify-between ở cấp container bài học */
+    body > div.min-h-screen,
+    body > div.flex.flex-col.justify-between,
+    body > main.flex-grow,
+    body > div.flex-grow {
+      min-height: 0 !important;
+      height: auto !important;
+      justify-content: flex-start !important;
+      flex-grow: 0 !important;
+    }
+    /* Tự động ẩn các watermark do AI sinh ra để bài học hiển thị nguyên bản sạch sẽ */
+    .infographic-watermark,
+    [data-watermark="true"] {
+      display: none !important;
     }
     body {
       touch-action: manipulation;
@@ -969,46 +990,110 @@
   let lastSentBridgeH = 0;
   let rafResizeId = null;
 
+  // Tự động dọn dẹp các watermark / credit footer do AI sinh ra để giữ nguyên bản nội dung gốc
+  function cleanupWatermarks() {
+    try {
+      const markers = [
+        'Antigravity Visual Architect',
+        'Trang Web Infographic được tạo tự động',
+        'Lưu tại thư mục Downloads của người dùng'
+      ];
+      const els = document.querySelectorAll('footer, p, div, span, small');
+      for (let i = 0; i < els.length; i++) {
+        const el = els[i];
+        if (!el.children || el.children.length <= 2) {
+          const txt = (el.textContent || '').trim();
+          for (let k = 0; k < markers.length; k++) {
+            if (txt.includes(markers[k])) {
+              el.style.setProperty('display', 'none', 'important');
+              el.setAttribute('aria-hidden', 'true');
+              el.setAttribute('data-watermark', 'true');
+              break;
+            }
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   function measureRealContentHeight() {
     const body = document.body;
     const html = document.documentElement;
-    if (!body) return 300;
+    if (!body) return 250;
 
-    // Đo vị trí đáy phần tử con thấp nhất của body (loại trừ overlay và script/style)
-    let maxChildBottom = 0;
-    const children = body.children;
-    for (let i = 0; i < children.length; i++) {
-      const el = children[i];
-      if (el.id === 'ann-layer' || el.id === '__bridge_sandbox_styles' || el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+    // Bước 1: Dọn sạch watermark thừa để trả lại độ dài nguyên bản cho bài học
+    cleanupWatermarks();
+
+    // Bước 2: Vô hiệu hóa min-h-screen/100vh trên các container con để không bị kéo giãn theo viewport iframe
+    try {
+      const vhEls = body.querySelectorAll('.min-h-screen, .h-screen, [class*="min-h-screen"], [class*="h-screen"], [class*="min-h-dvh"], [class*="h-dvh"]');
+      vhEls.forEach(el => {
+        el.style.setProperty('min-height', '0px', 'important');
+        el.style.setProperty('height', 'auto', 'important');
+      });
+    } catch (_) {}
+
+    // Bước 3: Đo vị trí đáy thực tế của các phần tử nội dung (loại trừ overlay, nền trang trí và script/style)
+    let maxContentBottom = 0;
+    const candidates = [];
+    const directChildren = body.children;
+    for (let i = 0; i < directChildren.length; i++) {
+      candidates.push(directChildren[i]);
+    }
+
+    // Nếu body chỉ có một vài container bọc ngoài (như div bento, div.container, main), quét sâu thêm cấp con
+    if (directChildren.length <= 4) {
+      for (let i = 0; i < directChildren.length; i++) {
+        const c = directChildren[i];
+        if (c.children && c.children.length > 0) {
+          for (let j = 0; j < c.children.length; j++) {
+            candidates.push(c.children[j]);
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < candidates.length; i++) {
+      const el = candidates[i];
+      if (!el || el.nodeType !== 1) continue;
+      if (el.id === 'ann-layer' || el.id === '__bridge_sandbox_styles' || el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'NOSCRIPT') continue;
+      if (el.getAttribute('data-watermark') === 'true') continue;
+
       try {
-        const pos = window.getComputedStyle(el).position;
-        if (pos === 'fixed') continue;
+        const style = window.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden') continue;
+        if (style.position === 'fixed') continue;
+        // Bỏ qua các lớp phủ trang trí nền (ví dụ radial glow, background canvas, hạt particles chiếm full khung)
+        if (style.position === 'absolute' && (style.pointerEvents === 'none' || el.getAttribute('aria-hidden') === 'true')) {
+          continue;
+        }
       } catch (_) {}
+
       const rect = el.getBoundingClientRect();
+      if (rect.height <= 0 && rect.width <= 0) continue;
+
       const bottom = (rect.bottom || 0) + (window.scrollY || window.pageYOffset || 0);
-      if (bottom > maxChildBottom) {
-        maxChildBottom = bottom;
+      if (bottom > maxContentBottom) {
+        maxContentBottom = bottom;
       }
     }
 
     let h = 0;
-    if (maxChildBottom > 50) {
-      h = Math.ceil(maxChildBottom);
+    if (maxContentBottom > 50) {
+      h = Math.ceil(maxContentBottom);
       try {
         const bStyle = window.getComputedStyle(body);
         const pb = parseFloat(bStyle.paddingBottom) || 0;
         const mb = parseFloat(bStyle.marginBottom) || 0;
         h += Math.ceil(pb + mb);
       } catch (_) {}
+      // Thêm khoảng đệm thở tinh tế 16px ở đáy để bài học không bị sát mép
+      h += 16;
     } else {
-      h = Math.ceil(Math.max(body.scrollHeight || 0, body.offsetHeight || 0, html ? html.scrollHeight : 0, 300));
+      h = Math.ceil(Math.max(body.offsetHeight || 0, 250));
     }
 
-    const totalScrollH = Math.max(body.scrollHeight || 0, html ? html.scrollHeight : 0);
-    if (totalScrollH > h) {
-      h = totalScrollH;
-    }
-
+    // Đảm bảo chiều cao tối thiểu hợp lý (150px), tuyệt đối KHÔNG ghi đè bằng totalScrollH (chống vòng lặp phình vô tận)
     return Math.max(h, 150);
   }
 
@@ -1038,7 +1123,10 @@
   });
   window.addEventListener('resize', scheduleUpdateFramePositions);
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(scheduleUpdateFramePositions).catch(() => {});
+    document.fonts.ready.then(() => {
+      sendHeight();
+      scheduleUpdateFramePositions();
+    }).catch(() => {});
   }
   if (typeof ResizeObserver !== 'undefined' && document.body) {
     let lastObsW = 0, lastObsH = 0;
@@ -1465,9 +1553,10 @@
           applySavedHighlights(msg.highlights);
         }
         const chunks = extractTTSChunks();
+        const readyH = typeof measureRealContentHeight === 'function' ? measureRealContentHeight() : 250;
         window.parent.postMessage({
           type: 'BRIDGE_READY',
-          height: Math.max(document.body ? document.body.scrollHeight : 350, 350),
+          height: readyH,
           bg: getNativeBg(),
           ttsChunks: chunks
         }, '*');
@@ -2224,9 +2313,10 @@
   function announceReadyImmediate() {
     try {
       const chunks = typeof extractTTSChunks === 'function' ? extractTTSChunks() : [];
+      const readyH = typeof measureRealContentHeight === 'function' ? measureRealContentHeight() : 250;
       window.parent.postMessage({
         type: 'BRIDGE_READY',
-        height: Math.max(document.body ? document.body.scrollHeight : 400, 400),
+        height: readyH,
         bg: typeof getNativeBg === 'function' ? getNativeBg() : '#FFFFFF',
         ttsChunks: chunks
       }, '*');
