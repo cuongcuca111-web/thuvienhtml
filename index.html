@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.40"></script>
+  <script src="./changelog.js?v=5.8.41"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.40',
+        version: 'v5.8.41',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -202,7 +202,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.40';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.41';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -616,8 +616,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.40">
-  <script src="./bridge.js?v=5.8.40"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.41">
+  <script src="./bridge.js?v=5.8.41"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2331,7 +2331,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.40 • build 24/10/2026 17:42</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.41 • build 24/10/2026 17:55</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3120,7 +3120,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.40</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.41</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3142,7 +3142,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.40 • build 24/10/2026 17:42</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.41 • build 24/10/2026 17:55</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6522,8 +6522,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.40</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.40</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.41</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.41</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -38602,20 +38602,53 @@
 
       try {
         if (selfTestLoadingStepText) {
-          selfTestLoadingStepText.innerText = "[1/3] Đang áp dụng DOM Semantic Stripping & lọc trọng tâm...";
+          selfTestLoadingStepText.innerText = "[1/3] Đang nạp nội dung bài học & chắt lọc trọng tâm...";
         }
 
         // Tối ưu 1 & 2: Phân bổ ngân sách ký tự tối đa cho từng bài để giữ token ở mức tối thiểu
         const maxCharsPerLesson = Math.max(1200, Math.floor(12000 / selectedLessons.length));
         const mergedSnippets = [];
 
-        selectedLessons.forEach((les, idx) => {
-          const rawDocHtml = les.content || les.rawContent || '';
+        for (let idx = 0; idx < selectedLessons.length; idx++) {
+          const les = selectedLessons[idx];
+          let rawDocHtml = les.htmlContent || les.content || les.rawContent || '';
+
+          // 1. Thử nạp từ IndexedDB nếu chưa nạp đủ vào memory
+          if ((!rawDocHtml || rawDocHtml.trim().length < 50) && typeof getLessonContentFromIDB === 'function') {
+            try {
+              const idbContent = await getLessonContentFromIDB(les.id);
+              if (idbContent && idbContent.length > 50) {
+                rawDocHtml = idbContent;
+                les.htmlContent = idbContent;
+              }
+            } catch (_) {}
+          }
+
+          // 2. Thử nạp từ Iframe đang hiển thị nếu đúng là bài hiện tại
+          if ((!rawDocHtml || rawDocHtml.trim().length < 50) && les.id === state.activeLessonId) {
+            const ifr = document.getElementById('lessonIframe');
+            const ifrDoc = typeof getSafeIframeDocument === 'function' ? getSafeIframeDocument(ifr) : (ifr ? (ifr.contentDocument || ifr.contentWindow?.document) : null);
+            if (ifrDoc && ifrDoc.body) {
+              const ifrText = ifrDoc.body.innerHTML || ifrDoc.body.textContent || '';
+              if (ifrText && ifrText.length > 50) {
+                rawDocHtml = ifrText;
+              }
+            }
+          }
+
+          // 3. Dự phòng qua description hoặc title nếu vẫn trống
+          if (!rawDocHtml || rawDocHtml.trim().length < 50) {
+            rawDocHtml = les.description || les.plainText || les.title || '';
+          }
+
           const distilled = extractDistilledLessonText(rawDocHtml, maxCharsPerLesson);
-          mergedSnippets.push(`[BÀI ${idx + 1}: ${les.title || 'Bài học'}]\n${distilled}`);
-        });
+          mergedSnippets.push(`[BÀI ${idx + 1}: ${les.title || 'Bài học'}]\n${distilled || rawDocHtml.slice(0, maxCharsPerLesson)}`);
+        }
 
         const fullDistilledText = mergedSnippets.join('\n\n');
+        if (!fullDistilledText || fullDistilledText.trim().length < 30) {
+          throw new Error("Không thể trích xuất nội dung văn bản từ các bài học đã chọn. Vui lòng thử lại hoặc chọn bài học khác.");
+        }
 
         if (selfTestLoadingStepText) {
           selfTestLoadingStepText.innerText = "[2/3] Đang gửi yêu cầu đến AI với JSON Schema tối giản...";
@@ -38653,7 +38686,8 @@
 
           const directData = await directRes.json();
           const rawText = directData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          aiResult = JSON.parse(rawText);
+          const cleanJson = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+          aiResult = JSON.parse(cleanJson);
         } else {
           // BƯỚC ĐIỀU HƯỚNG 2: Gọi qua endpoint máy chủ /api/ai/explain với mode 'self_test'
           const headers = { 'Content-Type': 'application/json' };
@@ -38685,34 +38719,46 @@
           selfTestLoadingStepText.innerText = "[3/3] AI đã hoàn tất! Đang khởi tạo bộ đề...";
         }
 
+        // Hỗ trợ linh hoạt cấu trúc khóa trả về từ AI
+        const rawQuizzes = Array.isArray(aiResult?.quizzes) ? aiResult.quizzes
+          : (Array.isArray(aiResult?.quiz) ? aiResult.quiz
+          : (Array.isArray(aiResult?.questions) ? aiResult.questions : []));
+
+        const rawFlashcards = Array.isArray(aiResult?.flashcards) ? aiResult.flashcards
+          : (Array.isArray(aiResult?.cards) ? aiResult.cards : []);
+
         // Tạo đối tượng Deck mới hoàn chỉnh
-        const quizzes = Array.isArray(aiResult.quizzes) ? aiResult.quizzes.map((q, idx) => ({
+        const quizzes = rawQuizzes.map((q, idx) => ({
           id: `q_${Date.now()}_${idx}`,
           question: q.q || q.question || 'Câu hỏi',
-          options: Array.isArray(q.options) ? q.options : ['A', 'B', 'C', 'D'],
-          answer: typeof q.ans === 'number' ? q.ans : 0,
+          options: Array.isArray(q.options) && q.options.length >= 2 ? q.options : ['A', 'B', 'C', 'D'],
+          answer: typeof q.ans === 'number' ? q.ans : (typeof q.answer === 'number' ? q.answer : 0),
           explanation: q.explanation || 'Không có giải thích chi tiết.',
           starred: false,
           isWrong: false,
           wrongCount: 0
-        })) : [];
+        })).filter(q => q.question && q.options.length >= 2);
 
-        const flashcards = Array.isArray(aiResult.flashcards) ? aiResult.flashcards.map((fc, idx) => ({
+        const flashcards = rawFlashcards.map((fc, idx) => ({
           id: `fc_${Date.now()}_${idx}`,
-          front: fc.q || fc.front || 'Câu hỏi',
-          back: fc.a || fc.back || 'Đáp án',
+          front: fc.q || fc.front || fc.question || 'Câu hỏi',
+          back: fc.a || fc.back || fc.answer || 'Đáp án',
           starred: false,
           isWrong: false,
           wrongCount: 0
-        })) : [];
+        })).filter(fc => fc.front && fc.back);
+
+        if (quizzes.length === 0 && flashcards.length === 0) {
+          throw new Error('AI không tìm thấy đủ dữ liệu nội dung từ bài học đã chọn để tạo câu hỏi trắc nghiệm hoặc flashcards. Vui lòng kiểm tra lại nội dung bài học hoặc chọn bài khác!');
+        }
 
         // Tự động đặt tên cho file bài kiểm tra
-        const autoTitle = aiResult.title || `Tự kiểm tra: ${selectedLessons.map(l => l.title).slice(0, 2).join(' & ')}`;
+        const autoTitle = aiResult?.title || `Tự kiểm tra: ${selectedLessons.map(l => l.title).slice(0, 2).join(' & ')}`;
 
         const newDeck = {
           id: 'deck_' + Date.now(),
           title: autoTitle,
-          summary: aiResult.summary || `Bộ đề gồm ${quizzes.length} câu trắc nghiệm và ${flashcards.length} thẻ ghi nhớ.`,
+          summary: aiResult?.summary || `Bộ đề gồm ${quizzes.length} câu trắc nghiệm và ${flashcards.length} thẻ ghi nhớ.`,
           lessonIds: selectedLessons.map(l => l.id),
           lessonTitles: selectedLessons.map(l => l.title),
           createdAt: Date.now(),
@@ -38846,10 +38892,10 @@
             const bestScore = deck.stats?.bestScore;
 
             return `
-              <div class="deck-card p-4 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-3">
+              <div data-deck-card="${escapeHtml(deck.id)}" class="deck-card p-4 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] shadow-2xs hover:shadow-md hover:border-indigo-400/60 dark:hover:border-indigo-500/60 transition-all flex flex-col justify-between space-y-3 cursor-pointer group">
                 <div class="space-y-1.5">
                   <div class="flex items-start justify-between gap-2">
-                    <h4 class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] line-clamp-2 leading-snug">${escapeHtml(deck.title)}</h4>
+                    <h4 class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-snug">${escapeHtml(deck.title)}</h4>
                     <button data-delete-deck="${escapeHtml(deck.id)}" class="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0 cursor-pointer" title="Xóa bộ đề này">
                       <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
                     </button>
@@ -38859,6 +38905,7 @@
                   <div class="flex flex-wrap items-center gap-1.5 pt-1">
                     ${quizCount > 0 ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">${quizCount} Trắc nghiệm</span>` : ''}
                     ${fcCount > 0 ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/50 dark:border-purple-800/50">${fcCount} Thẻ nhớ</span>` : ''}
+                    ${(quizCount === 0 && fcCount === 0) ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50">Chưa có câu hỏi</span>` : ''}
                     ${bestScore ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">Điểm cao: ${bestScore}%</span>` : ''}
                     <span class="text-[10px] font-sans text-stone-400 ml-auto">${dateStr}</span>
                   </div>
@@ -38878,14 +38925,47 @@
                       <span>Lật Flashcard</span>
                     </button>
                   ` : ''}
+                  ${(quizCount === 0 && fcCount === 0) ? `
+                    <button data-recreate-deck="${escapeHtml(deck.id)}" class="flex-1 touch-target min-h-[36px] py-1.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer">
+                      <svg class="w-3.5 h-3.5"><use href="#icon-sparkles"></use></svg>
+                      <span>Tạo lại câu hỏi AI</span>
+                    </button>
+                  ` : ''}
                 </div>
               </div>
             `;
           }).join('');
 
-          // Gắn sự kiện nút trong Deck Card
+          // 1. Gắn sự kiện click trực tiếp toàn bộ thẻ Deck (Click vào thẻ là bắt đầu học ngay)
+          decksGridContainer.querySelectorAll('[data-deck-card]').forEach(card => {
+            card.onclick = (e) => {
+              if (e.target.closest('button')) return;
+              const dId = card.getAttribute('data-deck-card');
+              const d = (state.learningData.studyDecks || []).find(x => x.id === dId);
+              if (!d) return;
+
+              if (d.quizzes && d.quizzes.length > 0) {
+                hideModalAnimated(studyDecksModal);
+                startQuizSession(d.quizzes, d.title, d);
+              } else if (d.flashcards && d.flashcards.length > 0) {
+                hideModalAnimated(studyDecksModal);
+                startFlashcardSession(d.flashcards, d.title);
+              } else {
+                hideModalAnimated(studyDecksModal);
+                if (d.lessonIds && d.lessonIds.length > 0) {
+                  selfTestSelectedLessonIds.clear();
+                  d.lessonIds.forEach(id => selfTestSelectedLessonIds.add(id));
+                }
+                openSelfTestConfigModal();
+                showToast("Bộ đề này chưa có câu hỏi. Đang mở để bạn tạo lại...", "info");
+              }
+            };
+          });
+
+          // 2. Gắn sự kiện nút Luyện trắc nghiệm
           decksGridContainer.querySelectorAll('[data-launch-quiz]').forEach(btn => {
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+              e.stopPropagation();
               const dId = btn.getAttribute('data-launch-quiz');
               const d = (state.learningData.studyDecks || []).find(x => x.id === dId);
               if (d && d.quizzes?.length > 0) {
@@ -38895,8 +38975,10 @@
             };
           });
 
+          // 3. Gắn sự kiện nút Lật Flashcard
           decksGridContainer.querySelectorAll('[data-launch-fc]').forEach(btn => {
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+              e.stopPropagation();
               const dId = btn.getAttribute('data-launch-fc');
               const d = (state.learningData.studyDecks || []).find(x => x.id === dId);
               if (d && d.flashcards?.length > 0) {
@@ -38906,8 +38988,26 @@
             };
           });
 
+          // 4. Gắn sự kiện nút Tạo lại câu hỏi cho bộ đề 0 câu
+          decksGridContainer.querySelectorAll('[data-recreate-deck]').forEach(btn => {
+            btn.onclick = (e) => {
+              e.stopPropagation();
+              const dId = btn.getAttribute('data-recreate-deck');
+              const d = (state.learningData.studyDecks || []).find(x => x.id === dId);
+              hideModalAnimated(studyDecksModal);
+              if (d && d.lessonIds && d.lessonIds.length > 0) {
+                selfTestSelectedLessonIds.clear();
+                d.lessonIds.forEach(id => selfTestSelectedLessonIds.add(id));
+              }
+              openSelfTestConfigModal();
+              showToast("Đang mở trình tạo đề để bổ sung câu hỏi...", "info");
+            };
+          });
+
+          // 5. Gắn sự kiện nút Xóa bộ đề
           decksGridContainer.querySelectorAll('[data-delete-deck]').forEach(btn => {
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+              e.stopPropagation();
               const dId = btn.getAttribute('data-delete-deck');
               if (confirm("Bạn có chắc chắn muốn xóa bộ đề này không?")) {
                 state.learningData.studyDecks = (state.learningData.studyDecks || []).filter(x => x.id !== dId);

@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.41',
+        date: '2026-10-24T17:55:00+07:00',
+        title: 'Khắc Phục Lỗi Bộ Đề Rỗng & Tối Ưu Hóa Click Trực Tiếp Vào Thẻ Tự Kiểm Tra',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi tạo bộ đề 0 câu: Sửa đường truyền nạp dữ liệu bài học bất đồng bộ từ IndexedDB và Iframe sang AI, đảm bảo dữ liệu văn bản bài học luôn đầy đủ khi gửi sang mô hình AI.' },
+          { type: 'improved', text: 'Nâng trần Token và nới rộng cấu trúc JSON máy chủ: Nâng mức token đầu ra cho chế độ self_test lên 2.500 tokens, hỗ trợ đa dạng cấu trúc trả về từ AI (quizzes/questions, flashcards/cards), loại bỏ nguy cơ cắt cụt JSON.' },
+          { type: 'new', text: 'Tương tác thẻ 1-chạm (One-Click Study): Toàn bộ thẻ bộ đề hiện có thể click trực tiếp để vào làm trắc nghiệm hoặc lật thẻ nhớ ngay lập tức, có hiệu ứng hover sang trọng.' },
+          { type: 'improved', text: 'Khôi phục bộ đề cũ: Với các bộ đề 0 câu tạo trước đây, hệ thống bổ sung nút và cơ chế "Tạo lại câu hỏi AI", tự động chọn lại các bài học tương ứng để tạo đề mới đầy đủ.' }
+        ]
+      },
+      {
         version: 'v5.8.40',
         date: '2026-10-24T17:42:00+07:00',
         title: 'Tự Động Cuộn Đến Bài Đang Đọc, Số Lượng Tự Động & Khóa Quyền Gói Pro Cho Bộ Đề AI',

@@ -455,6 +455,7 @@ D. [Phương án D]
           `<selected_text>\n${rawText}\n</selected_text>`
         ].filter(Boolean).join('\n\n');
       } else if (mode === 'self_test') {
+        optimalMaxTokens = 2500;
         const testType = ['mixed', 'quiz', 'flashcard'].includes(body.testType) ? body.testType : 'mixed';
         const isAutoCount = body.count === 'auto';
         const targetCountNum = Math.min(20, Math.max(3, parseInt(body.count, 10) || 10));
@@ -597,13 +598,19 @@ ${rawText}
       if (!dataObj || (!Array.isArray(dataObj.quizzes) && !Array.isArray(dataObj.flashcards))) {
         try {
           const parsed = JSON.parse(aiResponse?.rawText || aiResponse?.text || '{}');
-          if (Array.isArray(parsed.quizzes) || Array.isArray(parsed.flashcards)) {
+          if (Array.isArray(parsed.quizzes) || Array.isArray(parsed.flashcards) || Array.isArray(parsed.questions) || Array.isArray(parsed.quiz) || Array.isArray(parsed.cards)) {
             dataObj = parsed;
             if (aiResponse) aiResponse.data = parsed;
           }
         } catch (_) {}
       }
-      if (dataObj && (Array.isArray(dataObj.quizzes) || Array.isArray(dataObj.flashcards))) {
+      const rawQ = Array.isArray(dataObj?.quizzes) ? dataObj.quizzes
+        : (Array.isArray(dataObj?.quiz) ? dataObj.quiz
+        : (Array.isArray(dataObj?.questions) ? dataObj.questions : []));
+      const rawFC = Array.isArray(dataObj?.flashcards) ? dataObj.flashcards
+        : (Array.isArray(dataObj?.cards) ? dataObj.cards : []);
+
+      if (rawQ.length > 0 || rawFC.length > 0) {
         isSelfTestValid = true;
         extractedExplanation = dataObj.summary || dataObj.title || 'Đã tạo thành công bộ đề tự kiểm tra.';
       }
@@ -633,16 +640,31 @@ ${rawText}
       }
       finalResult.title = sanitizeText(dataObj?.title || 'Tự kiểm tra bài học', 200);
       finalResult.summary = sanitizeText(dataObj?.summary || '', 500);
-      finalResult.quizzes = Array.isArray(dataObj?.quizzes) ? dataObj.quizzes.map(q => ({
-        q: sanitizeText(q.q, 500),
+
+      const rawQ = Array.isArray(dataObj?.quizzes) ? dataObj.quizzes
+        : (Array.isArray(dataObj?.quiz) ? dataObj.quiz
+        : (Array.isArray(dataObj?.questions) ? dataObj.questions : []));
+      const rawFC = Array.isArray(dataObj?.flashcards) ? dataObj.flashcards
+        : (Array.isArray(dataObj?.cards) ? dataObj.cards : []);
+
+      finalResult.quizzes = rawQ.map(q => ({
+        q: sanitizeText(q.q || q.question, 500),
         options: Array.isArray(q.options) ? q.options.slice(0, 4).map(o => sanitizeText(o, 300)) : [],
-        ans: typeof q.ans === 'number' ? q.ans : 0,
+        ans: typeof q.ans === 'number' ? q.ans : (typeof q.answer === 'number' ? q.answer : 0),
         explanation: sanitizeText(q.explanation, 600)
-      })) : [];
-      finalResult.flashcards = Array.isArray(dataObj?.flashcards) ? dataObj.flashcards.map(fc => ({
-        q: sanitizeText(fc.q, 400),
-        a: sanitizeText(fc.a, 600)
-      })) : [];
+      })).filter(q => q.q && q.options.length >= 2);
+
+      finalResult.flashcards = rawFC.map(fc => ({
+        q: sanitizeText(fc.q || fc.front || fc.question, 400),
+        a: sanitizeText(fc.a || fc.back || fc.answer, 600)
+      })).filter(fc => fc.q && fc.a);
+
+      if (finalResult.quizzes.length === 0 && finalResult.flashcards.length === 0) {
+        return res.status(422).json({
+          error: 'AI không tìm thấy đủ dữ liệu nội dung từ bài học để tạo câu hỏi trắc nghiệm hoặc flashcards. Vui lòng chọn bài học khác hoặc kiểm tra lại nội dung bài!'
+        });
+      }
+
       finalResult.text = `Đã tạo ${finalResult.quizzes.length} câu trắc nghiệm và ${finalResult.flashcards.length} thẻ flashcard.`;
     }
 
