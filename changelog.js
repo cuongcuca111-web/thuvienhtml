@@ -2,6 +2,15 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.44',
+        date: '2026-10-24T18:25:00+07:00',
+        title: 'Thiết Kế Riêng Biểu Tượng AI Tự Động Đề Xuất & Hoàn Thiện Trực Quan Bộ Đề',
+        items: [
+          { type: 'improved', text: 'Thiết kế riêng Biểu tượng AI Tự động đề xuất (Bespoke Gemini Auto Sparkle): Thay thế ngôi sao 5 cánh đơn điệu bằng biểu tượng vector chòm sao Gemini đôi độc quyền (ngôi sao chính 4 cánh uốn cong chuẩn Editorial kèm tinh tú phụ đề xuất và hạt lấp lánh), tạo sự đồng bộ hoàn hảo với ngôn ngữ thiết kế AI của toàn bộ website.' },
+          { type: 'improved', text: 'Phối màu tương thích trạng thái: Tự động chuyển đổi màu thông minh giữa vàng kim dịu mát (#FDE68A) khi kích hoạt trên nền tím indigo và màu hổ phách sang trọng (#F59E0B / #FBBF24) khi ở trạng thái nghỉ, phân biệt rõ rệt với tính năng Gắn sao (Favorites) của thư viện.' }
+        ]
+      },
+      {
         version: 'v5.8.43',
         date: '2026-10-24T18:15:00+07:00',
         title: 'Đồng Bộ Hóa Nhãn Mác Vương Miện Pro Hoàng Gia & Tự Động Ẩn Khi Đạt Gói Pro',

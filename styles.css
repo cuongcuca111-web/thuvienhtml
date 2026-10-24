@@ -4441,6 +4441,25 @@
       border-color: rgba(217, 199, 160, 0.9);
     }
 
+    /* Biểu tượng AI Tự động đề xuất (AI Auto Proposal) thiết kế riêng chuẩn vibe web */
+    .self-test-count-btn .self-test-auto-icon {
+      color: #F59E0B;
+      display: block;
+      flex-shrink: 0;
+      transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dark .self-test-count-btn .self-test-auto-icon {
+      color: #FBBF24;
+    }
+    /* Khi nút Tự động được chọn (nền tím indigo-600 chữ trắng) */
+    .self-test-count-btn.bg-indigo-600 .self-test-auto-icon {
+      color: #FDE68A;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.22));
+    }
+    .self-test-count-btn:hover .self-test-auto-icon {
+      transform: scale(1.12);
+    }
+
     /* Floating Corner Tag cho tính năng AI Pro (Đồng bộ theo ảnh 3 vương miện hoàng gia) */
     .ai-pro-corner-badge {
       position: absolute;

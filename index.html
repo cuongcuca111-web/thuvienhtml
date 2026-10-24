@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.43"></script>
+  <script src="./changelog.js?v=5.8.44"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.43',
+        version: 'v5.8.44',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.43';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.44';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -624,8 +624,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.43">
-  <script src="./bridge.js?v=5.8.43"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.44">
+  <script src="./bridge.js?v=5.8.44"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -679,6 +679,16 @@
       <path d="M8 0.5C8 4.64 4.64 8 0.5 8C4.64 8 8 11.36 8 15.5C8 11.36 11.36 8 15.5 8C11.36 8 8 4.64 8 0.5Z" fill="currentColor"/>
       <circle cx="13" cy="3" r="1.2" fill="currentColor" opacity="0.85"/>
       <circle cx="3" cy="13" r="0.9" fill="currentColor" opacity="0.6"/>
+    </symbol>
+
+    <!-- Biểu tượng AI Tự động đề xuất (AI Auto Proposal / Adaptive Gemini Sparkle) thiết kế riêng chuẩn Vibe Editorial -->
+    <symbol id="icon-ai-auto" viewBox="0 0 16 16">
+      <!-- Ngôi sao Gemini AI chính với 4 cánh cong chuẩn Editorial -->
+      <path d="M6.5 2C6.5 5.3 4.2 8 1 8C4.2 8 6.5 10.7 6.5 14C6.5 10.7 8.8 8 12 8C8.8 8 6.5 5.3 6.5 2Z" fill="currentColor"/>
+      <!-- Ngôi sao AI vệ tinh đề xuất góc trên bên phải -->
+      <path d="M12.5 1C12.5 2.38 11.38 3.5 10 3.5C11.38 3.5 12.5 4.62 12.5 6C12.5 4.62 13.62 3.5 15 3.5C13.62 3.5 12.5 2.38 12.5 1Z" fill="currentColor"/>
+      <!-- Hạt tinh thể lấp lánh cân bằng góc dưới bên phải -->
+      <circle cx="13" cy="12.5" r="1.15" fill="currentColor" opacity="0.85"/>
     </symbol>
 
     <!-- Biểu tượng Bóng đèn Tri thức & Gợi ý (Insight Lightbulb) Vector chuẩn Vibe Editorial -->
@@ -2339,7 +2349,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.43 • build 24/10/2026 18:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.44 • build 24/10/2026 18:25</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3131,7 +3141,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.43</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.44</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3153,7 +3163,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.43 • build 24/10/2026 18:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.44 • build 24/10/2026 18:25</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3982,8 +3992,8 @@
           <div class="flex flex-wrap items-center gap-2 pt-1">
             <span class="text-xs font-medium text-[#57534E] dark:text-[#9AA3B2]">Số lượng:</span>
             <div class="inline-flex flex-wrap items-center bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl p-1 text-xs gap-1 font-medium">
-              <button type="button" data-count="auto" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1" title="AI tự ước lượng số lượng câu hỏi phù hợp nhất theo độ dài tài liệu">
-                <svg class="w-3.5 h-3.5 text-amber-500 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.2L12 16.8 5.7 21.2 8 14l-6-4.6h7.6z"/></svg>
+              <button type="button" data-count="auto" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5" title="AI tự ước lượng số lượng câu hỏi phù hợp nhất theo độ dài tài liệu">
+                <svg class="w-3.5 h-3.5 shrink-0 self-test-auto-icon" aria-hidden="true"><use href="#icon-ai-auto"></use></svg>
                 <span>Tự động (AI đề xuất)</span>
               </button>
               <button type="button" data-count="5" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer">5 câu (Nhanh)</button>
@@ -6536,8 +6546,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.43</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.43</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.44</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.44</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
