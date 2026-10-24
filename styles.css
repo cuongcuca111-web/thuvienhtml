@@ -4448,7 +4448,7 @@
     }
     #btnQuizRetryWrongOnly:hover svg,
     #btnPracticeWrongOnly:hover svg {
-      transform: rotate(-35deg);
+      transform: rotate(-35deg) scale(1.1);
     }
 
     /* Biểu tượng AI Tự động đề xuất (AI Auto Proposal) thiết kế riêng chuẩn vibe web */

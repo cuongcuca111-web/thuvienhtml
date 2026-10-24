@@ -2,6 +2,15 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.46',
+        date: '2026-10-24T18:45:00+07:00',
+        title: 'Hoàn Thiện Biểu Tượng Độc Quyền Vòng Cung Ôn Luyện Khắc Phục Lỗi Sai',
+        items: [
+          { type: 'improved', text: 'Thiết kế biểu tượng độc quyền Vòng lặp Tri thức & Khắc phục sai sót (#icon-retry-wrong): Kết hợp vòng cung ôn tập tuần hoàn uốn lượn mềm mại với điểm sáng tri thức 4 cánh ở tâm, thay thế hoàn toàn tình trạng trùng lặp icon mũi tên xoay cũ và emoji khối vuông xanh thô.' },
+          { type: 'improved', text: 'Đồng bộ hóa trải nghiệm nút "Luyện tập các câu sai ngay": Nút bấm trong Trung tâm bộ đề hiển thị duy nhất 1 icon vector sắc nét, tinh gọn, hòa nhập trọn vẹn với phong cách thẩm mỹ học thuật của trang web.' }
+        ]
+      },
+      {
         version: 'v5.8.45',
         date: '2026-10-24T18:35:00+07:00',
         title: 'Thiết Kế Riêng Biểu Tượng Vòng Lặp Ôn Luyện Sửa Sai & Loại Bỏ Emoji Thô',
