@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.27',
+        date: '2026-10-24T10:30:00+07:00',
+        title: 'Khắc Phục Lệch Vị Trí Bài Học & Triệt Tiêu Giật Lag / Nháy Màn Hình Trống Khi Tải Lại Trang',
+        items: [
+          { type: 'fix', text: 'Sửa lỗi lệch chỉ số Reader khi tải lại trang: Khởi tạo tức thì sortOrder và activeLessonId từ localStorage ngay tại thời điểm khởi tạo state, tính toán chính xác tuyệt đối số thứ tự (ví dụ 19/21) ngay từ lần vẽ đầu tiên mà không bị lệch sang vị trí mặc định (3/21).' },
+          { type: 'fix', text: 'Triệt tiêu hiện tượng nháy màn hình "Thư viện của bạn đang trống" và giật lag: Thêm hidden mặc định cho emptyLessonState trong HTML tĩnh, tránh chớp nháy UI khi Firestore đang nạp dữ liệu.' },
+          { type: 'improved', text: 'Đồng bộ hóa mượt mà luồng tải cấu hình người dùng: Tự động cập nhật chỉ số thanh Reader ngay khi nạp xong cài đặt sắp xếp từ Cloud, giữ vững vị trí và chuyển bài mượt mà 60fps.' }
+        ]
+      },
+      {
         version: 'v5.8.26',
         date: '2026-10-24T10:15:00+07:00',
         title: 'Khắc Phục Triệt Để Hiện Tượng Trắng Mờ Ở Phần Trên Cùng Màn Hình Trên Thiết Bị iOS',
