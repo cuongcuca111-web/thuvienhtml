@@ -2,6 +2,36 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.31',
+        date: '2026-10-24T15:40:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Đóng Khung Tạm Thời Khi Tìm Kiếm Từ Khóa & AI',
+        items: [
+          { type: 'fixed', text: 'Sửa lỗi khung viền biến mất khi cuộn mượt (Smooth Scroll): Loại bỏ hoàn toàn ngưỡng ẩn scroll 500px gây mất khung khi đoạn khớp nằm xa vị trí cuộn ban đầu.' },
+          { type: 'fixed', text: 'Đồng bộ hóa 100% khi chuyển bài học từ kết quả tìm kiếm: Bổ sung đa tầng retry an toàn (200ms, 500ms, 1000ms, 1500ms) kết hợp bắt sự kiện BRIDGE_READY và onIframeLoaded, đảm bảo không bao giờ bị rớt lệnh đóng khung do iframe tải chậm.' },
+          { type: 'improved', text: 'Tối ưu thuật toán nhận diện từ khóa & khoảng trắng DOM: Hỗ trợ chuẩn hóa khoảng trắng không ngắt (non-breaking space &nbsp;), ký tự xuống dòng và các biến thể dấu câu, đảm bảo định vị chính xác vị trí hiển thị khung viền và huy hiệu tìm kiếm trên mọi trang bài đọc.' }
+        ]
+      },
+      {
+        version: 'v5.8.31',
+        date: '2026-10-24T15:40:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Đóng Khung Tạm Thời Khi Tìm Kiếm Từ Khóa & AI',
+        items: [
+          { type: 'fixed', text: 'Sửa lỗi khung viền biến mất khi cuộn mượt (Smooth Scroll): Loại bỏ hoàn toàn ngưỡng ẩn scroll 500px gây mất khung khi đoạn khớp nằm xa vị trí cuộn ban đầu.' },
+          { type: 'fixed', text: 'Đồng bộ hóa 100% khi chuyển bài học từ kết quả tìm kiếm: Bổ sung đa tầng retry an toàn (200ms, 500ms, 1000ms, 1500ms) kết hợp bắt sự kiện BRIDGE_READY và onIframeLoaded, đảm bảo không bao giờ bị rớt lệnh đóng khung do iframe tải chậm.' },
+          { type: 'improved', text: 'Tối ưu thuật toán nhận diện từ khóa & khoảng trắng DOM: Hỗ trợ chuẩn hóa khoảng trắng không ngắt (non-breaking space &nbsp;), ký tự xuống dòng và các biến thể dấu câu, đảm bảo định vị chính xác vị trí hiển thị khung viền và huy hiệu tìm kiếm trên mọi trang bài đọc.' }
+        ]
+      },
+      {
+        version: 'v5.8.31',
+        date: '2026-10-24T15:40:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Đóng Khung Tạm Thời Khi Tìm Kiếm Từ Khóa & AI',
+        items: [
+          { type: 'fixed', text: 'Sửa lỗi khung viền biến mất khi cuộn mượt (Smooth Scroll): Loại bỏ hoàn toàn ngưỡng ẩn scroll 500px gây mất khung khi đoạn khớp nằm xa vị trí cuộn ban đầu.' },
+          { type: 'fixed', text: 'Đồng bộ hóa 100% khi chuyển bài học từ kết quả tìm kiếm: Bổ sung đa tầng retry an toàn (200ms, 500ms, 1000ms, 1500ms) kết hợp bắt sự kiện BRIDGE_READY và onIframeLoaded, đảm bảo không bao giờ bị rớt lệnh đóng khung do iframe tải chậm.' },
+          { type: 'improved', text: 'Tối ưu thuật toán nhận diện từ khóa & khoảng trắng DOM: Hỗ trợ chuẩn hóa khoảng trắng không ngắt (non-breaking space &nbsp;), ký tự xuống dòng và các biến thể dấu câu, đảm bảo định vị chính xác vị trí hiển thị khung viền và huy hiệu tìm kiếm trên mọi trang bài đọc.' }
+        ]
+      },
+      {
         version: 'v5.8.30',
         date: '2026-10-24T13:35:00+07:00',
         title: 'Thiết Kế Lại Biểu Tượng Chấm Sáng AI & Bóng Đèn Tri Thức Chuẩn Vector SVG',
