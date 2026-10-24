@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.24',
+        date: '2026-10-24T09:30:00+07:00',
+        title: 'Đồng Bộ Hóa Vĩnh Viễn Thứ Tự Sắp Xếp Bài Học & Khắc Phục Triệt Để Lỗi Lệch Thứ Tự Khi Tải Lại Trang',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi tải lại trang bị hoàn nguyên về thứ tự trước khi sắp xếp (lỗi 12/24 trên thanh Reader): Ngăn chặn triệt để hiện tượng loadUserSettings ghi đè ngầm lựa chọn sắp xếp của người dùng về giá trị mặc định.' },
+          { type: 'fix', text: 'Nâng cấp luồng đồng bộ Cloud sang batch.set({ merge: true }) tức thì (0ms): Thao tác sắp xếp theo tên & số được cam kết ghi vĩnh viễn lên Firestore ngay lập tức mà không bị hủy bởi thao tác F5 hay đóng tab.' },
+          { type: 'feature', text: 'Bổ sung nút "Khóa thứ tự A-Z lên Cloud" trong menu Sắp xếp: Tự động chuẩn hóa và gán vĩnh viễn chỉ số order tuần tự (10, 20, 30...) cho toàn bộ bài học trong tất cả danh mục, lưu đồng bộ đồng nhất lên Cloud.' },
+          { type: 'improved', text: 'Cơ chế bảo toàn thứ tự cục bộ (Local Sync Queue Guard): Lưu tạm hàng đợi sắp xếp trong localStorage và bảo vệ snapshot Firestore không bao giờ ghi đè ngược thứ tự cũ lên giao diện.' }
+        ]
+      },
+      {
         version: 'v5.8.23',
         date: '2026-10-20T20:50:00+07:00',
         title: 'Thêm Tính Năng Tải Xuống File Đang Xem Ngay Trên Thanh Công Cụ Reader',

@@ -169,7 +169,7 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.23"></script>
+  <script src="./changelog.js?v=5.8.24"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
@@ -192,7 +192,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.23';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.24';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -606,8 +606,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.23">
-  <script src="./bridge.js?v=5.8.23"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.24">
+  <script src="./bridge.js?v=5.8.24"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2129,7 +2129,7 @@
             <svg class="w-4 h-4 text-indigo-500"><use href="#icon-sort"></use></svg>
           </button>
           <!-- Popover chọn sắp xếp -->
-          <div id="sortOrderDropdownMenu" class="hidden absolute right-0 top-full mt-1 w-40 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-1.5 space-y-0.5 text-xs">
+          <div id="sortOrderDropdownMenu" class="hidden absolute right-0 top-full mt-1 w-48 bg-white dark:bg-[#181B20] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl shadow-xl z-50 p-1.5 space-y-0.5 text-xs">
             <button class="sort-option-btn w-full text-left px-2 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 font-medium text-[#1C1917] dark:text-[#EDECE8] flex items-center justify-between cursor-pointer" data-sort="manual">
               <span>Thủ công (mặc định)</span>
               <span class="sort-check text-indigo-600">✓</span>
@@ -2150,6 +2150,12 @@
               <span>Theo tên & số (1, 2, 10...)</span>
               <span class="sort-check text-indigo-600 hidden">✓</span>
             </button>
+            <div class="pt-1 mt-1 border-t border-[#E7E5DF] dark:border-[#262C36]">
+              <button id="btnSyncAllLessonsNaturalOrder" class="w-full text-left px-2 py-1.5 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1.5 cursor-pointer" title="Đồng bộ thứ tự tên & số (1, 2, 3...) cho toàn bộ bài học lên Cloud">
+                <svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-cloud-upload"></use></svg>
+                <span>Khóa thứ tự A-Z lên Cloud</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -2290,7 +2296,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.23 • build 20/10/2026 20:50</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.24 • build 24/10/2026 09:30</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3079,7 +3085,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.23</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.24</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3101,7 +3107,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.23 • build 20/10/2026 20:50</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.24 • build 24/10/2026 09:30</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6065,8 +6071,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.23</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.23</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.24</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.24</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -20229,10 +20235,16 @@
           state.desktopSidebarOpen = merged.desktopSidebarOpen;
           if (typeof applyDesktopSidebarState === 'function') applyDesktopSidebarState(state.desktopSidebarOpen);
         }
-        if (merged.sortOrder) {
-          state.sortOrder = merged.sortOrder;
-          localStorage.setItem('local_sort_order', merged.sortOrder);
+        if (cfg && cfg.sortOrder) {
+          state.sortOrder = cfg.sortOrder;
+          localStorage.setItem('local_sort_order', cfg.sortOrder);
           if (typeof updateSortOrderUI === 'function') updateSortOrderUI(state.sortOrder);
+        } else {
+          const storedSort = localStorage.getItem('local_sort_order');
+          if (storedSort) {
+            state.sortOrder = storedSort;
+            if (typeof updateSortOrderUI === 'function') updateSortOrderUI(state.sortOrder);
+          }
         }
         if (merged.aiPreferredStyle) {
           currentAiPreferredStyle = merged.aiPreferredStyle;
@@ -20496,7 +20508,12 @@
             } catch (_) {}
             return;
           }
-          loadedCats.push({ id: docId, ...docSnap.data() });
+          const catData = { id: docId, ...docSnap.data() };
+          if (pendingCategoriesOrderMap.has(docId)) {
+            const pc = pendingCategoriesOrderMap.get(docId);
+            catData.order = pc.order;
+          }
+          loadedCats.push(catData);
         });
         loadedCats.sort((a, b) => (a.order || 0) - (b.order || 0));
 
@@ -20554,7 +20571,13 @@
             } catch (_) {}
             return;
           }
-          loadedLessons.push({ id: docId, ...docSnap.data() });
+          const lessonData = { id: docId, ...docSnap.data() };
+          if (pendingLessonsOrderMap.has(docId)) {
+            const pl = pendingLessonsOrderMap.get(docId);
+            lessonData.order = pl.order;
+            if (pl.categoryId !== undefined) lessonData.categoryId = pl.categoryId;
+          }
+          loadedLessons.push(lessonData);
         });
         loadedLessons.sort((a, b) => (a.order || 0) - (b.order || 0));
 
@@ -21007,17 +21030,53 @@
       });
 
       sortOrderMenu.querySelectorAll('.sort-option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           const sortVal = btn.getAttribute('data-sort') || 'manual';
           state.sortOrder = sortVal;
           localStorage.setItem('local_sort_order', sortVal);
-          saveUserSettings();
           updateSortOrderUI(sortVal);
           sortOrderMenu.classList.add('hidden');
+
+          // ĐỒNG BỘ THỨ TỰ VÀO DATABASE CHO TỪNG BÀI HỌC (CHUẨN HÓA ORDER 10, 20, 30...)
+          const affected = standardizeAndPersistAllLessonsOrder(sortVal);
+          saveLocalLessons();
           renderCategoriesAndLessons();
           renderActiveLesson();
+          saveUserSettings().catch(() => {});
+          if (affected.length > 0) {
+            await syncAffectedLessonsOrder(affected, true);
+          }
+          const sortNames = {
+            manual: 'Thủ công',
+            newest: 'Mới thêm',
+            recent: 'Mở gần đây',
+            unlearned: 'Chưa học trước',
+            name: 'Theo tên & số'
+          };
+          const sortName = sortNames[sortVal] || sortVal;
+          showToast(`Đã sắp xếp & đồng bộ thứ tự (${sortName})`);
         });
       });
+
+      const btnSyncAllLessonsNaturalOrder = document.getElementById('btnSyncAllLessonsNaturalOrder');
+      if (btnSyncAllLessonsNaturalOrder) {
+        btnSyncAllLessonsNaturalOrder.addEventListener('click', async () => {
+          sortOrderMenu.classList.add('hidden');
+          state.sortOrder = 'name';
+          localStorage.setItem('local_sort_order', 'name');
+          updateSortOrderUI('name');
+          const affected = standardizeAndPersistAllLessonsOrder('name');
+          saveLocalLessons();
+          renderCategoriesAndLessons();
+          renderActiveLesson();
+          saveUserSettings().catch(() => {});
+          showToast('Đang khóa & đồng bộ thứ tự A-Z cho tất cả bài học lên Cloud...');
+          if (affected.length > 0) {
+            await syncAffectedLessonsOrder(affected, true);
+          }
+          showToast('Đã khóa và đồng bộ thứ tự A-Z thành công!');
+        });
+      }
 
       // Đồng bộ ngay trạng thái ban đầu của Sort Order Dropdown từ state / localStorage
       updateSortOrderUI(state.sortOrder);
@@ -21580,12 +21639,13 @@
         state.sortOrder = 'manual';
         localStorage.setItem('local_sort_order', 'manual');
         if (typeof updateSortOrderUI === 'function') updateSortOrderUI('manual');
-        saveUserSettings();
+        saveUserSettings().catch(() => {});
         saveLocalLessons();
         renderCategoriesAndLessons();
         renderActiveLesson();
-        showToast('Đã sắp xếp thứ tự bài học theo tên & số');
-        await syncAffectedLessonsOrder(affected);
+        showToast('Đã sắp xếp thứ tự và đang đồng bộ lên Cloud...');
+        await syncAffectedLessonsOrder(affected, true);
+        showToast('Đã đồng bộ thứ tự bài học lên Cloud thành công');
       });
     }
 
@@ -21765,6 +21825,45 @@
       return affected;
     }
 
+    function standardizeAndPersistAllLessonsOrder(mode = 'name') {
+      const affected = [];
+      const allCatIds = state.categories.map(c => c.id).concat([null]);
+
+      allCatIds.forEach(catId => {
+        const isUncat = !catId || !state.categories.some(c => c.id === catId);
+        const catLessons = (state.lessons || []).filter(l => 
+          isUncat 
+            ? (!l.categoryId || !state.categories.some(c => c.id === l.categoryId))
+            : l.categoryId === catId
+        );
+
+        if (catLessons.length === 0) return;
+
+        if (mode === 'name') {
+          catLessons.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'vi', { numeric: true, sensitivity: 'base' }));
+        } else if (mode === 'newest') {
+          catLessons.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        } else if (mode === 'recent') {
+          catLessons.sort((a, b) => (b.lastOpenedAt || 0) - (a.lastOpenedAt || 0));
+        } else if (mode === 'unlearned') {
+          catLessons.sort((a, b) => (a.isCompleted ? 1 : 0) - (b.isCompleted ? 1 : 0));
+        } else {
+          catLessons.sort((a, b) => (a.order || 0) - (b.order || 0));
+        }
+
+        catLessons.forEach((l, idx) => {
+          const targetOrder = (idx + 1) * 10;
+          if (l.order !== targetOrder) {
+            l.order = targetOrder;
+            affected.push(l);
+          }
+        });
+      });
+
+      return affected;
+    }
+    window.standardizeAndPersistAllLessonsOrder = standardizeAndPersistAllLessonsOrder;
+
     // ==========================================
     // TỐI ƯU HÓA: DỌN SẠCH BỘ NHỚ RAM IFRAME KHI CHUYỂN BÀI HỌC
     // ==========================================
@@ -21822,6 +21921,21 @@
     const pendingCategoriesOrderMap = new Map(); // id -> { id, order }
     let orderSyncDebounceTimer = null;
 
+    // Phục hồi hàng đợi sync thứ tự còn dở dang từ localStorage (nếu có do F5 trước đó)
+    try {
+      const savedPending = localStorage.getItem('thuvienhtml_pending_order_sync');
+      if (savedPending) {
+        const parsed = JSON.parse(savedPending);
+        if (parsed && typeof parsed === 'object') {
+          Object.entries(parsed).forEach(([id, item]) => {
+            if (item && item.order !== undefined) {
+              pendingLessonsOrderMap.set(id, item);
+            }
+          });
+        }
+      }
+    } catch (_) {}
+
     async function flushOrderSyncToFirestore() {
       if (orderSyncDebounceTimer) {
         clearTimeout(orderSyncDebounceTimer);
@@ -21829,8 +21943,6 @@
       }
 
       if (!state.userId || state.useLocalFallback || !db) {
-        pendingLessonsOrderMap.clear();
-        pendingCategoriesOrderMap.clear();
         return;
       }
 
@@ -21838,9 +21950,6 @@
       const categoriesToSync = Array.from(pendingCategoriesOrderMap.values());
 
       if (lessonsToSync.length === 0 && categoriesToSync.length === 0) return;
-
-      pendingLessonsOrderMap.clear();
-      pendingCategoriesOrderMap.clear();
 
       state.isReordering = true;
 
@@ -21873,12 +21982,17 @@
           const chunk = allOps.slice(b, b + MAX_BATCH_SIZE);
           const batch = writeBatch(db);
           for (const op of chunk) {
-            batch.update(op.ref, op.data);
+            batch.set(op.ref, op.data, { merge: true });
           }
           await batch.commit();
         }
+
+        // Xóa sạch hàng đợi chỉ khi batch commit thành công
+        pendingLessonsOrderMap.clear();
+        pendingCategoriesOrderMap.clear();
+        try { localStorage.removeItem('thuvienhtml_pending_order_sync'); } catch (_) {}
       } catch (err) {
-        console.warn('[SyncOrder] Lỗi đồng bộ Firestore theo Batch Debounce:', err);
+        console.warn('[SyncOrder] Lỗi đồng bộ Firestore theo Batch:', err);
       } finally {
         setTimeout(() => {
           state.isReordering = false;
@@ -21886,7 +22000,7 @@
       }
     }
 
-    async function syncAffectedLessonsOrder(affectedList) {
+    async function syncAffectedLessonsOrder(affectedList, immediate = false) {
       if (!affectedList || affectedList.length === 0) return;
       if (!state.userId || state.useLocalFallback || !db) return;
 
@@ -21897,6 +22011,15 @@
           categoryId: l.categoryId || null
         });
       });
+
+      try {
+        const queueObj = Object.fromEntries(pendingLessonsOrderMap);
+        localStorage.setItem('thuvienhtml_pending_order_sync', JSON.stringify(queueObj));
+      } catch (_) {}
+
+      if (immediate) {
+        return await flushOrderSyncToFirestore();
+      }
 
       if (orderSyncDebounceTimer) clearTimeout(orderSyncDebounceTimer);
       orderSyncDebounceTimer = setTimeout(() => {
@@ -40056,6 +40179,12 @@
 
       safeRun('loadRecentLessons', () => {
         if (typeof loadRecentLessons === 'function') loadRecentLessons();
+      });
+
+      safeRun('flushPendingOrderSyncOnBoot', () => {
+        if (typeof flushOrderSyncToFirestore === 'function' && pendingLessonsOrderMap.size > 0) {
+          flushOrderSyncToFirestore().catch(() => {});
+        }
       });
 
       safeRun('initWhatsNewAndChangelog', () => {
