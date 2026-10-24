@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.43',
+        date: '2026-10-24T18:15:00+07:00',
+        title: 'Đồng Bộ Hóa Nhãn Mác Vương Miện Pro Hoàng Gia & Tự Động Ẩn Khi Đạt Gói Pro',
+        items: [
+          { type: 'improved', text: 'Đồng bộ hóa biểu tượng Pro chuẩn hoàng gia: Cập nhật icon Pro thành biểu tượng Vương miện Hoàng gia vàng (Crown) trên nền đen kim sa viền vàng cát (#0F1226 & rgba(217, 199, 160, 0.7)), đồng bộ 100% với huy hiệu hồ sơ người dùng.' },
+          { type: 'new', text: 'Thiết kế nhãn mác góc (Floating Corner Tag): Đưa nhãn Pro lên vị trí góc trên bên phải của nút "Tự kiểm tra" và "+ Tạo bài mới" thay vì chèn ngang dòng chữ, tạo phong cách nhãn mác cao cấp và giữ nút bấm gọn gàng, tinh tế.' },
+          { type: 'improved', text: 'Cơ chế tự động ẩn nhãn cho phiên bản Pro: Hệ thống tự động kiểm tra quyền Pro để ẩn hoàn toàn nhãn mác Pro ở góc nút (cả tức thì ngay tại 0ms qua head cache lẫn khi đăng nhập hoặc nâng cấp), mang lại giao diện tinh gọn tối đa cho thành viên Pro.' }
+        ]
+      },
+      {
         version: 'v5.8.42',
         date: '2026-10-24T18:05:00+07:00',
         title: 'Chuyên Biệt Google Gemini & Kho Dự Trữ Đa Khóa API Tự Động Failover',
