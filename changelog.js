@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.50',
+    date: '2026-10-24T20:10:00+07:00',
+    title: 'Khắc Phục Triệt Để Lỗi Phân Định Dạng Bài: Chỉ Tạo Flashcard & Chỉ Tạo Trắc Nghiệm',
+    items: [
+      { type: 'fix', text: 'Tách biệt và cô lập tuyệt đối 3 dạng bài (Chỉ Flashcards / Chỉ Trắc nghiệm / Kết hợp): Khắc phục lỗi khi chọn "Chỉ Flashcards" nhưng AI sinh ra cả trắc nghiệm. Cấu trúc Prompt và JSON Schema được thiết kế động riêng biệt cho từng chế độ, cấm hoàn toàn việc sinh thừa định dạng.' },
+      { type: 'improved', text: 'Cơ chế lọc và bảo vệ dữ liệu 2 tầng (Server & Client): Hệ thống chủ động loại bỏ triệt để các câu hỏi không thuộc dạng bài đã chọn, tách biệt bộ nhớ cache theo từng dạng bài và tự động đặt tên đúng chuẩn ("Thẻ nhớ: ..." hoặc "Trắc nghiệm: ...").' },
+      { type: 'improved', text: 'Tự động sửa lỗi bộ đề cũ & Điều hướng học thông minh: Tự động chuẩn hóa các bộ đề đã tạo trước đó về đúng dạng bài (chỉ hiển thị 1 nút tương ứng như "Lật Flashcard"), đồng thời nhấp trực tiếp vào thẻ Flashcard sẽ mở ngay chế độ lật thẻ 3D.' }
+    ]
+  },
+  {
     version: 'v5.8.49',
     date: '2026-10-24T19:40:00+07:00',
     title: 'Hỗ Trợ Thế Hệ Model Gemini 3.8 & Tự Động Thích Ứng Khóa API Mới (Key Pool Auto-Discovery)',

@@ -136,6 +136,7 @@ module.exports = async function handler(req, res) {
     const isSelfTest = body.mode === 'self_test';
     const rawText = sanitizeText(body.text, isSelfTest ? 25000 : 2000);
     const mode = ['explain', 'example', 'translate', 'flashcard', 'quiz', 'self_test'].includes(body.mode) ? body.mode : 'explain';
+    const testType = ['mixed', 'quiz', 'flashcard'].includes(body.testType) ? body.testType : 'mixed';
     const style = ['casual', 'academic', 'concise', 'practical'].includes(body.style) ? body.style : 'casual';
     const targetLang = sanitizeText(body.targetLang || 'Tiếng Việt', 50);
     const rawContext = body.context || {};
@@ -294,7 +295,7 @@ module.exports = async function handler(req, res) {
     const promptHash = instruction ? crypto.createHash('md5').update(instruction).digest('hex').substring(0, 8) : 'default';
     const docContextHash = documentContextText ? crypto.createHash('md5').update(documentContextText.substring(0, 500)).digest('hex').substring(0, 8) : 'nodoc';
     const cacheKey = crypto.createHash('sha256')
-      .update(`${mode}:${style}:${targetLang}:${promptHash}:${docContextHash}:${normalizedRawText}`)
+      .update(`${mode}:${testType}:${body.count || 10}:${style}:${targetLang}:${promptHash}:${docContextHash}:${normalizedRawText}`)
       .digest('hex');
 
     const cacheDocRef = db.doc(`ai_cache/${cacheKey}`);
@@ -318,8 +319,8 @@ module.exports = async function handler(req, res) {
               targetLang: cachedData.result.targetLang || targetLang,
               title: cachedData.result.title || undefined,
               summary: cachedData.result.summary || undefined,
-              quizzes: cachedData.result.quizzes || undefined,
-              flashcards: cachedData.result.flashcards || undefined
+              quizzes: testType === 'flashcard' ? [] : (cachedData.result.quizzes || []),
+              flashcards: testType === 'quiz' ? [] : (cachedData.result.flashcards || [])
             });
           } else {
             cacheDocRef.delete().catch(() => {});
@@ -456,35 +457,91 @@ D. [Phương án D]
         ].filter(Boolean).join('\n\n');
       } else if (mode === 'self_test') {
         optimalMaxTokens = 2500;
-        const testType = ['mixed', 'quiz', 'flashcard'].includes(body.testType) ? body.testType : 'mixed';
         const isAutoCount = body.count === 'auto';
         const targetCountNum = Math.min(20, Math.max(3, parseInt(body.count, 10) || 10));
-        const countDesc = isAutoCount
-          ? 'TỰ ĐỘNG ƯỚC LƯỢNG (từ 5 đến 15 câu tùy thuộc vào độ dài và mật độ kiến thức của tài liệu)'
-          : `${targetCountNum} câu`;
 
-        systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
-Nhiệm vụ của bạn là dựa vào tài liệu bài học được cung cấp để tự động biên soạn một bộ đề TỰ KIỂM TRA & ÔN TẬP chất lượng cao với số lượng: ${countDesc}, bao gồm:
-1. ĐẶT TÊN BỘ ĐỀ (title): Tự đặt tên ngắn gọn, súc tích, chuyên nghiệp phản ánh đúng trọng tâm kiến thức của bài học (Ví dụ: "Trắc nghiệm & Flashcard: Cấu trúc Dữ liệu Cây" hoặc "Kiểm tra: Thì Hiện tại Hoàn thành").
-2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm kiến thức kiểm tra.
-3. CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (quizzes):
-   - ${isAutoCount ? 'Tự ước lượng số lượng câu hỏi trắc nghiệm (khoảng 3 đến 10 câu phù hợp với độ dài bài học).' : `Biên soạn khoảng ${testType === 'flashcard' ? 0 : (testType === 'quiz' ? targetCountNum : Math.ceil(targetCountNum / 2))} câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có tính phân loại tốt, bám sát các định nghĩa, nguyên lý, công thức, quy tắc hoặc tình huống cốt lõi.`}
-   - Trường "options": mảng gồm đúng 4 chuỗi phương án [A, B, C, D].
-   - Trường "ans": số nguyên từ 0 đến 3 biểu thị vị trí đáp án đúng.
-   - Trường "explanation": giải thích ngắn gọn, súc tích vì sao đáp án đó đúng.
-4. THẺ NHỚ FLASHCARD ÔN TẬP (flashcards):
-   - ${isAutoCount ? 'Tự ước lượng số lượng thẻ flashcard (khoảng 3 đến 8 thẻ bám sát các khái niệm chính).' : `Biên soạn khoảng ${testType === 'quiz' ? 0 : (testType === 'flashcard' ? targetCountNum : Math.floor(targetCountNum / 2))} thẻ flashcard ôn tập.`}
-   - Trường "q": câu hỏi ngắn hoặc khái niệm cần nhớ.
-   - Trường "a": câu trả lời hoặc định nghĩa cô đọng, sắc nét.`;
+        if (testType === 'flashcard') {
+          const fcCountDesc = isAutoCount
+            ? 'TỰ ĐỘNG ƯỚC LƯỢNG (từ 5 đến 15 thẻ flashcard tùy thuộc vào độ dài và mật độ kiến thức của tài liệu)'
+            : `${targetCountNum} thẻ flashcard`;
 
-        userPrompt = [
-          `<task>
-Hãy đọc kỹ tài liệu bài học sau đây và biên soạn bộ đề Tự kiểm tra & Thẻ nhớ tương ứng với định dạng JSON chuẩn.
+          systemPrompt = `Bạn là chuyên gia sư phạm và biên soạn tài liệu học tập của ứng dụng "Thư viện Sách HTML".
+Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ THẺ NHỚ FLASHCARD ôn tập chuyên sâu với số lượng: ${fcCountDesc}.
+TUYỆT ĐỐI KHÔNG TẠO CÂU HỎI TRẮC NGHIỆM (quizzes).
+YÊU CẦU CỤ THỂ:
+1. ĐẶT TÊN BỘ THẺ (title): Bắt đầu bằng "Thẻ nhớ: [Tên bài học hoặc chủ đề]" (Ví dụ: "Thẻ nhớ: Chiến lược và Quá trình Logistics").
+2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm các khái niệm cốt lõi trong bộ thẻ nhớ.
+3. DANH SÁCH THẺ NHỚ (flashcards):
+   - Mỗi thẻ gồm:
+     + "q": Thuật ngữ, câu hỏi hoặc khái niệm cần ghi nhớ (mặt trước).
+     + "a": Định nghĩa, câu trả lời hoặc cốt lõi kiến thức cô đọng, sắc bén, dễ nhớ (mặt sau).
+Bắt buộc trả về đúng định dạng JSON Schema chỉ gồm title, summary và flashcards.`;
+
+          userPrompt = [
+            `<task>
+Hãy đọc kỹ tài liệu bài học sau đây và CHỈ BIÊN SOẠN BỘ THẺ NHỚ FLASHCARD (${fcCountDesc}). Tuyệt đối không tạo câu hỏi trắc nghiệm.
 </task>`,
-          `<lesson_content>
+            `<lesson_content>
 ${rawText}
 </lesson_content>`
-        ].join('\n\n');
+          ].join('\n\n');
+
+        } else if (testType === 'quiz') {
+          const quizCountDesc = isAutoCount
+            ? 'TỰ ĐỘNG ƯỚC LƯỢNG (từ 5 đến 15 câu trắc nghiệm tùy thuộc vào độ dài và mật độ kiến thức của tài liệu)'
+            : `${targetCountNum} câu trắc nghiệm`;
+
+          systemPrompt = `Bạn là chuyên gia khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
+Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ ĐỀ TRẮC NGHIỆM 4 ĐÁP ÁN với số lượng: ${quizCountDesc}.
+TUYỆT ĐỐI KHÔNG TẠO THẺ FLASHCARD (flashcards).
+YÊU CẦU CỤ THỂ:
+1. ĐẶT TÊN BỘ ĐỀ (title): Bắt đầu bằng "Trắc nghiệm: [Tên bài học hoặc chủ đề]" (Ví dụ: "Trắc nghiệm: Chiến lược và Quá trình Logistics").
+2. TÓM TẮT (summary): 1-2 câu tóm tắt phạm vi và kiến thức trọng tâm của bài kiểm tra.
+3. CÂU HỎI TRẮC NGHIỆM (quizzes):
+   - Mỗi câu gồm:
+     + "q": Nội dung câu hỏi trắc nghiệm bám sát bài học, có tính phân loại tốt.
+     + "options": Mảng đúng 4 đáp án [A, B, C, D].
+     + "ans": Số nguyên từ 0 đến 3 (vị trí đáp án đúng).
+     + "explanation": Giải thích chi tiết vì sao đáp án đó đúng và phân tích ngắn gọn.
+Bắt buộc trả về đúng định dạng JSON Schema chỉ gồm title, summary và quizzes.`;
+
+          userPrompt = [
+            `<task>
+Hãy đọc kỹ tài liệu bài học sau đây và CHỈ BIÊN SOẠN BỘ CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (${quizCountDesc}). Tuyệt đối không tạo thẻ flashcard.
+</task>`,
+            `<lesson_content>
+${rawText}
+</lesson_content>`
+          ].join('\n\n');
+
+        } else {
+          const mixedCountDesc = isAutoCount
+            ? 'TỰ ĐỘNG ƯỚC LƯỢNG (khoảng 3 đến 8 câu trắc nghiệm VÀ 3 đến 8 thẻ flashcard tùy theo bài học)'
+            : `${targetCountNum} phần (gồm ${Math.ceil(targetCountNum / 2)} câu trắc nghiệm và ${Math.floor(targetCountNum / 2)} thẻ flashcard)`;
+
+          systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
+Nhiệm vụ của bạn là dựa vào tài liệu bài học để biên soạn trọn bộ TỰ KIỂM TRA & THẺ NHỚ kết hợp với số lượng: ${mixedCountDesc}, bao gồm:
+1. ĐẶT TÊN BỘ ĐỀ (title): Đặt tên dạng "Kiểm tra & Flashcard: [Tên bài học]" (Ví dụ: "Kiểm tra & Flashcard: Cấu trúc Dữ liệu Cây").
+2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm kiểm tra và ôn tập.
+3. CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (quizzes):
+   - "q": Câu hỏi trắc nghiệm.
+   - "options": Đúng 4 lựa chọn [A, B, C, D].
+   - "ans": 0 đến 3.
+   - "explanation": Giải thích ngắn gọn vì sao đáp án đúng.
+4. THẺ NHỚ FLASHCARD ÔN TẬP (flashcards):
+   - "q": Câu hỏi ngắn hoặc khái niệm cần nhớ.
+   - "a": Câu trả lời hoặc định nghĩa cô đọng.
+Bắt buộc trả về đúng định dạng JSON Schema.`;
+
+          userPrompt = [
+            `<task>
+Hãy đọc kỹ tài liệu bài học sau đây và biên soạn bộ đề Tự kiểm tra & Thẻ nhớ kết hợp theo định dạng JSON.
+</task>`,
+            `<lesson_content>
+${rawText}
+</lesson_content>`
+          ].join('\n\n');
+        }
       }
     }
 
@@ -492,36 +549,44 @@ ${rawText}
       type: 'object',
       properties: {
         mode: { type: 'string' },
-        title: { type: 'string', description: 'Tên tự đặt cho bộ đề thi' },
-        summary: { type: 'string', description: 'Tóm tắt ngắn gọn phạm vi bài kiểm tra' },
-        quizzes: {
-          type: 'array',
-          description: 'Danh sách câu hỏi trắc nghiệm 4 đáp án',
-          items: {
-            type: 'object',
-            properties: {
-              q: { type: 'string' },
-              options: { type: 'array', items: { type: 'string' } },
-              ans: { type: 'integer' },
-              explanation: { type: 'string' }
-            },
-            required: ['q', 'options', 'ans', 'explanation']
+        title: { type: 'string', description: 'Tên tự đặt cho bộ đề thi hoặc thẻ nhớ' },
+        summary: { type: 'string', description: 'Tóm tắt ngắn gọn phạm vi bài học' },
+        ...(testType !== 'flashcard' ? {
+          quizzes: {
+            type: 'array',
+            description: 'Danh sách câu hỏi trắc nghiệm 4 đáp án',
+            items: {
+              type: 'object',
+              properties: {
+                q: { type: 'string' },
+                options: { type: 'array', items: { type: 'string' } },
+                ans: { type: 'integer' },
+                explanation: { type: 'string' }
+              },
+              required: ['q', 'options', 'ans', 'explanation']
+            }
           }
-        },
-        flashcards: {
-          type: 'array',
-          description: 'Danh sách thẻ nhớ ôn tập',
-          items: {
-            type: 'object',
-            properties: {
-              q: { type: 'string' },
-              a: { type: 'string' }
-            },
-            required: ['q', 'a']
+        } : {}),
+        ...(testType !== 'quiz' ? {
+          flashcards: {
+            type: 'array',
+            description: 'Danh sách thẻ nhớ ôn tập',
+            items: {
+              type: 'object',
+              properties: {
+                q: { type: 'string' },
+                a: { type: 'string' }
+              },
+              required: ['q', 'a']
+            }
           }
-        }
+        } : {})
       },
-      required: ['title', 'quizzes', 'flashcards']
+      required: [
+        'title',
+        'summary',
+        ...(testType === 'flashcard' ? ['flashcards'] : (testType === 'quiz' ? ['quizzes'] : ['quizzes', 'flashcards']))
+      ]
     } : {
       type: 'object',
       properties: {
@@ -638,7 +703,7 @@ ${rawText}
           dataObj = JSON.parse(aiResponse?.rawText || aiResponse?.text || '{}');
         } catch (_) {}
       }
-      finalResult.title = sanitizeText(dataObj?.title || 'Tự kiểm tra bài học', 200);
+      finalResult.title = sanitizeText(dataObj?.title || (testType === 'flashcard' ? 'Thẻ nhớ bài học' : 'Tự kiểm tra bài học'), 200);
       finalResult.summary = sanitizeText(dataObj?.summary || '', 500);
 
       const rawQ = Array.isArray(dataObj?.quizzes) ? dataObj.quizzes
@@ -647,25 +712,65 @@ ${rawText}
       const rawFC = Array.isArray(dataObj?.flashcards) ? dataObj.flashcards
         : (Array.isArray(dataObj?.cards) ? dataObj.cards : []);
 
-      finalResult.quizzes = rawQ.map(q => ({
-        q: sanitizeText(q.q || q.question, 500),
-        options: Array.isArray(q.options) ? q.options.slice(0, 4).map(o => sanitizeText(o, 300)) : [],
-        ans: typeof q.ans === 'number' ? q.ans : (typeof q.answer === 'number' ? q.answer : 0),
-        explanation: sanitizeText(q.explanation, 600)
-      })).filter(q => q.q && q.options.length >= 2);
+      if (testType === 'flashcard') {
+        finalResult.quizzes = [];
+        finalResult.flashcards = rawFC.map(fc => ({
+          q: sanitizeText(fc.q || fc.front || fc.question, 400),
+          a: sanitizeText(fc.a || fc.back || fc.answer, 600)
+        })).filter(fc => fc.q && fc.a);
 
-      finalResult.flashcards = rawFC.map(fc => ({
-        q: sanitizeText(fc.q || fc.front || fc.question, 400),
-        a: sanitizeText(fc.a || fc.back || fc.answer, 600)
-      })).filter(fc => fc.q && fc.a);
+        finalResult.title = finalResult.title.replace(/^(?:Trắc nghiệm\s*(?:&|và)?\s*|Kiểm tra\s*(?:&|và)?\s*)+/i, '');
+        if (!finalResult.title.toLowerCase().includes('thẻ') && !finalResult.title.toLowerCase().includes('flashcard')) {
+          finalResult.title = `Thẻ nhớ: ${finalResult.title}`;
+        }
+        finalResult.text = `Đã tạo ${finalResult.flashcards.length} thẻ flashcard.`;
 
-      if (finalResult.quizzes.length === 0 && finalResult.flashcards.length === 0) {
-        return res.status(422).json({
-          error: 'AI không tìm thấy đủ dữ liệu nội dung từ bài học để tạo câu hỏi trắc nghiệm hoặc flashcards. Vui lòng chọn bài học khác hoặc kiểm tra lại nội dung bài!'
-        });
+        if (finalResult.flashcards.length === 0) {
+          return res.status(422).json({
+            error: 'AI không tìm thấy đủ dữ liệu nội dung từ bài học để tạo flashcards. Vui lòng chọn bài học khác hoặc kiểm tra lại nội dung bài!'
+          });
+        }
+      } else if (testType === 'quiz') {
+        finalResult.flashcards = [];
+        finalResult.quizzes = rawQ.map(q => ({
+          q: sanitizeText(q.q || q.question, 500),
+          options: Array.isArray(q.options) ? q.options.slice(0, 4).map(o => sanitizeText(o, 300)) : [],
+          ans: typeof q.ans === 'number' ? q.ans : (typeof q.answer === 'number' ? q.answer : 0),
+          explanation: sanitizeText(q.explanation, 600)
+        })).filter(q => q.q && q.options.length >= 2);
+
+        finalResult.title = finalResult.title.replace(/^(?:Thẻ nhớ\s*(?:&|và)?\s*|Flashcard\s*(?:&|và)?\s*)+/i, '');
+        if (!finalResult.title.toLowerCase().includes('trắc nghiệm') && !finalResult.title.toLowerCase().includes('kiểm tra')) {
+          finalResult.title = `Trắc nghiệm: ${finalResult.title}`;
+        }
+        finalResult.text = `Đã tạo ${finalResult.quizzes.length} câu trắc nghiệm.`;
+
+        if (finalResult.quizzes.length === 0) {
+          return res.status(422).json({
+            error: 'AI không tìm thấy đủ dữ liệu nội dung từ bài học để tạo câu hỏi trắc nghiệm. Vui lòng chọn bài học khác hoặc kiểm tra lại nội dung bài!'
+          });
+        }
+      } else {
+        finalResult.quizzes = rawQ.map(q => ({
+          q: sanitizeText(q.q || q.question, 500),
+          options: Array.isArray(q.options) ? q.options.slice(0, 4).map(o => sanitizeText(o, 300)) : [],
+          ans: typeof q.ans === 'number' ? q.ans : (typeof q.answer === 'number' ? q.answer : 0),
+          explanation: sanitizeText(q.explanation, 600)
+        })).filter(q => q.q && q.options.length >= 2);
+
+        finalResult.flashcards = rawFC.map(fc => ({
+          q: sanitizeText(fc.q || fc.front || fc.question, 400),
+          a: sanitizeText(fc.a || fc.back || fc.answer, 600)
+        })).filter(fc => fc.q && fc.a);
+
+        finalResult.text = `Đã tạo ${finalResult.quizzes.length} câu trắc nghiệm và ${finalResult.flashcards.length} thẻ flashcard.`;
+
+        if (finalResult.quizzes.length === 0 && finalResult.flashcards.length === 0) {
+          return res.status(422).json({
+            error: 'AI không tìm thấy đủ dữ liệu nội dung từ bài học để tạo câu hỏi trắc nghiệm hoặc flashcards. Vui lòng chọn bài học khác hoặc kiểm tra lại nội dung bài!'
+          });
+        }
       }
-
-      finalResult.text = `Đã tạo ${finalResult.quizzes.length} câu trắc nghiệm và ${finalResult.flashcards.length} thẻ flashcard.`;
     }
 
     if (Array.isArray(finalResult.terms)) {
