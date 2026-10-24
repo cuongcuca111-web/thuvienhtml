@@ -1,6 +1,16 @@
 // changelog.js - Dữ liệu Lịch sử cập nhật (Changelog) của Thư viện Sách HTML
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
+  {
+    version: 'v5.8.49',
+    date: '2026-10-24T19:40:00+07:00',
+    title: 'Hỗ Trợ Thế Hệ Model Gemini 3.8 & Tự Động Thích Ứng Khóa API Mới (Key Pool Auto-Discovery)',
+    items: [
+      { type: 'fix', text: 'Khắc phục triệt để lỗi deprecation model trên các khóa API mới: Google đã chính thức ngừng cấp quyền model cũ (gemini-2.5-flash) cho các tài khoản mới tạo và bắt buộc dùng gemini-3.8-flash. Hệ thống đã nâng cấp toàn diện sang bộ model Gemini 3.8 Flash & Gemini 3.8 Pro chuẩn 2026.' },
+      { type: 'improved', text: 'Cơ chế tự động phát hiện model hỗ trợ (ListModels & Auto Recommendation Discovery): Khi kiểm tra hoặc sử dụng khóa API, hệ thống tự động xác thực danh sách model Google cấp phép với chi phí 0 token, đồng thời tự động nhận diện và chuyển hướng model nếu Google gợi ý trong phản hồi.' },
+      { type: 'improved', text: 'Chuẩn hóa trạng thái và nhãn mác Kho dự trữ khóa: Sửa lỗi gắn nhầm mác "Sắp hết hạn" cho các khóa mới hợp lệ; khóa phụ hoạt động tốt sẽ mang mác chuẩn "⚪ Dự phòng (Sẵn sàng kích hoạt)" hoặc "🟢 Đang hoạt động" khi được thăng hạng làm khóa chính.' }
+    ]
+  },
       {
         version: 'v5.8.48',
         date: '2026-10-24T19:15:00+07:00',

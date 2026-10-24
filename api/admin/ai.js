@@ -6,12 +6,13 @@ const { DEFAULT_MODELS, invalidateAiSettingsCache } = require('../../lib/call-ai
 
 const FALLBACK_MODELS = {
   gemini: [
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Thế hệ mới, siêu nhanh - Khuyên dùng)' },
-    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Ổn định, chi phí tối ưu)' },
-    { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B (Siêu nhẹ, tiết kiệm)' },
-    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Thế hệ mới)' },
-    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Mạnh mẽ, phân tích sâu)' },
-    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Cực mạnh, thế hệ mới)' }
+    { id: 'gemini-3.8-flash', name: 'Gemini 3.8 Flash (Thế hệ mới 2026, siêu nhanh - Khuyên dùng)' },
+    { id: 'gemini-3.8-pro', name: 'Gemini 3.8 Pro (Mạnh mẽ, tư duy & suy luận sâu)' },
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Tốc độ cao)' },
+    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Phân tích chuyên sâu)' },
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Ổn định)' },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Tối ưu chi phí)' },
+    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' }
   ]
 };
 
@@ -398,15 +399,7 @@ module.exports = async function handler(req, res) {
         ? requestedModel.trim()
         : ((settings.models && settings.models.gemini && settings.models.gemini.fast) ||
            (DEFAULT_MODELS.gemini && DEFAULT_MODELS.gemini.fast) ||
-           'gemini-2.0-flash');
-
-      const candidateModels = [
-        model,
-        'gemini-2.0-flash',
-        'gemini-1.5-flash',
-        'gemini-2.5-flash'
-      ];
-      const uniqueCandidates = [...new Set(candidateModels)];
+           'gemini-3.8-flash');
 
       let geminiOk = false;
       let lastRespMsg = '';
@@ -414,40 +407,98 @@ module.exports = async function handler(req, res) {
       let isQuotaError = false;
       let isInvalidError = false;
 
-      for (const candModel of uniqueCandidates) {
-        try {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candModel)}:generateContent?key=${encodeURIComponent(apiKey)}`;
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
-              generationConfig: { maxOutputTokens: 10 }
-            })
-          });
-
-          if (resp.ok) {
-            const d = await resp.json();
-            testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
-            geminiOk = true;
-            model = candModel;
-            break;
-          } else {
-            const d = await resp.json().catch(() => ({}));
-            const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
-            lastRespMsg = msg;
-            if (resp.status === 400 && (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID'))) {
-              isInvalidError = true;
-              break;
-            }
-            if (resp.status === 429 || msg.includes('quota') || msg.includes('exhausted')) {
-              isQuotaError = true;
-            }
+      // 1. Kiểm tra tính hợp lệ của Key qua ListModels API (Zero-token verification)
+      let googleSupportedModels = [];
+      try {
+        const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+        const listResp = await fetch(listUrl, { method: 'GET' });
+        if (listResp.ok) {
+          const listData = await listResp.json().catch(() => ({}));
+          if (Array.isArray(listData.models)) {
+            googleSupportedModels = listData.models
+              .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+              .map(m => (m.name || '').replace(/^models\//, ''))
+              .filter(Boolean);
           }
-        } catch (netErr) {
-          lastRespMsg = netErr.message;
+        } else {
+          const errData = await listResp.json().catch(() => ({}));
+          const errMsg = (errData && errData.error && errData.error.message) || ('HTTP ' + listResp.status);
+          if (listResp.status === 400 && (errMsg.includes('API key not valid') || errMsg.includes('API_KEY_INVALID'))) {
+            isInvalidError = true;
+            lastRespMsg = errMsg;
+          } else if (listResp.status === 429 || errMsg.includes('quota') || errMsg.includes('exhausted')) {
+            isQuotaError = true;
+            lastRespMsg = errMsg;
+          }
         }
-        if (geminiOk) break;
+      } catch (listErr) {
+        console.warn('Lỗi gọi ListModels Gemini:', listErr.message);
+      }
+
+      // 2. Thử nghiệm generateContent thực tế
+      if (!isInvalidError && !isQuotaError) {
+        const preferredPriority = [
+          'gemini-3.8-flash',
+          'gemini-3.8-pro',
+          model,
+          'gemini-2.5-flash',
+          'gemini-2.0-flash',
+          'gemini-1.5-flash'
+        ].filter(Boolean);
+
+        const candidateModels = [
+          ...preferredPriority.filter(m => googleSupportedModels.length === 0 || googleSupportedModels.includes(m)),
+          ...preferredPriority,
+          ...googleSupportedModels
+        ];
+        const uniqueCandidates = [...new Set(candidateModels)];
+
+        for (let i = 0; i < uniqueCandidates.length; i++) {
+          const candModel = uniqueCandidates[i];
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candModel)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const resp = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
+                generationConfig: { maxOutputTokens: 10 }
+              })
+            });
+
+            if (resp.ok) {
+              const d = await resp.json();
+              testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
+              geminiOk = true;
+              model = candModel;
+              break;
+            } else {
+              const d = await resp.json().catch(() => ({}));
+              const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
+              lastRespMsg = msg;
+              if (resp.status === 400 && (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID'))) {
+                isInvalidError = true;
+                break;
+              }
+              if (resp.status === 429 || msg.includes('quota') || msg.includes('exhausted')) {
+                isQuotaError = true;
+              }
+
+              // Nhận diện gợi ý chuyển đổi model tự động từ Google nếu tài khoản/khóa mới không hỗ trợ model cũ
+              // (Ví dụ: "models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.8-flash")
+              const match = msg.match(/(?:models\/|use\s+models\/)([a-zA-Z0-9.\-_]+)/i);
+              if (match && match[1]) {
+                const suggestedModel = match[1];
+                if (!uniqueCandidates.includes(suggestedModel)) {
+                  uniqueCandidates.splice(i + 1, 0, suggestedModel);
+                }
+              }
+            }
+          } catch (netErr) {
+            lastRespMsg = netErr.message;
+          }
+          if (geminiOk) break;
+        }
       }
 
       const nowIso = new Date().toISOString();
@@ -518,8 +569,8 @@ module.exports = async function handler(req, res) {
           priority: ['gemini'],
           models: {
             gemini: {
-              fast: (models && models.gemini && models.gemini.fast) || 'gemini-2.0-flash',
-              strong: (models && models.gemini && models.gemini.strong) || 'gemini-1.5-pro'
+              fast: (models && models.gemini && models.gemini.fast) || 'gemini-3.8-flash',
+              strong: (models && models.gemini && models.gemini.strong) || 'gemini-3.8-pro'
             }
           },
           autoFailover: typeof autoFailover === 'boolean' ? autoFailover : true,
