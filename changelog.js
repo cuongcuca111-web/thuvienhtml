@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.55',
+    date: '2026-10-24T21:30:00+07:00',
+    title: 'Khóa Tốc Độ 60 FPS Thao Tác Cuộn & Chuyển Cảnh Biến Hình Siêu Mượt Pop-up AI (Fluid GPU Morphing)',
+    items: [
+      { type: 'improved', text: 'Triệt tiêu 100% hiện tượng tụt FPS và giật lag khi cuộn trang: Tách biệt hoàn toàn cơ chế bám sát tọa độ khi cuộn và hiệu ứng chuyển cảnh. Khi cuộn trang, tọa độ pop-up AI cập nhật tức thì theo nhịp vẽ màn hình (GPU Compositor) thông qua requestAnimationFrame, loại bỏ hoàn toàn các thuộc tính transition layout gây tắc nghẽn CPU/Reflow.' },
+      { type: 'improved', text: 'Chuyển cảnh biến hình (Morphing Transition) siêu mượt chuẩn Trụ cột 3 /thietkeweb: Khi biến đổi qua lại giữa Hộp Giải thích Đầy đủ và Thanh Mini Pill ở đáy/đỉnh màn hình, kích hoạt chuyển cảnh 250ms với đường cong tự nhiên cubic-bezier(0.16, 1, 0.3, 1). Loại bỏ hoàn toàn display:none, áp dụng kỹ thuật GPU Crossfade với opacity và transform scale, đảm bảo chuyển đổi êm ái như ứng dụng native cao cấp.' },
+      { type: 'improved', text: 'Vùng đệm trễ Hysteresis chống rung giật biên: Bổ sung khoảng đệm 80-110px ở mép màn hình, ngăn chặn triệt để hiện tượng giật cục hoặc nhấp nháy chuyển trạng thái liên tục khi người dùng cuộn lăn tăn ở sát ngưỡng đáy hoặc đỉnh.' }
+    ]
+  },
+  {
     version: 'v5.8.54',
     date: '2026-10-24T21:25:00+07:00',
     title: 'Cứu Hộ Tự Động Toàn Diện (Autonomous Boot Watchdog), Phục Hồi Trang Đơ & Đồng Bộ 60 FPS',
