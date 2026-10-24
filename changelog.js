@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.26',
+        date: '2026-10-24T10:15:00+07:00',
+        title: 'Khắc Phục Triệt Để Hiện Tượng Trắng Mờ Ở Phần Trên Cùng Màn Hình Trên Thiết Bị iOS',
+        items: [
+          { type: 'fix', text: 'Khắc phục triệt để lỗi dải trắng mờ ở đỉnh màn hình trên iOS: Chuyển cấu hình apple-mobile-web-app-status-bar-style sang "default", loại bỏ hoàn toàn lớp phủ mờ progressive frosted blur do WebKit tự động tạo trên iOS.' },
+          { type: 'fix', text: 'Loại bỏ hiện tượng xếp chồng đa tầng backdrop-blur ở vùng safe-area: Chuyển toàn bộ unifiedTopBar, header và stickyReaderHeader sang màu nền thuần chuẩn Editorial (#FAF9F5 / #111317), triệt tiêu bóng mờ đục và chớp sáng trên iOS Safari.' },
+          { type: 'improved', text: 'Tối ưu hóa hiển thị vùng tai thỏ / Dynamic Island: Khu vực đỉnh màn hình hiển thị liền mạch, sắc nét và tự động đồng bộ theo chủ đề Sáng / Tối thời gian thực.' }
+        ]
+      },
+      {
         version: 'v5.8.25',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
