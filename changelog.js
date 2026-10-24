@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.53',
+    date: '2026-10-24T21:15:00+07:00',
+    title: 'Khắc Phục Triệt Để Lỗi Model AI (404 Not Found), Chuẩn Hóa Gemini 2.0 Flash & Auto-Heal Đa Tầng',
+    items: [
+      { type: 'fix', text: 'Triệt tiêu dứt điểm lỗi model 404 ("models/gemini-1.5-pro is not found for API version v1beta"): Chuẩn hóa toàn bộ engine AI sang Google Gemini 2.0 Flash siêu tốc độ, ổn định và hỗ trợ 100% tài khoản Google AI Studio. Loại bỏ hoàn toàn các model đã bị Google đóng (1.5-pro) hoặc không tồn tại (3.8-flash).' },
+      { type: 'improved', text: 'Cơ chế tự động làm lành cấu hình đa tầng (Auto-Heal & Model Sanitizer Guard): Tự động phát hiện và chuyển đổi tức thì mọi model cũ lưu trong Firestore (config/ai_settings) hoặc cấu hình trình duyệt về Gemini 2.0 Flash trong bộ nhớ và tự động đồng bộ ngầm sửa dữ liệu trong cơ sở dữ liệu.' },
+      { type: 'improved', text: 'Chuỗi dự phòng thích ứng thông minh (Failover Cascade): Đặt Gemini 2.0 Flash lên ưu tiên hàng đầu, kèm theo các cấp dự phòng thứ cấp an toàn (Gemini 1.5 Flash -> Gemini 2.5 Flash -> Gemini 2.5 Flash-Lite). Sửa lỗi cú pháp thẻ đóng ẩn trong index.html, đảm bảo luồng AI giải thích đoạn trích và bài tập tự kiểm tra luôn phản hồi liền mạch.' }
+    ]
+  },
+  {
     version: 'v5.8.52',
     date: '2026-10-24T20:55:00+07:00',
     title: 'Thanh Trợ Lý AI Thu Nhỏ Hai Chiều Linh Hoạt (Bi-directional Smart Mini Pill Bar)',

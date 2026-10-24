@@ -2,17 +2,14 @@
 // Gộp toàn bộ API quản trị AI Google Gemini: Kho dự phòng đa khóa (Key Pool), Cài đặt, Giám sát, Kiểm tra & Danh sách Model
 const { verifyAdmin, recordAuditLog } = require('../../lib/admin-auth');
 const { encryptKey, decryptKey, maskApiKey } = require('../../lib/crypto');
-const { DEFAULT_MODELS, invalidateAiSettingsCache } = require('../../lib/call-ai');
+const { DEFAULT_MODELS, sanitizeGeminiModel, invalidateAiSettingsCache } = require('../../lib/call-ai');
 
 const FALLBACK_MODELS = {
   gemini: [
-    { id: 'gemini-3.8-flash', name: 'Gemini 3.8 Flash (Thế hệ mới 2026, siêu nhanh - Khuyên dùng)' },
-    { id: 'gemini-3.8-pro', name: 'Gemini 3.8 Pro (Mạnh mẽ, tư duy & suy luận sâu)' },
-    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Tốc độ cao)' },
-    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Phân tích chuyên sâu)' },
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Ổn định)' },
-    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Tối ưu chi phí)' },
-    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' }
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Khuyên dùng - Siêu nhanh, Chuẩn xác & Ổn định)' },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Tối ưu chi phí & Tương thích cao)' },
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Hybrid Reasoning - Tài khoản đủ điều kiện)' },
+    { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash-Lite (Tốc độ cao)' }
   ]
 };
 
@@ -395,11 +392,13 @@ module.exports = async function handler(req, res) {
 
       const settingsSnap = await db.doc('config/ai_settings').get();
       const settings = settingsSnap.exists ? settingsSnap.data() : {};
-      let model = (requestedModel && typeof requestedModel === 'string' && requestedModel.trim())
+      let rawModel = (requestedModel && typeof requestedModel === 'string' && requestedModel.trim())
         ? requestedModel.trim()
         : ((settings.models && settings.models.gemini && settings.models.gemini.fast) ||
            (DEFAULT_MODELS.gemini && DEFAULT_MODELS.gemini.fast) ||
-           'gemini-3.8-flash');
+           'gemini-2.0-flash');
+      let model = (typeof sanitizeGeminiModel === 'function') ? sanitizeGeminiModel(rawModel) : rawModel.replace(/^models\//, '');
+      if (model.includes('1.5-pro') || model.includes('3.8')) model = 'gemini-2.0-flash';
 
       let geminiOk = false;
       let lastRespMsg = '';
@@ -438,12 +437,11 @@ module.exports = async function handler(req, res) {
       // 2. Thử nghiệm generateContent thực tế
       if (!isInvalidError && !isQuotaError) {
         const preferredPriority = [
-          'gemini-3.8-flash',
-          'gemini-3.8-pro',
           model,
-          'gemini-2.5-flash',
           'gemini-2.0-flash',
-          'gemini-1.5-flash'
+          'gemini-1.5-flash',
+          'gemini-2.5-flash',
+          'gemini-2.5-flash-lite'
         ].filter(Boolean);
 
         const candidateModels = [
@@ -488,7 +486,7 @@ module.exports = async function handler(req, res) {
               // (Ví dụ: "models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.8-flash")
               const match = msg.match(/(?:models\/|use\s+models\/)([a-zA-Z0-9.\-_]+)/i);
               if (match && match[1]) {
-                const suggestedModel = match[1];
+                const suggestedModel = (typeof sanitizeGeminiModel === 'function') ? sanitizeGeminiModel(match[1]) : match[1];
                 if (!uniqueCandidates.includes(suggestedModel)) {
                   uniqueCandidates.splice(i + 1, 0, suggestedModel);
                 }
@@ -569,8 +567,8 @@ module.exports = async function handler(req, res) {
           priority: ['gemini'],
           models: {
             gemini: {
-              fast: (models && models.gemini && models.gemini.fast) || 'gemini-3.8-flash',
-              strong: (models && models.gemini && models.gemini.strong) || 'gemini-3.8-pro'
+              fast: sanitizeGeminiModel(models && models.gemini && models.gemini.fast),
+              strong: sanitizeGeminiModel(models && models.gemini && models.gemini.strong)
             }
           },
           autoFailover: typeof autoFailover === 'boolean' ? autoFailover : true,

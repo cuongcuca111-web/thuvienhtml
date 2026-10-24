@@ -2750,17 +2750,16 @@ async function renderAiTab(container) {
   };
 
   const availableGeminiModels = liveGeminiModels || [
-    { id: 'gemini-3.8-flash', name: 'Gemini 3.8 Flash (Thế hệ mới 2026, siêu nhanh - Khuyên dùng)' },
-    { id: 'gemini-3.8-pro', name: 'Gemini 3.8 Pro (Mạnh mẽ, tư duy & suy luận sâu)' },
-    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Tốc độ cao)' },
-    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Phân tích chuyên sâu)' },
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Ổn định)' },
-    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Tối ưu chi phí)' },
-    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' }
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Khuyên dùng - Siêu nhanh, Chuẩn xác & Ổn định)' },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Tối ưu chi phí & Tương thích cao)' },
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Hybrid Reasoning - Tài khoản đủ điều kiện)' },
+    { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash-Lite (Tốc độ cao)' }
   ];
 
-  const currentFastModel = (aiSettings.models && aiSettings.models.gemini && aiSettings.models.gemini.fast) || 'gemini-3.8-flash';
-  const currentStrongModel = (aiSettings.models && aiSettings.models.gemini && aiSettings.models.gemini.strong) || 'gemini-3.8-pro';
+  let currentFastModel = (aiSettings.models && aiSettings.models.gemini && aiSettings.models.gemini.fast) || 'gemini-2.0-flash';
+  let currentStrongModel = (aiSettings.models && aiSettings.models.gemini && aiSettings.models.gemini.strong) || 'gemini-2.0-flash';
+  if (currentFastModel.includes('1.5-pro') || currentFastModel.includes('3.8')) currentFastModel = 'gemini-2.0-flash';
+  if (currentStrongModel.includes('1.5-pro') || currentStrongModel.includes('3.8')) currentStrongModel = 'gemini-2.0-flash';
 
   const renderModelOptions = (modelsList, selectedValue) => {
     let hasSelected = false;
@@ -3366,8 +3365,8 @@ async function renderAiTab(container) {
           body: JSON.stringify({
             models: {
               gemini: {
-                fast: fastVal || 'gemini-3.8-flash',
-                strong: strongVal || 'gemini-3.8-pro'
+                fast: fastVal || 'gemini-2.0-flash',
+                strong: strongVal || 'gemini-2.0-flash'
               }
             },
             autoFailover: autoFailoverVal,
