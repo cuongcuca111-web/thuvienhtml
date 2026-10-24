@@ -54,10 +54,11 @@
       transition: top 0.15s ease-out, left 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out, opacity 0.3s ease;
     }
 
-    /* Chống vòng lặp phình chiều cao theo viewport iframe */
-    html, body {
-      min-height: 0 !important;
+    /* Chống vòng lặp phình chiều cao theo viewport iframe và triệt tiêu bẫy 100vh làm cụt bài đọc */
+    html, body, body > div, body > main, [class*="min-h-screen"], [class*="h-screen"], [class*="max-h-screen"] {
       height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
     }
     body {
       touch-action: manipulation;
@@ -956,13 +957,38 @@
 
   function getNativeBg() {
     try {
-      const bBg = window.getComputedStyle(document.body).backgroundColor;
-      const hBg = window.getComputedStyle(document.documentElement).backgroundColor;
-      const isTrans = v => !v || v === 'transparent' || v === 'rgba(0, 0, 0, 0)';
-      if (!isTrans(bBg)) return bBg;
-      if (!isTrans(hBg)) return hBg;
+      const isTrans = function(v) { return !v || v === 'transparent' || v === 'rgba(0, 0, 0, 0)'; };
+      if (document.body) {
+        const bBg = window.getComputedStyle(document.body).backgroundColor;
+        if (!isTrans(bBg)) return bBg;
+      }
+      if (document.documentElement) {
+        const hBg = window.getComputedStyle(document.documentElement).backgroundColor;
+        if (!isTrans(hBg)) return hBg;
+      }
+
+      // Quét các khối bọc con bên trong body để lấy màu nền thực tế (tránh lỗi nền trên container div)
+      const topChildren = document.body ? document.body.children : [];
+      for (let i = 0; i < Math.min(topChildren.length, 6); i++) {
+        const c = topChildren[i];
+        if (c.id === 'ann-layer' || c.id === '__bridge_sandbox_styles' || c.tagName === 'SCRIPT' || c.tagName === 'STYLE') continue;
+        const cBg = window.getComputedStyle(c).backgroundColor;
+        if (!isTrans(cBg)) return cBg;
+      }
+
+      // Kiểm tra độ sáng màu chữ của body: nếu chữ sáng thì bài học chắc chắn là giao diện tối (Dark Mode)
+      if (document.body) {
+        const bodyColor = window.getComputedStyle(document.body).color;
+        if (bodyColor) {
+          const rgb = bodyColor.match(/\d+/g);
+          if (rgb && rgb.length >= 3) {
+            const lum = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+            if (lum > 140) return '#070B14'; // Nền tối đặc trưng của Infographic / Dark theme
+          }
+        }
+      }
     } catch (_) {}
-    return '#FFFFFF';
+    return '';
   }
 
   // 2. Tự co giãn chiều cao (Auto-height) chuẩn xác & Đồng bộ vị trí khung
@@ -974,36 +1000,49 @@
     const html = document.documentElement;
     if (!body) return 300;
 
-    // Đo vị trí đáy phần tử con thấp nhất của body (loại trừ overlay và script/style)
-    let maxChildBottom = 0;
-    const children = body.children;
-    for (let i = 0; i < children.length; i++) {
-      const el = children[i];
-      if (el.id === 'ann-layer' || el.id === '__bridge_sandbox_styles' || el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
-      try {
-        const pos = window.getComputedStyle(el).position;
-        if (pos === 'fixed') continue;
-      } catch (_) {}
-      const rect = el.getBoundingClientRect();
-      const bottom = (rect.bottom || 0) + (window.scrollY || window.pageYOffset || 0);
-      if (bottom > maxChildBottom) {
-        maxChildBottom = bottom;
+    // 1. Quét sâu các phần tử con để tìm vị trí đáy thấp nhất thực tế
+    let maxDeepBottom = 0;
+    try {
+      const allEls = body.querySelectorAll('div, section, article, main, p, table, ul, ol, figure, footer, header, svg');
+      const count = Math.min(allEls.length, 300);
+      for (let i = 0; i < count; i++) {
+        const el = allEls[i];
+        if (el.id === 'ann-layer' || el.id === '__bridge_sandbox_styles') continue;
+        try {
+          if (window.getComputedStyle(el).position === 'fixed') continue;
+        } catch (_) {}
+        const rect = el.getBoundingClientRect();
+        const bottom = (rect.bottom || 0) + (window.scrollY || window.pageYOffset || 0);
+        if (bottom > maxDeepBottom) {
+          maxDeepBottom = bottom;
+        }
       }
-    }
+    } catch (_) {}
 
-    let h = 0;
-    if (maxChildBottom > 50) {
-      h = Math.ceil(maxChildBottom);
-      try {
-        const bStyle = window.getComputedStyle(body);
-        const pb = parseFloat(bStyle.paddingBottom) || 0;
-        const mb = parseFloat(bStyle.marginBottom) || 0;
-        h += Math.ceil(pb + mb);
-      } catch (_) {}
-    } else {
-      h = Math.ceil(Math.max(body.scrollHeight || 0, body.offsetHeight || 0, html ? html.scrollHeight : 0, 300));
-    }
-    return Math.max(h, 150);
+    // 2. Thu thập kích thước từ toàn bộ các nguồn đo của DOM
+    const bScrollH = body.scrollHeight || 0;
+    const bOffsetH = body.offsetHeight || 0;
+    const hScrollH = html ? html.scrollHeight : 0;
+    const hOffsetH = html ? html.offsetHeight : 0;
+
+    // Chiều cao nội dung là giá trị tối đa, không bao giờ bị cắt ngắn
+    let realH = Math.max(
+      maxDeepBottom,
+      bScrollH,
+      bOffsetH,
+      hScrollH,
+      hOffsetH,
+      200
+    );
+
+    try {
+      const bStyle = window.getComputedStyle(body);
+      const pb = parseFloat(bStyle.paddingBottom) || 0;
+      const mb = parseFloat(bStyle.marginBottom) || 0;
+      realH += Math.ceil(pb + mb);
+    } catch (_) {}
+
+    return Math.ceil(Math.max(realH, 150));
   }
 
   function sendHeight() {

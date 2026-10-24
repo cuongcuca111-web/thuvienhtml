@@ -1974,10 +1974,10 @@
     #iframeOuterContainer {
       position: relative;
       z-index: 2;
-      background-color: var(--bg-card, #FFFFFF);
+      background-color: transparent;
     }
     html.dark #iframeOuterContainer {
-      background-color: #161A20;
+      background-color: transparent;
     }
 
     /* HIỆU ỨNG VIỀN TRÊN & GÓC ĐỌNG TUYẾT TRÊN TẤT CẢ POPUP & MODAL (TOP & CORNER SNOW CAPS) */

@@ -2,7 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
-        version: 'v5.8.31',
+        version: 'v5.8.32',
+        date: '2026-10-24T15:55:00+07:00',
+        title: 'Khắc Phục Triệt Để Lỗi Bị Trắng Nửa Dưới Màn Hình Trong Khung Bài Đọc',
+        items: [
+          { type: 'fixed', text: 'Loại bỏ ép chiều cao tối thiểu 800px (sm:min-h-[calc(100vh-280px)]): Khung ngoài bài đọc (#iframeOuterContainer) nay tự động ôm khít chiều cao thực tế của bài học, loại bỏ hoàn toàn khoảng trống trắng thừa ở nửa dưới màn hình.' },
+          { type: 'fixed', text: 'Nhận diện màu nền thông minh & Chống cụt bài đọc: Tự động trích xuất màu nền từ các khối bọc con bên trong bài học và kiểm tra độ sáng màu chữ (Luminance) để gán màu nền đồng bộ (#070B14 / Dark Theme), triệt tiêu hiện tượng lệch pha nền trắng.' },
+          { type: 'improved', text: 'Tối ưu thuật toán đo chiều cao DOM toàn diện: Quét sâu vị trí đáy của tất cả các phần tử và hóa giải bẫy 100vh/min-h-screen trong iframe, đảm bảo toàn bộ nội dung bài học luôn hiển thị đầy đủ 100% không bị cắt cụt.' }
+        ]
+      },
+      {
+        version: 'v5.8.32',
         date: '2026-10-24T15:40:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Đóng Khung Tạm Thời Khi Tìm Kiếm Từ Khóa & AI',
         items: [
@@ -12,7 +22,7 @@ const CHANGELOG = [
         ]
       },
       {
-        version: 'v5.8.31',
+        version: 'v5.8.32',
         date: '2026-10-24T15:40:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Đóng Khung Tạm Thời Khi Tìm Kiếm Từ Khóa & AI',
         items: [
@@ -22,7 +32,7 @@ const CHANGELOG = [
         ]
       },
       {
-        version: 'v5.8.31',
+        version: 'v5.8.32',
         date: '2026-10-24T15:40:00+07:00',
         title: 'Khắc Phục Triệt Để Lỗi Đóng Khung Tạm Thời Khi Tìm Kiếm Từ Khóa & AI',
         items: [
