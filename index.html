@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.56"></script>
+  <script src="./changelog.js?v=5.8.57"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.56',
+        version: 'v5.8.57',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.56';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.57';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.56">
-  <script src="./bridge.js?v=5.8.56"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.57">
+  <script src="./bridge.js?v=5.8.57"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.56 • build 24/10/2026 21:35</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.57 • build 24/10/2026 22:15</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3224,7 +3224,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.56</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.57</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3246,7 +3246,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.56 • build 24/10/2026 21:35</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.57 • build 24/10/2026 22:15</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3589,9 +3589,14 @@
             <span>Đã lưu</span>
           </span>
         </div>
-        <button id="btnCloseAiPopover" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng kết quả AI" title="Đóng">
-          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
-        </button>
+        <div class="flex items-center gap-0.5 shrink-0">
+          <button id="btnMinimizeAiPopover" type="button" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Thu nhỏ" title="Thu nhỏ (để dễ xem văn bản xung quanh)">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <button id="btnCloseAiPopover" type="button" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng kết quả AI" title="Đóng">
+            <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
       </div>
 
       <!-- Selected text quote snippet -->
@@ -6642,8 +6647,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.56</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.56</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.57</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.57</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -35687,7 +35692,7 @@
         `;
         badgeEl.innerHTML = `
           <span class="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-500/12 dark:bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded-full select-none">
-            <span>✓ Đã xong</span>
+            <span>✓ Đã xong (Nhấp để xem)</span>
           </span>
         `;
       } else if (currentAiStatus === 'error') {
@@ -35780,6 +35785,30 @@
 
       const headerEl = document.querySelector('header') || document.getElementById('mainHeader');
       const headerSafeTop = headerEl ? Math.max(56, headerEl.getBoundingClientRect().bottom + 8) : 60;
+
+      // Trong lúc đang chờ phản hồi AI: TỰ ĐỘNG THU GỌN thành Mini Pill Bar ở đáy để người dùng thoải mái xem nội dung xung quanh
+      if (currentAiStatus === 'generating') {
+        popover.classList.add('is-minimized', 'is-minimized-bottom');
+        popover.classList.remove('is-minimized-top');
+        updateAiMiniStatusUI('bottom');
+
+        const miniW = Math.min(380, viewportW - 24);
+        let miniLeft = Math.max(minLeft, Math.round((viewportW - miniW) / 2));
+        if (typeof window._aiPopoverDragOffsetX === 'number' && window._aiPopoverDragOffsetX !== 0) {
+          miniLeft = Math.max(minLeft, Math.min(viewportW - miniW - 12, miniLeft + window._aiPopoverDragOffsetX));
+        }
+
+        const miniTop = Math.round(viewportH - 24 - 44);
+        popover.style.setProperty('position', 'fixed', 'important');
+        popover.style.setProperty('top', miniTop + 'px', 'important');
+        popover.style.setProperty('left', Math.round(miniLeft) + 'px', 'important');
+        popover.style.setProperty('width', miniW + 'px', 'important');
+        popover.style.setProperty('height', '44px', 'important');
+        popover.style.removeProperty('bottom');
+        popover.style.removeProperty('right');
+        popover.style.removeProperty('transform');
+        return;
+      }
 
       // KIỂM TRA ĐIỀU KIỆN TỰ ĐỘNG THU NHỎ KHI CUỘN TRANG (CẢ CUỘN LÊN VÀ CUỘN XUỐNG) KÈM HYSTERESIS CHỐNG GIẬT:
       const wasMinimized = popover.classList.contains('is-minimized');
@@ -35998,7 +36027,7 @@
       window.addEventListener('pointerup', onPointerUp, { passive: true });
     }
 
-    function showAiResultPopover(mode, triggerRect) {
+    function showAiResultPopover(mode, triggerRect, options = {}) {
       const popover = document.getElementById('aiResultPopover');
       if (!popover) return;
 
@@ -36006,10 +36035,17 @@
       currentAiTriggerRect = triggerRect;
       window._aiPopoverDragOffsetX = 0;
       window._aiPopoverDragOffsetY = 0;
+      const isAutoMin = Boolean(options && options.autoMinimize);
+
       if (popover) {
-        popover.classList.remove('is-minimized', 'is-minimized-top', 'is-minimized-bottom');
-        popover.style.removeProperty('bottom');
-        popover.style.bottom = 'auto';
+        if (isAutoMin) {
+          popover.classList.add('is-minimized', 'is-minimized-bottom');
+          popover.classList.remove('is-minimized-top', 'is-morphing');
+        } else {
+          popover.classList.remove('is-minimized', 'is-minimized-top', 'is-minimized-bottom');
+          popover.style.removeProperty('bottom');
+          popover.style.bottom = 'auto';
+        }
       }
 
       const bridgeInfo = currentSelectionInfoBridge || window._lastValidSelectionBridge;
@@ -36061,7 +36097,11 @@
       const hlToolbar = document.getElementById('highlightFloatingToolbar');
       if (hlToolbar) hlToolbar.classList.add('hidden');
 
-      popover.classList.remove('is-minimized');
+      if (isAutoMin) {
+        popover.classList.add('is-minimized', 'is-minimized-bottom');
+      } else {
+        popover.classList.remove('is-minimized');
+      }
       popover.classList.add('no-transition');
       popover.classList.remove('hidden');
       positionAiPopover(triggerRect);
@@ -36222,7 +36262,31 @@
       html += '</div>';
 
       bodyEl.innerHTML = html;
-      reclampAiPopoverPosition();
+
+      // KIỂM TRA TỰ ĐỘNG BUNG MỞ (AUTO-EXPAND):
+      // Nếu popover đang thu nhỏ (do autoMinimize lúc chờ câu trả lời):
+      // Kiểm tra xem vị trí bôi đen có đang nằm trong tầm mắt (viewport) không.
+      const popover = document.getElementById('aiResultPopover');
+      if (popover && popover.classList.contains('is-minimized')) {
+        const rect = getEffectiveAiTriggerRect(currentAiTriggerRect);
+        const headerEl = document.querySelector('header') || document.getElementById('mainHeader');
+        const headerSafeTop = headerEl ? Math.max(56, headerEl.getBoundingClientRect().bottom + 8) : 60;
+        const isInViewport = rect && (rect.top >= headerSafeTop - 20) && (rect.bottom <= window.innerHeight - 50);
+
+        if (isInViewport) {
+          // Người đọc vẫn đang ở đoạn văn được chọn: Tự động bung mở êm ái 60fps GPU Morphing!
+          triggerAiMorphing(popover);
+          popover.classList.remove('is-minimized', 'is-minimized-top', 'is-minimized-bottom');
+          scheduleAiPopoverReposition();
+        } else {
+          // Người đọc đã cuộn đi xa: Giữ nguyên Mini Pill Bar, cập nhật nhãn "✓ Đã xong (Nhấp để xem)"
+          if (typeof updateAiMiniStatusUI === 'function') {
+            updateAiMiniStatusUI(popover.classList.contains('is-minimized-bottom') ? 'bottom' : 'top');
+          }
+        }
+      } else {
+        reclampAiPopoverPosition();
+      }
     }
 
     function renderAiError(errMsg, forceBypass = true) {
@@ -36438,14 +36502,11 @@
         localStorage.setItem('ai_translate_target_lang', currentAiTargetLang);
       }
 
-      showAiResultPopover(mode, triggerRect);
-      currentAiStatus = 'generating';
-      if (typeof updateAiMiniStatusUI === 'function') updateAiMiniStatusUI();
-
       // Kiểm tra bộ nhớ đệm phía trình duyệt (Client Cache): Phục hồi tức thì 0ms, không tốn thêm token hay lượt gọi nào
       const clientCacheKey = `${mode}:${activeStyle || ''}:${currentAiTargetLang || ''}:${text.trim().toLowerCase()}`;
+      let cachedItem = null;
       if (!bypassCache) {
-        let cachedItem = clientAiCache.get(clientCacheKey);
+        cachedItem = clientAiCache.get(clientCacheKey);
         if (!cachedItem) {
           const stored = getStoredAiCache();
           if (stored && stored[clientCacheKey]) {
@@ -36453,12 +36514,21 @@
             clientAiCache.set(clientCacheKey, cachedItem);
           }
         }
-        if (cachedItem && cachedItem.text && cachedItem.text.length >= 10) {
-          cachedItem.cached = true;
-          currentAiLastResult = cachedItem;
-          renderAiSuccessResult(cachedItem);
-          return;
-        }
+      }
+
+      const hasValidCache = !bypassCache && cachedItem && cachedItem.text && cachedItem.text.length >= 10;
+
+      // Nếu có cache: mở trực tiếp popover đầy đủ
+      // Nếu chưa có cache (đang chờ AI trả lời): TỰ ĐỘNG THU GỌN thành Mini Pill Bar ở đáy để người dùng thoải mái đọc tiếp nội dung xung quanh!
+      showAiResultPopover(mode, triggerRect, { autoMinimize: !hasValidCache });
+      currentAiStatus = 'generating';
+      if (typeof updateAiMiniStatusUI === 'function') updateAiMiniStatusUI('bottom');
+
+      if (hasValidCache) {
+        cachedItem.cached = true;
+        currentAiLastResult = cachedItem;
+        renderAiSuccessResult(cachedItem);
+        return;
       }
 
       // // FIX-4: Nâng cấp Skeleton UI 2 phần mô phỏng kết quả thực tế, ổn định chiều cao và tự đổi thông điệp sau 3s
@@ -36773,6 +36843,22 @@
 
       if (btnClose) {
         btnClose.addEventListener('click', () => closeAiResultPopover());
+      }
+
+      const btnMinimize = document.getElementById('btnMinimizeAiPopover');
+      if (btnMinimize) {
+        btnMinimize.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const pop = document.getElementById('aiResultPopover');
+          if (pop) {
+            triggerAiMorphing(pop);
+            pop.classList.add('is-minimized', 'is-minimized-bottom');
+            pop.classList.remove('is-minimized-top');
+            updateAiMiniStatusUI('bottom');
+            positionAiPopover();
+          }
+        });
       }
 
       if (btnCopy) {

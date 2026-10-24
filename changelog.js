@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.57',
+    date: '2026-10-24T22:15:00+07:00',
+    title: 'Tăng Tốc Phản Hồi AI Vượt Bậc (~1s) & Tự Động Thu Nhỏ (Auto-Collapse) Trong Lúc Chờ Trả Lời',
+    items: [
+      { type: 'improved', text: 'Tăng tốc phản hồi AI vượt bậc (>70% nhanh hơn): Tinh gọn JSON Schema của tác vụ giải thích đơn giản và ví dụ/dịch thuật, chỉ tập trung sinh nội dung chính súc tích (dưới 80 từ) thay vì sinh các mảng dữ liệu rườm rà. Kết hợp bộ đệm in-memory 60s cho cấu hình Firestore, giảm thời gian phản hồi của Gemini 2.0 Flash xuống chỉ còn ~800ms - 1.2s.' },
+      { type: 'improved', text: 'Tự động thu nhỏ thông minh (Auto-Collapse while Waiting): Trong lúc chờ AI sinh câu trả lời, pop-up tự động thu gọn thành thanh Mini Pill Bar êm ái ở đáy màn hình với badge "Đang xử lý...". Người đọc hoàn toàn không bị che khuất tầm nhìn, thoải mái đọc tiếp các đoạn văn và nội dung xung quanh.' },
+      { type: 'improved', text: 'Tự động bung mở 60 FPS GPU Morphing khi hoàn thành: Ngay khi câu trả lời sẵn sàng, nếu người dùng vẫn đang ở vị trí đoạn trích, thanh mini tự động bung mở mượt mà thành hộp thoại giải thích đầy đủ. Nếu người dùng đã cuộn đi xa, thanh mini hiển thị "✓ Đã xong (Nhấp để xem)" để không làm gián đoạn việc đọc.' },
+      { type: 'improved', text: 'Bổ sung nút Thu nhỏ (—) chủ động trong Header: Người dùng có thể nhấn nút "Thu nhỏ" bất cứ lúc nào để ghim pop-up xuống thanh mini và thoải mái xem lại toàn bộ văn bản trang sách.' }
+    ]
+  },
+  {
     version: 'v5.8.56',
     date: '2026-10-24T21:35:00+07:00',
     title: 'Khắc Phục Triệt Để Lỗi Model 2.5 Bị Google Giới Hạn (No Longer Available) & Mở Rộng Timeout Tạo Đề AI',

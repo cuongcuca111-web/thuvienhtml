@@ -85,6 +85,29 @@ function extractExplanationText(data, rawText) {
   return cleaned;
 }
 
+// Cache cấu hình prompts tùy chỉnh trong bộ nhớ (TTL: 60 giây) để giảm độ trễ truy vấn Firestore
+let _cachedCustomPrompts = null;
+let _cachedCustomPromptsExpiry = 0;
+async function getCachedCustomPrompts(db) {
+  const now = Date.now();
+  if (_cachedCustomPrompts && now < _cachedCustomPromptsExpiry) {
+    return _cachedCustomPrompts;
+  }
+  try {
+    const settingsSnap = await db.doc('config/ai_settings').get();
+    if (settingsSnap.exists) {
+      _cachedCustomPrompts = settingsSnap.data().prompts || {};
+    } else {
+      _cachedCustomPrompts = {};
+    }
+    _cachedCustomPromptsExpiry = now + 60000;
+  } catch (cfgErr) {
+    console.warn('Lỗi đọc custom prompts:', cfgErr.message);
+    if (!_cachedCustomPrompts) _cachedCustomPrompts = {};
+  }
+  return _cachedCustomPrompts;
+}
+
 // Kho từ điển thuật ngữ tích hợp sẵn (Instant Built-in Lexicon)
 // Trả kết quả 0ms, 0 Token, 0 Quota cho các từ vựng và khái niệm phổ biến nhất
 const BUILTIN_LEXICON = require('../../lib/ai-lexicon.json');
@@ -235,13 +258,10 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // Đọc cài đặt prompt tùy chỉnh từ Firestore (nếu quản trị viên đã cấu hình)
+    // Đọc cài đặt prompt tùy chỉnh từ Firestore (có cache in-memory 60s để giảm độ trễ)
     let customPrompts = {};
     try {
-      const settingsSnap = await db.doc('config/ai_settings').get();
-      if (settingsSnap.exists) {
-        customPrompts = settingsSnap.data().prompts || {};
-      }
+      customPrompts = await getCachedCustomPrompts(db);
     } catch (cfgErr) {
       console.warn('Lỗi đọc custom prompts:', cfgErr.message);
     }
@@ -264,8 +284,8 @@ module.exports = async function handler(req, res) {
 
     const DEFAULT_PROMPTS = {
       explain: `[YÊU CẦU: GIẢI THÍCH TRỰC TIẾP, BÁM SÁT BÀI HỌC]
-- Giải thích trực tiếp, ngắn gọn bản chất ý nghĩa của đoạn trích <selected_text> (trong 2 đến 3 câu văn).
-- Mục 'terms' để mảng rỗng []. Tập trung toàn bộ lời giải thích vào mục 'text'.`,
+- Giải thích trực tiếp, ngắn gọn bản chất ý nghĩa của đoạn trích <selected_text> (trong 2 đến 3 câu văn, dưới 80 từ).
+- Trả lời súc tích, đi thẳng vào trọng tâm, không giải thích vòng vo.`,
 
       example: `[YÊU CẦU: CHO VÍ DỤ MINH HỌA]
 - Đưa ra 1 ví dụ thực tế súc tích (1-2 câu) bám sát kiến thức trong <selected_text>.
@@ -386,7 +406,14 @@ module.exports = async function handler(req, res) {
     // 5. Chuẩn bị Prompt siêu tối ưu Token: Phân nhánh từ vựng ngắn (Short Term) vs Đoạn văn dài
     let systemPrompt = '';
     let userPrompt = '';
-    let optimalMaxTokens = 450;
+    let optimalMaxTokens = 300;
+    if (mode === 'explain') {
+      optimalMaxTokens = 260;
+    } else if (mode === 'example' || mode === 'translate') {
+      optimalMaxTokens = 220;
+    } else if (mode === 'flashcard' || mode === 'quiz') {
+      optimalMaxTokens = 450;
+    }
 
     if (isShortTerm) {
       // Prompt siêu tinh gọn cho từ vựng cơ bản: Tiết kiệm >90% token
@@ -591,25 +618,7 @@ ${rawText}
       type: 'object',
       properties: {
         mode: { type: 'string' },
-        text: { type: 'string', description: 'Nội dung giải thích chính, hoặc ví dụ, hoặc bản dịch' },
-        terms: {
-          type: 'array',
-          description: 'Danh sách tối đa 3 thuật ngữ kèm giải thích nghĩa',
-          items: {
-            type: 'object',
-            properties: {
-              term: { type: 'string' },
-              meaning: { type: 'string' }
-            },
-            required: ['term', 'meaning']
-          }
-        },
-        examples: {
-          type: 'array',
-          description: 'Danh sách các ví dụ minh họa',
-          items: { type: 'string' }
-        },
-        targetLang: { type: 'string' }
+        text: { type: 'string', description: 'Nội dung trả lời trực tiếp súc tích, dễ hiểu' }
       },
       required: ['mode', 'text']
     };
