@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.35"></script>
+  <script src="./changelog.js?v=5.8.36"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.35',
+        version: 'v5.8.36',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -202,7 +202,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.35';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.36';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -616,8 +616,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.35">
-  <script src="./bridge.js?v=5.8.35"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.36">
+  <script src="./bridge.js?v=5.8.36"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2324,7 +2324,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.35 • build 24/10/2026 16:32</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.36 • build 24/10/2026 17:00</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3113,7 +3113,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.35</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.36</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3135,7 +3135,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.35 • build 24/10/2026 16:32</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.36 • build 24/10/2026 17:00</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3427,15 +3427,15 @@
     </button>
   </div>
 
-  <!-- Popover & Bottom Sheet Hiển thị Kết quả AI -->
-  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-[85] bg-black/40 backdrop-blur-xs transition-opacity duration-200"></div>
-  <div id="aiResultPopover" class="hidden fixed z-[90] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-all duration-150 select-none overflow-hidden
-       w-full sm:w-[480px] max-w-[calc(100vw-32px)] max-h-[85dvh] sm:max-h-[calc(100vh-84px)] bottom-0 sm:bottom-auto sm:top-auto sm:left-auto">
-    <!-- Thanh kéo Mobile Drag Handle -->
-    <div class="sm:hidden w-12 h-1 bg-[#E7E5DF] dark:border-[#262C36] rounded-full mx-auto my-2 shrink-0"></div>
+  <!-- Popover Hiển thị Kết quả AI Thông Minh Theo Vùng Chọn -->
+  <div id="aiResultBackdrop" class="hidden fixed inset-0 z-[85] bg-black/20 pointer-events-none transition-opacity duration-200"></div>
+  <div id="aiResultPopover" class="hidden fixed z-[90] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] border border-[#E7E5DF] dark:border-[#262C36] shadow-2xl rounded-2xl flex flex-col transition-opacity duration-150 select-none overflow-hidden
+       w-full sm:w-[480px] max-w-[calc(100vw-24px)] max-h-[calc(100vh-80px)] top-0 left-0">
+    <!-- Thanh kéo Drag Handle -->
+    <div id="aiPopoverDragBar" class="w-12 h-1 bg-[#E7E5DF] dark:bg-[#262C36] rounded-full mx-auto my-2 shrink-0 cursor-grab active:cursor-grabbing hover:bg-stone-300 dark:hover:bg-stone-600 transition" title="Kéo để di chuyển pop-up"></div>
     
     <!-- Header -->
-    <div class="px-4 py-3 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 shrink-0">
+    <div id="aiPopoverHeader" class="px-4 py-3 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-2 shrink-0 cursor-grab active:cursor-grabbing">
       <div class="flex items-center gap-2 min-w-0">
         <div id="aiHeaderIcon" class="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
@@ -6099,8 +6099,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.35</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.35</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.36</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.36</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -16793,7 +16793,7 @@
     }
     window.repositionSelectionToolbar = repositionSelectionToolbar;
 
-    // Đồng bộ vị trí thanh nổi khi trang cha cuộn hoặc thay đổi kích thước
+    // Đồng bộ vị trí thanh nổi và popover AI khi trang cha cuộn hoặc thay đổi kích thước
     let _parentScrollRaf = null;
     const _handleParentScrollOrResize = () => {
       if (_parentScrollRaf) return;
@@ -16802,10 +16802,15 @@
         if (currentSelectionInfoBridge && currentSelectionInfoBridge.rect) {
           repositionSelectionToolbar(currentSelectionInfoBridge.rect);
         }
+        const aiPop = document.getElementById('aiResultPopover');
+        if (aiPop && !aiPop.classList.contains('hidden') && typeof positionAiPopover === 'function') {
+          positionAiPopover();
+        }
       });
     };
     window.addEventListener('scroll', _handleParentScrollOrResize, { passive: true, capture: true });
     window.addEventListener('resize', _handleParentScrollOrResize, { passive: true });
+    document.getElementById('readingArea')?.addEventListener('scroll', _handleParentScrollOrResize, { passive: true });
 
     // Tự động đóng thanh công cụ khi người dùng click/chạm ra vị trí khác ngoài thanh công cụ
     document.addEventListener('pointerdown', (e) => {
@@ -16814,7 +16819,7 @@
       if (hlToolbar && hlToolbar.classList.contains('hidden') && (!mbActionBar || mbActionBar.classList.contains('hidden'))) {
         return;
       }
-      if (e.target.closest('#highlightFloatingToolbar, #highlightToolbar, #mobileSelectionActionBar, #aiExplainModal, #aiInlineExplainModal, #aiAssistantPopover, #mobileAiMenuPopup, .modal-animated, .custom-color-picker-dialog, #wrapCustomColorBtn, .color-swatch-popover')) {
+      if (e.target.closest('#highlightFloatingToolbar, #highlightToolbar, #mobileSelectionActionBar, #aiExplainModal, #aiInlineExplainModal, #aiAssistantPopover, #aiResultPopover, #mobileAiMenuPopup, .modal-animated, .custom-color-picker-dialog, #wrapCustomColorBtn, .color-swatch-popover')) {
         return;
       }
       clearAllSelectionContexts();
@@ -17095,11 +17100,11 @@
         }
 
         case 'SELECTION_SCROLLED': {
-          if (currentSelectionInfoBridge && msg.rect) {
-            currentSelectionInfoBridge.rect = msg.rect;
-            if (window._lastValidSelectionBridge) {
-              window._lastValidSelectionBridge.rect = msg.rect;
-            }
+          const activeSel = currentSelectionInfoBridge || window._aiTargetSelection;
+          if (activeSel && msg.rect) {
+            if (currentSelectionInfoBridge) currentSelectionInfoBridge.rect = msg.rect;
+            if (window._lastValidSelectionBridge) window._lastValidSelectionBridge.rect = msg.rect;
+            if (window._aiTargetSelection) window._aiTargetSelection.rect = msg.rect;
             try {
               const ifr = iframe || document.getElementById('lessonIframe');
               const ifrRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
@@ -17112,6 +17117,10 @@
               };
             } catch (_) {}
             repositionSelectionToolbar(msg.rect, iframe);
+            const aiPop = document.getElementById('aiResultPopover');
+            if (aiPop && !aiPop.classList.contains('hidden') && typeof positionAiPopover === 'function') {
+              positionAiPopover(currentAiTriggerRect);
+            }
           }
           break;
         }
@@ -17132,6 +17141,7 @@
             frameId: msg.intersectingFrameId || null
           };
           window._lastValidSelectionBridge = { ...currentSelectionInfoBridge };
+          window._aiTargetSelection = { ...currentSelectionInfoBridge };
           currentAiSelectedText = msg.text || '';
           window._lastCapturedSelectionOffsets = null;
           activeHighlightItem = null;
@@ -17160,11 +17170,16 @@
           const hlToolbar = document.getElementById('highlightFloatingToolbar') || document.getElementById('highlightToolbar');
           const mbActionBar = document.getElementById('mobileSelectionActionBar');
           const hlModal = document.getElementById('highlightDetailModal');
+          const aiPop = document.getElementById('aiResultPopover');
+          const isAiOpen = aiPop && !aiPop.classList.contains('hidden');
           const isModalOpen = hlModal && !hlModal.classList.contains('hidden');
           const isInteractingWithToolbar = (hlToolbar && (hlToolbar.matches(':hover') || hlToolbar.contains(document.activeElement))) ||
-                                           (mbActionBar && (mbActionBar.matches(':hover') || mbActionBar.contains(document.activeElement)));
+                                           (mbActionBar && (mbActionBar.matches(':hover') || mbActionBar.contains(document.activeElement))) ||
+                                           (isAiOpen && (aiPop.matches(':hover') || aiPop.contains(document.activeElement)));
           if (!isInteractingWithToolbar) {
-            currentSelectionInfoBridge = null;
+            if (!isAiOpen) {
+              currentSelectionInfoBridge = null;
+            }
             if (!isModalOpen) {
               activeHighlightItem = null;
             }
@@ -34872,87 +34887,144 @@
       return hasVietnamese ? 'English' : 'Tiếng Việt';
     }
 
-    function positionAiPopover(triggerRect) {
+    // Lưu trữ thông tin vùng chọn AI và độ lệch kéo thủ công
+    window._aiTargetSelection = null;
+    window._aiPopoverDragOffsetX = 0;
+    window._aiPopoverDragOffsetY = 0;
+
+    function getEffectiveAiTriggerRect(rectParam = null) {
+      if (rectParam && typeof rectParam.top === 'number' && typeof rectParam.bottom === 'number') {
+        return rectParam;
+      }
+      const bridgeInfo = currentSelectionInfoBridge || window._aiTargetSelection || window._lastValidSelectionBridge;
+      if (bridgeInfo && bridgeInfo.rect) {
+        const ifr = document.getElementById('lessonIframe');
+        const ifrRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
+        return {
+          top: ifrRect.top + bridgeInfo.rect.top,
+          bottom: ifrRect.top + bridgeInfo.rect.bottom,
+          left: ifrRect.left + bridgeInfo.rect.left,
+          right: ifrRect.left + (bridgeInfo.rect.right || (bridgeInfo.rect.left + (bridgeInfo.rect.width || 0))),
+          width: bridgeInfo.rect.width || 0,
+          height: bridgeInfo.rect.height || 0
+        };
+      }
+      if (currentSelectionInfo && currentSelectionInfo.range) {
+        try {
+          const r = currentSelectionInfo.range.getBoundingClientRect();
+          return {
+            top: r.top,
+            bottom: r.bottom,
+            left: r.left,
+            right: r.right,
+            width: r.width,
+            height: r.height
+          };
+        } catch (_) {}
+      }
+      if (currentSelectionInfo && currentSelectionInfo.rect) {
+        return currentSelectionInfo.rect;
+      }
+      if (currentAiTriggerRect && typeof currentAiTriggerRect.top === 'number') {
+        return currentAiTriggerRect;
+      }
+      return null;
+    }
+
+    function positionAiPopover(triggerRectParam = null) {
       const popover = document.getElementById('aiResultPopover');
       const backdrop = document.getElementById('aiResultBackdrop');
-      if (!popover) return;
-      popover.style.setProperty('position', 'fixed', 'important');
+      if (!popover || popover.classList.contains('hidden')) return;
 
-      const isDesktop = window.innerWidth >= 640;
+      // Không hiển thị backdrop tối màn hình để người dùng luôn đọc được bài gốc khi xem giải thích
+      if (backdrop) backdrop.classList.add('hidden');
+
+      const rect = getEffectiveAiTriggerRect(triggerRectParam);
+      if (rect) currentAiTriggerRect = rect;
+
       const viewportW = window.innerWidth;
       const viewportH = window.innerHeight;
 
-      if (!isDesktop) {
-        // Chế độ Bottom Sheet cố định chuẩn mực cho màn hình nhỏ / điện thoại
-        if (backdrop) backdrop.classList.remove('hidden');
-        popover.style.removeProperty('top');
-        popover.style.removeProperty('transform');
-        popover.style.bottom = '0px';
-        popover.style.left = '0px';
-        popover.style.right = '0px';
-        popover.style.width = '100%';
-        popover.style.maxWidth = '100vw';
-        popover.style.maxHeight = 'calc(100dvh - 56px)';
-        return;
-      }
-
-      // Chế độ Desktop (>= 640px): Tự động căn chỉnh thông minh, không bao giờ tràn màn hình hay trôi đáy
-      const popoverW = Math.min(480, viewportW - 32);
+      // Chiều rộng linh hoạt (tối đa 480px, tự động co giãn vừa vặn trên điện thoại và màn hình nhỏ)
+      const popoverW = Math.min(480, viewportW - 24);
+      popover.style.setProperty('position', 'fixed', 'important');
       popover.style.width = popoverW + 'px';
-      popover.style.maxWidth = 'calc(100vw - 32px)';
-      popover.style.maxHeight = 'calc(100vh - 84px)';
+      popover.style.maxWidth = 'calc(100vw - 24px)';
+      popover.style.maxHeight = 'calc(100vh - 80px)';
       popover.style.removeProperty('bottom');
       popover.style.removeProperty('right');
       popover.style.removeProperty('transform');
 
-      // Vùng an toàn với sidebar mục lục bên trái
+      // Vùng an toàn với sidebar
       const mainSidebar = document.getElementById('mainSidebar');
-      let minLeft = 16;
+      let minLeft = 12;
       if (mainSidebar && !mainSidebar.classList.contains('-translate-x-full')) {
         const sRect = mainSidebar.getBoundingClientRect();
         if (sRect.right > 0 && sRect.right < viewportW / 2) {
-          minLeft = Math.max(minLeft, sRect.right + 16);
+          minLeft = Math.max(minLeft, sRect.right + 12);
         }
       }
-      const maxLeft = Math.max(minLeft, viewportW - popoverW - 16);
+      const maxLeft = Math.max(minLeft, viewportW - popoverW - 12);
 
-      // Chiều cao thực tế của popover
-      const popoverH = Math.min(viewportH - 84, Math.max(280, popover.offsetHeight || 380));
-      const headerSafeTop = 64; // Dưới top header chính
-      const maxSafeTop = Math.max(headerSafeTop, viewportH - popoverH - 16);
+      const headerEl = document.querySelector('header') || document.getElementById('mainHeader');
+      const headerSafeTop = headerEl ? Math.max(56, headerEl.getBoundingClientRect().bottom + 8) : 60;
+      const popoverH = Math.min(viewportH - headerSafeTop - 16, Math.max(260, popover.offsetHeight || 380));
+      const maxSafeTop = Math.max(headerSafeTop, viewportH - popoverH - 12);
 
-      const validRect = (triggerRect && typeof triggerRect.top === 'number' && typeof triggerRect.bottom === 'number');
-
-      if (validRect) {
-        if (backdrop) backdrop.classList.add('hidden');
-
-        // Thử đặt BÊN DƯỚI đoạn bôi đen
-        let top = triggerRect.bottom + 12;
-        const fitsBelow = (top + popoverH <= viewportH - 16);
-        const fitsAbove = (triggerRect.top - 12 - popoverH >= headerSafeTop);
+      if (rect && typeof rect.top === 'number' && typeof rect.bottom === 'number') {
+        // Luôn bám sát vị trí đoạn bôi đen ("đi theo chỗ tôi bôi đen")
+        let top = rect.bottom + 10;
+        const fitsBelow = (top + popoverH <= viewportH - 12);
+        const fitsAbove = (rect.top - 10 - popoverH >= headerSafeTop);
 
         if (!fitsBelow && fitsAbove) {
-          top = triggerRect.top - popoverH - 12;
+          // Nếu không đủ chỗ phía dưới, lật lên phía trên đoạn bôi đen
+          top = rect.top - popoverH - 10;
         } else if (!fitsBelow && !fitsAbove) {
-          // Cả trên lẫn dưới đều quá chật -> Căn giữa khoảng an toàn
-          top = Math.round(headerSafeTop + (viewportH - headerSafeTop - 16 - popoverH) / 2);
+          // Nếu cả trên và dưới đều chật, chọn phía có nhiều không gian hơn
+          const spaceBelow = viewportH - rect.bottom;
+          const spaceAbove = rect.top - headerSafeTop;
+          if (spaceBelow >= spaceAbove) {
+            top = Math.min(rect.bottom + 10, maxSafeTop);
+          } else {
+            top = Math.max(headerSafeTop, rect.top - popoverH - 10);
+          }
         }
 
         top = Math.max(headerSafeTop, Math.min(maxSafeTop, top));
 
-        let left = triggerRect.left + (triggerRect.width / 2) - (popoverW / 2);
+        // Căn giữa theo chiều ngang của vùng bôi đen
+        let left = rect.left + (rect.width / 2) - (popoverW / 2);
         left = Math.max(minLeft, Math.min(maxLeft, left));
 
-        popover.style.top = Math.round(top) + 'px';
-        popover.style.left = Math.round(left) + 'px';
-      } else {
-        // Nếu không có triggerRect -> Căn giữa màn hình đọc sách với backdrop nhẹ
-        if (backdrop) backdrop.classList.remove('hidden');
-        const left = Math.max(minLeft, Math.round(minLeft + (viewportW - minLeft - popoverW) / 2));
-        const top = Math.max(headerSafeTop, Math.round(headerSafeTop + (viewportH - headerSafeTop - popoverH) / 2));
+        // Cộng thêm độ lệch nếu người dùng chủ động kéo popover
+        if (typeof window._aiPopoverDragOffsetX === 'number' && window._aiPopoverDragOffsetX !== 0) {
+          left = Math.max(minLeft, Math.min(maxLeft, left + window._aiPopoverDragOffsetX));
+        }
+        if (typeof window._aiPopoverDragOffsetY === 'number' && window._aiPopoverDragOffsetY !== 0) {
+          top = Math.max(headerSafeTop, Math.min(maxSafeTop, top + window._aiPopoverDragOffsetY));
+        }
 
         popover.style.top = Math.round(top) + 'px';
         popover.style.left = Math.round(left) + 'px';
+        popover.style.bottom = 'auto';
+        popover.style.right = 'auto';
+      } else {
+        // Fallback khi chưa có tọa độ vùng chọn: Căn giữa màn hình an toàn
+        let left = Math.max(minLeft, Math.round(minLeft + (viewportW - minLeft - popoverW) / 2));
+        let top = Math.max(headerSafeTop, Math.round(headerSafeTop + (viewportH - headerSafeTop - popoverH) / 2));
+
+        if (typeof window._aiPopoverDragOffsetX === 'number' && window._aiPopoverDragOffsetX !== 0) {
+          left = Math.max(minLeft, Math.min(maxLeft, left + window._aiPopoverDragOffsetX));
+        }
+        if (typeof window._aiPopoverDragOffsetY === 'number' && window._aiPopoverDragOffsetY !== 0) {
+          top = Math.max(headerSafeTop, Math.min(maxSafeTop, top + window._aiPopoverDragOffsetY));
+        }
+
+        popover.style.top = Math.round(top) + 'px';
+        popover.style.left = Math.round(left) + 'px';
+        popover.style.bottom = 'auto';
+        popover.style.right = 'auto';
       }
     }
     window.positionAiPopover = positionAiPopover;
@@ -34960,11 +35032,59 @@
     function reclampAiPopoverPosition() {
       const popover = document.getElementById('aiResultPopover');
       if (!popover || popover.classList.contains('hidden')) return;
-      requestAnimationFrame(() => {
-        positionAiPopover(currentAiTriggerRect);
-      });
+      positionAiPopover();
     }
     window.reclampAiPopoverPosition = reclampAiPopoverPosition;
+
+    function initAiPopoverDrag() {
+      const popover = document.getElementById('aiResultPopover');
+      if (!popover) return;
+      const dragHandle = document.getElementById('aiPopoverHeader');
+      const mobileBar = document.getElementById('aiPopoverDragBar');
+
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let initialOffsetX = 0, initialOffsetY = 0;
+
+      function onPointerDown(e) {
+        if (e.target.closest('button, input, select, textarea, a, .ai-style-pill-btn, .ai-switch-mode-btn')) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialOffsetX = window._aiPopoverDragOffsetX || 0;
+        initialOffsetY = window._aiPopoverDragOffsetY || 0;
+        document.body.style.userSelect = 'none';
+        if (dragHandle) dragHandle.classList.add('cursor-grabbing');
+        if (mobileBar) mobileBar.classList.add('cursor-grabbing');
+        e.preventDefault();
+      }
+
+      function onPointerMove(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        window._aiPopoverDragOffsetX = initialOffsetX + dx;
+        window._aiPopoverDragOffsetY = initialOffsetY + dy;
+        positionAiPopover();
+      }
+
+      function onPointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        document.body.style.userSelect = '';
+        if (dragHandle) dragHandle.classList.remove('cursor-grabbing');
+        if (mobileBar) mobileBar.classList.remove('cursor-grabbing');
+      }
+
+      if (dragHandle) {
+        dragHandle.addEventListener('pointerdown', onPointerDown);
+      }
+      if (mobileBar) {
+        mobileBar.addEventListener('pointerdown', onPointerDown);
+      }
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('pointerup', onPointerUp, { passive: true });
+    }
 
     function showAiResultPopover(mode, triggerRect) {
       const popover = document.getElementById('aiResultPopover');
@@ -34972,6 +35092,15 @@
 
       currentAiActiveMode = mode;
       currentAiTriggerRect = triggerRect;
+      window._aiPopoverDragOffsetX = 0;
+      window._aiPopoverDragOffsetY = 0;
+
+      const bridgeInfo = currentSelectionInfoBridge || window._lastValidSelectionBridge;
+      if (bridgeInfo && bridgeInfo.rect) {
+        window._aiTargetSelection = { ...bridgeInfo };
+      } else if (currentSelectionInfo && currentSelectionInfo.rect) {
+        window._aiTargetSelection = { ...currentSelectionInfo };
+      }
 
       const styleBar = document.getElementById('aiPromptStyleBar');
       if (styleBar) {
@@ -35036,6 +35165,9 @@
       if (backdrop) backdrop.classList.add('hidden');
       if (switchMenu) switchMenu.classList.add('hidden');
       if (langMenu) langMenu.classList.add('hidden');
+      window._aiTargetSelection = null;
+      window._aiPopoverDragOffsetX = 0;
+      window._aiPopoverDragOffsetY = 0;
     }
     window.closeAiResultPopover = closeAiResultPopover;
 
@@ -35313,6 +35445,7 @@
           sectionTitle: bridgeInfo.sectionTitle || ''
         };
         if (bridgeInfo.rect) {
+          window._aiTargetSelection = { ...bridgeInfo };
           const ifr = document.getElementById('lessonIframe');
           const ifrRect = ifr ? ifr.getBoundingClientRect() : { top: 0, left: 0 };
           triggerRect = {
@@ -35325,6 +35458,7 @@
         }
       } else if (localInfo && localInfo.text) {
         text = localInfo.text;
+        window._aiTargetSelection = { ...localInfo };
         if (localInfo.rect) triggerRect = localInfo.rect;
       }
 
@@ -35335,6 +35469,9 @@
       }
       if (!triggerRect && currentAiTriggerRect) {
         triggerRect = currentAiTriggerRect;
+      }
+      if (triggerRect) {
+        currentAiTriggerRect = triggerRect;
       }
 
       if (!text || text.trim().length < 2) {
@@ -35754,6 +35891,8 @@
         });
       }
 
+      initAiPopoverDrag();
+
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           closeAiResultPopover();
@@ -35765,7 +35904,13 @@
       });
       window.addEventListener('scroll', () => {
         reclampAiPopoverPosition();
-      }, { passive: true });
+      }, { passive: true, capture: true });
+      const readArea = document.getElementById('readingArea');
+      if (readArea) {
+        readArea.addEventListener('scroll', () => {
+          reclampAiPopoverPosition();
+        }, { passive: true });
+      }
 
       document.addEventListener('click', (e) => {
         const pop = document.getElementById('aiResultPopover');

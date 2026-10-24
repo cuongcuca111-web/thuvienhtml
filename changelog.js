@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.36',
+        date: '2026-10-24T17:00:00+07:00',
+        title: 'Cửa Sổ AI Thông Minh Bám Sát Đoạn Bôi Đen & Theo Dõi Tọa Độ Thời Gian Thực',
+        items: [
+          { type: 'improved', text: 'Tự động bám sát vị trí đoạn bôi đen: Pop-up giải thích/ví dụ/dịch thuật AI nay xuất hiện ngay cạnh đoạn văn bản người dùng đang chọn trên mọi kích thước màn hình (kể cả di động và màn hình thu nhỏ), chấm dứt hoàn toàn tình trạng bị kẹt cố định ở đáy màn hình.' },
+          { type: 'improved', text: 'Đồng bộ cuộn trang thời gian thực (Live Scroll Tracking): Pop-up AI tự động di chuyển nhịp nhàng cùng đoạn văn bản khi người dùng cuộn bài đọc, không bị đứng yên cố định hay lệch khỏi tầm mắt.' },
+          { type: 'improved', text: 'Hỗ trợ kéo thả linh hoạt (Draggable) & Loại bỏ nền đen che chữ: Người dùng có thể kéo thả pop-up tùy ý qua thanh kéo hoặc tiêu đề; nền tài liệu luôn hiển thị sáng rõ và cho phép đọc đối chiếu nội dung gốc dễ dàng.' }
+        ]
+      },
+      {
         version: 'v5.8.35',
         date: '2026-10-24T16:32:00+07:00',
         title: 'Sửa Lỗi Cú Pháp Sandbox Bridge & Khôi Phục Toàn Diện 100% Nội Dung File Gốc',
