@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.46"></script>
+  <script src="./changelog.js?v=5.8.47"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.46',
+        version: 'v5.8.47',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.46';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.47';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -624,8 +624,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.46">
-  <script src="./bridge.js?v=5.8.46"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.47">
+  <script src="./bridge.js?v=5.8.47"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2358,7 +2358,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.46 • build 24/10/2026 18:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.47 • build 24/10/2026 18:55</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3150,7 +3150,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.46</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.47</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3172,7 +3172,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.46 • build 24/10/2026 18:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.47 • build 24/10/2026 18:55</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6556,8 +6556,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.46</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.46</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.47</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.47</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -38183,6 +38183,9 @@
 
       if (isKnown) {
         fcKnownCount++;
+        if (card && typeof resolveWrongQuestion === 'function') {
+          resolveWrongQuestion(card, false);
+        }
       } else {
         fcUnknownCount++;
         fcUnknownQueue.push(card);
@@ -38208,7 +38211,24 @@
       const total = fcKnownCount + fcUnknownCount;
       const pct = total > 0 ? Math.round((fcKnownCount / total) * 100) : 100;
       if (fcSummaryStats) {
-        fcSummaryStats.innerText = `Bạn đã nhớ ${fcKnownCount} / ${total} câu hỏi (${pct}%).`;
+        if (fcUnknownCount === 0 && total > 0) {
+          fcSummaryStats.innerHTML = `Bạn đã nhớ ${fcKnownCount} / ${total} câu hỏi (${pct}%).<br><span class="text-emerald-600 dark:text-emerald-400 font-semibold text-xs mt-1 inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline-block shrink-0"><use href="#icon-check-check"></use></svg> Tuyệt vời! Bạn đã ghi nhớ toàn bộ thẻ và xóa sạch khỏi danh sách cần học lại!</span>`;
+        } else {
+          fcSummaryStats.innerHTML = `Bạn đã nhớ ${fcKnownCount} / ${total} câu hỏi (${pct}%).<br><span class="text-stone-400 text-xs mt-0.5 inline-block">Các thẻ nhớ được đã tự động gỡ khỏi danh sách ôn lại.</span>`;
+        }
+      }
+
+      if (btnFcRetryUnknown) {
+        if (fcUnknownQueue.length > 0) {
+          btnFcRetryUnknown.classList.remove('hidden');
+          btnFcRetryUnknown.innerText = `Ôn lại ${fcUnknownQueue.length} thẻ chưa nhớ`;
+        } else {
+          btnFcRetryUnknown.classList.add('hidden');
+        }
+      }
+
+      if (typeof renderStudyDecksModalTabs === 'function') {
+        renderStudyDecksModalTabs();
       }
     }
 
@@ -38307,13 +38327,17 @@
       }
     };
 
-    // Nâng cấp answerFlashcard để ghi nhận câu chưa nhớ vào Phần sai để học lại
+    // Nâng cấp answerFlashcard để ghi nhận câu chưa nhớ vào Phần sai để học lại và tự động gỡ câu đã nhớ
     const _origAnswerFlashcard = answerFlashcard;
     answerFlashcard = function(isKnown) {
       if (flashcardQueue && flashcardIndex < flashcardQueue.length) {
         const card = flashcardQueue[flashcardIndex];
         if (!isKnown) {
-          recordWrongQuestion(card, { id: 'fc_session', title: document.getElementById('fcSessionTitle')?.innerText || 'Flashcard' }, 'Chưa nhớ');
+          recordWrongQuestion(card, { id: 'fc_session', title: (document.getElementById('fcSessionTitle')?.innerText || 'Flashcard').replace(/🔁/g, '').trim() }, 'Chưa nhớ');
+        } else {
+          if (card && typeof resolveWrongQuestion === 'function') {
+            resolveWrongQuestion(card, false);
+          }
         }
       }
       _origAnswerFlashcard(isKnown);
@@ -38427,10 +38451,12 @@
       item.lastWrongAt = Date.now();
 
       const existingIdx = state.learningData.wrongItems.findIndex(x => x.id === item.id);
+      const rawTitle = (deck ? deck.title : 'Tự kiểm tra') || 'Tự kiểm tra';
+      const cleanTitle = rawTitle.replace(/🔁/g, '').trim();
       const wrongRecord = {
         ...item,
         deckId: deck ? deck.id : '',
-        deckTitle: deck ? deck.title : 'Tự kiểm tra',
+        deckTitle: cleanTitle,
         userAnswer: userAnswer,
         wrongCount: item.wrongCount,
         lastWrongAt: Date.now()
@@ -38463,17 +38489,40 @@
       renderStudyDecksModalTabs();
     }
 
-    function resolveWrongQuestion(itemId) {
-      if (state.learningData.wrongItems) {
-        state.learningData.wrongItems = state.learningData.wrongItems.filter(x => x.id !== itemId);
+    function resolveWrongQuestion(itemOrId, showNotice = true) {
+      if (!itemOrId) return;
+      const itemId = (typeof itemOrId === 'object' && itemOrId !== null) ? itemOrId.id : itemOrId;
+      const targetObj = (typeof itemOrId === 'object' && itemOrId !== null) ? itemOrId : null;
+
+      if (state.learningData && state.learningData.wrongItems) {
+        state.learningData.wrongItems = state.learningData.wrongItems.filter(x => {
+          if (itemId && x.id === itemId) return false;
+          if (targetObj) {
+            if (targetObj.question && x.question && x.question.trim() === targetObj.question.trim()) return false;
+            if (targetObj.front && x.front && x.front.trim() === targetObj.front.trim()) return false;
+          }
+          return true;
+        });
       }
+
       (state.learningData.studyDecks || []).forEach(d => {
-        (d.quizzes || []).forEach(q => { if (q.id === itemId) q.isWrong = false; });
-        (d.flashcards || []).forEach(f => { if (f.id === itemId) f.isWrong = false; });
+        (d.quizzes || []).forEach(q => {
+          if (itemId && q.id === itemId) q.isWrong = false;
+          else if (targetObj && targetObj.question && q.question && q.question.trim() === targetObj.question.trim()) q.isWrong = false;
+        });
+        (d.flashcards || []).forEach(f => {
+          if (itemId && f.id === itemId) f.isWrong = false;
+          else if (targetObj && targetObj.front && f.front && f.front.trim() === targetObj.front.trim()) f.isWrong = false;
+        });
       });
+
       saveStudyDecksAndItems();
-      showToast("Đã đánh dấu đã hiểu và gỡ khỏi danh sách câu sai!");
-      renderStudyDecksModalTabs();
+      if (showNotice) {
+        showToast("Đã đánh dấu đã hiểu và gỡ khỏi danh sách câu sai!");
+      }
+      if (typeof renderStudyDecksModalTabs === 'function') {
+        renderStudyDecksModalTabs();
+      }
     }
 
     // -------------------------------------------------------------------------
@@ -38958,6 +39007,27 @@
       if (badgeCountStarred) badgeCountStarred.innerText = starred.length;
       if (badgeCountWrong) badgeCountWrong.innerText = wrong.length;
 
+      // Cập nhật trạng thái nút Luyện tập câu sai & câu gắn sao
+      if (btnPracticeWrongOnly) {
+        if (wrong.length === 0) {
+          btnPracticeWrongOnly.classList.add('opacity-50', 'pointer-events-none');
+          btnPracticeWrongOnly.setAttribute('disabled', 'true');
+        } else {
+          btnPracticeWrongOnly.classList.remove('opacity-50', 'pointer-events-none');
+          btnPracticeWrongOnly.removeAttribute('disabled');
+        }
+      }
+
+      if (btnPracticeStarredQuiz) {
+        if (starred.length === 0) {
+          btnPracticeStarredQuiz.classList.add('opacity-50', 'pointer-events-none');
+          btnPracticeStarredQuiz.setAttribute('disabled', 'true');
+        } else {
+          btnPracticeStarredQuiz.classList.remove('opacity-50', 'pointer-events-none');
+          btnPracticeStarredQuiz.removeAttribute('disabled');
+        }
+      }
+
       // 1. RENDER TAB TẤT CẢ BỘ ĐỀ
       if (currentHubTab === 'all' && decksGridContainer) {
         const filter = (searchDecksInput?.value || '').trim().toLowerCase();
@@ -39197,7 +39267,7 @@
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/60">
                       ${item.wrongCount > 1 ? `Sai ${item.wrongCount} lần` : 'Làm sai 1 lần'}
                     </span>
-                    <span class="text-[11px] text-stone-400 truncate max-w-xs">${escapeHtml(item.deckTitle || '')}</span>
+                    <span class="text-[11px] text-stone-400 truncate max-w-xs">${escapeHtml((item.deckTitle || '').replace(/🔁/g, '').trim())}</span>
                   </div>
 
                   <button data-resolve-wrong="${escapeHtml(item.id)}" class="touch-target px-2.5 py-1 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center gap-1 transition cursor-pointer" title="Đánh dấu đã hiểu để gỡ khỏi danh sách">
@@ -39477,9 +39547,11 @@
 
       if (isCorrect) {
         currentQuizCorrectCount++;
+        // Tự động gỡ bỏ khỏi danh sách câu làm sai khi người dùng trả lời đúng
+        resolveWrongQuestion(q, false);
       } else {
         currentQuizWrongList.push(q);
-        recordWrongQuestion(q, currentQuizDeckRef || { title: quizModalTitle?.innerText || 'Trắc nghiệm' }, optIdx);
+        recordWrongQuestion(q, currentQuizDeckRef || { title: (quizModalTitle?.innerText || 'Trắc nghiệm').replace(/🔁/g, '').trim() }, optIdx);
       }
 
       // Record daily analytics
@@ -39535,6 +39607,15 @@
         quizSummaryScoreText.innerText = `Bạn đạt ${currentQuizCorrectCount} / ${total} câu đúng (${pct}%)`;
       }
 
+      const quizSummarySubtext = document.getElementById('quizSummarySubtext');
+      if (quizSummarySubtext) {
+        if (currentQuizWrongList.length === 0 && total > 0) {
+          quizSummarySubtext.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center justify-center gap-1.5"><svg class="w-4 h-4 inline-block shrink-0"><use href="#icon-check-check"></use></svg> Tuyệt vời! Bạn đã làm đúng toàn bộ và xóa sạch các câu cần ôn lại!</span>';
+        } else {
+          quizSummarySubtext.innerText = `Các câu làm đúng đã tự động gỡ khỏi danh sách ôn. Còn lại ${currentQuizWrongList.length} câu làm sai.`;
+        }
+      }
+
       // Cập nhật điểm cao nhất vào Deck nếu có
       if (currentQuizDeckRef) {
         currentQuizDeckRef.stats = currentQuizDeckRef.stats || {};
@@ -39546,9 +39627,17 @@
         saveStudyDecksAndItems();
       }
 
+      if (typeof renderStudyDecksModalTabs === 'function') {
+        renderStudyDecksModalTabs();
+      }
+
       if (btnQuizRetryWrongOnly) {
         if (currentQuizWrongList.length > 0) {
           btnQuizRetryWrongOnly.classList.remove('hidden');
+          const cleanTitle = (quizModalTitle?.innerText || 'Trắc nghiệm')
+            .replace(/^Ôn lại câu làm sai:\s*/i, '')
+            .replace(/🔁/g, '')
+            .trim();
           const label = document.getElementById('btnQuizRetryWrongLabel');
           if (label) {
             label.innerText = `Ôn lại ${currentQuizWrongList.length} câu làm sai`;
@@ -39559,7 +39648,7 @@
             `;
           }
           btnQuizRetryWrongOnly.onclick = () => {
-            startQuizSession(currentQuizWrongList, `Ôn lại câu làm sai: ${quizModalTitle?.innerText || ''}`, currentQuizDeckRef);
+            startQuizSession(currentQuizWrongList, `Ôn lại câu làm sai: ${cleanTitle}`, currentQuizDeckRef);
           };
         } else {
           btnQuizRetryWrongOnly.classList.add('hidden');

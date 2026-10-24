@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.47',
+        date: '2026-10-24T18:55:00+07:00',
+        title: 'Tự Động Gỡ Bỏ Câu Sai Khi Hoàn Thành Ôn Luyện Thành Công',
+        items: [
+          { type: 'improved', text: 'Cơ chế tự động giải phóng câu sai đã làm chủ: Khi người dùng trả lời đúng câu hỏi trắc nghiệm hoặc bấm "Nhớ rồi" thẻ flashcard trong quá trình luyện tập, câu hỏi đó sẽ lập tức được tự động gỡ bỏ và biến mất khỏi danh sách "Cần học lại (Làm sai)".' },
+          { type: 'improved', text: 'Đồng bộ tức thì số lượng câu cần ôn tập: Huy hiệu số đếm câu sai (badgeCountWrong) tự động giảm dần về 0 theo thời gian thực; khi làm chủ toàn bộ các câu sai, hệ thống hiển thị huy hiệu vinh danh và thông điệp chúc mừng hoàn thành xuất sắc.' },
+          { type: 'improved', text: 'Thanh lọc tiêu đề và tự động vô hiệu nút trống: Loại bỏ triệt để các ký tự biểu tượng phím lặp cũ trong bộ nhớ đệm, tự động chuyển nút "Luyện tập các câu sai ngay" về trạng thái vô hiệu khi danh sách câu sai về 0.' }
+        ]
+      },
+      {
         version: 'v5.8.46',
         date: '2026-10-24T18:45:00+07:00',
         title: 'Hoàn Thiện Biểu Tượng Độc Quyền Vòng Cung Ôn Luyện Khắc Phục Lỗi Sai',
