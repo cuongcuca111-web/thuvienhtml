@@ -2758,8 +2758,8 @@ async function renderAiTab(container) {
 
   let currentFastModel = (aiSettings.models && aiSettings.models.gemini && aiSettings.models.gemini.fast) || 'gemini-2.0-flash';
   let currentStrongModel = (aiSettings.models && aiSettings.models.gemini && aiSettings.models.gemini.strong) || 'gemini-2.0-flash';
-  if (currentFastModel.includes('1.5-pro') || currentFastModel.includes('3.8')) currentFastModel = 'gemini-2.0-flash';
-  if (currentStrongModel.includes('1.5-pro') || currentStrongModel.includes('3.8')) currentStrongModel = 'gemini-2.0-flash';
+  if (currentFastModel.includes('1.5-pro') || currentFastModel.includes('2.5') || currentFastModel.includes('3.8')) currentFastModel = 'gemini-2.0-flash';
+  if (currentStrongModel.includes('1.5-pro') || currentStrongModel.includes('2.5') || currentStrongModel.includes('3.8')) currentStrongModel = 'gemini-2.0-flash';
 
   const renderModelOptions = (modelsList, selectedValue) => {
     let hasSelected = false;

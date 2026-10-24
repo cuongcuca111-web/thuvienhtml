@@ -398,7 +398,7 @@ module.exports = async function handler(req, res) {
            (DEFAULT_MODELS.gemini && DEFAULT_MODELS.gemini.fast) ||
            'gemini-2.0-flash');
       let model = (typeof sanitizeGeminiModel === 'function') ? sanitizeGeminiModel(rawModel) : rawModel.replace(/^models\//, '');
-      if (model.includes('1.5-pro') || model.includes('3.8')) model = 'gemini-2.0-flash';
+      if (model.includes('1.5-pro') || model.includes('2.5') || model.includes('3.8')) model = 'gemini-2.0-flash';
 
       let geminiOk = false;
       let lastRespMsg = '';
@@ -439,9 +439,9 @@ module.exports = async function handler(req, res) {
         const preferredPriority = [
           model,
           'gemini-2.0-flash',
+          'gemini-2.0-flash-lite',
           'gemini-1.5-flash',
-          'gemini-2.5-flash',
-          'gemini-2.5-flash-lite'
+          'gemini-3.5-flash-lite'
         ].filter(Boolean);
 
         const candidateModels = [

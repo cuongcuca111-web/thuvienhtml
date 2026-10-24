@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.56',
+    date: '2026-10-24T21:35:00+07:00',
+    title: 'Khắc Phục Triệt Để Lỗi Model 2.5 Bị Google Giới Hạn (No Longer Available) & Mở Rộng Timeout Tạo Đề AI',
+    items: [
+      { type: 'fix', text: 'Triệt tiêu hoàn toàn lỗi "This model models/gemini-2.5-flash-lite is no longer available to new users": Theo chính sách mới nhất của Google, dòng model 2.5 đã bị khóa đối với các tài khoản và API key mới. Hệ thống đã loại bỏ hoàn toàn model 2.5 khỏi chuỗi gọi dự phòng và chuẩn hóa 100% sang Gemini 2.0 Flash (kèm Gemini 2.0 Flash-Lite và Gemini 3.5 Flash-Lite).' },
+      { type: 'improved', text: 'Tự động làm lành (Auto-heal) cấu hình Firestore: Tự động quét và nâng cấp các model 2.5 cũ đang lưu trong cơ sở dữ liệu về Gemini 2.0 Flash chuẩn, ngăn chặn triệt để tình trạng gọi nhầm model không khả dụng.' },
+      { type: 'improved', text: 'Thời gian chờ thích ứng (Dynamic Timeout) lên đến 50 giây: Nâng cấp cơ chế timeout cố định 10s cũ thành thời gian chờ tự động theo dung lượng token (18s đến 50s). Đảm bảo quá trình tạo trọn bộ 10 - 15 câu trắc nghiệm kết hợp flashcard (2500 tokens) luôn có đủ thời gian sinh JSON hoàn hảo mà không bao giờ bị ngắt kết nối.' }
+    ]
+  },
+  {
     version: 'v5.8.55',
     date: '2026-10-24T21:30:00+07:00',
     title: 'Khóa Tốc Độ 60 FPS Thao Tác Cuộn & Chuyển Cảnh Biến Hình Siêu Mượt Pop-up AI (Fluid GPU Morphing)',
