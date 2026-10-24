@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.54',
+    date: '2026-10-24T21:25:00+07:00',
+    title: 'Cứu Hộ Tự Động Toàn Diện (Autonomous Boot Watchdog), Phục Hồi Trang Đơ & Đồng Bộ 60 FPS',
+    items: [
+      { type: 'fix', text: 'Triệt tiêu 100% hiện tượng đơ trang / trắng màn hình do bộ nhớ đệm: Tích hợp cơ chế Boot Watchdog tự trị ngay trong thẻ <head>. Nếu phát hiện ứng dụng bị gián đoạn hoặc không khởi động sau 2.5 giây do bản lưu đệm Service Worker cũ, hệ thống sẽ tự động dọn sạch cache và nạp lại bản mới nhất từ máy chủ.' },
+      { type: 'improved', text: 'Bảo vệ cú pháp và cân bằng cấu trúc CSS/JS toàn cục: Đã loại bỏ các dấu ngoặc thừa tiềm ẩn trong styles.css và index.html, đảm bảo luồng khởi tạo phân hệ modular (đồng hồ Hà Nội, danh sách bài học, thanh sidebar, bộ đọc Iframe) chạy mượt mà không bao giờ bị nghẽn.' },
+      { type: 'improved', text: 'Giao diện Cứu hộ Khẩn cấp (Emergency Recovery UI): Trong trường hợp mạng chập chờn, một thanh cứu hộ tinh tế chuẩn Dark Glassmorphism sẽ xuất hiện cho phép người dùng 1 chạm làm mới toàn bộ dữ liệu ứng dụng.' }
+    ]
+  },
+  {
     version: 'v5.8.53',
     date: '2026-10-24T21:15:00+07:00',
     title: 'Khắc Phục Triệt Để Lỗi Model AI (404 Not Found), Chuẩn Hóa Gemini 2.0 Flash & Auto-Heal Đa Tầng',

@@ -3896,8 +3896,6 @@
         filter: blur(2px);
       }
     }
-      }
-    }
 
     @media (prefers-reduced-motion: reduce) {
       #searchCommandPalette.palette-entering,

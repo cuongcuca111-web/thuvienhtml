@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.53"></script>
+  <script src="./changelog.js?v=5.8.54"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.53',
+        version: 'v5.8.54',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.53';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.54';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -393,6 +393,80 @@
         sessionStorage.removeItem('sw_forced_version_reload');
       }
     } catch (_) {}
+    // 3. Autonomous Boot Watchdog & Auto-Recovery (/thietkeweb Trụ cột 1: Tự trị điều tra & cứu hộ)
+    window.__appBootSuccess = false;
+    window.__appBootStartedAt = Date.now();
+
+    function triggerEmergencyRecovery(reason) {
+      if (window.__appBootSuccess) return;
+      const key = 'emergency_recovery_attempt';
+      const lastAttempt = parseInt(sessionStorage.getItem(key) || '0', 10);
+      if (Date.now() - lastAttempt < 10000) {
+        showEmergencyRecoveryUI(reason);
+        return;
+      }
+      sessionStorage.setItem(key, String(Date.now()));
+      console.warn('[Cứu hộ Khẩn cấp] Phát hiện giao diện bị đơ/lỗi nạp script (' + reason + '). Đang tự động dọn sạch cache và tải lại...');
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (const r of regs) r.unregister();
+        }).catch(() => {});
+      }
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          for (const k of keys) caches.delete(k);
+        }).catch(() => {});
+      }
+      setTimeout(() => {
+        window.location.replace(window.location.origin + window.location.pathname + '?nocache=' + Date.now());
+      }, 250);
+    }
+
+    function showEmergencyRecoveryUI(reason) {
+      if (document.getElementById('emergencyRecoveryBanner')) return;
+      const banner = document.createElement('div');
+      banner.id = 'emergencyRecoveryBanner';
+      banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999999;background:rgba(22,26,32,0.95);color:#EDEDED;backdrop-filter:blur(16px);border:1px solid rgba(239,68,68,0.4);border-radius:14px;padding:14px 20px;box-shadow:0 20px 40px rgba(0,0,0,0.5);display:flex;align-items:center;gap:14px;font-family:system-ui,-apple-system,sans-serif;font-size:13px;max-width:90vw;animation:emergencyFadeIn 300ms ease-out;';
+      banner.innerHTML = '<svg style="width:20px;height:20px;color:#EF4444;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><div style="flex:1;min-width:0;"><div style="font-weight:600;color:#FCA5A5;">Trình duyệt bị đơ do bản lưu đệm cũ</div><div style="font-size:11px;color:#9CA3AF;margin-top:2px;">Bấm để xóa sạch bộ nhớ tạm và nạp ngay phiên bản mới nhất</div></div><button id="btnForceClearReload" style="background:#4F46E5;color:#FFF;border:none;padding:7px 14px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;transition:all 150ms ease;">Tải lại ngay</button>';
+      document.body.appendChild(banner);
+      const btn = document.getElementById('btnForceClearReload');
+      if (btn) {
+        btn.onclick = () => {
+          btn.innerText = 'Đang làm mới...';
+          btn.disabled = true;
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(regs => {
+              for (const r of regs) r.unregister();
+            }).catch(() => {});
+          }
+          if ('caches' in window) {
+            caches.keys().then(keys => {
+              for (const k of keys) caches.delete(k);
+            }).catch(() => {});
+          }
+          setTimeout(() => {
+            window.location.replace(window.location.origin + window.location.pathname + '?force=' + Date.now());
+          }, 300);
+        };
+      }
+    }
+
+    window.addEventListener('error', function(e) {
+      if (!window.__appBootSuccess) {
+        setTimeout(() => triggerEmergencyRecovery(e.message || 'Script error'), 1200);
+      }
+    }, true);
+
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (!window.__appBootSuccess) {
+          triggerEmergencyRecovery('Không nhận được phản hồi boot sau 2.5s');
+        } else {
+          sessionStorage.removeItem('emergency_recovery_attempt');
+        }
+      }, 2500);
+    });
+
 
     (function() {
       const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='44' fill='#4F46E5'/><g transform='translate(24, 24) scale(6)' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6.5C6.5 6 9.5 5.2 12 6.5C14.5 5.2 17.5 6 20 6.5V18.5C17.5 18 14.5 17.2 12 18.5C9.5 17.2 6.5 18 4 18.5V6.5Z'/><path d='M12 6.5V18.5'/><circle cx='12' cy='3.8' r='1.2' fill='#FBBF24'/></g>    <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -624,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.53">
-  <script src="./bridge.js?v=5.8.53"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.54">
+  <script src="./bridge.js?v=5.8.54"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2358,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.53 • build 24/10/2026 21:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.54 • build 24/10/2026 21:25</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3150,7 +3224,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.53</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.54</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3172,7 +3246,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.53 • build 24/10/2026 21:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.54 • build 24/10/2026 21:25</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6565,8 +6639,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.53</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.53</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.54</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.54</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -43300,6 +43374,8 @@
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           document.documentElement.classList.remove('app-preload');
+          window.__appBootSuccess = true;
+          try { sessionStorage.removeItem('emergency_recovery_attempt'); } catch (_) {}
         });
       });
     }
