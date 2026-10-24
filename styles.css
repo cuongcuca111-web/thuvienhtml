@@ -4518,3 +4518,76 @@
     animation: none !important;
   }
 }
+
+/* =========================================================================
+   AI EXPLAIN POPOVER: TRANSITIONS & AUTO-MINIMIZE DOCK (EDITORIAL VIBE)
+   ========================================================================= */
+
+#aiResultPopover {
+  /* Transition nhẹ nhàng, sang trọng khi thay đổi vị trí trên/dưới hoặc co giãn kích thước */
+  transition: top 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+              left 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s ease,
+              opacity 0.22s ease-out;
+  will-change: top, left, width, max-height;
+}
+
+/* Tắt transition ngay lập tức khi đang chủ động kéo thả để đạt độ nhạy 1:1 không bị trễ */
+#aiResultPopover.ai-dragging,
+#aiResultPopover.no-transition {
+  transition: none !important;
+}
+
+/* Trạng thái thu nhỏ thanh Pill khi người dùng cuộn trang xuống vượt qua vùng bôi đen */
+#aiResultPopover.is-minimized {
+  width: auto !important;
+  min-width: 290px;
+  max-width: 440px;
+  height: 42px !important;
+  max-height: 42px !important;
+  border-radius: 9999px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(231, 229, 223, 0.9) !important;
+  box-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.06) !important;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dark #aiResultPopover.is-minimized {
+  background-color: rgba(24, 27, 32, 0.94) !important;
+  border-color: rgba(38, 44, 54, 0.9) !important;
+  box-shadow: 0 14px 35px -6px rgba(0, 0, 0, 0.55), 0 6px 12px -2px rgba(0, 0, 0, 0.35) !important;
+}
+
+#aiResultPopover.is-minimized:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 36px -6px rgba(0, 0, 0, 0.16), 0 6px 12px -2px rgba(0, 0, 0, 0.08) !important;
+}
+.dark #aiResultPopover.is-minimized:hover {
+  box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 8px 16px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Khi thu nhỏ: Ẩn các thành phần chi tiết và hiển thị Mini Bar */
+#aiResultPopover.is-minimized > *:not(#aiPopoverMiniBar) {
+  display: none !important;
+}
+#aiResultPopover.is-minimized #aiPopoverMiniBar {
+  display: flex !important;
+}
+#aiResultPopover:not(.is-minimized) #aiPopoverMiniBar {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #aiResultPopover {
+    transition: opacity 0.15s ease-out !important;
+  }
+}

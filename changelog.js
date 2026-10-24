@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.39',
+        date: '2026-10-24T17:35:00+07:00',
+        title: 'Chuyển Động Trượt Mượt Vị Trí Pop-Up AI & Tự Động Thu Nhỏ Khi Cuộn Trang',
+        items: [
+          { type: 'improved', text: 'Chuyển động lật vị trí mượt mà (Smooth Transition): Áp dụng đường cong chuyển động tự nhiên cubic-bezier(0.16, 1, 0.3, 1) chuẩn Editorial khi pop-up AI đổi vị trí từ trên xuống dưới hoặc ngược lại quanh vùng bôi đen, loại bỏ hoàn toàn hiện tượng giật cục.' },
+          { type: 'new', text: 'Tự động thu nhỏ thành Mini Pill khi cuộn trang (Auto-Minimize Dock): Khi người dùng cuộn xuống đọc tiếp nội dung bài học, pop-up tự động thu gọn thành thanh trạng thái bo tròn dạng viên thuốc (Pill) tinh tế ngay dưới header, không che chắn tầm nhìn.' },
+          { type: 'improved', text: 'Chỉ báo trạng thái thời gian thực: Mini Pill hiển thị rõ nét trạng thái AI đang xử lý (chấm nhịp thở màu hổ phách/tím) hay đã có kết quả (icon ngọc lục bảo #icon-ai-cached kèm huy hiệu "✓ Đã xong").' },
+          { type: 'new', text: 'Tự động mở rộng & Cuộn mượt thông minh: Chỉ cần cuộn trang lên lại hoặc bấm trực tiếp vào Mini Pill, hệ thống sẽ cuộn mượt đưa đoạn văn bản bôi đen vào giữa màn hình và mở rộng trọn vẹn kết quả AI.' }
+        ]
+      },
+      {
         version: 'v5.8.38',
         date: '2026-10-24T17:25:00+07:00',
         title: 'Hệ Thống Tự Kiểm Tra & Bộ Đề AI Thông Minh Tối Ưu Token Siêu Cấp',
