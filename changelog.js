@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.52',
+    date: '2026-10-24T20:55:00+07:00',
+    title: 'Thanh Trợ Lý AI Thu Nhỏ Hai Chiều Linh Hoạt (Bi-directional Smart Mini Pill Bar)',
+    items: [
+      { type: 'improved', text: 'Tự động thu nhỏ thanh Pill ở đáy màn hình khi cuộn lên: Khi người dùng cuộn trang lên trên khiến đoạn văn bản bôi đen trôi xuống khỏi đáy màn hình, cửa sổ giải thích AI sẽ tự động thu nhỏ thành thanh trạng thái mini tinh gọn ở cạnh đáy (thay vì bung to choán nửa màn hình), hiển thị trạng thái xử lý và nhãn "Cuộn xuống" kèm mũi tên trực quan.' },
+      { type: 'improved', text: 'Điều hướng cuộn trang hai chiều thông minh: Tự động phát hiện hướng cuộn để ghim thanh mini ở đỉnh (dưới header với nhãn "Cuộn lên") hoặc ở đáy (với nhãn "Cuộn xuống"). Nhấp vào thanh mini sẽ cuộn mượt 60 FPS đưa đoạn văn bản trở lại trung tâm màn hình và mở rộng pop-up tự nhiên.' },
+      { type: 'improved', text: 'Hiệu ứng chuyển cảnh và hover nhẹ nhàng chuẩn /thietkeweb: Thanh trạng thái mini ở đáy trang bị hiệu ứng nâng nhẹ (translateY -2px), bóng đổ phát quang mờ ảo và tự động mở lại giao diện đầy đủ khi đoạn văn bản trôi trở lại tầm nhìn.' }
+    ]
+  },
+  {
     version: 'v5.8.51',
     date: '2026-10-24T20:30:00+07:00',
     title: 'Khắc Phục Triệt Để Khoảng Trống Đen Ở Cuối Bài Đọc & Ôm Khít Nội Dung Nguyên Bản (Viewer Fit-Content)',

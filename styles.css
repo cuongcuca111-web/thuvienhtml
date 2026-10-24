@@ -4664,6 +4664,26 @@
   box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 8px 16px -2px rgba(0, 0, 0, 0.4) !important;
 }
 
+/* Trạng thái thu nhỏ thanh Pill ở đáy màn hình khi cuộn lên */
+#aiResultPopover.is-minimized.is-minimized-bottom {
+  bottom: 24px !important;
+  top: auto !important;
+  box-shadow: 0 14px 35px -6px rgba(0, 0, 0, 0.16), 0 6px 14px -2px rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark #aiResultPopover.is-minimized.is-minimized-bottom {
+  box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 8px 18px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Hiệu ứng hover nổi bật nhẹ nhàng theo chuẩn /thietkeweb */
+#aiResultPopover.is-minimized.is-minimized-bottom:hover {
+  transform: translateY(-2px);
+}
+
+#aiResultPopover.is-minimized.is-minimized-top:hover {
+  transform: translateY(2px);
+}
+
 /* Khi thu nhỏ: Ẩn các thành phần chi tiết và hiển thị Mini Bar */
 #aiResultPopover.is-minimized > *:not(#aiPopoverMiniBar) {
   display: none !important;
