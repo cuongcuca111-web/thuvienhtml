@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.42',
+        date: '2026-10-24T18:05:00+07:00',
+        title: 'Chuyên Biệt Google Gemini & Kho Dự Trữ Đa Khóa API Tự Động Failover',
+        items: [
+          { type: 'improved', text: 'Tối ưu hóa chuyên biệt Google Gemini: Loại bỏ hoàn toàn các mô hình bên ngoài (Claude, OpenAI), quy tụ 100% tài nguyên xử lý vào hệ sinh thái Google Gemini thế hệ mới với tốc độ vượt trội.' },
+          { type: 'new', text: 'Kho dự trữ Khóa API Gemini (Key Pool): Cho phép quản trị viên cài đặt không giới hạn các khóa API dự phòng; tự động mã hóa AES-256-GCM bảo mật tuyệt đối.' },
+          { type: 'improved', text: 'Cơ chế Tự động Chuyển khóa dự phòng (Auto-Failover): Khi khóa chính hết hạn mức hoặc gặp lỗi 429 Quota Exceeded, hệ thống lập tức tự động kích hoạt khóa dự phòng tiếp theo để thực hiện lại yêu cầu, đảm bảo dịch vụ không gián đoạn.' },
+          { type: 'new', text: 'Hệ thống Mác trạng thái thông minh: Gắn mác rõ ràng cho từng khóa: 🟢 Đang hoạt động, 🟡 Sắp hết hạn, 🔴 Hết hạn, ⚪ Dự phòng sẵn sàng; hỗ trợ kiểm tra trực tiếp (Live Test) và tự động cập nhật mác theo thời gian thực.' }
+        ]
+      },
+      {
         version: 'v5.8.41',
         date: '2026-10-24T17:55:00+07:00',
         title: 'Khắc Phục Lỗi Bộ Đề Rỗng & Tối Ưu Hóa Click Trực Tiếp Vào Thẻ Tự Kiểm Tra',

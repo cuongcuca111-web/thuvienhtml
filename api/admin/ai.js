@@ -1,32 +1,17 @@
 // api/admin/ai.js
-// Gộp toàn bộ API quản trị AI: save-key, delete-key, settings, usage, test, models
+// Gộp toàn bộ API quản trị AI Google Gemini: Kho dự phòng đa khóa (Key Pool), Cài đặt, Giám sát, Kiểm tra & Danh sách Model
 const { verifyAdmin, recordAuditLog } = require('../../lib/admin-auth');
 const { encryptKey, decryptKey, maskApiKey } = require('../../lib/crypto');
 const { DEFAULT_MODELS, invalidateAiSettingsCache } = require('../../lib/call-ai');
 
 const FALLBACK_MODELS = {
   gemini: [
-    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Siêu nhanh, thế hệ mới)' },
-    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Nhanh & Rẻ - Khuyên dùng)' },
-    { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B (Siêu nhẹ)' },
-    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Cực mạnh, thế hệ mới)' },
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Thế hệ mới, siêu nhanh - Khuyên dùng)' },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Ổn định, chi phí tối ưu)' },
+    { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B (Siêu nhẹ, tiết kiệm)' },
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Thế hệ mới)' },
     { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Mạnh mẽ, phân tích sâu)' },
-    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Thế hệ mới)' }
-  ],
-  claude: [
-    { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku (Rất nhanh & Tiết kiệm)' },
-    { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet (Thông minh & Chuẩn xác)' },
-    { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus (Tư duy phức tạp)' },
-    { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' }
-  ],
-  openai: [
-    { id: 'gpt-4o-mini', name: 'GPT-4o Mini (Nhanh & Rẻ - Khuyên dùng)' },
-    { id: 'gpt-4o', name: 'GPT-4o (Đa phương thức mạnh nhất)' },
-    { id: 'o3-mini', name: 'OpenAI o3-mini (Lý luận nhanh)' },
-    { id: 'o1-mini', name: 'OpenAI o1-mini (Lý luận nhẹ)' },
-    { id: 'o1', name: 'OpenAI o1 (Lý luận chuyên sâu)' },
-    { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
-    { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (Cũ)' }
+    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Cực mạnh, thế hệ mới)' }
   ]
 };
 
@@ -35,6 +20,104 @@ function resolveAction(req) {
   const pathname = (req.url || '').split('?')[0];
   const parts = pathname.split('/').filter(Boolean);
   return (parts[parts.length - 1] || '').toLowerCase();
+}
+
+/**
+ * Trợ giúp đọc kho khóa bí mật và tự động di chuyển key đơn lẻ cũ nếu có
+ */
+async function loadSecretKeyPool(db) {
+  const [secPool, secLegacy] = await Promise.all([
+    db.doc('admin_secrets/gemini_pool').get().catch(() => ({ exists: false })),
+    db.doc('admin_secrets/gemini').get().catch(() => ({ exists: false }))
+  ]);
+
+  let poolKeys = [];
+  if (secPool.exists && Array.isArray(secPool.data().keys)) {
+    poolKeys = secPool.data().keys;
+  } else if (secLegacy.exists && secLegacy.data().cipherText) {
+    const leg = secLegacy.data();
+    poolKeys = [{
+      id: 'gemini_key_primary',
+      label: 'Khóa chính (Google AI Studio)',
+      cipherText: leg.cipherText,
+      iv: leg.iv,
+      authTag: leg.authTag,
+      maskedKey: leg.maskedKey || '••••',
+      status: 'active',
+      isPrimary: true,
+      order: 1,
+      createdAt: leg.updatedAt || new Date().toISOString()
+    }];
+  }
+
+  return poolKeys;
+}
+
+/**
+ * Trợ giúp lưu kho khóa đồng thời vào admin_secrets/gemini_pool và config/ai_settings
+ */
+async function saveSecretKeyPool(db, poolKeys, uid = null) {
+  const nowIso = new Date().toISOString();
+
+  // Đảm bảo luôn có ít nhất 1 khóa là Primary nếu danh sách không rỗng
+  let hasPrimary = poolKeys.some(k => k.isPrimary && k.status !== 'expired');
+  if (!hasPrimary && poolKeys.length > 0) {
+    const firstNonExpired = poolKeys.find(k => k.status !== 'expired') || poolKeys[0];
+    firstNonExpired.isPrimary = true;
+    if (firstNonExpired.status === 'standby') firstNonExpired.status = 'active';
+  }
+
+  const publicKeys = poolKeys.map(k => ({
+    id: k.id,
+    label: k.label || 'Khóa Gemini',
+    maskedKey: k.maskedKey,
+    status: k.status || 'standby',
+    isPrimary: Boolean(k.isPrimary),
+    order: k.order || 1,
+    lastTested: k.lastTested || null,
+    testMessage: k.testMessage || '',
+    createdAt: k.createdAt || nowIso,
+    updatedAt: nowIso
+  }));
+
+  const primaryKey = poolKeys.find(k => k.isPrimary) || poolKeys[0] || null;
+
+  const promises = [
+    db.doc('admin_secrets/gemini_pool').set({
+      keys: poolKeys,
+      updatedAt: nowIso,
+      updatedBy: uid
+    }),
+    db.doc('config/ai_settings').set({
+      geminiKeyPool: publicKeys,
+      providers: {
+        gemini: {
+          isConfigured: poolKeys.length > 0,
+          maskedKey: primaryKey ? primaryKey.maskedKey : '',
+          status: primaryKey ? (primaryKey.status === 'active' ? 'ready' : (primaryKey.status === 'expired' ? 'error' : 'saved')) : 'not_configured',
+          lastTested: primaryKey ? primaryKey.lastTested : null,
+          updatedAt: nowIso
+        }
+      }
+    }, { merge: true })
+  ];
+
+  if (primaryKey) {
+    promises.push(db.doc('admin_secrets/gemini').set({
+      cipherText: primaryKey.cipherText,
+      iv: primaryKey.iv,
+      authTag: primaryKey.authTag,
+      maskedKey: primaryKey.maskedKey,
+      provider: 'gemini',
+      updatedAt: nowIso,
+      updatedBy: uid
+    }));
+  }
+
+  await Promise.all(promises);
+  if (typeof invalidateAiSettingsCache === 'function') {
+    invalidateAiSettingsCache();
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -46,107 +129,376 @@ module.exports = async function handler(req, res) {
 
   const { db, uid } = ctx;
 
-  // 1. ACTION: SAVE-KEY
-  if (action === 'save-key') {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { provider, apiKey } = req.body || {};
-    const validProviders = ['gemini', 'claude', 'openai'];
-    if (!provider || !validProviders.includes(provider)) {
-      return res.status(400).json({ error: 'Nhà cung cấp không hợp lệ. Chọn gemini, claude hoặc openai.' });
-    }
-    if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length < 8) {
-      return res.status(400).json({ error: 'Khóa API không hợp lệ hoặc quá ngắn.' });
-    }
-
-    try {
-      const trimmedKey = apiKey.trim();
-      const encrypted = encryptKey(trimmedKey);
-      const maskedKey = maskApiKey(trimmedKey);
-      const nowIso = new Date().toISOString();
-
-      await db.doc(`admin_secrets/${provider}`).set({
-        ...encrypted,
-        provider,
-        updatedAt: nowIso,
-        updatedBy: uid
-      });
-
-      await db.doc('config/ai_settings').set({
-        providers: {
-          [provider]: {
-            isConfigured: true,
-            maskedKey: maskedKey,
-            status: 'saved',
-            lastTested: null,
-            updatedAt: nowIso
-          }
-        }
-      }, { merge: true });
-
-      await recordAuditLog(db, {
-        uid,
-        action: 'ai_key_save',
-        newVal: { provider, maskedKey },
-        details: `Lưu API key nhà cung cấp ${provider.toUpperCase()} (${maskedKey})`
-      });
-
-      if (typeof invalidateAiSettingsCache === 'function') {
-        invalidateAiSettingsCache();
+  // 1. ACTION: KEY-POOL (GET danh sách khóa công khai & POST thêm/cập nhật khóa)
+  if (action === 'key-pool') {
+    if (req.method === 'GET') {
+      try {
+        const poolKeys = await loadSecretKeyPool(db);
+        const publicKeys = poolKeys.map(k => ({
+          id: k.id,
+          label: k.label || 'Khóa Gemini',
+          maskedKey: k.maskedKey,
+          status: k.status || 'standby', // 'active' | 'expiring' | 'expired' | 'standby'
+          isPrimary: Boolean(k.isPrimary),
+          order: k.order || 1,
+          lastTested: k.lastTested || null,
+          testMessage: k.testMessage || '',
+          createdAt: k.createdAt || null
+        }));
+        return res.status(200).json({ success: true, keys: publicKeys });
+      } catch (err) {
+        return res.status(500).json({ error: 'Không thể tải danh sách khóa: ' + err.message });
       }
-
-      return res.status(200).json({
-        success: true,
-        provider,
-        maskedKey,
-        updatedAt: nowIso
-      });
-    } catch (err) {
-      console.error('Lỗi lưu API key:', err.message);
-      return res.status(500).json({ error: 'Không thể lưu khóa: ' + err.message });
     }
+
+    if (req.method === 'POST') {
+      const { id, label, apiKey, status, isPrimary } = req.body || {};
+
+      try {
+        let poolKeys = await loadSecretKeyPool(db);
+        const nowIso = new Date().toISOString();
+
+        if (id) {
+          // CẬP NHẬT KHÓA ĐÃ CÓ
+          const targetIndex = poolKeys.findIndex(k => k.id === id);
+          if (targetIndex === -1) {
+            return res.status(404).json({ error: 'Không tìm thấy khóa có mã: ' + id });
+          }
+
+          const existing = poolKeys[targetIndex];
+          if (label && typeof label === 'string') existing.label = label.trim().slice(0, 80);
+          if (status && ['active', 'expiring', 'expired', 'standby'].includes(status)) {
+            existing.status = status;
+          }
+
+          if (apiKey && typeof apiKey === 'string' && apiKey.trim().length >= 8) {
+            const trimmed = apiKey.trim();
+            const encrypted = encryptKey(trimmed);
+            existing.cipherText = encrypted.cipherText;
+            existing.iv = encrypted.iv;
+            existing.authTag = encrypted.authTag;
+            existing.maskedKey = maskApiKey(trimmed);
+            existing.status = status || 'standby';
+          }
+
+          if (isPrimary || existing.status === 'active') {
+            poolKeys.forEach(k => {
+              if (k.id !== id) {
+                k.isPrimary = false;
+                if (k.status === 'active') k.status = 'standby';
+              }
+            });
+            existing.isPrimary = true;
+            existing.status = 'active';
+          }
+
+          existing.updatedAt = nowIso;
+        } else {
+          // THÊM KHÓA MỚI VÀO KHO DỰ TRỮ
+          if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length < 8) {
+            return res.status(400).json({ error: 'Vui lòng cung cấp khóa API Google Gemini hợp lệ (tối thiểu 8 ký tự).' });
+          }
+
+          const trimmed = apiKey.trim();
+          const encrypted = encryptKey(trimmed);
+          const maskedKey = maskApiKey(trimmed);
+          const newId = 'gemini_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+          const keyLabel = (label && typeof label === 'string' && label.trim())
+            ? label.trim().slice(0, 80)
+            : (poolKeys.length === 0 ? 'Khóa chính (Google AI Studio)' : `Khóa dự phòng #${poolKeys.length}`);
+
+          const shouldBePrimary = Boolean(isPrimary) || poolKeys.length === 0 || status === 'active';
+
+          if (shouldBePrimary) {
+            poolKeys.forEach(k => {
+              k.isPrimary = false;
+              if (k.status === 'active') k.status = 'standby';
+            });
+          }
+
+          const newKeyItem = {
+            id: newId,
+            label: keyLabel,
+            cipherText: encrypted.cipherText,
+            iv: encrypted.iv,
+            authTag: encrypted.authTag,
+            maskedKey,
+            status: shouldBePrimary ? 'active' : (status || 'standby'),
+            isPrimary: shouldBePrimary,
+            order: poolKeys.length + 1,
+            lastTested: null,
+            testMessage: '',
+            createdAt: nowIso,
+            updatedAt: nowIso
+          };
+
+          poolKeys.push(newKeyItem);
+        }
+
+        await saveSecretKeyPool(db, poolKeys, uid);
+
+        await recordAuditLog(db, {
+          uid,
+          action: 'gemini_key_pool_update',
+          details: `Cập nhật kho API Gemini (${poolKeys.length} khóa).`
+        });
+
+        const publicKeys = poolKeys.map(k => ({
+          id: k.id,
+          label: k.label,
+          maskedKey: k.maskedKey,
+          status: k.status,
+          isPrimary: Boolean(k.isPrimary),
+          order: k.order,
+          lastTested: k.lastTested,
+          testMessage: k.testMessage,
+          createdAt: k.createdAt
+        }));
+
+        return res.status(200).json({ success: true, keys: publicKeys });
+      } catch (err) {
+        console.error('Lỗi cập nhật key pool:', err.message);
+        return res.status(500).json({ error: 'Không thể cập nhật khóa: ' + err.message });
+      }
+    }
+
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 2. ACTION: DELETE-KEY
-  if (action === 'delete-key') {
+  // 2. ACTION: DELETE-KEY-POOL (Xóa 1 khóa khỏi kho dự phòng)
+  if (action === 'delete-key-pool') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { provider } = req.body || {};
-    const validProviders = ['gemini', 'claude', 'openai'];
-    if (!provider || !validProviders.includes(provider)) {
-      return res.status(400).json({ error: 'Nhà cung cấp không hợp lệ.' });
-    }
+    const { keyId } = req.body || {};
+    if (!keyId) return res.status(400).json({ error: 'Thiếu keyId cần xóa.' });
 
     try {
-      await db.doc(`admin_secrets/${provider}`).delete();
-      await db.doc('config/ai_settings').set({
-        providers: {
-          [provider]: {
-            isConfigured: false,
-            maskedKey: '',
-            status: 'not_configured',
-            lastTested: null,
-            updatedAt: new Date().toISOString()
-          }
-        }
-      }, { merge: true });
+      let poolKeys = await loadSecretKeyPool(db);
+      const filtered = poolKeys.filter(k => k.id !== keyId);
 
-      if (typeof invalidateAiSettingsCache === 'function') {
-        invalidateAiSettingsCache();
+      if (filtered.length === poolKeys.length) {
+        return res.status(404).json({ error: 'Không tìm thấy khóa để xóa.' });
       }
+
+      await saveSecretKeyPool(db, filtered, uid);
 
       await recordAuditLog(db, {
         uid,
-        action: 'ai_key_delete',
-        details: `Xóa API key của nhà cung cấp ${provider.toUpperCase()}`
+        action: 'gemini_key_pool_delete',
+        details: `Xóa khóa ${keyId} khỏi kho dự phòng Gemini`
       });
 
-      return res.status(200).json({ success: true, provider });
+      return res.status(200).json({ success: true });
     } catch (err) {
-      console.error('Lỗi xóa API key:', err.message);
+      console.error('Lỗi xóa khóa pool:', err.message);
       return res.status(500).json({ error: 'Không thể xóa khóa: ' + err.message });
     }
   }
 
-  // 3. ACTION: SETTINGS (GET & POST)
+  // 3. ACTION: SET-KEY-STATUS (Đổi mác: active, expiring, expired, standby)
+  if (action === 'set-key-status') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { keyId, status } = req.body || {};
+    const validStatuses = ['active', 'expiring', 'expired', 'standby'];
+    if (!keyId || !validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Dữ liệu không hợp lệ. status phải là: active, expiring, expired hoặc standby.' });
+    }
+
+    try {
+      let poolKeys = await loadSecretKeyPool(db);
+      const target = poolKeys.find(k => k.id === keyId);
+      if (!target) return res.status(404).json({ error: 'Không tìm thấy khóa.' });
+
+      if (status === 'active') {
+        poolKeys.forEach(k => {
+          if (k.id !== keyId) {
+            k.isPrimary = false;
+            if (k.status === 'active') k.status = 'standby';
+          }
+        });
+        target.isPrimary = true;
+        target.status = 'active';
+      } else {
+        target.status = status;
+        if (target.isPrimary) {
+          target.isPrimary = false;
+          // Tìm khóa khác không bị expired làm primary
+          const alt = poolKeys.find(k => k.id !== keyId && k.status !== 'expired');
+          if (alt) {
+            alt.isPrimary = true;
+            alt.status = 'active';
+          }
+        }
+      }
+
+      await saveSecretKeyPool(db, poolKeys, uid);
+      return res.status(200).json({ success: true, keyId, status });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi cập nhật trạng thái: ' + err.message });
+    }
+  }
+
+  // 4. ACTION: SET-PRIMARY-KEY (Đặt làm khóa chính đang hoạt động)
+  if (action === 'set-primary-key') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { keyId } = req.body || {};
+    if (!keyId) return res.status(400).json({ error: 'Thiếu keyId.' });
+
+    try {
+      let poolKeys = await loadSecretKeyPool(db);
+      const target = poolKeys.find(k => k.id === keyId);
+      if (!target) return res.status(404).json({ error: 'Không tìm thấy khóa.' });
+
+      poolKeys.forEach(k => {
+        k.isPrimary = (k.id === keyId);
+        if (k.id !== keyId && k.status === 'active') {
+          k.status = 'standby';
+        }
+      });
+      target.status = 'active';
+
+      await saveSecretKeyPool(db, poolKeys, uid);
+      return res.status(200).json({ success: true, keyId });
+    } catch (err) {
+      return res.status(500).json({ error: 'Lỗi thiết lập khóa chính: ' + err.message });
+    }
+  }
+
+  // 5. ACTION: TEST (Kiểm tra trực tiếp kết nối và trạng thái của khóa Gemini)
+  if (action === 'test') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    const { keyId, apiKey: rawApiKey, model: requestedModel } = req.body || {};
+
+    try {
+      let poolKeys = await loadSecretKeyPool(db);
+      let targetKeyItem = null;
+      let apiKey = '';
+
+      if (rawApiKey) {
+        apiKey = String(rawApiKey).trim();
+      } else if (keyId) {
+        targetKeyItem = poolKeys.find(k => k.id === keyId);
+        if (!targetKeyItem) return res.status(404).json({ error: 'Không tìm thấy khóa.' });
+        apiKey = decryptKey(targetKeyItem);
+      } else {
+        targetKeyItem = poolKeys.find(k => k.isPrimary) || poolKeys[0];
+        if (!targetKeyItem) {
+          return res.status(400).json({ error: 'Chưa có API key Gemini nào trong kho dự trữ để kiểm tra.' });
+        }
+        apiKey = decryptKey(targetKeyItem);
+      }
+
+      apiKey = (apiKey || '').replace(/[\r\n\t ]/g, '').trim();
+      if (!apiKey || apiKey.length < 8) {
+        return res.status(400).json({ error: 'Khóa API không hợp lệ hoặc quá ngắn.' });
+      }
+
+      const settingsSnap = await db.doc('config/ai_settings').get();
+      const settings = settingsSnap.exists ? settingsSnap.data() : {};
+      let model = (requestedModel && typeof requestedModel === 'string' && requestedModel.trim())
+        ? requestedModel.trim()
+        : ((settings.models && settings.models.gemini && settings.models.gemini.fast) ||
+           (DEFAULT_MODELS.gemini && DEFAULT_MODELS.gemini.fast) ||
+           'gemini-2.0-flash');
+
+      const candidateModels = [
+        model,
+        'gemini-2.0-flash',
+        'gemini-1.5-flash',
+        'gemini-2.5-flash'
+      ];
+      const uniqueCandidates = [...new Set(candidateModels)];
+
+      let geminiOk = false;
+      let lastRespMsg = '';
+      let testResponse = '';
+      let isQuotaError = false;
+      let isInvalidError = false;
+
+      for (const candModel of uniqueCandidates) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candModel)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
+              generationConfig: { maxOutputTokens: 10 }
+            })
+          });
+
+          if (resp.ok) {
+            const d = await resp.json();
+            testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
+            geminiOk = true;
+            model = candModel;
+            break;
+          } else {
+            const d = await resp.json().catch(() => ({}));
+            const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
+            lastRespMsg = msg;
+            if (resp.status === 400 && (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID'))) {
+              isInvalidError = true;
+              break;
+            }
+            if (resp.status === 429 || msg.includes('quota') || msg.includes('exhausted')) {
+              isQuotaError = true;
+            }
+          }
+        } catch (netErr) {
+          lastRespMsg = netErr.message;
+        }
+        if (geminiOk) break;
+      }
+
+      const nowIso = new Date().toISOString();
+      let determinedStatus = 'active';
+
+      if (geminiOk) {
+        // Nếu test thành công:
+        if (targetKeyItem) {
+          determinedStatus = targetKeyItem.isPrimary ? 'active' : 'standby';
+          targetKeyItem.status = determinedStatus;
+          targetKeyItem.lastTested = nowIso;
+          targetKeyItem.testMessage = `Hoạt động tốt (Model: ${model})`;
+          await saveSecretKeyPool(db, poolKeys, uid);
+        }
+        return res.status(200).json({
+          success: true,
+          status: determinedStatus,
+          message: `Kết nối thành công tới Google Gemini! Model ${model} phản hồi: "${testResponse}"`,
+          testedAt: nowIso
+        });
+      } else {
+        // Test thất bại:
+        determinedStatus = (isQuotaError || isInvalidError) ? 'expired' : 'expiring';
+        let friendlyError = lastRespMsg;
+        if (isInvalidError) {
+          friendlyError = 'Khóa API không hợp lệ hoặc đã bị xóa trên Google AI Studio. Vui lòng kiểm tra lại.';
+        } else if (isQuotaError) {
+          friendlyError = 'Khóa đã hết hạn mức sử dụng (Quota Exceeded / Rate Limit).';
+        }
+
+        if (targetKeyItem) {
+          targetKeyItem.status = determinedStatus;
+          targetKeyItem.lastTested = nowIso;
+          targetKeyItem.testMessage = friendlyError.slice(0, 300);
+          await saveSecretKeyPool(db, poolKeys, uid);
+        }
+
+        return res.status(200).json({
+          success: false,
+          status: determinedStatus,
+          message: `Kiểm tra thất bại: ${friendlyError}`,
+          testedAt: nowIso
+        });
+      }
+    } catch (err) {
+      console.error('Lỗi test key:', err.message);
+      return res.status(500).json({ success: false, message: 'Lỗi kiểm tra khóa: ' + err.message });
+    }
+  }
+
+  // 6. ACTION: SETTINGS (GET & POST cài đặt chung)
   if (action === 'settings') {
     if (req.method === 'GET') {
       try {
@@ -158,17 +510,19 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { priority, models, dailyRequestCap, featureToggles, prompts } = req.body || {};
+      const { models, dailyRequestCap, autoFailover, featureToggles, prompts } = req.body || {};
       try {
-        const sanitizedPriority = Array.isArray(priority) && priority.length > 0
-          ? priority.filter(p => ['gemini', 'claude', 'openai'].includes(p))
-          : ['gemini', 'openai', 'claude'];
-
         const sanitizedCap = Math.max(0, parseInt(dailyRequestCap, 10) || 0);
 
         const updateData = {
-          priority: sanitizedPriority,
-          models: models && typeof models === 'object' ? models : {},
+          priority: ['gemini'],
+          models: {
+            gemini: {
+              fast: (models && models.gemini && models.gemini.fast) || 'gemini-2.0-flash',
+              strong: (models && models.gemini && models.gemini.strong) || 'gemini-1.5-pro'
+            }
+          },
+          autoFailover: typeof autoFailover === 'boolean' ? autoFailover : true,
           dailyRequestCap: sanitizedCap,
           featureToggles: featureToggles && typeof featureToggles === 'object' ? featureToggles : {
             smartSchedule: true,
@@ -196,7 +550,7 @@ module.exports = async function handler(req, res) {
           uid,
           action: 'ai_settings_update',
           newVal: updateData,
-          details: `Cập nhật cấu hình AI (Ưu tiên: ${sanitizedPriority.join(' → ')}, Trần ngày: ${sanitizedCap || 'Vô hạn'})`
+          details: `Cập nhật cấu hình Gemini (Trần ngày: ${sanitizedCap || 'Vô hạn'}, Auto-Failover: ${updateData.autoFailover ? 'Bật' : 'Tắt'})`
         });
 
         return res.status(200).json({ success: true, settings: updateData });
@@ -209,309 +563,130 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 4. ACTION: USAGE (GET)
+  // 7. ACTION: USAGE (GET thống kê 14 ngày qua)
   if (action === 'usage') {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
     try {
-      const settingsSnap = await db.doc('config/ai_settings').get();
-      const settings = settingsSnap.exists ? settingsSnap.data() : {};
+      const snap = await db.doc('config/ai_settings').get();
+      const settings = snap.exists ? snap.data() : {};
       const dailyCap = parseInt(settings.dailyRequestCap, 10) || 0;
 
-      const snap = await db.collection('ai_usage').orderBy('date', 'desc').limit(14).get();
+      const dates = [];
+      const now = new Date();
+      for (let i = 0; i < 14; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        dates.push(d.toISOString().slice(0, 10));
+      }
 
-      const dailyUsage = [];
+      const refs = dates.map(d => db.doc(`ai_usage/${d}`));
+      const snaps = await db.getAll(...refs).catch(() => []);
+
+      const usageHistory = [];
+      let todayRequests = 0;
+      let todayTokens = 0;
       let grandRequests = 0;
       let grandTokens = 0;
-      let todayRequests = 0;
 
-      const todayStr = new Date().toISOString().slice(0, 10);
+      dates.forEach((dateStr, idx) => {
+        const doc = snaps[idx];
+        const data = (doc && doc.exists) ? doc.data() : {};
+        const reqCount = data.totalRequests || 0;
+        const tokCount = data.totalTokens || 0;
 
-      snap.forEach(doc => {
-        const d = doc.data();
-        const reqCount = d.totalRequests || 0;
-        const tokCount = d.totalTokens || 0;
+        if (idx === 0) {
+          todayRequests = reqCount;
+          todayTokens = tokCount;
+        }
+
         grandRequests += reqCount;
         grandTokens += tokCount;
 
-        if (d.date === todayStr) {
-          todayRequests = reqCount;
-        }
-
-        dailyUsage.push({
-          date: d.date,
-          totalRequests: reqCount,
-          totalTokens: tokCount,
-          providers: d.providers || {}
+        usageHistory.push({
+          date: dateStr,
+          requests: reqCount,
+          tokens: tokCount,
+          byProvider: data.requestsByProvider || {},
+          byModel: data.requestsByModel || {}
         });
       });
 
       const isCapped = dailyCap > 0 && todayRequests >= dailyCap;
 
       return res.status(200).json({
-        dailyUsage,
+        dailyCap,
+        todayRequests,
+        todayTokens,
         grandRequests,
         grandTokens,
-        todayRequests,
-        dailyCap,
-        isCapped
+        isCapped,
+        history: usageHistory
       });
     } catch (err) {
-      console.error('Lỗi tải thống kê ai_usage:', err.message);
-      return res.status(500).json({ error: 'Không thể tải thống kê chi phí AI.' });
+      console.error('Lỗi lấy dữ liệu sử dụng AI:', err.message);
+      return res.status(500).json({ error: 'Không thể lấy thống kê sử dụng: ' + err.message });
     }
   }
 
-  // 5. ACTION: TEST (POST)
-  if (action === 'test') {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const { provider, apiKey: rawApiKey, model: requestedModel } = req.body || {};
-    const validProviders = ['gemini', 'claude', 'openai'];
-    if (!provider || !validProviders.includes(provider)) {
-      return res.status(400).json({ error: 'Nhà cung cấp không hợp lệ.' });
-    }
-
-    try {
-      let apiKey = rawApiKey ? String(rawApiKey).trim() : null;
-      let isTestingDirectKey = Boolean(apiKey);
-
-      if (!apiKey) {
-        const secDoc = await db.doc(`admin_secrets/${provider}`).get();
-        if (!secDoc.exists) {
-          return res.status(400).json({ error: 'Chưa có API key cho nhà cung cấp này. Vui lòng dán key vào ô nhập để kiểm tra hoặc lưu.' });
-        }
-        apiKey = decryptKey(secDoc.data());
-      }
-
-      apiKey = (apiKey || '').replace(/[\r\n\t ]/g, '').trim();
-      if (!apiKey || apiKey.length < 8) {
-        return res.status(400).json({ error: 'Khóa API không hợp lệ hoặc quá ngắn.' });
-      }
-
-      const settingsSnap = await db.doc('config/ai_settings').get();
-      const settings = settingsSnap.exists ? settingsSnap.data() : {};
-      let model = (requestedModel && typeof requestedModel === 'string' && requestedModel.trim())
-        ? requestedModel.trim()
-        : ((settings.models && settings.models[provider] && settings.models[provider].fast) ||
-           (DEFAULT_MODELS[provider] && DEFAULT_MODELS[provider].fast));
-
-      let testResponse = '';
-      let success = false;
-      let errorMsg = '';
-
-      if (provider === 'gemini') {
-        const candidateModels = [
-          model,
-          model.endsWith('-latest') ? model.replace(/-latest$/, '') : `${model}-latest`,
-          model.endsWith('-002') ? model.replace(/-002$/, '') : `${model}-002`,
-          model.endsWith('-001') ? model.replace(/-001$/, '') : `${model}-001`
-        ].filter(Boolean);
-        const uniqueCandidates = [...new Set(candidateModels)];
-
-        let geminiOk = false;
-        let lastRespMsg = '';
-
-        for (const candModel of uniqueCandidates) {
-          const apiVersions = candModel.startsWith('gemini-1.5') ? ['v1', 'v1beta'] : ['v1beta', 'v1'];
-
-          for (const apiVer of apiVersions) {
-            try {
-              const url = `https://generativelanguage.googleapis.com/${apiVer}/models/${encodeURIComponent(candModel)}:generateContent?key=${encodeURIComponent(apiKey)}`;
-              const resp = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  contents: [{ role: 'user', parts: [{ text: 'Trả lời: OK' }] }],
-                  generationConfig: { maxOutputTokens: 10 }
-                })
-              });
-
-              if (resp.ok) {
-                const d = await resp.json();
-                testResponse = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts && d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text && d.candidates[0].content.parts[0].text.trim()) || 'OK';
-                success = true;
-                geminiOk = true;
-                model = candModel;
-                break;
-              } else {
-                const d = await resp.json().catch(() => ({}));
-                const msg = (d && d.error && d.error.message) || ('HTTP ' + resp.status);
-                lastRespMsg = msg;
-                if (resp.status === 400 && (msg.includes('API key not valid') || msg.includes('API_KEY_INVALID'))) {
-                  break;
-                }
-              }
-            } catch (netErr) {
-              lastRespMsg = netErr.message;
-            }
-          }
-          if (geminiOk) break;
-        }
-
-        if (!geminiOk) {
-          if (lastRespMsg.includes('API key not valid') || lastRespMsg.includes('API_KEY_INVALID')) {
-            errorMsg = 'Khóa API Google Gemini không hợp lệ hoặc đã bị vô hiệu hóa. Vui lòng kiểm tra lại tại Google AI Studio (https://aistudio.google.com/app/apikey) và đảm bảo key bắt đầu bằng "AIzaSy...".';
-          } else {
-            errorMsg = `Model ${model} không phản hồi: ${lastRespMsg}`;
-          }
-        }
-      } else if (provider === 'claude') {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01'
-          },
-          body: JSON.stringify({
-            model: model,
-            max_tokens: 10,
-            messages: [{ role: 'user', content: 'Trả lời: OK' }]
-          })
-        });
-
-        if (resp.status === 401) {
-          errorMsg = 'Khóa API Claude không chính xác (x-api-key invalid). Key Claude thường bắt đầu bằng "sk-ant-...".';
-        } else if (resp.status === 429) {
-          errorMsg = 'Hết hạn mức tài khoản Anthropic hoặc bị giới hạn tốc độ.';
-        } else if (!resp.ok) {
-          errorMsg = `Lỗi từ Anthropic (HTTP ${resp.status})`;
-        } else {
-          const d = await resp.json();
-          testResponse = (d.content && d.content[0] && d.content[0].text && d.content[0].text.trim()) || 'OK';
-          success = true;
-        }
-      } else if (provider === 'openai') {
-        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [{ role: 'user', content: 'Trả lời: OK' }],
-            max_tokens: 10
-          })
-        });
-
-        if (resp.status === 401) {
-          errorMsg = 'Khóa API OpenAI không chính xác (Incorrect API key). Key OpenAI thường bắt đầu bằng "sk-...".';
-        } else if (resp.status === 429) {
-          errorMsg = 'Hết hạn mức tín dụng OpenAI (You exceeded your current quota).';
-        } else if (!resp.ok) {
-          errorMsg = `Lỗi từ OpenAI (HTTP ${resp.status})`;
-        } else {
-          const d = await resp.json();
-          testResponse = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content && d.choices[0].message.content.trim()) || 'OK';
-          success = true;
-        }
-      }
-
-      const nowIso = new Date().toISOString();
-      const settingsUpdate = {
-        providers: {
-          [provider]: {
-            status: success ? 'ready' : 'error',
-            lastTested: nowIso,
-            testMessage: success ? `Thành công (Model: ${model})` : errorMsg
-          }
-        }
-      };
-
-      if (success && requestedModel) {
-        settingsUpdate.models = {
-          ...(settings.models || {}),
-          [provider]: {
-            ...(settings.models && settings.models[provider] ? settings.models[provider] : {}),
-            fast: requestedModel
-          }
-        };
-      }
-
-      await db.doc('config/ai_settings').set(settingsUpdate, { merge: true });
-      if (typeof invalidateAiSettingsCache === 'function') {
-        invalidateAiSettingsCache();
-      }
-
-      const successMsg = isTestingDirectKey
-        ? `Kiểm tra thành công khóa vừa nhập với model ${model}! Khóa này hoạt động tốt. Bạn hãy nhấn "Lưu key" để lưu vào hệ thống.`
-        : `Kết nối thành công tới ${provider.toUpperCase()}! Model ${model} phản hồi: "${testResponse}"`;
-
-      return res.status(200).json({
-        success,
-        message: success ? successMsg : `Kiểm tra thất bại: ${errorMsg}`,
-        testedAt: nowIso
-      });
-    } catch (err) {
-      console.error('Lỗi kiểm tra AI API:', err.message);
-      return res.status(500).json({ success: false, message: 'Không thể kết nối tới máy chủ nhà cung cấp: ' + err.message });
-    }
-  }
-
-  // 6. ACTION: MODELS (GET)
+  // 8. ACTION: MODELS (GET danh sách Model Google Gemini)
   if (action === 'models') {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' });
-    const provider = String(req.query.provider || '').toLowerCase();
-    const validProviders = ['gemini', 'claude', 'openai'];
-    if (!validProviders.includes(provider)) {
-      return res.status(400).json({ error: 'Nhà cung cấp không hợp lệ.' });
-    }
 
     try {
       let fetchedModels = [];
-      const secDoc = await db.doc(`admin_secrets/${provider}`).get();
-      if (secDoc.exists) {
+      const poolKeys = await loadSecretKeyPool(db);
+      const activeKeyItem = poolKeys.find(k => k.status !== 'expired') || poolKeys[0];
+
+      if (activeKeyItem && activeKeyItem.cipherText) {
         try {
-          const apiKey = decryptKey(secDoc.data());
-          if (provider === 'gemini') {
-            const [respV1, respBeta] = await Promise.all([
-              fetch(`https://generativelanguage.googleapis.com/v1/models?key=${encodeURIComponent(apiKey)}`).catch(() => null),
-              fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`).catch(() => null)
-            ]);
-            const modelsMap = new Map();
-            for (const resp of [respV1, respBeta]) {
-              if (resp && resp.ok) {
-                const d = await resp.json().catch(() => ({}));
-                (d.models || []).forEach(m => {
-                  if ((m.supportedGenerationMethods || []).includes('generateContent')) {
-                    const id = m.name.replace('models/', '');
-                    if (!modelsMap.has(id)) {
-                      modelsMap.set(id, {
-                        id: id,
-                        name: `${m.displayName || id} (${id})`
-                      });
-                    }
+          const apiKey = decryptKey(activeKeyItem);
+          const [respV1, respBeta] = await Promise.all([
+            fetch(`https://generativelanguage.googleapis.com/v1/models?key=${encodeURIComponent(apiKey)}`).catch(() => null),
+            fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`).catch(() => null)
+          ]);
+
+          const modelsMap = new Map();
+          for (const resp of [respV1, respBeta]) {
+            if (resp && resp.ok) {
+              const d = await resp.json().catch(() => ({}));
+              (d.models || []).forEach(m => {
+                if ((m.supportedGenerationMethods || []).includes('generateContent')) {
+                  const id = m.name.replace('models/', '');
+                  if (!modelsMap.has(id) && id.startsWith('gemini')) {
+                    modelsMap.set(id, {
+                      id: id,
+                      name: `${m.displayName || id} (${id})`
+                    });
                   }
-                });
-              }
-            }
-            if (modelsMap.size > 0) fetchedModels = Array.from(modelsMap.values());
-          } else if (provider === 'openai') {
-            const resp = await fetch('https://api.openai.com/v1/models', {
-              headers: { 'Authorization': `Bearer ${apiKey}` }
-            });
-            if (resp.ok) {
-              const d = await resp.json();
-              const list = (d.data || [])
-                .filter(m => m.id.startsWith('gpt-'))
-                .map(m => ({ id: m.id, name: m.id }))
-                .sort((a, b) => a.id.localeCompare(b.id));
-              if (list.length > 0) fetchedModels = list;
+                }
+              });
             }
           }
+          if (modelsMap.size > 0) fetchedModels = Array.from(modelsMap.values());
         } catch (fetchErr) {
-          console.warn(`Không thể lấy danh sách model trực tiếp từ ${provider}, dùng fallback:`, fetchErr.message);
+          console.warn('Không thể lấy danh sách model trực tiếp từ Google, dùng danh sách dự phòng:', fetchErr.message);
         }
       }
 
       if (fetchedModels.length === 0) {
-        fetchedModels = FALLBACK_MODELS[provider] || [];
+        fetchedModels = FALLBACK_MODELS.gemini || [];
       }
 
-      return res.status(200).json({ provider, models: fetchedModels });
+      return res.status(200).json({ provider: 'gemini', models: fetchedModels });
     } catch (err) {
       return res.status(500).json({ error: 'Lỗi tải danh sách model: ' + err.message });
     }
+  }
+
+  // 9. LEGACY ALIAS: SAVE-KEY & DELETE-KEY (Tương thích ngược)
+  if (action === 'save-key') {
+    const { apiKey } = req.body || {};
+    req.body = { ...req.body, id: 'gemini_key_primary', label: 'Khóa chính (Google AI Studio)', apiKey, status: 'active', isPrimary: true };
+    return handler({ ...req, query: { action: 'key-pool' }, method: 'POST' }, res);
+  }
+
+  if (action === 'delete-key') {
+    return handler({ ...req, query: { action: 'delete-key-pool' }, method: 'POST', body: { keyId: 'gemini_key_primary' } }, res);
   }
 
   return res.status(404).json({ error: `Không tìm thấy hành động AI: ${action}` });
