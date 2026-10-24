@@ -72,12 +72,12 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ results: [] });
     }
 
-    // Quét toàn bộ thư viện (lên tới 80 bài học) để đảm bảo không bỏ sót bất kỳ bài học nào
-    const candidateLessons = rawLessons.slice(0, 80).map(l => ({
+    // Tiếp nhận tối đa 30 bài học đã được lọc thô theo bán kính ngữ cảnh & trích xuất thông minh từ Client
+    const candidateLessons = rawLessons.slice(0, 30).map(l => ({
       id: String(l.id || ''),
       title: sanitizeText(l.title || '', 150),
       categoryTitle: sanitizeText(l.categoryTitle || 'Chung', 80),
-      excerpt: sanitizeText(l.excerpt || l.plainText || '', 500)
+      excerpt: sanitizeText(l.excerpt || l.plainText || '', 650)
     })).filter(l => l.id && (l.title || l.excerpt));
 
     if (candidateLessons.length === 0) {
