@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.28',
+        date: '2026-10-24T11:00:00+07:00',
+        title: 'Tra Cứu Từ Khóa & Từ Đồng Nghĩa Bằng AI, Tự Động Đóng Khung Kèm Huy Hiệu Từ Khóa Tìm Kiếm',
+        items: [
+          { type: 'feature', text: 'Tự động kích hoạt AI tra cứu ngữ nghĩa & từ đồng nghĩa: Khi tìm kiếm từ khóa không có cụm từ chính xác trong bài (ví dụ: "Mắt máy tính", "Mắt PC"), hệ thống tự động gọi AI phân tích và tìm ra bài học chứa khái niệm tương đương (ví dụ: "Thị giác máy tính"). Tuyệt đối không dùng API key khi tìm thấy từ khóa gốc.' },
+          { type: 'feature', text: 'Đóng khung từ khóa khớp kèm huy hiệu nổi bật: Khi click vào kết quả tìm kiếm, trang bài tự động mở, cuộn đến vị trí và đóng khung tạm thời từ khóa trong bài (ví dụ: "thị giác máy tính"), đồng thời gắn huy hiệu hiển thị từ khóa người dùng đã gõ (ví dụ: "✨ Mắt máy tính") ngay trên đỉnh khung.' },
+          { type: 'performance', text: 'Tối ưu tốc độ phản hồi và độ chính xác cao: Nâng cấp luồng AI quét toàn bộ danh mục bài học (lên đến 80 bài) với Gemini 2.0 Flash siêu tốc (~1s), kết hợp bộ nhớ đệm cache 0ms cho các truy vấn lặp lại.' }
+        ]
+      },
+      {
         version: 'v5.8.27',
         date: '2026-10-24T10:30:00+07:00',
         title: 'Khắc Phục Lệch Vị Trí Bài Học & Triệt Tiêu Giật Lag / Nháy Màn Hình Trống Khi Tải Lại Trang',

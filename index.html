@@ -176,7 +176,7 @@
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.27',
+        version: 'v5.8.28',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -202,7 +202,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.27';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.28';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -2306,7 +2306,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.27 • build 24/10/2026 10:30</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.28 • build 24/10/2026 10:30</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3095,7 +3095,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.27</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.28</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3117,7 +3117,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.27 • build 24/10/2026 10:30</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.28 • build 24/10/2026 10:30</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6081,8 +6081,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.27</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.27</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.28</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.28</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -26011,9 +26011,9 @@
     setTimeout(scheduleBackgroundIndexing, 1500);
 
     // Nhảy tới đúng vị trí kết quả và gửi thông điệp vẽ khung nổi bật
-    function jumpToSearchMatch(lessonId, occurrenceIndex, prefix, suffix, keyword, isAiMatch = false) {
+    function jumpToSearchMatch(lessonId, occurrenceIndex, prefix, suffix, keyword, isAiMatch = false, matchedTerm = '', searchQuery = '') {
       if (!lessonId) return;
-      searchDebugLog("Nhảy tới kết quả bài:", lessonId, "vị trí:", occurrenceIndex, "từ khóa:", keyword, "isAiMatch:", isAiMatch);
+      searchDebugLog("Nhảy tới kết quả bài:", lessonId, "vị trí:", occurrenceIndex, "từ khóa:", keyword, "isAiMatch:", isAiMatch, "matchedTerm:", matchedTerm, "searchQuery:", searchQuery);
 
       const payload = {
         type: 'HIGHLIGHT_BOX_TARGET',
@@ -26022,7 +26022,9 @@
         prefix: prefix || '',
         suffix: suffix || '',
         keyword: keyword || '',
-        isAiMatch: Boolean(isAiMatch)
+        isAiMatch: Boolean(isAiMatch),
+        matchedTerm: matchedTerm || '',
+        searchQuery: searchQuery || keyword || ''
       };
 
       if (state.activeLessonId === lessonId) {
@@ -26140,16 +26142,19 @@
         return;
       }
 
-      // Xác định tập bài học cần tìm
-      let targetLessons = [];
-      if (searchScope === 'current') {
-        if (state.activeLessonId) {
-          const cur = state.lessons.find(l => l.id === state.activeLessonId);
-          if (cur && !cur.trashed && !cur.isDeleted && !cur.deletedAt) targetLessons = [cur];
+      function getSearchTargetLessons() {
+        if (searchScope === 'current') {
+          if (state.activeLessonId) {
+            const cur = (state.lessons || []).find(l => l.id === state.activeLessonId);
+            if (cur && !cur.trashed && !cur.isDeleted && !cur.deletedAt) return [cur];
+          }
+          return [];
         }
-      } else {
-        targetLessons = (state.lessons || []).filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
+        return (state.lessons || []).filter(l => !l.trashed && !l.isDeleted && !l.deletedAt);
       }
+
+      // Xác định tập bài học cần tìm
+      const targetLessons = getSearchTargetLessons();
 
       if (targetLessons.length === 0) {
         dropdownEl.innerHTML = scopeHeader + `
@@ -26226,25 +26231,7 @@
           if (occurrences.length >= 30) break; // Giới hạn tối đa 30 kết quả mỗi bài
         }
 
-        // 2. Nếu nhiều từ và không khớp cụm nguyên vẹn: tìm các đoạn chứa tất cả các từ
-        if (occurrences.length === 0 && words.length > 1) {
-          const allWordsMatch = words.every(w => normText.includes(w) || normTitle.includes(w));
-          if (allWordsMatch) {
-            const firstWordIdx = normText.indexOf(words[0]);
-            if (firstWordIdx !== -1) {
-              const start = Math.max(0, firstWordIdx - 30);
-              const end = Math.min(plainText.length, firstWordIdx + 90);
-              const snippetRaw = plainText.substring(start, end);
-              occurrences.push({
-                occurrenceIndex: 0,
-                prefix: plainText.substring(start, firstWordIdx),
-                matchedText: plainText.substring(firstWordIdx, firstWordIdx + words[0].length),
-                suffix: plainText.substring(firstWordIdx + words[0].length, end),
-                snippet: (start > 0 ? '…' : '') + escapeHtml(snippetRaw) + (end < plainText.length ? '…' : '')
-              });
-            }
-          }
-        }
+        // (Đã loại bỏ cơ chế quét rời rạc từng từ gây kết quả rác và chặn AI semantic search)
 
         if (titleHasKw || occurrences.length > 0) {
           totalMatchCount += occurrences.length;
@@ -26270,11 +26257,11 @@
           return b.matchCount - a.matchCount;
         });
 
-        renderSearchResults(lessonMatches, rawQ, totalMatchCount, dropdownEl);
+        renderSearchResults(lessonMatches, rawQ, totalMatchCount, dropdownEl, targetLessons);
         return;
       }
 
-      // NẾU KHÔNG TÌM THẤY TỪ KHÓA GỐC -> KÍCH HOẠT TÌM KIẾM NGỮ NGHĨA & NỘI DUNG TƯƠNG TỰ BẰNG AI
+      // NẾU KHÔNG TÌM THẤY TỪ KHÓA GỐC (HOẶC TỪ ĐỒNG NGHĨA) -> TỰ ĐỘNG KÍCH HOẠT TÌM KIẾM NGỮ NGHĨA BẰNG AI
       triggerAiSemanticSearch(rawQ, targetLessons, dropdownEl);
     }
 
@@ -26326,12 +26313,13 @@
 
       try {
         const candidatePayload = [];
-        for (const l of targetLessons.slice(0, 35)) {
+        // Quét toàn bộ thư viện (lên đến 80 bài học) để không bỏ sót bất kỳ bài học nào
+        for (const l of targetLessons.slice(0, 80)) {
           let excerpt = '';
           if (searchIndexCache.has(l.id)) {
-            excerpt = (searchIndexCache.get(l.id).plainText || '').substring(0, 600);
+            excerpt = (searchIndexCache.get(l.id).plainText || '').substring(0, 500);
           } else {
-            excerpt = extractCleanTextFromHtml(l.htmlContent || '').substring(0, 600);
+            excerpt = extractCleanTextFromHtml(l.htmlContent || '').substring(0, 500);
           }
           const cat = (state.categories || []).find(c => c.id === l.categoryId);
           candidatePayload.push({
@@ -26434,7 +26422,8 @@
         cardsHtml += `
           <div class="ai-search-result-item mb-2.5 p-3 rounded-xl bg-white dark:bg-[#181B20] border border-indigo-200/70 dark:border-indigo-900/50 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-md transition cursor-pointer select-none group"
                data-lesson-id="${lesson.id}"
-               data-target-snippet="${escapeAttr(r.targetSnippet)}"
+               data-matched-term="${escapeAttr(r.matchedTerm || '')}"
+               data-target-snippet="${escapeAttr(r.targetSnippet || '')}"
                role="button"
                tabindex="0">
             
@@ -26481,7 +26470,8 @@
       targetEl.querySelectorAll('.ai-search-result-item').forEach(item => {
         item.addEventListener('click', () => {
           const lId = item.getAttribute('data-lesson-id');
-          const snippet = item.getAttribute('data-target-snippet');
+          const snippet = item.getAttribute('data-target-snippet') || '';
+          const matchedTerm = item.getAttribute('data-matched-term') || '';
 
           if (query && query.trim()) {
             addRecentSearch(query.trim());
@@ -26490,13 +26480,13 @@
           closeSearchCommandPalette();
           if (searchInput) searchInput.value = query;
 
-          jumpToSearchMatch(lId, 0, '', '', snippet, true);
+          jumpToSearchMatch(lId, 0, '', '', snippet, true, matchedTerm, query.trim());
         });
       });
     }
 
     // Hiển thị danh sách kết quả tìm kiếm với phân nhóm & trích đoạn chuẩn chỉnh
-    function renderSearchResults(lessonMatches, query, totalMatchCount, dropdownEl) {
+    function renderSearchResults(lessonMatches, query, totalMatchCount, dropdownEl, targetLessons = null) {
       const targetEl = dropdownEl || paletteSearchResultsList || document.getElementById('searchResultsDropdown');
       if (!targetEl) return;
       targetEl.innerHTML = '';
@@ -26625,8 +26615,28 @@
           </div>
         `;
       });
-      targetEl.innerHTML = countLimitNotice + groupsHtml;
+      const aiOptionBanner = `
+        <div class="mb-2.5 p-2.5 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-xl border border-indigo-200/70 dark:border-indigo-800/50 flex items-center justify-between gap-2 select-none">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-indigo-600 dark:text-indigo-400">✨</span>
+            <span class="text-xs text-[#1C1917] dark:text-[#EDECE8] font-medium truncate">Tìm thêm theo nghĩa hoặc từ đồng nghĩa:</span>
+          </div>
+          <button type="button" class="btn-force-ai-search shrink-0 px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] shadow-2xs hover:shadow transition active:scale-95 flex items-center gap-1 cursor-pointer">
+            <span>Tìm bằng AI</span>
+            <span>➔</span>
+          </button>
+        </div>
+      `;
+      targetEl.innerHTML = countLimitNotice + aiOptionBanner + groupsHtml;
       targetEl.classList.remove('hidden');
+
+      targetEl.querySelectorAll('.btn-force-ai-search').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const tLessons = targetLessons || (typeof getSearchTargetLessons === 'function' ? getSearchTargetLessons() : (state.lessons || []));
+          triggerAiSemanticSearch(query, tLessons, targetEl);
+        });
+      });
 
       // Nút mở rộng kết quả ẩn
       targetEl.querySelectorAll('.btn-expand-snippets').forEach(btn => {
@@ -26657,7 +26667,7 @@
           closeSearchCommandPalette();
           if (searchInput) searchInput.value = query;
 
-          jumpToSearchMatch(lId, oIdx, prefix, suffix, kw);
+          jumpToSearchMatch(lId, oIdx, prefix, suffix, kw, false, kw, query.trim());
         });
       });
     }

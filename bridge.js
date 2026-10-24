@@ -1745,6 +1745,7 @@
   let overlayTimer = null;
   let overlayObserver = null;
   let activeKeyword = '';
+  let activeSearchQuery = '';
   let lastScrollY = window.scrollY || 0;
 
   function normalizeVietnamese1to1(text) {
@@ -1784,6 +1785,7 @@
     currentOccurrences = [];
     currentOccIndex = -1;
     activeKeyword = '';
+    activeSearchQuery = '';
     window.removeEventListener('resize', updateOverlayPosition);
     window.removeEventListener('scroll', handleOverlayScroll);
   }
@@ -1800,6 +1802,32 @@
       searchBoxOverlayEl.style.left = (rect.left + scrollX - pad) + 'px';
       searchBoxOverlayEl.style.width = Math.max(20, rect.width + pad * 2) + 'px';
       searchBoxOverlayEl.style.height = Math.max(18, rect.height + pad * 2) + 'px';
+
+      // Căn chỉnh vị trí huy hiệu hiển thị từ khóa đã tìm kiếm bên trên hoặc bên dưới nếu sát mép
+      const queryBadge = searchBoxOverlayEl.querySelector('.search-query-top-badge');
+      if (queryBadge) {
+        if (rect.top < 38) {
+          queryBadge.style.top = 'auto';
+          queryBadge.style.bottom = '-30px';
+          const arrow = queryBadge.querySelector('.search-query-badge-arrow');
+          if (arrow) {
+            arrow.style.bottom = 'auto';
+            arrow.style.top = '-4px';
+            arrow.style.borderTop = 'none';
+            arrow.style.borderBottom = '4px solid ' + (currentIsAiMatch ? '#6366F1' : '#1E293B');
+          }
+        } else {
+          queryBadge.style.bottom = 'auto';
+          queryBadge.style.top = '-30px';
+          const arrow = queryBadge.querySelector('.search-query-badge-arrow');
+          if (arrow) {
+            arrow.style.top = 'auto';
+            arrow.style.bottom = '-4px';
+            arrow.style.borderBottom = 'none';
+            arrow.style.borderTop = '4px solid ' + (currentIsAiMatch ? '#7C3AED' : '#1E293B');
+          }
+        }
+      }
     } catch (_) {}
   }
 
@@ -1812,7 +1840,8 @@
     }
   }
 
-  function renderOverlayAtIndex(idx, shouldPulse = true) {
+  function renderOverlayAtIndex(idx, shouldPulse) {
+    if (typeof shouldPulse === 'undefined') shouldPulse = true;
     if (idx < 0 || idx >= currentOccurrences.length) return;
     currentOccIndex = idx;
     const occ = currentOccurrences[idx];
@@ -1847,23 +1876,56 @@
     searchBoxOverlayEl.style.display = 'block';
     searchBoxOverlayEl.style.opacity = '1';
 
+    // Cập nhật huy hiệu hiển thị từ khóa người dùng đã tìm kiếm ngay bên trên khung đóng
+    let queryBadge = searchBoxOverlayEl.querySelector('.search-query-top-badge');
+    if (!queryBadge) {
+      queryBadge = document.createElement('div');
+      queryBadge.className = 'search-query-top-badge';
+      searchBoxOverlayEl.appendChild(queryBadge);
+    }
+
+    const displayText = (activeSearchQuery || activeKeyword || '').trim();
+    if (displayText) {
+      const isAi = currentIsAiMatch;
+      queryBadge.style.cssText = [
+        'position: absolute',
+        'top: -30px',
+        'left: 0',
+        'display: inline-flex',
+        'align-items: center',
+        'gap: 5px',
+        'padding: 3px 9px',
+        'border-radius: 6px',
+        'font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        'font-size: 11px',
+        'font-weight: 700',
+        'line-height: 1.2',
+        'white-space: nowrap',
+        'pointer-events: none',
+        'z-index: 1000000',
+        'box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28)',
+        isAi
+          ? 'background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.35);'
+          : 'background: #1E293B; color: #F8FAFC; border: 1px solid rgba(255, 255, 255, 0.2);'
+      ].join(';');
+
+      const safeDisplay = displayText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      queryBadge.innerHTML = '<span style="font-size: 12px; line-height: 1;">' + (isAi ? '✨' : '🔍') + '</span>' +
+        '<span style="letter-spacing: 0.01em;">' + safeDisplay + '</span>' +
+        '<span class="search-query-badge-arrow" style="position: absolute; bottom: -4px; left: 10px; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 4px solid ' + (isAi ? '#7C3AED' : '#1E293B') + ';"></span>';
+      queryBadge.style.display = 'inline-flex';
+    } else {
+      queryBadge.style.display = 'none';
+    }
+
     // Hiệu ứng nhịp (pulse) 1.2s nhẹ nhàng tôn trọng prefers-reduced-motion
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (shouldPulse && !prefersReduced) {
       if (currentIsAiMatch) {
         searchBoxOverlayEl.classList.add('is-ai-match');
-        if (!searchBoxOverlayEl.querySelector('.ai-match-badge')) {
-          const badge = document.createElement('span');
-          badge.className = 'ai-match-badge';
-          badge.style.cssText = 'position:absolute;top:-26px;left:0;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#FFF;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;box-shadow:0 2px 8px rgba(99,102,241,0.4);pointer-events:none;white-space:nowrap;font-family:system-ui,-apple-system,sans-serif;z-index:1000000;';
-          badge.innerText = '✨ Đoạn sát nghĩa nhất theo AI';
-          searchBoxOverlayEl.appendChild(badge);
-        }
         searchBoxOverlayEl.style.animation = 'searchBoxPulseAi 0.4s ease-in-out 3';
       } else {
         searchBoxOverlayEl.classList.remove('is-ai-match');
-        const badge = searchBoxOverlayEl.querySelector('.ai-match-badge');
-        if (badge) badge.remove();
         searchBoxOverlayEl.style.animation = 'searchBoxPulse 0.4s ease-in-out 3';
       }
       setTimeout(() => {
@@ -1892,12 +1954,10 @@
 
   function handleHighlightBoxTarget(msg) {
     clearSearchBoxOverlay();
-    if (!msg || (!msg.keyword && !msg.targetSnippet)) return;
+    if (!msg || (!msg.keyword && !msg.targetSnippet && !msg.matchedTerm)) return;
 
     currentIsAiMatch = Boolean(msg.isAiMatch);
-    activeKeyword = (msg.targetSnippet || msg.keyword || '').trim();
-    const rawKw = activeKeyword;
-    const normKw = normalizeVietnamese1to1(rawKw).toLowerCase();
+    activeSearchQuery = (msg.searchQuery || '').trim();
 
     // Thu thập tất cả các text node hiển thị
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
@@ -1919,60 +1979,35 @@
     }
 
     const normFull = normalizeVietnamese1to1(fullText).toLowerCase();
-    const occurrences = [];
-    let searchPos = 0;
-    while (true) {
-      const matchIdx = normFull.indexOf(normKw, searchPos);
-      if (matchIdx === -1) break;
-      const matchEnd = matchIdx + normKw.length;
 
-      // Tìm node bắt đầu
-      let startNodeInfo = null, startOffset = 0;
-      for (const no of nodeOffsets) {
-        if (matchIdx >= no.start && matchIdx < no.end) {
-          startNodeInfo = no;
-          startOffset = matchIdx - no.start;
-          break;
-        }
-      }
+    // Danh sách từ khóa ứng cử viên theo thứ tự ưu tiên:
+    // 1. matchedTerm (từ khóa cụ thể trong bài cần đóng khung, ví dụ: 'thị giác máy tính')
+    // 2. keyword (từ khóa tìm kiếm ban đầu)
+    // 3. targetSnippet (đoạn trích dẫn chứa từ khóa)
+    const candidateTerms = [];
+    if (msg.matchedTerm && msg.matchedTerm.trim()) candidateTerms.push(msg.matchedTerm.trim());
+    if (msg.keyword && msg.keyword.trim() && !candidateTerms.includes(msg.keyword.trim())) candidateTerms.push(msg.keyword.trim());
+    if (msg.targetSnippet && msg.targetSnippet.trim() && !candidateTerms.includes(msg.targetSnippet.trim())) candidateTerms.push(msg.targetSnippet.trim());
 
-      // Tìm node kết thúc
-      let endNodeInfo = null, endOffset = 0;
-      for (const no of nodeOffsets) {
-        if (matchEnd > no.start && matchEnd <= no.end) {
-          endNodeInfo = no;
-          endOffset = matchEnd - no.start;
-          break;
-        }
-      }
+    let occurrences = [];
+    let usedTerm = '';
 
-      if (startNodeInfo && endNodeInfo) {
-        try {
-          const range = document.createRange();
-          range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
-          range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
-          
-          const prefix = fullText.substring(Math.max(0, matchIdx - 40), matchIdx);
-          const suffix = fullText.substring(matchEnd, Math.min(fullText.length, matchEnd + 40));
-          occurrences.push({ range, matchIdx, matchEnd, prefix, suffix, index: occurrences.length });
-        } catch (_) {}
-      }
+    for (const term of candidateTerms) {
+      const normTerm = normalizeVietnamese1to1(term).toLowerCase();
+      if (!normTerm || normTerm.length < 2) continue;
 
-      searchPos = matchIdx + Math.max(1, normKw.length);
-    }
+      let pos = 0;
+      const foundOccs = [];
+      while (true) {
+        const matchIdx = normFull.indexOf(normTerm, pos);
+        if (matchIdx === -1) break;
+        const matchEnd = matchIdx + normTerm.length;
 
-    // Dự phòng tìm kiếm cho AI match nếu không khớp 100% từng chữ do ngắt dòng hoặc ký tự định dạng
-    if (occurrences.length === 0 && normKw.length > 20) {
-      const chunkLen = Math.min(30, Math.floor(normKw.length * 0.5));
-      const subChunk = normKw.substring(0, chunkLen);
-      const subIdx = normFull.indexOf(subChunk);
-      if (subIdx !== -1) {
-        const matchEnd = Math.min(normFull.length, subIdx + normKw.length);
         let startNodeInfo = null, startOffset = 0;
         for (const no of nodeOffsets) {
-          if (subIdx >= no.start && subIdx < no.end) {
+          if (matchIdx >= no.start && matchIdx < no.end) {
             startNodeInfo = no;
-            startOffset = subIdx - no.start;
+            startOffset = matchIdx - no.start;
             break;
           }
         }
@@ -1984,18 +2019,68 @@
             break;
           }
         }
+
         if (startNodeInfo && endNodeInfo) {
           try {
             const range = document.createRange();
             range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
             range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
-            occurrences.push({ range, matchIdx: subIdx, matchEnd, prefix: '', suffix: '', index: 0 });
+            const prefix = fullText.substring(Math.max(0, matchIdx - 40), matchIdx);
+            const suffix = fullText.substring(matchEnd, Math.min(fullText.length, matchEnd + 40));
+            foundOccs.push({ range, matchIdx, matchEnd, prefix, suffix, index: foundOccs.length });
           } catch (_) {}
+        }
+        pos = matchIdx + Math.max(1, normTerm.length);
+      }
+
+      if (foundOccs.length > 0) {
+        occurrences = foundOccs;
+        usedTerm = term;
+        break; // Đã tìm thấy ứng viên ưu tiên cao nhất
+      }
+    }
+
+    // Dự phòng: Nếu chưa tìm thấy cụm nguyên vẹn và targetSnippet dài, thử tìm cụm con
+    if (occurrences.length === 0 && msg.targetSnippet) {
+      const normSnip = normalizeVietnamese1to1(msg.targetSnippet).toLowerCase();
+      if (normSnip.length > 20) {
+        const chunkLen = Math.min(30, Math.floor(normSnip.length * 0.5));
+        const subChunk = normSnip.substring(0, chunkLen);
+        const subIdx = normFull.indexOf(subChunk);
+        if (subIdx !== -1) {
+          const matchEnd = Math.min(normFull.length, subIdx + normSnip.length);
+          let startNodeInfo = null, startOffset = 0;
+          for (const no of nodeOffsets) {
+            if (subIdx >= no.start && subIdx < no.end) {
+              startNodeInfo = no;
+              startOffset = subIdx - no.start;
+              break;
+            }
+          }
+          let endNodeInfo = null, endOffset = 0;
+          for (const no of nodeOffsets) {
+            if (matchEnd > no.start && matchEnd <= no.end) {
+              endNodeInfo = no;
+              endOffset = matchEnd - no.start;
+              break;
+            }
+          }
+          if (startNodeInfo && endNodeInfo) {
+            try {
+              const range = document.createRange();
+              range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
+              range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
+              occurrences.push({ range, matchIdx: subIdx, matchEnd, prefix: '', suffix: '', index: 0 });
+              usedTerm = msg.targetSnippet;
+            } catch (_) {}
+          }
         }
       }
     }
 
+    activeKeyword = usedTerm || candidateTerms[0] || '';
     currentOccurrences = occurrences;
+
     if (occurrences.length === 0) {
       window.parent.postMessage({
         type: 'SEARCH_OVERLAY_STATUS',
@@ -2006,9 +2091,23 @@
       return;
     }
 
-    // Chọn lần xuất hiện thích hợp nhất (ưu tiên ngữ cảnh prefix/suffix, dự phòng index)
+    // Chọn lần xuất hiện thích hợp nhất:
+    // Nếu có targetSnippet, ưu tiên vị trí nằm trong hoặc sát targetSnippet nhất
     let targetIdx = 0;
-    if (msg.prefix || msg.suffix) {
+    if (msg.targetSnippet && occurrences.length > 1) {
+      const normSnip = normalizeVietnamese1to1(msg.targetSnippet).toLowerCase();
+      const snipIdx = normFull.indexOf(normSnip);
+      if (snipIdx !== -1) {
+        let minDiff = Infinity;
+        occurrences.forEach((occ, i) => {
+          const diff = Math.abs(occ.matchIdx - snipIdx);
+          if (diff < minDiff) {
+            minDiff = diff;
+            targetIdx = i;
+          }
+        });
+      }
+    } else if (msg.prefix || msg.suffix) {
       let bestScore = -1;
       const targetNormPrefix = normalizeVietnamese1to1(msg.prefix || '').toLowerCase();
       const targetNormSuffix = normalizeVietnamese1to1(msg.suffix || '').toLowerCase();

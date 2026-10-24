@@ -72,12 +72,12 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ results: [] });
     }
 
-    // Giới hạn tối đa 35 bài học để tối ưu tốc độ và token
-    const candidateLessons = rawLessons.slice(0, 35).map(l => ({
+    // Quét toàn bộ thư viện (lên tới 80 bài học) để đảm bảo không bỏ sót bất kỳ bài học nào
+    const candidateLessons = rawLessons.slice(0, 80).map(l => ({
       id: String(l.id || ''),
       title: sanitizeText(l.title || '', 150),
       categoryTitle: sanitizeText(l.categoryTitle || 'Chung', 80),
-      excerpt: sanitizeText(l.excerpt || l.plainText || '', 600)
+      excerpt: sanitizeText(l.excerpt || l.plainText || '', 500)
     })).filter(l => l.id && (l.title || l.excerpt));
 
     if (candidateLessons.length === 0) {
@@ -85,23 +85,27 @@ module.exports = async function handler(req, res) {
     }
 
     const systemPrompt = `Bạn là chuyên gia phân tích ngữ nghĩa và tìm kiếm thông tin chuyên sâu của Thư viện Sách HTML & Ôn tập.
-Người dùng đang tìm kiếm một từ khóa hoặc câu hỏi nhưng không tìm thấy kết quả khớp chính xác theo từng chữ.
+Người dùng đang tra cứu một từ khóa hoặc khái niệm (có thể là từ đồng nghĩa, ẩn dụ, tiếng Anh hoặc ngôn ngữ đời thường).
+Ví dụ điển hình:
+- "Mắt máy tính", "Mắt PC", "Computer Vision" -> chính là "Thị giác máy tính" / "thị giác máy tính trong trí tuệ nhân tạo".
+- "Não bộ AI", "Bộ óc máy tính" -> chính là "Mạng nơ-ron", "Deep Learning", "Bộ vi xử lý AI", v.v.
+
 Nhiệm vụ của bạn:
-1. Phân tích ngữ nghĩa, khái niệm cốt lõi, từ đồng nghĩa hoặc chủ đề liên quan chặt chẽ nhất của từ khóa.
+1. Phân tích ngữ nghĩa, khái niệm cốt lõi hoặc từ đồng nghĩa tương ứng trong chuyên ngành của từ khóa tìm kiếm.
 2. Đối chiếu với danh sách các bài học và đoạn văn trích dẫn.
-3. Tìm ra những bài học và đoạn văn CÓ NỘI DUNG SÁT NHẤT / TƯƠNG ĐỒNG NHẤT về mặt ý nghĩa, giải thích hoặc ngữ cảnh.
-4. Trả về tối đa 5 kết quả sát nhất (xếp theo độ tương đồng giảm dần).
-5. QUAN TRỌNG:
-   - "targetSnippet" PHẢI là một câu hoặc cụm từ có thật (từ 15 đến 120 ký tự) xuất hiện trong trích đoạn của bài học đó, để hệ thống có thể cuộn tới và đóng khung làm nổi bật cho người dùng.
-   - "reason" là 1 câu giải thích ngắn gọn (dưới 80 ký tự) vì sao đoạn này sát với từ khóa tìm kiếm.
-   - "similarityScore" là điểm số từ 65 đến 98.`;
+3. Tìm ra những bài học CÓ NỘI DUNG SÁT NHẤT / ĐỒNG NGHĨA NHẤT (tối đa 5 bài học, xếp theo độ tương đồng giảm dần).
+4. QUAN TRỌNG:
+   - "matchedTerm": Cụm từ hoặc thuật ngữ tương ứng CÓ THẬT xuất hiện trong bài học đó (từ 2 đến 8 từ, ví dụ: "thị giác máy tính" hoặc "Thị giác Máy tính") để hệ thống định vị và đóng khung chính xác từ khóa này.
+   - "targetSnippet": Câu hoặc đoạn trích ngắn (từ 20 đến 140 ký tự) có thật xuất hiện trong bài học chứa matchedTerm.
+   - "reason": 1 câu giải thích súc tích (dưới 80 ký tự) vì sao đoạn này tương đồng hoặc là từ đồng nghĩa với từ khóa tìm kiếm.
+   - "similarityScore": Điểm tương đồng từ 70 đến 99.`;
 
     const userPrompt = `TỪ KHÓA TÌM KIẾM CỦA NGƯỜI DÙNG: "${query}"
 
 DANH SÁCH BÀI HỌC VÀ TRÍCH ĐOẠN ĐỂ TÌM KIẾM:
 ${candidateLessons.map((l, i) => `[Bài ${i + 1}] ID: ${l.id} | Tiêu đề: ${l.title} | Mục: ${l.categoryTitle}\nNội dung: ${l.excerpt}`).join('\n\n')}
 
-Hãy phân tích và trả về JSON danh sách các kết quả sát nghĩa nhất.`;
+Hãy phân tích ngữ nghĩa và trả về JSON danh sách các kết quả sát nghĩa nhất kèm matchedTerm chuẩn xác.`;
 
     const jsonSchema = {
       type: 'object',
@@ -112,11 +116,12 @@ Hãy phân tích và trả về JSON danh sách các kết quả sát nghĩa nh�
             type: 'object',
             properties: {
               lessonId: { type: 'string' },
+              matchedTerm: { type: 'string' },
               targetSnippet: { type: 'string' },
               reason: { type: 'string' },
               similarityScore: { type: 'integer' }
             },
-            required: ['lessonId', 'targetSnippet', 'reason', 'similarityScore']
+            required: ['lessonId', 'matchedTerm', 'targetSnippet', 'reason', 'similarityScore']
           }
         }
       },
@@ -155,12 +160,13 @@ Hãy phân tích và trả về JSON danh sách các kết quả sát nghĩa nh�
     // Lọc lại kết quả để đảm bảo lessonId tồn tại trong danh sách đề cử
     const validCandidateIds = new Set(candidateLessons.map(l => l.id));
     const cleanResults = parsedResults
-      .filter(r => r && r.lessonId && validCandidateIds.has(r.lessonId) && r.targetSnippet)
+      .filter(r => r && r.lessonId && validCandidateIds.has(r.lessonId) && (r.matchedTerm || r.targetSnippet))
       .map(r => ({
         lessonId: r.lessonId,
-        targetSnippet: sanitizeText(r.targetSnippet, 200),
-        reason: sanitizeText(r.reason, 120),
-        similarityScore: Math.min(99, Math.max(60, Number(r.similarityScore) || 75))
+        matchedTerm: sanitizeText(r.matchedTerm || r.targetSnippet || '', 80),
+        targetSnippet: sanitizeText(r.targetSnippet || r.matchedTerm || '', 200),
+        reason: sanitizeText(r.reason || 'Nội dung liên quan theo ngữ nghĩa AI', 120),
+        similarityScore: Math.min(99, Math.max(65, Number(r.similarityScore) || 80))
       }))
       .slice(0, 5);
 
