@@ -28,6 +28,17 @@
       50% { transform: scale(1.02); box-shadow: 0 0 0 7px rgba(99, 102, 241, 0.32), 0 6px 18px rgba(0,0,0,0.24); }
       100% { transform: scale(1); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22), 0 4px 12px rgba(0,0,0,0.18); }
     }
+    @keyframes searchBoxPulseAi {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7), 0 4px 14px rgba(139, 92, 246, 0.3); }
+      50% { transform: scale(1.025); box-shadow: 0 0 0 10px rgba(139, 92, 246, 0.35), 0 8px 24px rgba(139, 92, 246, 0.4); }
+      100% { transform: scale(1); box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.28), 0 6px 18px rgba(139, 92, 246, 0.3); }
+    }
+    .search-highlight-overlay-box.is-ai-match {
+      border: 2.5px solid #8B5CF6 !important;
+      border-radius: 8px !important;
+      background-color: rgba(139, 92, 246, 0.16) !important;
+      box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.28), 0 8px 24px rgba(139, 92, 246, 0.25) !important;
+    }
     @media (prefers-reduced-motion: reduce) {
       .search-highlight-overlay-box { animation: none !important; }
     }
@@ -1839,7 +1850,22 @@
     // Hiệu ứng nhịp (pulse) 1.2s nhẹ nhàng tôn trọng prefers-reduced-motion
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (shouldPulse && !prefersReduced) {
-      searchBoxOverlayEl.style.animation = 'searchBoxPulse 0.4s ease-in-out 3';
+      if (currentIsAiMatch) {
+        searchBoxOverlayEl.classList.add('is-ai-match');
+        if (!searchBoxOverlayEl.querySelector('.ai-match-badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'ai-match-badge';
+          badge.style.cssText = 'position:absolute;top:-26px;left:0;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#FFF;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;box-shadow:0 2px 8px rgba(99,102,241,0.4);pointer-events:none;white-space:nowrap;font-family:system-ui,-apple-system,sans-serif;z-index:1000000;';
+          badge.innerText = '✨ Đoạn sát nghĩa nhất theo AI';
+          searchBoxOverlayEl.appendChild(badge);
+        }
+        searchBoxOverlayEl.style.animation = 'searchBoxPulseAi 0.4s ease-in-out 3';
+      } else {
+        searchBoxOverlayEl.classList.remove('is-ai-match');
+        const badge = searchBoxOverlayEl.querySelector('.ai-match-badge');
+        if (badge) badge.remove();
+        searchBoxOverlayEl.style.animation = 'searchBoxPulse 0.4s ease-in-out 3';
+      }
       setTimeout(() => {
         if (searchBoxOverlayEl) searchBoxOverlayEl.style.animation = 'none';
       }, 1250);
@@ -1862,11 +1888,14 @@
     }, '*');
   }
 
+  let currentIsAiMatch = false;
+
   function handleHighlightBoxTarget(msg) {
     clearSearchBoxOverlay();
-    if (!msg || !msg.keyword || !msg.keyword.trim()) return;
+    if (!msg || (!msg.keyword && !msg.targetSnippet)) return;
 
-    activeKeyword = msg.keyword.trim();
+    currentIsAiMatch = Boolean(msg.isAiMatch);
+    activeKeyword = (msg.targetSnippet || msg.keyword || '').trim();
     const rawKw = activeKeyword;
     const normKw = normalizeVietnamese1to1(rawKw).toLowerCase();
 
@@ -1930,6 +1959,40 @@
       }
 
       searchPos = matchIdx + Math.max(1, normKw.length);
+    }
+
+    // Dự phòng tìm kiếm cho AI match nếu không khớp 100% từng chữ do ngắt dòng hoặc ký tự định dạng
+    if (occurrences.length === 0 && normKw.length > 20) {
+      const chunkLen = Math.min(30, Math.floor(normKw.length * 0.5));
+      const subChunk = normKw.substring(0, chunkLen);
+      const subIdx = normFull.indexOf(subChunk);
+      if (subIdx !== -1) {
+        const matchEnd = Math.min(normFull.length, subIdx + normKw.length);
+        let startNodeInfo = null, startOffset = 0;
+        for (const no of nodeOffsets) {
+          if (subIdx >= no.start && subIdx < no.end) {
+            startNodeInfo = no;
+            startOffset = subIdx - no.start;
+            break;
+          }
+        }
+        let endNodeInfo = null, endOffset = 0;
+        for (const no of nodeOffsets) {
+          if (matchEnd > no.start && matchEnd <= no.end) {
+            endNodeInfo = no;
+            endOffset = matchEnd - no.start;
+            break;
+          }
+        }
+        if (startNodeInfo && endNodeInfo) {
+          try {
+            const range = document.createRange();
+            range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
+            range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
+            occurrences.push({ range, matchIdx: subIdx, matchEnd, prefix: '', suffix: '', index: 0 });
+          } catch (_) {}
+        }
+      }
     }
 
     currentOccurrences = occurrences;

@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.25',
+        date: '2026-10-24T09:40:00+07:00',
+        title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
+        items: [
+          { type: 'feature', text: 'Bổ sung tính năng Tìm kiếm nội dung tương tự bằng AI (Semantic AI Search): Khi tìm kiếm từ khóa không có kết quả khớp chính xác, AI sẽ tự động phân tích ngữ nghĩa và đề xuất lên đầu các bài học và đoạn văn sát nghĩa nhất kèm % độ tương đồng.' },
+          { type: 'feature', text: 'Tự động cuộn tới, đóng khung và làm nổi bật (AI Framing & Glow Pulse): Khi click vào kết quả AI, bài học tự động mở, cuộn tới đoạn sát nhất và vẽ khung viền tím phát sáng kèm huy hiệu "✨ Đoạn sát nghĩa nhất theo AI".' },
+          { type: 'performance', text: 'Tiết kiệm tối đa chi phí Token: Tuyệt đối chỉ kích hoạt API Key khi không tìm thấy từ khóa gốc. Tích hợp bộ nhớ đệm client (aiSemanticSearchCache) phản hồi tức thì 0ms cho các truy vấn đã thực hiện.' }
+        ]
+      },
+      {
         version: 'v5.8.24',
         date: '2026-10-24T09:30:00+07:00',
         title: 'Đồng Bộ Hóa Vĩnh Viễn Thứ Tự Sắp Xếp Bài Học & Khắc Phục Triệt Để Lỗi Lệch Thứ Tự Khi Tải Lại Trang',
