@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.29',
+        date: '2026-10-24T11:28:00+07:00',
+        title: 'Thiết Kế Lại Biểu Tượng Kính Lúp & Huy Hiệu Đóng Khung Chuẩn Vibe Editorial Cao Cấp',
+        items: [
+          { type: 'improved', text: 'Thay thế hoàn toàn biểu tượng emoji mặc định bằng icon kính lúp Vector SVG chuyên nghiệp: Biểu tượng kính lúp nét mảnh siêu sắc nét, nằm gọn trong ô gạch viền gradient xanh chàm tinh tế, đồng bộ hoàn hảo với phong cách thiết kế của Thư viện.' },
+          { type: 'improved', text: 'Nâng cấp huy hiệu nổi đỉnh khung theo chuẩn Glassmorphism: Tích hợp hiệu ứng làm mờ nền (backdrop-blur 12px), viền sáng phản quang tinh tế (subtle inner glow), font chữ sắc sảo và mũi tên định vị mềm mại.' },
+          { type: 'improved', text: 'Đồng bộ hóa biểu tượng đề xuất AI: Tích hợp biểu tượng chùm sao tỏa sáng Vector SVG phát quang tím violet cho các kết quả tìm kiếm ngữ nghĩa AI.' }
+        ]
+      },
+      {
         version: 'v5.8.28',
         date: '2026-10-24T11:00:00+07:00',
         title: 'Tra Cứu Từ Khóa & Từ Đồng Nghĩa Bằng AI, Tự Động Đóng Khung Kèm Huy Hiệu Từ Khóa Tìm Kiếm',

@@ -1806,25 +1806,25 @@
       // Căn chỉnh vị trí huy hiệu hiển thị từ khóa đã tìm kiếm bên trên hoặc bên dưới nếu sát mép
       const queryBadge = searchBoxOverlayEl.querySelector('.search-query-top-badge');
       if (queryBadge) {
-        if (rect.top < 38) {
+        if (rect.top < 40) {
           queryBadge.style.top = 'auto';
-          queryBadge.style.bottom = '-30px';
+          queryBadge.style.bottom = '-32px';
           const arrow = queryBadge.querySelector('.search-query-badge-arrow');
           if (arrow) {
             arrow.style.bottom = 'auto';
-            arrow.style.top = '-4px';
+            arrow.style.top = '-5px';
             arrow.style.borderTop = 'none';
-            arrow.style.borderBottom = '4px solid ' + (currentIsAiMatch ? '#6366F1' : '#1E293B');
+            arrow.style.borderBottom = '5px solid ' + (currentIsAiMatch ? '#1E1B4B' : '#0F172A');
           }
         } else {
           queryBadge.style.bottom = 'auto';
-          queryBadge.style.top = '-30px';
+          queryBadge.style.top = '-32px';
           const arrow = queryBadge.querySelector('.search-query-badge-arrow');
           if (arrow) {
             arrow.style.top = 'auto';
-            arrow.style.bottom = '-4px';
+            arrow.style.bottom = '-5px';
             arrow.style.borderBottom = 'none';
-            arrow.style.borderTop = '4px solid ' + (currentIsAiMatch ? '#7C3AED' : '#1E293B');
+            arrow.style.borderTop = '5px solid ' + (currentIsAiMatch ? '#4C1D95' : '#0F172A');
           }
         }
       }
@@ -1876,7 +1876,7 @@
     searchBoxOverlayEl.style.display = 'block';
     searchBoxOverlayEl.style.opacity = '1';
 
-    // Cập nhật huy hiệu hiển thị từ khóa người dùng đã tìm kiếm ngay bên trên khung đóng
+    // Cập nhật huy hiệu hiển thị từ khóa người dùng đã tìm kiếm ngay bên trên khung đóng (Icon Vector SVG siêu nét chuẩn Vibe Editorial)
     let queryBadge = searchBoxOverlayEl.querySelector('.search-query-top-badge');
     if (!queryBadge) {
       queryBadge = document.createElement('div');
@@ -1889,30 +1889,45 @@
       const isAi = currentIsAiMatch;
       queryBadge.style.cssText = [
         'position: absolute',
-        'top: -30px',
+        'top: -32px',
         'left: 0',
         'display: inline-flex',
         'align-items: center',
-        'gap: 5px',
-        'padding: 3px 9px',
-        'border-radius: 6px',
-        'font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        'font-size: 11px',
-        'font-weight: 700',
-        'line-height: 1.2',
+        'gap: 6px',
+        'padding: 3px 10px 3px 4px',
+        'border-radius: 8px',
+        'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif',
+        'font-size: 11.5px',
+        'font-weight: 600',
+        'line-height: 1.25',
         'white-space: nowrap',
         'pointer-events: none',
         'z-index: 1000000',
-        'box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28)',
+        'backdrop-filter: blur(12px)',
+        '-webkit-backdrop-filter: blur(12px)',
         isAi
-          ? 'background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.35);'
-          : 'background: #1E293B; color: #F8FAFC; border: 1px solid rgba(255, 255, 255, 0.2);'
+          ? 'background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(76, 29, 149, 0.95) 100%); color: #FAF5FF; border: 1px solid rgba(192, 132, 252, 0.38); box-shadow: 0 4px 18px -1px rgba(126, 34, 206, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);'
+          : 'background: rgba(15, 23, 42, 0.94); color: #F8FAFC; border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: 0 4px 18px -1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);'
       ].join(';');
 
+      const searchIconSvg = '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,rgba(59,130,246,0.22),rgba(37,99,235,0.14));border:1px solid rgba(96,165,250,0.32);box-shadow:inset 0 1px 0 rgba(255,255,255,0.18);flex-shrink:0;">' +
+        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">' +
+          '<circle cx="6.5" cy="6.5" r="4.5" stroke="#93C5FD" stroke-width="1.8" stroke-linecap="round"/>' +
+          '<path d="M10 10L13.8 13.8" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/>' +
+        '</svg>' +
+      '</span>';
+
+      const aiIconSvg = '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,rgba(168,85,247,0.28),rgba(126,34,206,0.18));border:1px solid rgba(192,132,252,0.4);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22);flex-shrink:0;">' +
+        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">' +
+          '<path d="M8 1L9.6 5.4L14 7L9.6 8.6L8 13L6.4 8.6L2 7L6.4 5.4L8 1Z" fill="#F0ABFC"/>' +
+          '<path d="M13 11L13.7 12.3L15 13L13.7 13.7L13 15L12.3 13.7L11 13L12.3 12.3L13 11Z" fill="#E879F9" opacity="0.9"/>' +
+        '</svg>' +
+      '</span>';
+
       const safeDisplay = displayText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      queryBadge.innerHTML = '<span style="font-size: 12px; line-height: 1;">' + (isAi ? '✨' : '🔍') + '</span>' +
-        '<span style="letter-spacing: 0.01em;">' + safeDisplay + '</span>' +
-        '<span class="search-query-badge-arrow" style="position: absolute; bottom: -4px; left: 10px; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 4px solid ' + (isAi ? '#7C3AED' : '#1E293B') + ';"></span>';
+      queryBadge.innerHTML = (isAi ? aiIconSvg : searchIconSvg) +
+        '<span style="letter-spacing: 0.012em; text-shadow: 0 1px 2px rgba(0,0,0,0.35);">' + safeDisplay + '</span>' +
+        '<span class="search-query-badge-arrow" style="position: absolute; bottom: -5px; left: 12px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid ' + (isAi ? '#4C1D95' : '#0F172A') + '; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));"></span>';
       queryBadge.style.display = 'inline-flex';
     } else {
       queryBadge.style.display = 'none';
