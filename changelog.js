@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.37',
+        date: '2026-10-24T17:15:00+07:00',
+        title: 'Thiết Kế Riêng Biểu Tượng Vector SVG Cho Huy Hiệu "Đã Lưu" (AI Fast Cache)',
+        items: [
+          { type: 'improved', text: 'Thay thế triệt để emoji tia chớp hệ thống (⚡) bằng biểu tượng vector SVG độc quyền (#icon-ai-cached): Tạo hình tia chớp khí động học sắc nét kết hợp 2 hạt năng lượng vệ tinh, đồng bộ chuẩn mực theo phong cách Editorial của toàn trang web.' },
+          { type: 'improved', text: 'Nâng cấp huy hiệu thành dạng thẻ pill bo tròn cao cấp: Tích hợp inline-flex căn giữa pixel-perfect, nền ngọc lục bảo trong mờ (glassmorphism emerald), viền hairline tinh xảo và màu sắc tự động thích ứng hoàn hảo cả chế độ sáng và tối.' },
+          { type: 'improved', text: 'Chuẩn hóa tính nhất quán cho bộ nhận diện AI: Đồng điệu 100% với biểu tượng chấm sáng AI (#icon-ai-sparkle) và bóng đèn tri thức (#icon-ai-lightbulb), mang lại trải nghiệm thị giác chuyên nghiệp, tinh tế.' }
+        ]
+      },
+      {
         version: 'v5.8.36',
         date: '2026-10-24T17:00:00+07:00',
         title: 'Cửa Sổ AI Thông Minh Bám Sát Đoạn Bôi Đen & Theo Dõi Tọa Độ Thời Gian Thực',
