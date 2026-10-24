@@ -2,6 +2,15 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.45',
+        date: '2026-10-24T18:35:00+07:00',
+        title: 'Thiết Kế Riêng Biểu Tượng Vòng Lặp Ôn Luyện Sửa Sai & Loại Bỏ Emoji Thô',
+        items: [
+          { type: 'improved', text: 'Thiết kế riêng Biểu tượng Vòng lặp Ôn luyện Sửa sai (Mastery Retry Loop): Thay thế hoàn toàn emoji phím lặp màu xanh thô kệch bằng biểu tượng vector vòng cung lặp kép 2 chiều (#icon-retry-wrong), mang phong cách học thuật thanh lịch và đồng bộ chuẩn giao diện Editorial của website.' },
+          { type: 'improved', text: 'Tối ưu hóa hiển thị nút "Ôn lại câu làm sai": Bảo toàn cấu trúc icon vector SVG sắc nét khi cập nhật số lượng câu sai động qua JS (ví dụ: "Ôn lại 1 câu làm sai"), bổ sung hiệu ứng vi tương tác xoay nhẹ góc khi rê chuột trên nền hoa hồng thanh nhã.' }
+        ]
+      },
+      {
         version: 'v5.8.44',
         date: '2026-10-24T18:25:00+07:00',
         title: 'Thiết Kế Riêng Biểu Tượng AI Tự Động Đề Xuất & Hoàn Thiện Trực Quan Bộ Đề',

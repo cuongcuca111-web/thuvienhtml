@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.44"></script>
+  <script src="./changelog.js?v=5.8.45"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.44',
+        version: 'v5.8.45',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.44';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.45';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -624,8 +624,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.44">
-  <script src="./bridge.js?v=5.8.44"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.45">
+  <script src="./bridge.js?v=5.8.45"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -1298,6 +1298,16 @@
     </symbol>
     <symbol id="icon-rotate-ccw" viewBox="0 0 24 24">
       <path d="M1 4V10H7M3.5 15A9 9 0 1 0 5.6 5.6L1 10" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- Biểu tượng Vòng lặp Ôn luyện Sửa sai (Retry Mistakes / Mastery Loop) thiết kế riêng chuẩn Vibe Editorial -->
+    <symbol id="icon-retry-wrong" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+        <path d="M16 16h5v5"/>
+      </g>
     </symbol>
     <symbol id="icon-copy" viewBox="0 0 24 24">
       <rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
@@ -2349,7 +2359,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.44 • build 24/10/2026 18:25</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.45 • build 24/10/2026 18:35</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3141,7 +3151,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.44</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.45</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3163,7 +3173,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.44 • build 24/10/2026 18:25</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.45 • build 24/10/2026 18:35</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -4165,8 +4175,8 @@
             </div>
             <div class="flex items-center gap-2">
               <button id="btnPracticeWrongOnly" type="button" class="touch-target px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5"><use href="#icon-rotate-ccw"></use></svg>
-                <span>🔁 Luyện tập các câu sai ngay</span>
+                <svg class="w-3.5 h-3.5 shrink-0 text-white" aria-hidden="true"><use href="#icon-retry-wrong"></use></svg>
+                <span>Luyện tập các câu sai ngay</span>
               </button>
             </div>
           </div>
@@ -4248,8 +4258,9 @@
         <p id="quizSummarySubtext" class="text-xs text-[#57534E] dark:text-[#9AA3B2] max-w-sm">Kết quả làm bài đã được tự động lưu lại vào hệ thống ôn tập.</p>
 
         <div class="flex flex-wrap items-center justify-center gap-2.5 pt-3">
-          <button id="btnQuizRetryWrongOnly" type="button" class="hidden touch-target px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold hover:bg-rose-100 transition cursor-pointer">
-            🔁 Ôn lại câu làm sai
+          <button id="btnQuizRetryWrongOnly" type="button" class="hidden touch-target px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold hover:bg-rose-100 transition cursor-pointer flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true"><use href="#icon-retry-wrong"></use></svg>
+            <span id="btnQuizRetryWrongLabel">Ôn lại câu làm sai</span>
           </button>
           <button id="btnQuizRestart" type="button" class="touch-target px-4 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] text-xs font-medium hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
             Làm lại từ đầu
@@ -6546,8 +6557,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.44</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.44</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.45</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.45</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -39297,9 +39308,9 @@
 
         hideModalAnimated(studyDecksModal);
         if (quizzes.length > 0) {
-          startQuizSession(quizzes, "🔁 Luyện tập các câu làm sai");
+          startQuizSession(quizzes, "Luyện tập các câu làm sai");
         } else {
-          startFlashcardSession(flashcards, "🔁 Luyện tập các thẻ chưa nhớ");
+          startFlashcardSession(flashcards, "Luyện tập các thẻ chưa nhớ");
         }
       };
     }
@@ -39539,7 +39550,15 @@
       if (btnQuizRetryWrongOnly) {
         if (currentQuizWrongList.length > 0) {
           btnQuizRetryWrongOnly.classList.remove('hidden');
-          btnQuizRetryWrongOnly.innerText = `🔁 Ôn lại ${currentQuizWrongList.length} câu làm sai`;
+          const label = document.getElementById('btnQuizRetryWrongLabel');
+          if (label) {
+            label.innerText = `Ôn lại ${currentQuizWrongList.length} câu làm sai`;
+          } else {
+            btnQuizRetryWrongOnly.innerHTML = `
+              <svg class="w-3.5 h-3.5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true"><use href="#icon-retry-wrong"></use></svg>
+              <span id="btnQuizRetryWrongLabel">Ôn lại ${currentQuizWrongList.length} câu làm sai</span>
+            `;
+          }
           btnQuizRetryWrongOnly.onclick = () => {
             startQuizSession(currentQuizWrongList, `Ôn lại câu làm sai: ${quizModalTitle?.innerText || ''}`, currentQuizDeckRef);
           };
