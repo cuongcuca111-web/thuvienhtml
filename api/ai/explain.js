@@ -456,35 +456,35 @@ D. [Phương án D]
         ].filter(Boolean).join('\n\n');
       } else if (mode === 'self_test') {
         const testType = ['mixed', 'quiz', 'flashcard'].includes(body.testType) ? body.testType : 'mixed';
-        const targetCount = Math.min(20, Math.max(3, parseInt(body.count, 10) || 10));
+        const isAutoCount = body.count === 'auto';
+        const targetCountNum = Math.min(20, Math.max(3, parseInt(body.count, 10) || 10));
+        const countDesc = isAutoCount
+          ? 'TỰ ĐỘNG ƯỚC LƯỢNG (từ 5 đến 15 câu tùy thuộc vào độ dài và mật độ kiến thức của tài liệu)'
+          : `${targetCountNum} câu`;
 
         systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
-Nhiệm vụ của bạn là dựa vào tài liệu bài học được cung cấp để tự động biên soạn một bộ đề TỰ KIỂM TRA & ÔN TẬP chất lượng cao, bao gồm:
+Nhiệm vụ của bạn là dựa vào tài liệu bài học được cung cấp để tự động biên soạn một bộ đề TỰ KIỂM TRA & ÔN TẬP chất lượng cao với số lượng: ${countDesc}, bao gồm:
 1. ĐẶT TÊN BỘ ĐỀ (title): Tự đặt tên ngắn gọn, súc tích, chuyên nghiệp phản ánh đúng trọng tâm kiến thức của bài học (Ví dụ: "Trắc nghiệm & Flashcard: Cấu trúc Dữ liệu Cây" hoặc "Kiểm tra: Thì Hiện tại Hoàn thành").
 2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm kiến thức kiểm tra.
 3. CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (quizzes):
-   - Biên soạn câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có tính phân loại tốt, bám sát các định nghĩa, nguyên lý, công thức, quy tắc hoặc tình huống cốt lõi.
-   - Trường "options": mảng gồm đúng 4 chuỗi phương án.
-   - Trường "ans": chỉ số phương án đúng (0, 1, 2 hoặc 3 tương ứng phương án thứ nhất, thứ hai, thứ ba, thứ tư).
-   - Trường "explanation": giải thích ngắn gọn, rõ ràng tại sao đáp án này đúng và lưu ý quan trọng.
-4. THẺ NHỚ FLASHCARD (flashcards):
-   - Biên soạn các thẻ nhớ ôn tập nhanh:
-   - Trường "q": câu hỏi / thuật ngữ / khái niệm ngắn gọn mặt trước.
-   - Trường "a": định nghĩa / câu trả lời cốt lõi mặt sau.
-BẮT BUỘC tuân thủ JSON Schema được yêu cầu. Tuyệt đối không thêm lời dẫn, markdown bọc ngoài hay văn bản phụ ngoài JSON.`;
+   - ${isAutoCount ? 'Tự ước lượng số lượng câu hỏi trắc nghiệm (khoảng 3 đến 10 câu phù hợp với độ dài bài học).' : `Biên soạn khoảng ${testType === 'flashcard' ? 0 : (testType === 'quiz' ? targetCountNum : Math.ceil(targetCountNum / 2))} câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có tính phân loại tốt, bám sát các định nghĩa, nguyên lý, công thức, quy tắc hoặc tình huống cốt lõi.`}
+   - Trường "options": mảng gồm đúng 4 chuỗi phương án [A, B, C, D].
+   - Trường "ans": số nguyên từ 0 đến 3 biểu thị vị trí đáp án đúng.
+   - Trường "explanation": giải thích ngắn gọn, súc tích vì sao đáp án đó đúng.
+4. THẺ NHỚ FLASHCARD ÔN TẬP (flashcards):
+   - ${isAutoCount ? 'Tự ước lượng số lượng thẻ flashcard (khoảng 3 đến 8 thẻ bám sát các khái niệm chính).' : `Biên soạn khoảng ${testType === 'quiz' ? 0 : (testType === 'flashcard' ? targetCountNum : Math.floor(targetCountNum / 2))} thẻ flashcard ôn tập.`}
+   - Trường "q": câu hỏi ngắn hoặc khái niệm cần nhớ.
+   - Trường "a": câu trả lời hoặc định nghĩa cô đọng, sắc nét.`;
 
         userPrompt = [
-          `[YÊU CẦU BIÊN SOẠN BỘ ĐỀ TỰ KIỂM TRA BẰNG AI]`,
-          `- Chế độ: ${testType === 'mixed' ? 'Kết hợp cả Trắc nghiệm 4 đáp án và Flashcards' : (testType === 'quiz' ? 'Chỉ câu hỏi trắc nghiệm 4 đáp án' : 'Chỉ thẻ nhớ Flashcards')}`,
-          `- Số lượng câu hỏi trắc nghiệm: ${testType === 'flashcard' ? 0 : targetCount}`,
-          `- Số lượng thẻ flashcard: ${testType === 'quiz' ? 0 : targetCount}`,
-          `- Tài liệu bài học đã được chọn lọc bên dưới:`,
-          `<lesson_content>\n${rawText}\n</lesson_content>`
+          `<task>
+Hãy đọc kỹ tài liệu bài học sau đây và biên soạn bộ đề Tự kiểm tra & Thẻ nhớ tương ứng với định dạng JSON chuẩn.
+</task>`,
+          `<lesson_content>
+${rawText}
+</lesson_content>`
         ].join('\n\n');
-
-        optimalMaxTokens = Math.min(3000, Math.max(900, targetCount * 180));
       }
-      optimalMaxTokens = (mode === 'self_test') ? optimalMaxTokens : ((mode === 'quiz' || mode === 'flashcard') ? 700 : 450);
     }
 
     const jsonSchema = (mode === 'self_test') ? {

@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.40',
+        date: '2026-10-24T17:42:00+07:00',
+        title: 'Tự Động Cuộn Đến Bài Đang Đọc, Số Lượng Tự Động & Khóa Quyền Gói Pro Cho Bộ Đề AI',
+        items: [
+          { type: 'improved', text: 'Tự động định vị bài học đang đọc: Khi mở modal Tự kiểm tra, hệ thống tự động tích chọn và cuộn mượt (smooth scroll) danh sách bài học đưa đúng bài bạn đang xem vào giữa khung nhìn, hiển thị rõ ràng huy hiệu "Đang đọc".' },
+          { type: 'new', text: 'Tùy chọn số lượng câu hỏi "Tự động (AI đề xuất)": AI tự động phân tích độ dài và mật độ kiến thức của các bài học được chọn để ước lượng và tạo số lượng câu hỏi trắc nghiệm & flashcard tối ưu nhất.' },
+          { type: 'improved', text: 'Huy hiệu PRO và cơ chế khóa quyền thành viên: Bổ sung mác PRO vàng kim sang trọng vào nút "Tự kiểm tra" (thanh công cụ bài học) và nút "+ Tạo bài mới" (Trung tâm Bộ đề); tự động hiển thị pop-up nâng cấp gói khi người dùng chưa có tài khoản Pro.' }
+        ]
+      },
+      {
         version: 'v5.8.39',
         date: '2026-10-24T17:35:00+07:00',
         title: 'Chuyển Động Trượt Mượt Vị Trí Pop-Up AI & Tự Động Thu Nhỏ Khi Cuộn Trang',
