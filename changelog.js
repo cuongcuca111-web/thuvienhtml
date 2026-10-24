@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.48',
+        date: '2026-10-24T19:15:00+07:00',
+        title: 'Nâng Cấp Toàn Diện Hệ Thống Đo Thời Gian Học Tập & Chống Mất Dữ Liệu',
+        items: [
+          { type: 'improved', text: 'Cơ chế đo thời gian học chính xác từng giây: Khắc phục triệt để tình trạng dừng đếm giờ khi đọc bài trong iframe nhờ bộ lắng nghe sự kiện đa tầng (Iframe Event Bridge) và nâng ngưỡng nhàn rỗi (idle window) lên 5 phút phù hợp chuẩn đọc học thuật.' },
+          { type: 'improved', text: 'Cơ chế chống mất dữ liệu đa tầng & Sao lưu khẩn cấp: Tự động lưu dồn giây đọc và làm tròn lưu ngay lập tức khi rời trang, chuyển tab hoặc đóng trình duyệt; bổ sung bản sao lưu độc lập (thuvienhtml_analytics_backup) và thuật toán hợp nhất Firestore thông minh (Smart Cloud Merge) ngăn chặn hoàn toàn việc mất lịch sử đọc khi đồng bộ đám mây.' },
+          { type: 'improved', text: 'Tính toán mục tiêu ngày thông minh & Trực quan hóa biểu đồ 7 ngày: Công nhận thành quả đọc sách khi đạt mục tiêu thời gian (38p/30p đạt 100% vinh danh thay vì 0%), hiển thị nhãn số phút trực tiếp trên từng cột biểu đồ và hỗ trợ công cụ bù giờ/tùy chỉnh mục tiêu linh hoạt.' }
+        ]
+      },
+      {
         version: 'v5.8.47',
         date: '2026-10-24T18:55:00+07:00',
         title: 'Tự Động Gỡ Bỏ Câu Sai Khi Hoàn Thành Ôn Luyện Thành Công',
