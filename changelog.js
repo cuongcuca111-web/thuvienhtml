@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.34',
+        date: '2026-10-24T16:20:00+07:00',
+        title: 'Khôi Phục Toàn Diện Chiều Cao Hiển Thị Đầy Đủ Bài Học Như Bản v5.8.30',
+        items: [
+          { type: 'fixed', text: 'Khắc phục triệt để lỗi thiếu/cụt phần cuối của bài học: Khôi phục cơ chế đo đạc chiều cao tự nhiên theo chuẩn v5.8.30, quét trọn vẹn 100% các khối phần tử trong tài liệu và áp dụng lớp bảo vệ chống cụt scrollHeight.' },
+          { type: 'fixed', text: 'Triệt tiêu quy tắc CSS ghi đè làm co rút cấu trúc bài đọc: Hủy bỏ việc can thiệp vào các thẻ con body > div, [class*="min-h-screen"], [class*="h-screen"], bảo toàn nguyên vẹn 100% bố cục gốc của mọi file HTML được tải lên.' },
+          { type: 'improved', text: 'Đồng bộ hóa khung chứa (#iframeOuterContainer) và bài đọc: Đảm bảo iframe giãn nở mượt mà không bao giờ bị cắt xén bất kể tài liệu dài bao nhiêu trang.' }
+        ]
+      },
+      {
         version: 'v5.8.33',
         date: '2026-10-24T16:05:00+07:00',
         title: 'Nâng Cấp Toàn Diện Bộ Tìm Kiếm AI: Quét Lan Tỏa Ngữ Cảnh, Trích Xuất Mục Chính & Từ Điển Cục Bộ 0ms',
