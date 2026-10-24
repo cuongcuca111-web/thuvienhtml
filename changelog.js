@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.35',
+        date: '2026-10-24T16:32:00+07:00',
+        title: 'Sửa Lỗi Cú Pháp Sandbox Bridge & Khôi Phục Toàn Diện 100% Nội Dung File Gốc',
+        items: [
+          { type: 'fixed', text: 'Triệt tiêu lỗi cú pháp ẩn (SyntaxError regex) trong Sandbox Bridge: Khôi phục bridge.js nguyên bản chuẩn v5.8.30, giúp tiến trình cầu nối Iframe khởi chạy ngay lập tức mà không bao giờ bị rơi vào bẫy kẹt 600px của bộ hẹn giờ dự phòng.' },
+          { type: 'fixed', text: 'Tự động co giãn chiều cao theo đúng 100% dung lượng file gốc: Iframe nay nhận lệnh BRIDGE_READY và BRIDGE_RESIZE mượt mà, tự động mở rộng trọn vẹn toàn bộ các mục bài đọc (Mục 1, 2, 3...) không còn bị che khuất hay xuất hiện khoảng trắng thừa.' },
+          { type: 'improved', text: 'Bảo vệ kép đa tầng (Dual Safety Guard): Đồng bộ hóa bộ đệm scrollHeight ở cả Iframe lẫn cửa sổ cha, đảm bảo tài liệu luôn hiển thị nguyên vẹn trên mọi thiết bị và kích thước màn hình.' }
+        ]
+      },
+      {
         version: 'v5.8.34',
         date: '2026-10-24T16:20:00+07:00',
         title: 'Khôi Phục Toàn Diện Chiều Cao Hiển Thị Đầy Đủ Bài Học Như Bản v5.8.30',

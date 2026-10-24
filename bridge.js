@@ -1004,7 +1004,6 @@
       h = Math.ceil(Math.max(body.scrollHeight || 0, body.offsetHeight || 0, html ? html.scrollHeight : 0, 300));
     }
 
-    // Bảo hiểm đa tầng: Tuyệt đối không bao giờ cắt ngắn hơn scrollHeight thực tế của tài liệu
     const totalScrollH = Math.max(body.scrollHeight || 0, html ? html.scrollHeight : 0);
     if (totalScrollH > h) {
       h = totalScrollH;
@@ -1757,8 +1756,7 @@
 
   function normalizeVietnamese1to1(text) {
     if (!text) return '';
-    const clean = text.replace(/[\u00A0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\t\r\n\v\f]/g, ' ');
-    const nfc = clean.normalize('NFC');
+    const nfc = text.normalize('NFC');
     const res = [];
     for (let i = 0; i < nfc.length; i++) {
       const ch = nfc[i];
@@ -1802,17 +1800,7 @@
     if (!searchBoxOverlayEl || currentOccIndex < 0 || !currentOccurrences[currentOccIndex]) return;
     try {
       const occ = currentOccurrences[currentOccIndex];
-      let rect = occ.range.getBoundingClientRect();
-      if (!rect || (rect.width === 0 && rect.height === 0)) {
-        const parent = occ.range.commonAncestorContainer.nodeType === 1
-          ? occ.range.commonAncestorContainer
-          : occ.range.commonAncestorContainer.parentElement;
-        if (parent) {
-          rect = parent.getBoundingClientRect();
-        }
-      }
-      if (!rect || (rect.width === 0 && rect.height === 0)) return;
-
+      const rect = occ.range.getBoundingClientRect();
       const scrollX = window.scrollX || window.pageXOffset || 0;
       const scrollY = window.scrollY || window.pageYOffset || 0;
       const pad = 3;
@@ -1850,7 +1838,12 @@
   }
 
   function handleOverlayScroll() {
-    updateOverlayPosition();
+    const curY = window.scrollY || 0;
+    if (Math.abs(curY - lastScrollY) > 500) {
+      if (searchBoxOverlayEl) searchBoxOverlayEl.style.opacity = '0';
+    } else {
+      updateOverlayPosition();
+    }
   }
 
   function renderOverlayAtIndex(idx, shouldPulse) {
@@ -1858,11 +1851,11 @@
     if (idx < 0 || idx >= currentOccurrences.length) return;
     currentOccIndex = idx;
     const occ = currentOccurrences[idx];
-
+    
     // Cuộn mượt để đoạn khớp nằm ở trung tâm màn hình
     try {
-      const scrollTarget = occ.range.commonAncestorContainer.nodeType === 1
-        ? occ.range.commonAncestorContainer
+      const scrollTarget = occ.range.commonAncestorContainer.nodeType === 1 
+        ? occ.range.commonAncestorContainer 
         : occ.range.commonAncestorContainer.parentElement;
       if (scrollTarget) {
         scrollTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -1875,7 +1868,7 @@
       searchBoxOverlayEl.id = 'searchHighlightBoxOverlay';
       searchBoxOverlayEl.className = 'search-highlight-overlay-box';
       (document.body || document.documentElement).appendChild(searchBoxOverlayEl);
-
+      
       window.addEventListener('resize', updateOverlayPosition, { passive: true });
       window.addEventListener('scroll', handleOverlayScroll, { passive: true });
       if (typeof ResizeObserver !== 'undefined' && document.body) {
@@ -1888,14 +1881,6 @@
     updateOverlayPosition();
     searchBoxOverlayEl.style.display = 'block';
     searchBoxOverlayEl.style.opacity = '1';
-
-    // Đảm bảo định vị chuẩn xác ngay cả khi layout thay đổi hoặc sau khi cuộn mượt tới vị trí
-    if (typeof requestAnimationFrame !== 'undefined') {
-      requestAnimationFrame(updateOverlayPosition);
-    }
-    setTimeout(updateOverlayPosition, 100);
-    setTimeout(updateOverlayPosition, 300);
-    setTimeout(updateOverlayPosition, 600);
 
     // Cập nhật huy hiệu hiển thị từ khóa người dùng đã tìm kiếm ngay bên trên khung đóng (Icon Vector SVG siêu nét chuẩn Vibe Editorial)
     let queryBadge = searchBoxOverlayEl.querySelector('.search-query-top-badge');
@@ -1988,70 +1973,6 @@
 
   let currentIsAiMatch = false;
 
-  function escapeRegex(str) {
-    var res = '';
-    var specials = '-[]/{}()*+?.\\^$|';
-    for (var k = 0; k < str.length; k++) {
-      var ch = str[k];
-      if (specials.indexOf(ch) !== -1) res += '\\' + ch;
-      else res += ch;
-    }
-    return res;
-  }
-
-  function findOccurrencesForTerm(term, normFull, fullText, nodeOffsets) {
-    const normTerm = normalizeVietnamese1to1(term).toLowerCase().trim();
-    if (!normTerm || normTerm.length < 2) return [];
-    const words = normTerm.split(/\s+/).filter(Boolean);
-    if (words.length === 0) return [];
-
-    const foundOccs = [];
-    try {
-      const escaped = words.map(function(w) {
-        return escapeRegex(w);
-      }).join('\\s+');
-      const re = new RegExp(escaped, 'g');
-      let m;
-      while ((m = re.exec(normFull)) !== null) {
-        const matchIdx = m.index;
-        const matchEnd = m.index + m[0].length;
-
-        let startNodeInfo = null, startOffset = 0;
-        for (let i = 0; i < nodeOffsets.length; i++) {
-          const no = nodeOffsets[i];
-          if (matchIdx >= no.start && matchIdx < no.end) {
-            startNodeInfo = no;
-            startOffset = matchIdx - no.start;
-            break;
-          }
-        }
-        let endNodeInfo = null, endOffset = 0;
-        for (let i = 0; i < nodeOffsets.length; i++) {
-          const no = nodeOffsets[i];
-          if (matchEnd > no.start && matchEnd <= no.end) {
-            endNodeInfo = no;
-            endOffset = matchEnd - no.start;
-            break;
-          }
-        }
-
-        if (startNodeInfo && endNodeInfo) {
-          try {
-            const range = document.createRange();
-            range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
-            range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
-            const prefix = fullText.substring(Math.max(0, matchIdx - 40), matchIdx);
-            const suffix = fullText.substring(matchEnd, Math.min(fullText.length, matchEnd + 40));
-            foundOccs.push({ range: range, matchIdx: matchIdx, matchEnd: matchEnd, prefix: prefix, suffix: suffix, index: foundOccs.length });
-          } catch (_) {}
-        }
-
-        if (m.index === re.lastIndex) re.lastIndex++;
-      }
-    } catch (_) {}
-    return foundOccs;
-  }
-
   function handleHighlightBoxTarget(msg) {
     clearSearchBoxOverlay();
     if (!msg || (!msg.keyword && !msg.targetSnippet && !msg.matchedTerm)) return;
@@ -2071,89 +1992,108 @@
 
     let fullText = '';
     const nodeOffsets = [];
-    for (let i = 0; i < textNodes.length; i++) {
-      const tn = textNodes[i];
+    for (const tn of textNodes) {
       const val = tn.nodeValue || '';
       const start = fullText.length;
       fullText += val;
-      nodeOffsets.push({ node: tn, start: start, end: fullText.length, text: val });
+      nodeOffsets.push({ node: tn, start, end: fullText.length, text: val });
     }
 
     const normFull = normalizeVietnamese1to1(fullText).toLowerCase();
 
     // Danh sách từ khóa ứng cử viên theo thứ tự ưu tiên:
+    // 1. matchedTerm (từ khóa cụ thể trong bài cần đóng khung, ví dụ: 'thị giác máy tính')
+    // 2. keyword (từ khóa tìm kiếm ban đầu)
+    // 3. targetSnippet (đoạn trích dẫn chứa từ khóa)
     const candidateTerms = [];
-    const cleanWord = function(t) {
-      return (t || '').replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '').trim();
-    };
-
-    if (msg.matchedTerm && msg.matchedTerm.trim()) {
-      candidateTerms.push(msg.matchedTerm.trim());
-      const c = cleanWord(msg.matchedTerm);
-      if (c && c !== msg.matchedTerm.trim() && !candidateTerms.includes(c)) candidateTerms.push(c);
-    }
-    if (msg.keyword && msg.keyword.trim() && !candidateTerms.includes(msg.keyword.trim())) {
-      candidateTerms.push(msg.keyword.trim());
-      const c = cleanWord(msg.keyword);
-      if (c && c !== msg.keyword.trim() && !candidateTerms.includes(c)) candidateTerms.push(c);
-    }
-    if (msg.targetSnippet && msg.targetSnippet.trim()) {
-      const snip = msg.targetSnippet.trim();
-      if (!candidateTerms.includes(snip)) candidateTerms.push(snip);
-      const subParts = snip.split(/[.,;?!…\n\r]+/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length >= 10; });
-      for (let i = 0; i < subParts.length; i++) {
-        if (!candidateTerms.includes(subParts[i])) candidateTerms.push(subParts[i]);
-      }
-    }
+    if (msg.matchedTerm && msg.matchedTerm.trim()) candidateTerms.push(msg.matchedTerm.trim());
+    if (msg.keyword && msg.keyword.trim() && !candidateTerms.includes(msg.keyword.trim())) candidateTerms.push(msg.keyword.trim());
+    if (msg.targetSnippet && msg.targetSnippet.trim() && !candidateTerms.includes(msg.targetSnippet.trim())) candidateTerms.push(msg.targetSnippet.trim());
 
     let occurrences = [];
     let usedTerm = '';
 
-    for (let i = 0; i < candidateTerms.length; i++) {
-      const term = candidateTerms[i];
-      const foundOccs = findOccurrencesForTerm(term, normFull, fullText, nodeOffsets);
+    for (const term of candidateTerms) {
+      const normTerm = normalizeVietnamese1to1(term).toLowerCase();
+      if (!normTerm || normTerm.length < 2) continue;
+
+      let pos = 0;
+      const foundOccs = [];
+      while (true) {
+        const matchIdx = normFull.indexOf(normTerm, pos);
+        if (matchIdx === -1) break;
+        const matchEnd = matchIdx + normTerm.length;
+
+        let startNodeInfo = null, startOffset = 0;
+        for (const no of nodeOffsets) {
+          if (matchIdx >= no.start && matchIdx < no.end) {
+            startNodeInfo = no;
+            startOffset = matchIdx - no.start;
+            break;
+          }
+        }
+        let endNodeInfo = null, endOffset = 0;
+        for (const no of nodeOffsets) {
+          if (matchEnd > no.start && matchEnd <= no.end) {
+            endNodeInfo = no;
+            endOffset = matchEnd - no.start;
+            break;
+          }
+        }
+
+        if (startNodeInfo && endNodeInfo) {
+          try {
+            const range = document.createRange();
+            range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
+            range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
+            const prefix = fullText.substring(Math.max(0, matchIdx - 40), matchIdx);
+            const suffix = fullText.substring(matchEnd, Math.min(fullText.length, matchEnd + 40));
+            foundOccs.push({ range, matchIdx, matchEnd, prefix, suffix, index: foundOccs.length });
+          } catch (_) {}
+        }
+        pos = matchIdx + Math.max(1, normTerm.length);
+      }
+
       if (foundOccs.length > 0) {
         occurrences = foundOccs;
         usedTerm = term;
-        break;
+        break; // Đã tìm thấy ứng viên ưu tiên cao nhất
       }
     }
 
-    // Dự phòng cấp 2: Nếu chưa tìm thấy và matchedTerm có từ 3 từ trở lên, thử các cụm con 2 từ
-    if (occurrences.length === 0 && msg.matchedTerm) {
-      const words = cleanWord(msg.matchedTerm).split(/\s+/).filter(Boolean);
-      if (words.length >= 3) {
-        const head2 = words.slice(0, 2).join(' ');
-        const tail2 = words.slice(-2).join(' ');
-        if (!candidateTerms.includes(head2)) {
-          const occs = findOccurrencesForTerm(head2, normFull, fullText, nodeOffsets);
-          if (occs.length > 0) {
-            occurrences = occs;
-            usedTerm = head2;
-          }
-        }
-        if (occurrences.length === 0 && !candidateTerms.includes(tail2)) {
-          const occs = findOccurrencesForTerm(tail2, normFull, fullText, nodeOffsets);
-          if (occs.length > 0) {
-            occurrences = occs;
-            usedTerm = tail2;
-          }
-        }
-      }
-    }
-
-    // Dự phòng cấp 3: Nếu targetSnippet dài, thử tìm cụm 4 từ liên tiếp trong snippet
+    // Dự phòng: Nếu chưa tìm thấy cụm nguyên vẹn và targetSnippet dài, thử tìm cụm con
     if (occurrences.length === 0 && msg.targetSnippet) {
-      const normSnip = normalizeVietnamese1to1(msg.targetSnippet).toLowerCase().trim();
-      const snipWords = normSnip.split(/\s+/).filter(Boolean);
-      if (snipWords.length >= 4) {
-        for (let i = 0; i <= snipWords.length - 4; i++) {
-          const subPhrase = snipWords.slice(i, i + 4).join(' ');
-          const occs = findOccurrencesForTerm(subPhrase, normFull, fullText, nodeOffsets);
-          if (occs.length > 0) {
-            occurrences = occs;
-            usedTerm = subPhrase;
-            break;
+      const normSnip = normalizeVietnamese1to1(msg.targetSnippet).toLowerCase();
+      if (normSnip.length > 20) {
+        const chunkLen = Math.min(30, Math.floor(normSnip.length * 0.5));
+        const subChunk = normSnip.substring(0, chunkLen);
+        const subIdx = normFull.indexOf(subChunk);
+        if (subIdx !== -1) {
+          const matchEnd = Math.min(normFull.length, subIdx + normSnip.length);
+          let startNodeInfo = null, startOffset = 0;
+          for (const no of nodeOffsets) {
+            if (subIdx >= no.start && subIdx < no.end) {
+              startNodeInfo = no;
+              startOffset = subIdx - no.start;
+              break;
+            }
+          }
+          let endNodeInfo = null, endOffset = 0;
+          for (const no of nodeOffsets) {
+            if (matchEnd > no.start && matchEnd <= no.end) {
+              endNodeInfo = no;
+              endOffset = matchEnd - no.start;
+              break;
+            }
+          }
+          if (startNodeInfo && endNodeInfo) {
+            try {
+              const range = document.createRange();
+              range.setStart(startNodeInfo.node, Math.min(startOffset, startNodeInfo.node.nodeValue.length));
+              range.setEnd(endNodeInfo.node, Math.min(endOffset, endNodeInfo.node.nodeValue.length));
+              occurrences.push({ range, matchIdx: subIdx, matchEnd, prefix: '', suffix: '', index: 0 });
+              usedTerm = msg.targetSnippet;
+            } catch (_) {}
           }
         }
       }
@@ -2173,13 +2113,14 @@
     }
 
     // Chọn lần xuất hiện thích hợp nhất:
+    // Nếu có targetSnippet, ưu tiên vị trí nằm trong hoặc sát targetSnippet nhất
     let targetIdx = 0;
     if (msg.targetSnippet && occurrences.length > 1) {
       const normSnip = normalizeVietnamese1to1(msg.targetSnippet).toLowerCase();
       const snipIdx = normFull.indexOf(normSnip);
       if (snipIdx !== -1) {
         let minDiff = Infinity;
-        occurrences.forEach(function(occ, i) {
+        occurrences.forEach((occ, i) => {
           const diff = Math.abs(occ.matchIdx - snipIdx);
           if (diff < minDiff) {
             minDiff = diff;
@@ -2191,7 +2132,7 @@
       let bestScore = -1;
       const targetNormPrefix = normalizeVietnamese1to1(msg.prefix || '').toLowerCase();
       const targetNormSuffix = normalizeVietnamese1to1(msg.suffix || '').toLowerCase();
-      occurrences.forEach(function(occ, i) {
+      occurrences.forEach((occ, i) => {
         let score = 0;
         const occPrefix = normalizeVietnamese1to1(occ.prefix).toLowerCase();
         const occSuffix = normalizeVietnamese1to1(occ.suffix).toLowerCase();
