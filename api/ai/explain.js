@@ -133,8 +133,9 @@ module.exports = async function handler(req, res) {
     }
 
     const body = req.body || {};
-    const rawText = sanitizeText(body.text, 2000);
-    const mode = ['explain', 'example', 'translate', 'flashcard', 'quiz'].includes(body.mode) ? body.mode : 'explain';
+    const isSelfTest = body.mode === 'self_test';
+    const rawText = sanitizeText(body.text, isSelfTest ? 25000 : 2000);
+    const mode = ['explain', 'example', 'translate', 'flashcard', 'quiz', 'self_test'].includes(body.mode) ? body.mode : 'explain';
     const style = ['casual', 'academic', 'concise', 'practical'].includes(body.style) ? body.style : 'casual';
     const targetLang = sanitizeText(body.targetLang || 'Tiếng Việt', 50);
     const rawContext = body.context || {};
@@ -164,18 +165,24 @@ module.exports = async function handler(req, res) {
 
     // 2. Kiểm tra độ dài đầu vào: Cho phép giải thích từ 1 từ đơn (>= 2 ký tự)
     if (!rawText || rawText.length < 2) {
-      return res.status(400).json({ error: 'Đoạn văn bản bôi đen quá ngắn (tối thiểu 2 ký tự).' });
+      return res.status(400).json({ error: 'Nội dung văn bản quá ngắn (tối thiểu 2 ký tự).' });
     }
     const words = rawText.split(/\s+/).filter(Boolean);
     if (words.length < 1) {
-      return res.status(400).json({ error: 'Vui lòng bôi đen từ hoặc đoạn văn để giải thích.' });
+      return res.status(400).json({ error: 'Vui lòng cung cấp nội dung để xử lý.' });
     }
-    if (rawText.length > 1500) {
-      return res.status(400).json({ error: 'Đoạn đã chọn quá dài (tối đa 1.500 ký tự). Hãy chọn đoạn ngắn hơn.' });
+    if (mode === 'self_test') {
+      if (rawText.length > 25000) {
+        return res.status(400).json({ error: 'Nội dung bài học quá dài (vượt quá 25.000 ký tự).' });
+      }
+    } else {
+      if (rawText.length > 1500) {
+        return res.status(400).json({ error: 'Đoạn đã chọn quá dài (tối đa 1.500 ký tự). Hãy chọn đoạn ngắn hơn.' });
+      }
     }
 
     const normalizedRawText = rawText.trim().replace(/\s+/g, ' ').toLowerCase();
-    const isShortTerm = words.length <= 6 && rawText.length <= 80 && (mode === 'explain' || mode === 'example');
+    const isShortTerm = (mode !== 'self_test') && words.length <= 6 && rawText.length <= 80 && (mode === 'explain' || mode === 'example');
     const bypassCache = Boolean(body.bypassCache);
 
     // BƯỚC ĐỆM 2.1: Kiểm tra Kho từ điển tích hợp sẵn (Built-in Lexicon) - 0 Token, 0ms, 0 Quota
@@ -308,7 +315,11 @@ module.exports = async function handler(req, res) {
               text: cachedText,
               terms: cachedData.result.terms || [],
               examples: cachedData.result.examples || [],
-              targetLang: cachedData.result.targetLang || targetLang
+              targetLang: cachedData.result.targetLang || targetLang,
+              title: cachedData.result.title || undefined,
+              summary: cachedData.result.summary || undefined,
+              quizzes: cachedData.result.quizzes || undefined,
+              flashcards: cachedData.result.flashcards || undefined
             });
           } else {
             cacheDocRef.delete().catch(() => {});
@@ -443,11 +454,74 @@ D. [Phương án D]
           `<context>\nTiêu đề mục: ${context.sectionTitle || 'Không có'}\nĐoạn trước: ${context.before || 'Không có'}\nĐoạn sau: ${context.after || 'Không có'}\n</context>`,
           `<selected_text>\n${rawText}\n</selected_text>`
         ].filter(Boolean).join('\n\n');
+      } else if (mode === 'self_test') {
+        const testType = ['mixed', 'quiz', 'flashcard'].includes(body.testType) ? body.testType : 'mixed';
+        const targetCount = Math.min(20, Math.max(3, parseInt(body.count, 10) || 10));
+
+        systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
+Nhiệm vụ của bạn là dựa vào tài liệu bài học được cung cấp để tự động biên soạn một bộ đề TỰ KIỂM TRA & ÔN TẬP chất lượng cao, bao gồm:
+1. ĐẶT TÊN BỘ ĐỀ (title): Tự đặt tên ngắn gọn, súc tích, chuyên nghiệp phản ánh đúng trọng tâm kiến thức của bài học (Ví dụ: "Trắc nghiệm & Flashcard: Cấu trúc Dữ liệu Cây" hoặc "Kiểm tra: Thì Hiện tại Hoàn thành").
+2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm kiến thức kiểm tra.
+3. CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (quizzes):
+   - Biên soạn câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) có tính phân loại tốt, bám sát các định nghĩa, nguyên lý, công thức, quy tắc hoặc tình huống cốt lõi.
+   - Trường "options": mảng gồm đúng 4 chuỗi phương án.
+   - Trường "ans": chỉ số phương án đúng (0, 1, 2 hoặc 3 tương ứng phương án thứ nhất, thứ hai, thứ ba, thứ tư).
+   - Trường "explanation": giải thích ngắn gọn, rõ ràng tại sao đáp án này đúng và lưu ý quan trọng.
+4. THẺ NHỚ FLASHCARD (flashcards):
+   - Biên soạn các thẻ nhớ ôn tập nhanh:
+   - Trường "q": câu hỏi / thuật ngữ / khái niệm ngắn gọn mặt trước.
+   - Trường "a": định nghĩa / câu trả lời cốt lõi mặt sau.
+BẮT BUỘC tuân thủ JSON Schema được yêu cầu. Tuyệt đối không thêm lời dẫn, markdown bọc ngoài hay văn bản phụ ngoài JSON.`;
+
+        userPrompt = [
+          `[YÊU CẦU BIÊN SOẠN BỘ ĐỀ TỰ KIỂM TRA BẰNG AI]`,
+          `- Chế độ: ${testType === 'mixed' ? 'Kết hợp cả Trắc nghiệm 4 đáp án và Flashcards' : (testType === 'quiz' ? 'Chỉ câu hỏi trắc nghiệm 4 đáp án' : 'Chỉ thẻ nhớ Flashcards')}`,
+          `- Số lượng câu hỏi trắc nghiệm: ${testType === 'flashcard' ? 0 : targetCount}`,
+          `- Số lượng thẻ flashcard: ${testType === 'quiz' ? 0 : targetCount}`,
+          `- Tài liệu bài học đã được chọn lọc bên dưới:`,
+          `<lesson_content>\n${rawText}\n</lesson_content>`
+        ].join('\n\n');
+
+        optimalMaxTokens = Math.min(3000, Math.max(900, targetCount * 180));
       }
-      optimalMaxTokens = (mode === 'quiz' || mode === 'flashcard') ? 700 : 450;
+      optimalMaxTokens = (mode === 'self_test') ? optimalMaxTokens : ((mode === 'quiz' || mode === 'flashcard') ? 700 : 450);
     }
 
-    const jsonSchema = {
+    const jsonSchema = (mode === 'self_test') ? {
+      type: 'object',
+      properties: {
+        mode: { type: 'string' },
+        title: { type: 'string', description: 'Tên tự đặt cho bộ đề thi' },
+        summary: { type: 'string', description: 'Tóm tắt ngắn gọn phạm vi bài kiểm tra' },
+        quizzes: {
+          type: 'array',
+          description: 'Danh sách câu hỏi trắc nghiệm 4 đáp án',
+          items: {
+            type: 'object',
+            properties: {
+              q: { type: 'string' },
+              options: { type: 'array', items: { type: 'string' } },
+              ans: { type: 'integer' },
+              explanation: { type: 'string' }
+            },
+            required: ['q', 'options', 'ans', 'explanation']
+          }
+        },
+        flashcards: {
+          type: 'array',
+          description: 'Danh sách thẻ nhớ ôn tập',
+          items: {
+            type: 'object',
+            properties: {
+              q: { type: 'string' },
+              a: { type: 'string' }
+            },
+            required: ['q', 'a']
+          }
+        }
+      },
+      required: ['title', 'quizzes', 'flashcards']
+    } : {
       type: 'object',
       properties: {
         mode: { type: 'string' },
@@ -517,8 +591,26 @@ D. [Phương án D]
       }
     }
 
+    let isSelfTestValid = false;
+    if (mode === 'self_test') {
+      let dataObj = aiResponse?.data;
+      if (!dataObj || (!Array.isArray(dataObj.quizzes) && !Array.isArray(dataObj.flashcards))) {
+        try {
+          const parsed = JSON.parse(aiResponse?.rawText || aiResponse?.text || '{}');
+          if (Array.isArray(parsed.quizzes) || Array.isArray(parsed.flashcards)) {
+            dataObj = parsed;
+            if (aiResponse) aiResponse.data = parsed;
+          }
+        } catch (_) {}
+      }
+      if (dataObj && (Array.isArray(dataObj.quizzes) || Array.isArray(dataObj.flashcards))) {
+        isSelfTestValid = true;
+        extractedExplanation = dataObj.summary || dataObj.title || 'Đã tạo thành công bộ đề tự kiểm tra.';
+      }
+    }
+
     // TUYỆT ĐỐI KHÔNG lưu vào cache, KHÔNG trừ lượt dùng và KHÔNG bao giờ trả chữ "{" về giao diện
-    if (!extractedExplanation || extractedExplanation === '{' || extractedExplanation === '{}' || extractedExplanation.length < 5) {
+    if (!isSelfTestValid && (!extractedExplanation || extractedExplanation === '{' || extractedExplanation === '{}' || extractedExplanation.length < 5)) {
       const errorMsg = callError ? callError.message : 'Mô hình AI bị quá tải hoặc phản hồi bị ngắt quãng. Vui lòng bấm "Thử lại" hoặc đổi sang phong cách giải thích khác.';
       return res.status(502).json({
         code: 'AI_RESPONSE_TRUNCATED',
@@ -531,6 +623,28 @@ D. [Phương án D]
     finalResult.style = style;
     finalResult.targetLang = targetLang;
     finalResult.text = sanitizeText(extractedExplanation, 2500);
+
+    if (mode === 'self_test') {
+      let dataObj = aiResponse?.data;
+      if (!dataObj || (!Array.isArray(dataObj.quizzes) && !Array.isArray(dataObj.flashcards))) {
+        try {
+          dataObj = JSON.parse(aiResponse?.rawText || aiResponse?.text || '{}');
+        } catch (_) {}
+      }
+      finalResult.title = sanitizeText(dataObj?.title || 'Tự kiểm tra bài học', 200);
+      finalResult.summary = sanitizeText(dataObj?.summary || '', 500);
+      finalResult.quizzes = Array.isArray(dataObj?.quizzes) ? dataObj.quizzes.map(q => ({
+        q: sanitizeText(q.q, 500),
+        options: Array.isArray(q.options) ? q.options.slice(0, 4).map(o => sanitizeText(o, 300)) : [],
+        ans: typeof q.ans === 'number' ? q.ans : 0,
+        explanation: sanitizeText(q.explanation, 600)
+      })) : [];
+      finalResult.flashcards = Array.isArray(dataObj?.flashcards) ? dataObj.flashcards.map(fc => ({
+        q: sanitizeText(fc.q, 400),
+        a: sanitizeText(fc.a, 600)
+      })) : [];
+      finalResult.text = `Đã tạo ${finalResult.quizzes.length} câu trắc nghiệm và ${finalResult.flashcards.length} thẻ flashcard.`;
+    }
 
     if (Array.isArray(finalResult.terms)) {
       finalResult.terms = finalResult.terms.slice(0, 3).map(t => ({
@@ -590,7 +704,11 @@ D. [Phương án D]
       text: finalResult.text,
       terms: finalResult.terms,
       examples: finalResult.examples,
-      targetLang: finalResult.targetLang
+      targetLang: finalResult.targetLang,
+      title: finalResult.title || undefined,
+      summary: finalResult.summary || undefined,
+      quizzes: finalResult.quizzes || undefined,
+      flashcards: finalResult.flashcards || undefined
     });
 
   } catch (err) {

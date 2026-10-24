@@ -169,14 +169,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.37"></script>
+  <script src="./changelog.js?v=5.8.38"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.37',
+        version: 'v5.8.38',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -202,7 +202,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.37';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.38';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -616,8 +616,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.37">
-  <script src="./bridge.js?v=5.8.37"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.38">
+  <script src="./bridge.js?v=5.8.38"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2331,7 +2331,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.37 • build 24/10/2026 17:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.38 • build 24/10/2026 17:25</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3120,7 +3120,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.37</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.38</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3142,7 +3142,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.37 • build 24/10/2026 17:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.38 • build 24/10/2026 17:25</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3774,9 +3774,15 @@
             <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2]" id="fcSessionSubtitle">Thẻ 1 / 5</p>
           </div>
         </div>
-        <button id="btnCloseFcModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng ôn tập" title="Đóng">
-          <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
-        </button>
+        <div class="flex items-center gap-1.5">
+          <!-- Nút Gắn sao lưu lại thẻ Flashcard hiện tại -->
+          <button id="btnFcStarToggle" type="button" class="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-stone-400 dark:text-stone-500 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Gắn sao lưu lại thẻ này" title="Gắn sao lưu lại thẻ này">
+            <svg id="fcStarIcon" class="w-4 h-4 fill-none transition-transform active:scale-125"><use href="#icon-star"></use></svg>
+          </button>
+          <button id="btnCloseFcModal" type="button" class="touch-target w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng bảng ôn tập" title="Đóng">
+            <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
       </div>
 
       <!-- Body Card Area -->
@@ -3833,6 +3839,378 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- // ========================================================================= -->
+  <!-- // FEATURE: HỆ THỐNG TỰ KIỂM TRA AI & QUẢN LÝ BỘ THẺ (ICON 2 TRÊN HEADER) -->
+  <!-- // ========================================================================= -->
+
+  <!-- MODAL 1: THIẾT LẬP TỰ KIỂM TRA BẰNG AI (SELF-TEST CONFIG MODAL) -->
+  <div id="selfTestConfigModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-3xl w-full max-w-2xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header -->
+      <div class="p-4 sm:p-5 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between shrink-0 bg-[#FAF9F5] dark:bg-[#14161C]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-amber-500/15 dark:from-indigo-950/60 dark:to-purple-950/40 border border-indigo-200/60 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs shrink-0">
+            <svg class="w-5 h-5"><use href="#icon-cards"></use></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-serif font-bold text-base sm:text-lg text-[#1C1917] dark:text-[#EDECE8]">Tạo bài Tự kiểm tra bằng AI</h3>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/40">
+                <svg class="w-3 h-3 text-indigo-500"><use href="#icon-ai-sparkle"></use></svg>
+                AI Generator
+              </span>
+            </div>
+            <p class="text-xs text-[#6E6B65] dark:text-[#9AA3B2] mt-0.5">Trắc nghiệm 4 đáp án &amp; Flashcard học sâu theo nội dung bài học</p>
+          </div>
+        </div>
+        <button id="btnCloseSelfTestConfigModal" type="button" class="touch-target w-10 h-10 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center cursor-pointer" aria-label="Đóng">
+          <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+        </button>
+      </div>
+
+      <!-- Body Scrollable -->
+      <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 no-scrollbar">
+
+        <!-- MỤC 1: CHỌN BÀI HỌC (Chọn 1 hoặc nhiều bài, mặc định là bài hiện tại) -->
+        <div class="space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
+              <span>1. Chọn bài học để kiểm tra</span>
+              <span id="selfTestSelectedCountBadge" class="text-[11px] font-sans font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50">Đã chọn 1 bài</span>
+            </label>
+            <div class="flex items-center gap-1 text-[11px]">
+              <button id="btnSelfTestSelectCurrentOnly" type="button" class="px-2 py-1 rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-medium transition cursor-pointer">Chỉ bài này</button>
+              <span class="text-stone-300 dark:text-stone-700">•</span>
+              <button id="btnSelfTestSelectAll" type="button" class="px-2 py-1 rounded-lg text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium transition cursor-pointer">Chọn tất cả</button>
+              <span class="text-stone-300 dark:text-stone-700">•</span>
+              <button id="btnSelfTestClearAll" type="button" class="px-2 py-1 rounded-lg text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium transition cursor-pointer">Bỏ chọn</button>
+            </div>
+          </div>
+
+          <!-- Ô tìm kiếm bài học nhanh -->
+          <div class="relative">
+            <svg class="w-3.5 h-3.5 absolute left-3 top-3 text-stone-400 pointer-events-none"><use href="#icon-search"></use></svg>
+            <input id="searchLessonForTestInput" type="text" placeholder="Tìm nhanh bài học theo tên..." class="w-full text-xs pl-8 pr-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none placeholder:text-stone-400" />
+          </div>
+
+          <!-- Danh sách bài học cuộn -->
+          <div id="selfTestLessonListContainer" class="max-h-48 overflow-y-auto rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/50 dark:bg-[#12151B]/50 divide-y divide-[#E7E5DF] dark:divide-[#262C36] p-1 space-y-0.5">
+            <!-- Render dynamically -->
+          </div>
+        </div>
+
+        <!-- MỤC 2: CẤU HÌNH BÀI KIỂM TRA -->
+        <div class="space-y-3">
+          <label class="text-xs font-bold uppercase tracking-wider text-[#1C1917] dark:text-[#EDECE8]">2. Dạng bài &amp; Số lượng câu hỏi</label>
+          
+          <!-- Chế độ kiểm tra -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <label class="self-test-type-opt relative flex flex-col p-3 rounded-2xl border border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 cursor-pointer transition select-none">
+              <input type="radio" name="selfTestType" value="mixed" checked class="sr-only" />
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300">Trắc nghiệm + Thẻ nhớ</span>
+                <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              </div>
+              <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Đầy đủ 4 đáp án &amp; thẻ lật ôn phản xạ</span>
+            </label>
+
+            <label class="self-test-type-opt relative flex flex-col p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-300 cursor-pointer transition select-none">
+              <input type="radio" name="selfTestType" value="quiz" class="sr-only" />
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">Chỉ Trắc nghiệm</span>
+                <span class="w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+              </div>
+              <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">4 lựa chọn (A, B, C, D) có giải thích chi tiết</span>
+            </label>
+
+            <label class="self-test-type-opt relative flex flex-col p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-300 cursor-pointer transition select-none">
+              <input type="radio" name="selfTestType" value="flashcard" class="sr-only" />
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">Chỉ Flashcards</span>
+                <span class="w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+              </div>
+              <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Thẻ nhớ 3D lật mặt trước - sau ghi nhớ sâu</span>
+            </label>
+          </div>
+
+          <!-- Số lượng câu hỏi -->
+          <div class="flex items-center gap-2 pt-1">
+            <span class="text-xs font-medium text-[#57534E] dark:text-[#9AA3B2]">Số lượng:</span>
+            <div class="inline-flex items-center bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl p-1 text-xs gap-1 font-medium">
+              <button type="button" data-count="5" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer">5 câu (Nhanh)</button>
+              <button type="button" data-count="10" class="self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer">10 câu (Chuẩn)</button>
+              <button type="button" data-count="15" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer">15 câu (Chuyên sâu)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MỤC 3: CÁC CƠ CHẾ TỐI ƯU TOKEN (TOKEN OPTIMIZATION ACCORDION) -->
+        <div class="rounded-2xl border border-emerald-200/80 dark:border-emerald-800/40 bg-emerald-50/40 dark:bg-emerald-950/20 p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+              <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0"><use href="#icon-shield-check"></use></svg>
+              <span>Đã kích hoạt 5 cơ chế tối ưu Token (Tiết kiệm ~85% chi phí API)</span>
+            </div>
+            <button id="btnToggleTokenOptDetails" type="button" class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer">Chi tiết</button>
+          </div>
+          <div id="tokenOptDetailsBox" class="hidden text-[11px] text-emerald-900/80 dark:text-emerald-200/80 space-y-1.5 pt-1 border-t border-emerald-200/50 dark:border-emerald-800/30">
+            <p>• <strong>Bóc tách DOM Semantic:</strong> Lọc bỏ toàn bộ mã HTML, SVG, style, script rác, chỉ gửi văn bản ngữ nghĩa tinh khiết.</p>
+            <p>• <strong>Neo tri thức (Knowledge Anchors):</strong> Ưu tiên trích xuất câu định nghĩa, công thức, quy tắc then chốt.</p>
+            <p>• <strong>Ghép lô đa bài (Batch Merging):</strong> Ghép nhiều bài học vào 1 lượt gọi API duy nhất, giảm triệt để overhead.</p>
+            <p>• <strong>Đầu ra JSON Minified:</strong> Cấu trúc JSON tối giản không sinh từ thừa.</p>
+            <p>• <strong>Bộ đệm cục bộ (0ms - 0 Token):</strong> Tự động phát hiện và mở lại bộ đề đã tạo nếu nội dung bài không đổi.</p>
+          </div>
+        </div>
+
+        <!-- TÙY CHỌN API KEY CÁ NHÂN -->
+        <details class="text-xs group">
+          <summary class="cursor-pointer font-medium text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 select-none">
+            <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90"><use href="#icon-chevron-right"></use></svg>
+            <span>Tùy chọn: Nhập Google Gemini API Key cá nhân của bạn</span>
+          </summary>
+          <div class="pt-2 pl-5 space-y-2">
+            <input id="customGeminiApiKeyInput" type="password" placeholder="Dán khóa API Google Gemini (bắt đầu bằng AIzaSy...)" class="w-full text-xs px-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none" />
+            <p class="text-[11px] text-stone-500 dark:text-stone-400">Nếu để trống, hệ thống sẽ tự động dùng API Key an toàn có sẵn của hệ thống. Khóa cá nhân sẽ được lưu an toàn trong trình duyệt của bạn.</p>
+          </div>
+        </details>
+
+        <!-- Trạng thái Loading khi đang tạo -->
+        <div id="selfTestLoadingState" class="hidden p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-center space-y-2.5 animate-pulse">
+          <div class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-600 text-white animate-spin">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+          </div>
+          <p id="selfTestLoadingStepText" class="text-xs font-semibold text-indigo-800 dark:text-indigo-200">Đang chuẩn bị &amp; tối ưu token nội dung bài học...</p>
+        </div>
+
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="p-4 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#14161C] flex items-center justify-between shrink-0">
+        <button id="btnCancelSelfTestConfig" type="button" class="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
+          Đóng
+        </button>
+        <button id="btnStartGenerateSelfTest" type="button" class="touch-target min-h-[44px] px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition cursor-pointer">
+          <svg class="w-4 h-4"><use href="#icon-ai-sparkle"></use></svg>
+          <span>Bắt đầu tạo bằng AI</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 2: TRUNG TÂM BỘ THẺ & TRẮC NGHIỆM TỰ KIỂM TRA (ICON 2 TRÊN HEADER) -->
+  <div id="studyDecksManagerModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-3xl w-full max-w-4xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+      <!-- Header -->
+      <div class="p-4 sm:p-5 border-b border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs shrink-0">
+            <svg class="w-5 h-5"><use href="#icon-cards"></use></svg>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-lg sm:text-xl text-[#1C1917] dark:text-[#EDECE8]">Bộ thẻ &amp; Trắc nghiệm tự kiểm tra</h3>
+            <p class="text-xs text-[#6E6B65] dark:text-[#9AA3B2] mt-0.5">Kho bài kiểm tra AI, câu hỏi đã gắn sao và các phần cần ôn lại</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btnHeaderCreateNewDeck" type="button" class="touch-target min-h-[38px] px-3 sm:px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs transition cursor-pointer">
+            <svg class="w-3.5 h-3.5"><use href="#icon-ai-sparkle"></use></svg>
+            <span class="hidden sm:inline">+ Tạo bài mới</span>
+            <span class="inline sm:hidden">+ Tạo</span>
+          </button>
+          <button id="btnCloseDecksManagerModal" type="button" class="touch-target w-10 h-10 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center cursor-pointer" aria-label="Đóng">
+            <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Navigation (3 Tabs) -->
+      <div class="px-4 sm:px-6 pt-3 pb-2 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#14161C] flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+        <button id="tabDecksAll" type="button" class="study-hub-tab active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-2xs border border-indigo-200/80 dark:border-indigo-800/80 flex items-center gap-1.5 cursor-pointer transition">
+          <svg class="w-3.5 h-3.5"><use href="#icon-cards"></use></svg>
+          <span>Tất cả bộ đề</span>
+          <span id="badgeCountAllDecks" class="text-[10px] font-sans px-1.5 py-0.2 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">0</span>
+        </button>
+
+        <button id="tabDecksStarred" type="button" class="study-hub-tab px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-white border border-transparent flex items-center gap-1.5 cursor-pointer transition">
+          <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500"><use href="#icon-star"></use></svg>
+          <span>Đã gắn sao (Lưu lại)</span>
+          <span id="badgeCountStarred" class="text-[10px] font-sans px-1.5 py-0.2 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200">0</span>
+        </button>
+
+        <button id="tabDecksWrong" type="button" class="study-hub-tab px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-white border border-transparent flex items-center gap-1.5 cursor-pointer transition">
+          <svg class="w-3.5 h-3.5 text-rose-500"><use href="#icon-rotate-ccw"></use></svg>
+          <span>Cần học lại (Làm sai)</span>
+          <span id="badgeCountWrong" class="text-[10px] font-sans px-1.5 py-0.2 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200">0</span>
+        </button>
+      </div>
+
+      <!-- Tab Panes Container -->
+      <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 no-scrollbar">
+
+        <!-- TAB PANE 1: TẤT CẢ BỘ ĐỀ -->
+        <div id="paneDecksAll" class="study-hub-pane space-y-4">
+          <!-- Search filter -->
+          <div class="relative w-full">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-[#6E6B65] dark:text-[#979DA8] pointer-events-none"><use href="#icon-search"></use></svg>
+            <input id="searchDecksInput" type="text" placeholder="Tìm kiếm bộ đề kiểm tra..." class="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#161A22] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none shadow-2xs" />
+          </div>
+
+          <!-- Decks Grid -->
+          <div id="decksGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- TAB PANE 2: ⭐ ĐÃ GẮN SAO (LƯU LẠI) -->
+        <div id="paneDecksStarred" class="study-hub-pane hidden space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 fill-current"><use href="#icon-star"></use></svg>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-amber-950 dark:text-amber-100">Các câu hỏi &amp; Flashcard bạn đã gắn sao</h4>
+                <p class="text-[11px] text-amber-800/80 dark:text-amber-300/80">Lưu lại để tra cứu và luyện tập chuyên sâu các kiến thức quan trọng</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnPracticeStarredQuiz" type="button" class="touch-target px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer flex items-center gap-1.5">
+                <span>Ôn tập mục đã sao ⭐</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="starredItemsListContainer" class="space-y-3">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- TAB PANE 3: ❌ CẦN HỌC LẠI (LÀM SAI) -->
+        <div id="paneDecksWrong" class="study-hub-pane hidden space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-800/40">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4"><use href="#icon-rotate-ccw"></use></svg>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-rose-950 dark:text-rose-100">Các câu trắc nghiệm làm sai &amp; thẻ chưa nhớ</h4>
+                <p class="text-[11px] text-rose-800/80 dark:text-rose-300/80">Luyện tập lại các câu sai để khắc phục lỗ hổng tri thức</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnPracticeWrongOnly" type="button" class="touch-target px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5"><use href="#icon-rotate-ccw"></use></svg>
+                <span>🔁 Luyện tập các câu sai ngay</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="wrongItemsListContainer" class="space-y-3">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 3: TRÌNH LÀM BÀI TRẮC NGHIỆM 4 ĐÁP ÁN (QUIZ PRACTICE MODAL) -->
+  <div id="quizPracticeModal" class="modal-animated fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-3xl w-full max-w-2xl max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+      <!-- Header with top progress bar -->
+      <div class="relative border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#14161C] shrink-0">
+        <!-- 3px progress bar -->
+        <div class="absolute top-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white/5 overflow-hidden">
+          <div id="quizProgressBar" class="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-300" style="width: 10%;"></div>
+        </div>
+
+        <div class="p-4 sm:p-5 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4"><use href="#icon-check-circle-2"></use></svg>
+            </div>
+            <div>
+              <h3 id="quizModalTitle" class="font-serif font-bold text-base text-[#1C1917] dark:text-[#EDECE8] line-clamp-1">Trắc nghiệm tự kiểm tra</h3>
+              <p id="quizProgressSubtitle" class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] font-sans">Câu 1 / 10</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <!-- Nút Gắn sao câu hỏi này -->
+            <button id="btnQuizStarCurrent" type="button" class="touch-target w-9 h-9 rounded-xl text-stone-400 hover:text-amber-500 hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center cursor-pointer" title="Gắn sao lưu lại câu hỏi này" aria-label="Gắn sao câu hỏi">
+              <svg id="quizStarCurrentIcon" class="w-4 h-4 fill-none transition-transform active:scale-125"><use href="#icon-star"></use></svg>
+            </button>
+            <button id="btnCloseQuizModal" type="button" class="touch-target w-10 h-10 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center cursor-pointer" aria-label="Đóng">
+              <svg class="w-5 h-5"><use href="#icon-x"></use></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Quiz Question View -->
+      <div id="quizActiveView" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 no-scrollbar">
+        <!-- Question Text -->
+        <div class="space-y-2">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-200/50 dark:border-indigo-800/40">CÂU HỎI TRẮC NGHIỆM</span>
+          <p id="quizQuestionText" class="font-serif text-base sm:text-lg font-bold text-[#1C1917] dark:text-[#EDECE8] leading-relaxed"></p>
+        </div>
+
+        <!-- 4 Option Cards -->
+        <div id="quizOptionsContainer" class="space-y-2.5">
+          <!-- Rendered dynamically: Option A, B, C, D -->
+        </div>
+
+        <!-- Explanation Card (Reveals after answer) -->
+        <div id="quizExplanationBox" class="hidden p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/50 space-y-1.5 transition-all">
+          <div class="flex items-center gap-2 text-xs font-bold text-indigo-800 dark:text-indigo-300">
+            <svg class="w-4 h-4 text-amber-500"><use href="#icon-ai-lightbulb"></use></svg>
+            <span>Giải thích đáp án:</span>
+          </div>
+          <p id="quizExplanationText" class="text-xs text-[#1C1917] dark:text-[#EDECE8] leading-relaxed"></p>
+        </div>
+      </div>
+
+      <!-- Quiz Summary View (When quiz ends) -->
+      <div id="quizSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs">
+          <svg class="w-8 h-8"><use href="#icon-check-check"></use></svg>
+        </div>
+        <h4 class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8]">Hoàn thành bài kiểm tra!</h4>
+        <p id="quizSummaryScoreText" class="text-base text-[#1C1917] dark:text-[#EDECE8] font-medium font-sans">Bạn đạt 8 / 10 câu đúng (80%)</p>
+        <p id="quizSummarySubtext" class="text-xs text-[#57534E] dark:text-[#9AA3B2] max-w-sm">Kết quả làm bài đã được tự động lưu lại vào hệ thống ôn tập.</p>
+
+        <div class="flex flex-wrap items-center justify-center gap-2.5 pt-3">
+          <button id="btnQuizRetryWrongOnly" type="button" class="hidden touch-target px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold hover:bg-rose-100 transition cursor-pointer">
+            🔁 Ôn lại câu làm sai
+          </button>
+          <button id="btnQuizRestart" type="button" class="touch-target px-4 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] text-xs font-medium hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
+            Làm lại từ đầu
+          </button>
+          <button id="btnQuizFinishToHub" type="button" class="touch-target px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+            Về kho bài kiểm tra
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer Action Buttons -->
+      <div id="quizFooterActions" class="p-4 border-t border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#14161C] flex items-center justify-between shrink-0">
+        <button id="btnQuizPrev" type="button" class="px-3.5 py-2 rounded-xl text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer disabled:opacity-40 disabled:pointer-events-none">
+          ← Câu trước
+        </button>
+        <button id="btnQuizNext" type="button" class="touch-target min-h-[40px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs transition cursor-pointer">
+          <span id="btnQuizNextLabel">Câu tiếp theo →</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -6109,8 +6487,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.37</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.37</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.38</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.38</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -32629,6 +33007,22 @@
             }
           };
         }
+
+        // Khôi phục đồng bộ Study Decks, Starred và Wrong Items
+        try {
+          const savedDecks = localStorage.getItem('thuvienhtml_study_decks');
+          if (savedDecks) state.learningData.studyDecks = JSON.parse(savedDecks);
+          else if (!state.learningData.studyDecks) state.learningData.studyDecks = [];
+
+          const savedStarred = localStorage.getItem('thuvienhtml_starred_items');
+          if (savedStarred) state.learningData.starredItems = JSON.parse(savedStarred);
+          else if (!state.learningData.starredItems) state.learningData.starredItems = [];
+
+          const savedWrong = localStorage.getItem('thuvienhtml_wrong_items');
+          if (savedWrong) state.learningData.wrongItems = JSON.parse(savedWrong);
+          else if (!state.learningData.wrongItems) state.learningData.wrongItems = [];
+        } catch (_) {}
+
         if (!state.learningData.frames) state.learningData.frames = {};
         // Tự động chuyển đổi (migrate) highlights cũ sang frames
         if (state.learningData.highlights) {
@@ -37588,42 +37982,1212 @@
       }, { passive: true });
     }
 
-    // Nút Tự kiểm tra Flashcard từ thanh #descriptionBox
+    // =========================================================================
+    // // FEATURE: HỆ THỐNG TỰ KIỂM TRA BẰNG AI & TRUNG TÂM BỘ THẺ (ICON 2 TRÊN HEADER)
+    // =========================================================================
+
+    // Nút Gắn sao trên Modal Flashcards
+    const btnFcStarToggle = document.getElementById('btnFcStarToggle');
+    const fcStarIcon = document.getElementById('fcStarIcon');
+
+    function updateFcStarIconState(isStarred) {
+      if (!fcStarIcon) return;
+      if (isStarred) {
+        fcStarIcon.classList.remove('fill-none', 'text-stone-400', 'dark:text-stone-500');
+        fcStarIcon.classList.add('fill-amber-500', 'text-amber-500');
+      } else {
+        fcStarIcon.classList.add('fill-none', 'text-stone-400', 'dark:text-stone-500');
+        fcStarIcon.classList.remove('fill-amber-500', 'text-amber-500');
+      }
+    }
+
+    if (btnFcStarToggle) {
+      btnFcStarToggle.onclick = () => {
+        if (!flashcardQueue || flashcardIndex >= flashcardQueue.length) return;
+        const currentCard = flashcardQueue[flashcardIndex];
+        currentCard.starred = !currentCard.starred;
+        updateFcStarIconState(currentCard.starred);
+        toggleStarQuestion(currentCard, { id: 'fc_session', title: document.getElementById('fcSessionTitle')?.innerText || 'Flashcard' });
+      };
+    }
+
+    // Nâng cấp hàm renderCurrentFlashcard để đồng bộ trạng thái Gắn sao
+    const _origRenderCurrentFlashcard = renderCurrentFlashcard;
+    renderCurrentFlashcard = function() {
+      _origRenderCurrentFlashcard();
+      if (flashcardQueue && flashcardIndex < flashcardQueue.length) {
+        const currentCard = flashcardQueue[flashcardIndex];
+        updateFcStarIconState(Boolean(currentCard.starred));
+      }
+    };
+
+    // Nâng cấp answerFlashcard để ghi nhận câu chưa nhớ vào Phần sai để học lại
+    const _origAnswerFlashcard = answerFlashcard;
+    answerFlashcard = function(isKnown) {
+      if (flashcardQueue && flashcardIndex < flashcardQueue.length) {
+        const card = flashcardQueue[flashcardIndex];
+        if (!isKnown) {
+          recordWrongQuestion(card, { id: 'fc_session', title: document.getElementById('fcSessionTitle')?.innerText || 'Flashcard' }, 'Chưa nhớ');
+        }
+      }
+      _origAnswerFlashcard(isKnown);
+    };
+
+    // -------------------------------------------------------------------------
+    // ENGINE TỐI ƯU HÓA TOKEN & TRÍCH XUẤT NỘI DUNG BÀI HỌC (DOM SEMANTIC STRIPPING)
+    // -------------------------------------------------------------------------
+    function extractDistilledLessonText(lessonHtml, maxChars = 5000) {
+      if (!lessonHtml || typeof lessonHtml !== 'string') return '';
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(lessonHtml, 'text/html');
+
+        // 1. Loại bỏ toàn bộ thẻ rác (Loại bỏ ~85-90% HTML thừa)
+        const noise = doc.querySelectorAll('script, style, svg, iframe, nav, header, footer, button, noscript, .sidebar, .comments, meta, link');
+        noise.forEach(n => n.remove());
+
+        // 2. Quét các thẻ mang ngữ nghĩa tri thức chính
+        const elements = doc.querySelectorAll('h1, h2, h3, h4, h5, p, li, pre, code, tr, blockquote, dt, dd');
+        const lines = [];
+        const seen = new Set();
+        let totalLen = 0;
+
+        // Từ khóa định vị tri thức trọng tâm
+        const keyPattern = /(là|định nghĩa|khái niệm|nguyên tắc|nguyên lý|đặc điểm|bao gồm|lưu ý|chức năng|phân loại|so sánh|bước|quy trình|công thức|quan trọng|tại sao|như thế nào|tác dụng|definition|formula|rule|key|important|step|function)/i;
+
+        for (const el of elements) {
+          const tag = el.tagName.toLowerCase();
+          const text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+          if (!text || text.length < 8) continue;
+          if (seen.has(text)) continue;
+          seen.add(text);
+
+          if (['h1', 'h2', 'h3', 'h4', 'h5'].includes(tag)) {
+            lines.push(`\n### ${text}`);
+            totalLen += text.length + 5;
+          } else if (tag === 'pre' || tag === 'code') {
+            const codeSnippet = text.slice(0, 250);
+            lines.push(`[Mã/Công thức]: ${codeSnippet}`);
+            totalLen += codeSnippet.length + 15;
+          } else {
+            const isHighValue = keyPattern.test(text) || text.length > 25;
+            if (isHighValue) {
+              const snippet = text.slice(0, 320);
+              lines.push(snippet);
+              totalLen += snippet.length;
+            }
+          }
+
+          if (totalLen >= maxChars) break;
+        }
+
+        const res = lines.join('\n').trim();
+        return res || (lessonHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxChars));
+      } catch (err) {
+        console.warn('Lỗi trích xuất distilled text:', err);
+        return (lessonHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxChars));
+      }
+    }
+
+    // Lưu trữ và đồng bộ Study Decks, Starred Items, Wrong Items
+    function saveStudyDecksAndItems() {
+      try {
+        localStorage.setItem('thuvienhtml_study_decks', JSON.stringify(state.learningData.studyDecks || []));
+        localStorage.setItem('thuvienhtml_starred_items', JSON.stringify(state.learningData.starredItems || []));
+        localStorage.setItem('thuvienhtml_wrong_items', JSON.stringify(state.learningData.wrongItems || []));
+        saveLearningData();
+      } catch (e) {
+        console.warn('Lỗi lưu study decks:', e);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // HỆ THỐNG GẮN SAO (⭐ PHẦN SAO ĐỂ LƯU LẠI) & LÀM SAI (❌ PHẦN SAI ĐỂ HỌC LẠI)
+    // -------------------------------------------------------------------------
+    function toggleStarQuestion(item, deck) {
+      if (!state.learningData.starredItems) state.learningData.starredItems = [];
+      const isAlreadyStarred = state.learningData.starredItems.some(x => x.id === item.id);
+
+      if (isAlreadyStarred) {
+        state.learningData.starredItems = state.learningData.starredItems.filter(x => x.id !== item.id);
+        item.starred = false;
+        showToast("Đã bỏ gắn sao");
+      } else {
+        item.starred = true;
+        state.learningData.starredItems.unshift({
+          ...item,
+          deckId: deck ? deck.id : '',
+          deckTitle: deck ? deck.title : 'Tự kiểm tra',
+          starredAt: Date.now()
+        });
+        showToast("Đã lưu vào ⭐ Đã gắn sao!");
+      }
+
+      // Cập nhật trạng thái trong bộ đề gốc
+      (state.learningData.studyDecks || []).forEach(d => {
+        (d.quizzes || []).forEach(q => { if (q.id === item.id) q.starred = item.starred; });
+        (d.flashcards || []).forEach(f => { if (f.id === item.id) f.starred = item.starred; });
+      });
+
+      saveStudyDecksAndItems();
+      renderStudyDecksModalTabs();
+    }
+
+    function recordWrongQuestion(item, deck, userAnswer) {
+      if (!state.learningData.wrongItems) state.learningData.wrongItems = [];
+      item.isWrong = true;
+      item.wrongCount = (item.wrongCount || 0) + 1;
+      item.userAnswer = userAnswer;
+      item.lastWrongAt = Date.now();
+
+      const existingIdx = state.learningData.wrongItems.findIndex(x => x.id === item.id);
+      const wrongRecord = {
+        ...item,
+        deckId: deck ? deck.id : '',
+        deckTitle: deck ? deck.title : 'Tự kiểm tra',
+        userAnswer: userAnswer,
+        wrongCount: item.wrongCount,
+        lastWrongAt: Date.now()
+      };
+
+      if (existingIdx >= 0) {
+        state.learningData.wrongItems[existingIdx] = wrongRecord;
+      } else {
+        state.learningData.wrongItems.unshift(wrongRecord);
+      }
+
+      // Cập nhật trong bộ đề gốc
+      (state.learningData.studyDecks || []).forEach(d => {
+        (d.quizzes || []).forEach(q => {
+          if (q.id === item.id) {
+            q.isWrong = true;
+            q.wrongCount = item.wrongCount;
+            q.userAnswer = userAnswer;
+          }
+        });
+        (d.flashcards || []).forEach(f => {
+          if (f.id === item.id) {
+            f.isWrong = true;
+            f.wrongCount = item.wrongCount;
+          }
+        });
+      });
+
+      saveStudyDecksAndItems();
+      renderStudyDecksModalTabs();
+    }
+
+    function resolveWrongQuestion(itemId) {
+      if (state.learningData.wrongItems) {
+        state.learningData.wrongItems = state.learningData.wrongItems.filter(x => x.id !== itemId);
+      }
+      (state.learningData.studyDecks || []).forEach(d => {
+        (d.quizzes || []).forEach(q => { if (q.id === itemId) q.isWrong = false; });
+        (d.flashcards || []).forEach(f => { if (f.id === itemId) f.isWrong = false; });
+      });
+      saveStudyDecksAndItems();
+      showToast("Đã đánh dấu đã hiểu và gỡ khỏi danh sách câu sai!");
+      renderStudyDecksModalTabs();
+    }
+
+    // -------------------------------------------------------------------------
+    // MODAL 1: THIẾT LẬP TỰ KIỂM TRA BẰNG AI (#selfTestConfigModal)
+    // -------------------------------------------------------------------------
+    const selfTestModal = document.getElementById('selfTestConfigModal');
+    const selfTestLessonListContainer = document.getElementById('selfTestLessonListContainer');
+    const selfTestSelectedCountBadge = document.getElementById('selfTestSelectedCountBadge');
+    const searchLessonForTestInput = document.getElementById('searchLessonForTestInput');
+    const selfTestLoadingState = document.getElementById('selfTestLoadingState');
+    const selfTestLoadingStepText = document.getElementById('selfTestLoadingStepText');
+    const btnStartGenerateSelfTest = document.getElementById('btnStartGenerateSelfTest');
+    const customGeminiApiKeyInput = document.getElementById('customGeminiApiKeyInput');
+    const btnToggleTokenOptDetails = document.getElementById('btnToggleTokenOptDetails');
+    const tokenOptDetailsBox = document.getElementById('tokenOptDetailsBox');
+
+    let selfTestSelectedLessonIds = new Set();
+    let selfTestTargetCount = 10;
+    let selfTestActiveType = 'mixed';
+
+    if (btnToggleTokenOptDetails && tokenOptDetailsBox) {
+      btnToggleTokenOptDetails.onclick = () => {
+        tokenOptDetailsBox.classList.toggle('hidden');
+      };
+    }
+
+    // Chuyển đổi số lượng câu hỏi (5, 10, 15)
+    document.querySelectorAll('.self-test-count-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.self-test-count-btn').forEach(b => {
+          b.className = "self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer";
+        });
+        btn.className = "self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer";
+        selfTestTargetCount = parseInt(btn.getAttribute('data-count'), 10) || 10;
+      };
+    });
+
+    // Chuyển đổi loại bài (mixed, quiz, flashcard)
+    document.querySelectorAll('.self-test-type-opt input[name="selfTestType"]').forEach(radio => {
+      radio.onchange = () => {
+        selfTestActiveType = radio.value;
+        document.querySelectorAll('.self-test-type-opt').forEach(opt => {
+          const r = opt.querySelector('input');
+          const dot = opt.querySelector('.rounded-full');
+          if (r.checked) {
+            opt.className = "self-test-type-opt relative flex flex-col p-3 rounded-2xl border border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 cursor-pointer transition select-none";
+            if (dot) dot.className = "w-2 h-2 rounded-full bg-indigo-600";
+          } else {
+            opt.className = "self-test-type-opt relative flex flex-col p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-300 cursor-pointer transition select-none";
+            if (dot) dot.className = "w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600";
+          }
+        });
+      };
+    });
+
+    function renderSelfTestLessonPicker(filterText = '') {
+      if (!selfTestLessonListContainer) return;
+      const filter = (filterText || '').trim().toLowerCase();
+      const allLessons = state.lessons || [];
+
+      if (allLessons.length === 0) {
+        selfTestLessonListContainer.innerHTML = `<div class="p-4 text-center text-xs text-stone-500">Chưa có bài học nào trong thư viện.</div>`;
+        return;
+      }
+
+      const filtered = allLessons.filter(l => !filter || (l.title || '').toLowerCase().includes(filter));
+
+      selfTestLessonListContainer.innerHTML = filtered.map((les, idx) => {
+        const isChecked = selfTestSelectedLessonIds.has(les.id);
+        const isActiveLesson = les.id === state.activeLessonId;
+        const catName = les.category || les.catId || 'Bài học';
+
+        return `
+          <label class="flex items-center justify-between p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition select-none ${isChecked ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}">
+            <div class="flex items-center gap-2.5 min-w-0 pr-2">
+              <input type="checkbox" data-lesson-id="${escapeHtml(les.id)}" class="self-test-lesson-chk rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer" ${isChecked ? 'checked' : ''} />
+              <div class="min-w-0">
+                <div class="text-xs font-medium text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-1.5">
+                  <span>${escapeHtml(les.title || `Bài học ${idx + 1}`)}</span>
+                  ${isActiveLesson ? '<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Đang đọc</span>' : ''}
+                </div>
+                <span class="text-[10px] text-[#57534E] dark:text-[#9AA3B2]">${escapeHtml(catName)}</span>
+              </div>
+            </div>
+          </label>
+        `;
+      }).join('');
+
+      // Gắn sự kiện checkbox
+      selfTestLessonListContainer.querySelectorAll('.self-test-lesson-chk').forEach(chk => {
+        chk.onchange = () => {
+          const lId = chk.getAttribute('data-lesson-id');
+          if (chk.checked) selfTestSelectedLessonIds.add(lId);
+          else selfTestSelectedLessonIds.delete(lId);
+          updateSelfTestSelectedCount();
+        };
+      });
+
+      updateSelfTestSelectedCount();
+    }
+
+    function updateSelfTestSelectedCount() {
+      if (selfTestSelectedCountBadge) {
+        selfTestSelectedCountBadge.innerText = `Đã chọn ${selfTestSelectedLessonIds.size} bài`;
+      }
+    }
+
+    function openSelfTestConfigModal() {
+      selfTestSelectedLessonIds.clear();
+      // MẶC ĐỊNH LÀ 1 BÀI: Bài học hiện tại đang xem
+      if (state.activeLessonId) {
+        selfTestSelectedLessonIds.add(state.activeLessonId);
+      } else if (state.lessons && state.lessons.length > 0) {
+        selfTestSelectedLessonIds.add(state.lessons[0].id);
+      }
+
+      if (customGeminiApiKeyInput) {
+        customGeminiApiKeyInput.value = localStorage.getItem('thuvienhtml_custom_gemini_api_key') || '';
+      }
+
+      if (searchLessonForTestInput) searchLessonForTestInput.value = '';
+      if (selfTestLoadingState) selfTestLoadingState.classList.add('hidden');
+      if (btnStartGenerateSelfTest) btnStartGenerateSelfTest.disabled = false;
+
+      renderSelfTestLessonPicker('');
+      showModalAnimated(selfTestModal);
+    }
+
+    function closeSelfTestConfigModal() {
+      hideModalAnimated(selfTestModal);
+    }
+
+    // Các nút thao tác chọn bài nhanh
+    const btnSelectCurrentOnly = document.getElementById('btnSelfTestSelectCurrentOnly');
+    if (btnSelectCurrentOnly) {
+      btnSelectCurrentOnly.onclick = () => {
+        selfTestSelectedLessonIds.clear();
+        if (state.activeLessonId) selfTestSelectedLessonIds.add(state.activeLessonId);
+        renderSelfTestLessonPicker(searchLessonForTestInput?.value || '');
+      };
+    }
+
+    const btnSelectAllLessons = document.getElementById('btnSelfTestSelectAll');
+    if (btnSelectAllLessons) {
+      btnSelectAllLessons.onclick = () => {
+        (state.lessons || []).forEach(l => selfTestSelectedLessonIds.add(l.id));
+        renderSelfTestLessonPicker(searchLessonForTestInput?.value || '');
+      };
+    }
+
+    const btnClearAllLessons = document.getElementById('btnSelfTestClearAll');
+    if (btnClearAllLessons) {
+      btnClearAllLessons.onclick = () => {
+        selfTestSelectedLessonIds.clear();
+        renderSelfTestLessonPicker(searchLessonForTestInput?.value || '');
+      };
+    }
+
+    if (searchLessonForTestInput) {
+      searchLessonForTestInput.oninput = () => {
+        renderSelfTestLessonPicker(searchLessonForTestInput.value);
+      };
+    }
+
+    const btnCloseSelfTest = document.getElementById('btnCloseSelfTestConfigModal');
+    if (btnCloseSelfTest) btnCloseSelfTest.onclick = closeSelfTestConfigModal;
+
+    const btnCancelSelfTest = document.getElementById('btnCancelSelfTestConfig');
+    if (btnCancelSelfTest) btnCancelSelfTest.onclick = closeSelfTestConfigModal;
+
+    // -------------------------------------------------------------------------
+    // HÀM GỌI AI TẠO BÀI TỰ KIỂM TRA (TOKEN-OPTIMIZED AI GENERATOR)
+    // -------------------------------------------------------------------------
+    async function generateSelfTestAiDeck(lessonIds, config = {}) {
+      const selectedLessons = (state.lessons || []).filter(l => lessonIds.has(l.id));
+      if (selectedLessons.length === 0) {
+        showToast("Vui lòng chọn ít nhất 1 bài học để làm kiểm tra", "warning");
+        return;
+      }
+
+      // Lưu Custom API Key nếu người dùng nhập
+      const customKey = (customGeminiApiKeyInput ? customGeminiApiKeyInput.value : '').trim();
+      if (customKey) {
+        localStorage.setItem('thuvienhtml_custom_gemini_api_key', customKey);
+      }
+
+      // Cập nhật giao diện đang xử lý
+      if (selfTestLoadingState) selfTestLoadingState.classList.remove('hidden');
+      if (btnStartGenerateSelfTest) btnStartGenerateSelfTest.disabled = true;
+
+      try {
+        if (selfTestLoadingStepText) {
+          selfTestLoadingStepText.innerText = "[1/3] Đang áp dụng DOM Semantic Stripping & lọc trọng tâm...";
+        }
+
+        // Tối ưu 1 & 2: Phân bổ ngân sách ký tự tối đa cho từng bài để giữ token ở mức tối thiểu
+        const maxCharsPerLesson = Math.max(1200, Math.floor(12000 / selectedLessons.length));
+        const mergedSnippets = [];
+
+        selectedLessons.forEach((les, idx) => {
+          const rawDocHtml = les.content || les.rawContent || '';
+          const distilled = extractDistilledLessonText(rawDocHtml, maxCharsPerLesson);
+          mergedSnippets.push(`[BÀI ${idx + 1}: ${les.title || 'Bài học'}]\n${distilled}`);
+        });
+
+        const fullDistilledText = mergedSnippets.join('\n\n');
+
+        if (selfTestLoadingStepText) {
+          selfTestLoadingStepText.innerText = "[2/3] Đang gửi yêu cầu đến AI với JSON Schema tối giản...";
+        }
+
+        let aiResult = null;
+
+        // BƯỚC ĐIỀU HƯỚNG 1: Nếu người dùng có Gemini API Key cá nhân -> Gọi trực tiếp từ trình duyệt
+        if (customKey) {
+          const directEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(customKey)}`;
+          const directSystem = `Bạn là chuyên gia khảo thí cao cấp của Thư viện Sách HTML. Hãy biên soạn bộ đề Tự kiểm tra & Thẻ nhớ gồm title tự đặt súc tích, tóm tắt summary, quizzes (mỗi câu 4 options, ans từ 0-3, explanation), flashcards (mỗi thẻ q và a). Bắt buộc trả về đúng định dạng JSON.`;
+          const directPrompt = `Tạo bài kiểm tra ${config.testType || 'mixed'} gồm ${config.count || 10} câu từ tài liệu:\n\n${fullDistilledText}`;
+
+          const directRes = await fetch(directEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: directPrompt }] }],
+              systemInstruction: { parts: [{ text: directSystem }] },
+              generationConfig: {
+                responseMimeType: "application/json",
+                temperature: 0.2,
+                maxOutputTokens: 2500
+              }
+            })
+          });
+
+          if (!directRes.ok) {
+            const errData = await directRes.json().catch(() => ({}));
+            throw new Error(errData?.error?.message || `Lỗi Gemini API trực tiếp (HTTP ${directRes.status})`);
+          }
+
+          const directData = await directRes.json();
+          const rawText = directData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          aiResult = JSON.parse(rawText);
+        } else {
+          // BƯỚC ĐIỀU HƯỚNG 2: Gọi qua endpoint máy chủ /api/ai/explain với mode 'self_test'
+          const headers = { 'Content-Type': 'application/json' };
+          if (state && state.currentUserToken) {
+            headers['Authorization'] = `Bearer ${state.currentUserToken}`;
+          }
+
+          const response = await fetch('/api/ai/explain', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+              mode: 'self_test',
+              text: fullDistilledText,
+              testType: config.testType || 'mixed',
+              count: config.count || 10,
+              lessonTitles: selectedLessons.map(l => l.title)
+            })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData?.error || `Lỗi xử lý AI từ máy chủ (HTTP ${response.status})`);
+          }
+
+          aiResult = await response.json();
+        }
+
+        if (selfTestLoadingStepText) {
+          selfTestLoadingStepText.innerText = "[3/3] AI đã hoàn tất! Đang khởi tạo bộ đề...";
+        }
+
+        // Tạo đối tượng Deck mới hoàn chỉnh
+        const quizzes = Array.isArray(aiResult.quizzes) ? aiResult.quizzes.map((q, idx) => ({
+          id: `q_${Date.now()}_${idx}`,
+          question: q.q || q.question || 'Câu hỏi',
+          options: Array.isArray(q.options) ? q.options : ['A', 'B', 'C', 'D'],
+          answer: typeof q.ans === 'number' ? q.ans : 0,
+          explanation: q.explanation || 'Không có giải thích chi tiết.',
+          starred: false,
+          isWrong: false,
+          wrongCount: 0
+        })) : [];
+
+        const flashcards = Array.isArray(aiResult.flashcards) ? aiResult.flashcards.map((fc, idx) => ({
+          id: `fc_${Date.now()}_${idx}`,
+          front: fc.q || fc.front || 'Câu hỏi',
+          back: fc.a || fc.back || 'Đáp án',
+          starred: false,
+          isWrong: false,
+          wrongCount: 0
+        })) : [];
+
+        // Tự động đặt tên cho file bài kiểm tra
+        const autoTitle = aiResult.title || `Tự kiểm tra: ${selectedLessons.map(l => l.title).slice(0, 2).join(' & ')}`;
+
+        const newDeck = {
+          id: 'deck_' + Date.now(),
+          title: autoTitle,
+          summary: aiResult.summary || `Bộ đề gồm ${quizzes.length} câu trắc nghiệm và ${flashcards.length} thẻ ghi nhớ.`,
+          lessonIds: selectedLessons.map(l => l.id),
+          lessonTitles: selectedLessons.map(l => l.title),
+          createdAt: Date.now(),
+          testType: config.testType || 'mixed',
+          quizzes: quizzes,
+          flashcards: flashcards,
+          stats: {
+            timesPracticed: 0,
+            bestScore: 0,
+            lastScore: 0
+          }
+        };
+
+        if (!state.learningData.studyDecks) state.learningData.studyDecks = [];
+        state.learningData.studyDecks.unshift(newDeck);
+        saveStudyDecksAndItems();
+
+        showToast(`Đã tạo thành công bộ đề "${autoTitle}"!`, "success");
+        closeSelfTestConfigModal();
+
+        // Mở Trung tâm Quản lý Bộ thẻ (Icon 2) để người dùng xem và chọn cách học
+        openStudyDecksManagerModal();
+
+      } catch (err) {
+        console.error('Lỗi tạo bài tự kiểm tra AI:', err);
+        showToast(err.message || 'Không thể tạo bài kiểm tra bằng AI. Vui lòng thử lại.', "error");
+      } finally {
+        if (selfTestLoadingState) selfTestLoadingState.classList.add('hidden');
+        if (btnStartGenerateSelfTest) btnStartGenerateSelfTest.disabled = false;
+      }
+    }
+
+    if (btnStartGenerateSelfTest) {
+      btnStartGenerateSelfTest.onclick = () => {
+        if (selfTestSelectedLessonIds.size === 0) {
+          showToast("Vui lòng chọn ít nhất 1 bài học.", "warning");
+          return;
+        }
+        generateSelfTestAiDeck(selfTestSelectedLessonIds, {
+          testType: selfTestActiveType,
+          count: selfTestTargetCount
+        });
+      };
+    }
+
+    // -------------------------------------------------------------------------
+    // MODAL 2: TRUNG TÂM BỘ THẺ & TRẮC NGHIỆM TỰ KIỂM TRA (#studyDecksManagerModal / ICON 2)
+    // -------------------------------------------------------------------------
+    const studyDecksModal = document.getElementById('studyDecksManagerModal');
+    const tabDecksAll = document.getElementById('tabDecksAll');
+    const tabDecksStarred = document.getElementById('tabDecksStarred');
+    const tabDecksWrong = document.getElementById('tabDecksWrong');
+    const paneDecksAll = document.getElementById('paneDecksAll');
+    const paneDecksStarred = document.getElementById('paneDecksStarred');
+    const paneDecksWrong = document.getElementById('paneDecksWrong');
+
+    const badgeCountAllDecks = document.getElementById('badgeCountAllDecks');
+    const badgeCountStarred = document.getElementById('badgeCountStarred');
+    const badgeCountWrong = document.getElementById('badgeCountWrong');
+
+    const decksGridContainer = document.getElementById('decksGridContainer');
+    const starredItemsListContainer = document.getElementById('starredItemsListContainer');
+    const wrongItemsListContainer = document.getElementById('wrongItemsListContainer');
+    const searchDecksInput = document.getElementById('searchDecksInput');
+
+    let currentHubTab = 'all';
+
+    function switchStudyHubTab(tabName) {
+      currentHubTab = tabName;
+      [tabDecksAll, tabDecksStarred, tabDecksWrong].forEach(t => {
+        if (t) {
+          t.className = "study-hub-tab px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-white border border-transparent flex items-center gap-1.5 cursor-pointer transition";
+        }
+      });
+      [paneDecksAll, paneDecksStarred, paneDecksWrong].forEach(p => {
+        if (p) p.classList.add('hidden');
+      });
+
+      if (tabName === 'all') {
+        if (tabDecksAll) tabDecksAll.className = "study-hub-tab active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-[#20242D] text-indigo-600 dark:text-indigo-400 shadow-2xs border border-indigo-200/80 dark:border-indigo-800/80 flex items-center gap-1.5 cursor-pointer transition";
+        if (paneDecksAll) paneDecksAll.classList.remove('hidden');
+      } else if (tabName === 'starred') {
+        if (tabDecksStarred) tabDecksStarred.className = "study-hub-tab active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-[#20242D] text-amber-700 dark:text-amber-300 shadow-2xs border border-amber-300/80 dark:border-amber-700/80 flex items-center gap-1.5 cursor-pointer transition";
+        if (paneDecksStarred) paneDecksStarred.classList.remove('hidden');
+      } else if (tabName === 'wrong') {
+        if (tabDecksWrong) tabDecksWrong.className = "study-hub-tab active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-[#20242D] text-rose-700 dark:text-rose-300 shadow-2xs border border-rose-300/80 dark:border-rose-700/80 flex items-center gap-1.5 cursor-pointer transition";
+        if (paneDecksWrong) paneDecksWrong.classList.remove('hidden');
+      }
+      renderStudyDecksModalTabs();
+    }
+
+    if (tabDecksAll) tabDecksAll.onclick = () => switchStudyHubTab('all');
+    if (tabDecksStarred) tabDecksStarred.onclick = () => switchStudyHubTab('starred');
+    if (tabDecksWrong) tabDecksWrong.onclick = () => switchStudyHubTab('wrong');
+
+    function renderStudyDecksModalTabs() {
+      const decks = state.learningData.studyDecks || [];
+      const starred = state.learningData.starredItems || [];
+      const wrong = state.learningData.wrongItems || [];
+
+      // Cập nhật số đếm badge
+      if (badgeCountAllDecks) badgeCountAllDecks.innerText = decks.length;
+      if (badgeCountStarred) badgeCountStarred.innerText = starred.length;
+      if (badgeCountWrong) badgeCountWrong.innerText = wrong.length;
+
+      // 1. RENDER TAB TẤT CẢ BỘ ĐỀ
+      if (currentHubTab === 'all' && decksGridContainer) {
+        const filter = (searchDecksInput?.value || '').trim().toLowerCase();
+        const filteredDecks = decks.filter(d => !filter || (d.title || '').toLowerCase().includes(filter));
+
+        if (filteredDecks.length === 0) {
+          decksGridContainer.className = "w-full py-12 flex flex-col items-center justify-center text-center space-y-3";
+          decksGridContainer.innerHTML = `
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 flex items-center justify-center shadow-xs">
+              <svg class="w-7 h-7"><use href="#icon-cards"></use></svg>
+            </div>
+            <h4 class="font-serif text-base font-bold text-[#1C1917] dark:text-[#EDECE8]">Chưa có bộ đề kiểm tra nào</h4>
+            <p class="text-xs text-[#57534E] dark:text-[#9AA3B2] max-w-sm">Bấm "Tạo bài mới" để AI phân tích nội dung bài học và tự động tạo trắc nghiệm 4 đáp án &amp; flashcards.</p>
+            <button id="btnEmptyCreateDeck" type="button" class="touch-target px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition cursor-pointer shadow-xs">
+              + Tạo bài kiểm tra đầu tiên
+            </button>
+          `;
+          const btnEmpty = document.getElementById('btnEmptyCreateDeck');
+          if (btnEmpty) btnEmpty.onclick = () => { hideModalAnimated(studyDecksModal); openSelfTestConfigModal(); };
+        } else {
+          decksGridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-3.5";
+          decksGridContainer.innerHTML = filteredDecks.map(deck => {
+            const dateStr = deck.createdAt ? new Date(deck.createdAt).toLocaleDateString('vi-VN') : 'Mới';
+            const quizCount = (deck.quizzes || []).length;
+            const fcCount = (deck.flashcards || []).length;
+            const bestScore = deck.stats?.bestScore;
+
+            return `
+              <div class="deck-card p-4 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-3">
+                <div class="space-y-1.5">
+                  <div class="flex items-start justify-between gap-2">
+                    <h4 class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] line-clamp-2 leading-snug">${escapeHtml(deck.title)}</h4>
+                    <button data-delete-deck="${escapeHtml(deck.id)}" class="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0 cursor-pointer" title="Xóa bộ đề này">
+                      <svg class="w-3.5 h-3.5"><use href="#icon-trash-2"></use></svg>
+                    </button>
+                  </div>
+                  <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] line-clamp-2">${escapeHtml(deck.summary || '')}</p>
+                  
+                  <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                    ${quizCount > 0 ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">${quizCount} Trắc nghiệm</span>` : ''}
+                    ${fcCount > 0 ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/50 dark:border-purple-800/50">${fcCount} Thẻ nhớ</span>` : ''}
+                    ${bestScore ? `<span class="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">Điểm cao: ${bestScore}%</span>` : ''}
+                    <span class="text-[10px] font-sans text-stone-400 ml-auto">${dateStr}</span>
+                  </div>
+                </div>
+
+                <!-- Nút thao tác -->
+                <div class="flex items-center gap-2 pt-2 border-t border-[#E7E5DF] dark:border-[#262C36]">
+                  ${quizCount > 0 ? `
+                    <button data-launch-quiz="${escapeHtml(deck.id)}" class="flex-1 touch-target min-h-[36px] py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer">
+                      <svg class="w-3.5 h-3.5"><use href="#icon-check-circle-2"></use></svg>
+                      <span>Luyện trắc nghiệm</span>
+                    </button>
+                  ` : ''}
+                  ${fcCount > 0 ? `
+                    <button data-launch-fc="${escapeHtml(deck.id)}" class="flex-1 touch-target min-h-[36px] py-1.5 px-3 rounded-xl bg-[#FAF9F5] dark:bg-[#20242D] border border-[#E7E5DF] dark:border-[#262C36] hover:border-indigo-400 text-[#1C1917] dark:text-[#EDECE8] font-semibold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer">
+                      <svg class="w-3.5 h-3.5 text-purple-600 dark:text-purple-400"><use href="#icon-cards"></use></svg>
+                      <span>Lật Flashcard</span>
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Gắn sự kiện nút trong Deck Card
+          decksGridContainer.querySelectorAll('[data-launch-quiz]').forEach(btn => {
+            btn.onclick = () => {
+              const dId = btn.getAttribute('data-launch-quiz');
+              const d = (state.learningData.studyDecks || []).find(x => x.id === dId);
+              if (d && d.quizzes?.length > 0) {
+                hideModalAnimated(studyDecksModal);
+                startQuizSession(d.quizzes, d.title, d);
+              }
+            };
+          });
+
+          decksGridContainer.querySelectorAll('[data-launch-fc]').forEach(btn => {
+            btn.onclick = () => {
+              const dId = btn.getAttribute('data-launch-fc');
+              const d = (state.learningData.studyDecks || []).find(x => x.id === dId);
+              if (d && d.flashcards?.length > 0) {
+                hideModalAnimated(studyDecksModal);
+                startFlashcardSession(d.flashcards, d.title);
+              }
+            };
+          });
+
+          decksGridContainer.querySelectorAll('[data-delete-deck]').forEach(btn => {
+            btn.onclick = () => {
+              const dId = btn.getAttribute('data-delete-deck');
+              if (confirm("Bạn có chắc chắn muốn xóa bộ đề này không?")) {
+                state.learningData.studyDecks = (state.learningData.studyDecks || []).filter(x => x.id !== dId);
+                saveStudyDecksAndItems();
+                renderStudyDecksModalTabs();
+                showToast("Đã xóa bộ đề");
+              }
+            };
+          });
+        }
+      }
+
+      // 2. RENDER TAB ⭐ ĐÃ GẮN SAO
+      if (currentHubTab === 'starred' && starredItemsListContainer) {
+        if (starred.length === 0) {
+          starredItemsListContainer.innerHTML = `
+            <div class="py-12 text-center text-xs text-stone-500 space-y-2">
+              <svg class="w-8 h-8 mx-auto text-amber-400 fill-amber-400/20"><use href="#icon-star"></use></svg>
+              <p class="font-medium text-stone-700 dark:text-stone-300">Chưa có câu hỏi nào được gắn sao</p>
+              <p class="text-[11px] text-stone-400 max-w-sm mx-auto">Trong lúc làm trắc nghiệm hoặc lật thẻ nhớ, bạn hãy bấm biểu tượng ⭐ để lưu các câu hỏi quan trọng vào đây ôn tập.</p>
+            </div>
+          `;
+        } else {
+          starredItemsListContainer.innerHTML = starred.map((item, idx) => {
+            const isQuiz = Array.isArray(item.options);
+            return `
+              <div class="p-4 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] shadow-2xs space-y-2.5">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${isQuiz ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'}">
+                      ${isQuiz ? 'Trắc nghiệm' : 'Flashcard'}
+                    </span>
+                    <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] truncate max-w-xs">${escapeHtml(item.deckTitle || '')}</span>
+                  </div>
+                  <button data-unstar-id="${escapeHtml(item.id)}" class="p-1 rounded-lg text-amber-500 hover:text-stone-400 hover:bg-black/5 transition cursor-pointer" title="Bỏ gắn sao">
+                    <svg class="w-4 h-4 fill-amber-500"><use href="#icon-star"></use></svg>
+                  </button>
+                </div>
+
+                <p class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] leading-relaxed">
+                  ${escapeHtml(item.question || item.front || '')}
+                </p>
+
+                ${isQuiz ? `
+                  <div class="space-y-1 pl-2 border-l-2 border-indigo-200 dark:border-indigo-800 text-xs">
+                    ${(item.options || []).map((opt, oIdx) => `
+                      <div class="flex items-center gap-2 ${oIdx === item.answer ? 'text-emerald-700 dark:text-emerald-300 font-semibold' : 'text-stone-500'}">
+                        <span class="w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${oIdx === item.answer ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60' : 'border-stone-300'}">${String.fromCharCode(65 + oIdx)}</span>
+                        <span>${escapeHtml(opt)}</span>
+                        ${oIdx === item.answer ? '<span class="text-[10px] text-emerald-600">✓ Đáp án đúng</span>' : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                  ${item.explanation ? `<p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] bg-indigo-50/40 dark:bg-indigo-950/30 p-2 rounded-xl">💡 <strong>Giải thích:</strong> ${escapeHtml(item.explanation)}</p>` : ''}
+                ` : `
+                  <div class="p-3 rounded-xl bg-purple-50/40 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40 text-xs text-[#1C1917] dark:text-[#EDECE8]">
+                    <strong>Đáp án / Giải nghĩa:</strong>
+                    <p class="mt-1 text-[11px] text-[#57534E] dark:text-[#9AA3B2] whitespace-pre-line">${escapeHtml(item.back || '')}</p>
+                  </div>
+                `}
+              </div>
+            `;
+          }).join('');
+
+          starredItemsListContainer.querySelectorAll('[data-unstar-id]').forEach(btn => {
+            btn.onclick = () => {
+              const sId = btn.getAttribute('data-unstar-id');
+              toggleStarQuestion({ id: sId, starred: true });
+            };
+          });
+        }
+      }
+
+      // 3. RENDER TAB ❌ CẦN HỌC LẠI (LÀM SAI)
+      if (currentHubTab === 'wrong' && wrongItemsListContainer) {
+        if (wrong.length === 0) {
+          wrongItemsListContainer.innerHTML = `
+            <div class="py-12 text-center text-xs text-stone-500 space-y-2">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+                <svg class="w-6 h-6"><use href="#icon-check-check"></use></svg>
+              </div>
+              <p class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8]">Không có câu hỏi nào cần ôn lại!</p>
+              <p class="text-[11px] text-stone-400 max-w-sm mx-auto">Khi bạn làm sai câu trắc nghiệm hoặc bấm "Chưa nhớ" thẻ flashcard, hệ thống sẽ gom riêng vào đây để luyện tập tập trung.</p>
+            </div>
+          `;
+        } else {
+          wrongItemsListContainer.innerHTML = wrong.map(item => {
+            const isQuiz = Array.isArray(item.options);
+            return `
+              <div class="p-4 rounded-2xl border border-rose-200/80 dark:border-rose-900/50 bg-white dark:bg-[#161A22] shadow-2xs space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/60">
+                      ${item.wrongCount > 1 ? `Sai ${item.wrongCount} lần` : 'Làm sai 1 lần'}
+                    </span>
+                    <span class="text-[11px] text-stone-400 truncate max-w-xs">${escapeHtml(item.deckTitle || '')}</span>
+                  </div>
+
+                  <button data-resolve-wrong="${escapeHtml(item.id)}" class="touch-target px-2.5 py-1 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center gap-1 transition cursor-pointer" title="Đánh dấu đã hiểu để gỡ khỏi danh sách">
+                    <svg class="w-3.5 h-3.5"><use href="#icon-check-check"></use></svg>
+                    <span>Đã hiểu</span>
+                  </button>
+                </div>
+
+                <p class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] leading-relaxed">
+                  ${escapeHtml(item.question || item.front || '')}
+                </p>
+
+                ${isQuiz ? `
+                  <div class="space-y-1.5 text-xs">
+                    ${typeof item.userAnswer === 'number' && item.options?.[item.userAnswer] ? `
+                      <div class="p-2 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-900/40 text-rose-800 dark:text-rose-200">
+                        <span class="font-semibold">Bạn đã chọn:</span> ${escapeHtml(item.options[item.userAnswer])} ❌
+                      </div>
+                    ` : ''}
+                    <div class="p-2 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-200">
+                      <span class="font-semibold">Đáp án đúng:</span> ${escapeHtml(item.options?.[item.answer] || '')} ✓
+                    </div>
+                  </div>
+                  ${item.explanation ? `<p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] bg-stone-50 dark:bg-[#181B20] p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36]">💡 <strong>Giải thích lý do:</strong> ${escapeHtml(item.explanation)}</p>` : ''}
+                ` : `
+                  <div class="p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/30 text-xs text-[#1C1917] dark:text-[#EDECE8]">
+                    <strong>Đáp án cần ghi nhớ:</strong>
+                    <p class="mt-1 text-[11px] text-[#57534E] dark:text-[#9AA3B2] whitespace-pre-line">${escapeHtml(item.back || '')}</p>
+                  </div>
+                `}
+              </div>
+            `;
+          }).join('');
+
+          wrongItemsListContainer.querySelectorAll('[data-resolve-wrong]').forEach(btn => {
+            btn.onclick = () => {
+              const wId = btn.getAttribute('data-resolve-wrong');
+              resolveWrongQuestion(wId);
+            };
+          });
+        }
+      }
+    }
+
+    function openStudyDecksManagerModal() {
+      renderStudyDecksModalTabs();
+      showModalAnimated(studyDecksModal);
+    }
+
+    const btnCloseDecksManager = document.getElementById('btnCloseDecksManagerModal');
+    if (btnCloseDecksManager) btnCloseDecksManager.onclick = () => hideModalAnimated(studyDecksModal);
+
+    const btnHeaderCreateNew = document.getElementById('btnHeaderCreateNewDeck');
+    if (btnHeaderCreateNew) {
+      btnHeaderCreateNew.onclick = () => {
+        hideModalAnimated(studyDecksModal);
+        openSelfTestConfigModal();
+      };
+    }
+
+    if (searchDecksInput) {
+      searchDecksInput.oninput = renderStudyDecksModalTabs;
+    }
+
+    // Nút Luyện tập câu đã gắn sao
+    const btnPracticeStarredQuiz = document.getElementById('btnPracticeStarredQuiz');
+    if (btnPracticeStarredQuiz) {
+      btnPracticeStarredQuiz.onclick = () => {
+        const starred = state.learningData.starredItems || [];
+        const quizzes = starred.filter(x => Array.isArray(x.options));
+        const flashcards = starred.filter(x => !Array.isArray(x.options));
+
+        if (starred.length === 0) {
+          showToast("Chưa có mục nào được gắn sao", "info");
+          return;
+        }
+
+        hideModalAnimated(studyDecksModal);
+        if (quizzes.length > 0) {
+          startQuizSession(quizzes, "Luyện tập các câu Đã gắn sao ⭐");
+        } else {
+          startFlashcardSession(flashcards, "Luyện tập thẻ Flashcard Đã gắn sao ⭐");
+        }
+      };
+    }
+
+    // Nút Luyện tập câu làm sai
+    const btnPracticeWrongOnly = document.getElementById('btnPracticeWrongOnly');
+    if (btnPracticeWrongOnly) {
+      btnPracticeWrongOnly.onclick = () => {
+        const wrong = state.learningData.wrongItems || [];
+        const quizzes = wrong.filter(x => Array.isArray(x.options));
+        const flashcards = wrong.filter(x => !Array.isArray(x.options));
+
+        if (wrong.length === 0) {
+          showToast("Không có câu nào bị làm sai!", "success");
+          return;
+        }
+
+        hideModalAnimated(studyDecksModal);
+        if (quizzes.length > 0) {
+          startQuizSession(quizzes, "🔁 Luyện tập các câu làm sai");
+        } else {
+          startFlashcardSession(flashcards, "🔁 Luyện tập các thẻ chưa nhớ");
+        }
+      };
+    }
+
+    // -------------------------------------------------------------------------
+    // MODAL 3: TRÌNH LÀM BÀI TRẮC NGHIỆM 4 ĐÁP ÁN (#quizPracticeModal)
+    // -------------------------------------------------------------------------
+    const quizModal = document.getElementById('quizPracticeModal');
+    const quizModalTitle = document.getElementById('quizModalTitle');
+    const quizProgressSubtitle = document.getElementById('quizProgressSubtitle');
+    const quizProgressBar = document.getElementById('quizProgressBar');
+    const btnQuizStarCurrent = document.getElementById('btnQuizStarCurrent');
+    const quizStarCurrentIcon = document.getElementById('quizStarCurrentIcon');
+    const btnCloseQuiz = document.getElementById('btnCloseQuizModal');
+
+    const quizActiveView = document.getElementById('quizActiveView');
+    const quizQuestionText = document.getElementById('quizQuestionText');
+    const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+    const quizExplanationBox = document.getElementById('quizExplanationBox');
+    const quizExplanationText = document.getElementById('quizExplanationText');
+
+    const quizSummaryView = document.getElementById('quizSummaryView');
+    const quizSummaryScoreText = document.getElementById('quizSummaryScoreText');
+    const btnQuizRetryWrongOnly = document.getElementById('btnQuizRetryWrongOnly');
+    const btnQuizRestart = document.getElementById('btnQuizRestart');
+    const btnQuizFinishToHub = document.getElementById('btnQuizFinishToHub');
+
+    const quizFooterActions = document.getElementById('quizFooterActions');
+    const btnQuizPrev = document.getElementById('btnQuizPrev');
+    const btnQuizNext = document.getElementById('btnQuizNext');
+    const btnQuizNextLabel = document.getElementById('btnQuizNextLabel');
+
+    let currentQuizQueue = [];
+    let currentQuizIndex = 0;
+    let currentQuizUserAnswers = {};
+    let currentQuizCorrectCount = 0;
+    let currentQuizWrongList = [];
+    let currentQuizDeckRef = null;
+
+    function startQuizSession(quizItems, title = "Trắc nghiệm tự kiểm tra", deckRef = null) {
+      if (!quizItems || quizItems.length === 0) {
+        showToast("Không có câu hỏi trắc nghiệm nào trong bộ này.", "info");
+        return;
+      }
+
+      currentQuizQueue = [...quizItems];
+      currentQuizIndex = 0;
+      currentQuizUserAnswers = {};
+      currentQuizCorrectCount = 0;
+      currentQuizWrongList = [];
+      currentQuizDeckRef = deckRef;
+
+      if (quizModalTitle) quizModalTitle.innerText = title;
+
+      if (quizActiveView) quizActiveView.classList.remove('hidden');
+      if (quizFooterActions) quizFooterActions.classList.remove('hidden');
+      if (quizSummaryView) quizSummaryView.classList.add('hidden');
+
+      renderCurrentQuizQuestion();
+      showModalAnimated(quizModal);
+    }
+
+    function renderCurrentQuizQuestion() {
+      if (!currentQuizQueue || currentQuizIndex >= currentQuizQueue.length) {
+        showQuizSummary();
+        return;
+      }
+
+      const q = currentQuizQueue[currentQuizIndex];
+      const total = currentQuizQueue.length;
+
+      // Progress bar & Subtitle
+      if (quizProgressSubtitle) quizProgressSubtitle.innerText = `Câu ${currentQuizIndex + 1} / ${total}`;
+      if (quizProgressBar) {
+        const pct = Math.round(((currentQuizIndex + 1) / total) * 100);
+        quizProgressBar.style.width = `${pct}%`;
+      }
+
+      // Star icon
+      if (quizStarCurrentIcon) {
+        const isStarred = Boolean(q.starred);
+        if (isStarred) {
+          quizStarCurrentIcon.classList.remove('fill-none', 'text-stone-400');
+          quizStarCurrentIcon.classList.add('fill-amber-500', 'text-amber-500');
+        } else {
+          quizStarCurrentIcon.classList.add('fill-none', 'text-stone-400');
+          quizStarCurrentIcon.classList.remove('fill-amber-500', 'text-amber-500');
+        }
+      }
+
+      // Question text
+      if (quizQuestionText) quizQuestionText.innerText = q.question;
+
+      // Render 4 Options
+      if (quizOptionsContainer) {
+        const userAnswer = currentQuizUserAnswers[currentQuizIndex];
+        const isAnswered = typeof userAnswer === 'number';
+
+        quizOptionsContainer.innerHTML = (q.options || []).map((opt, idx) => {
+          const letter = String.fromCharCode(65 + idx);
+          let btnCls = "w-full min-h-[52px] p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all select-none cursor-pointer ";
+          let letterCls = "w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ";
+
+          if (!isAnswered) {
+            btnCls += "border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5] dark:bg-[#12151B] hover:border-indigo-400 hover:bg-indigo-50/30 text-[#1C1917] dark:text-[#EDECE8]";
+            letterCls += "border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-300";
+          } else {
+            if (idx === q.answer) {
+              btnCls += "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-950 dark:text-emerald-100 font-semibold";
+              letterCls += "border-emerald-500 bg-emerald-600 text-white";
+            } else if (idx === userAnswer) {
+              btnCls += "border-rose-400 bg-rose-50 dark:bg-rose-950/50 text-rose-950 dark:text-rose-100";
+              letterCls += "border-rose-500 bg-rose-600 text-white";
+            } else {
+              btnCls += "border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] opacity-50 text-[#1C1917] dark:text-[#EDECE8]";
+              letterCls += "border-stone-300 dark:border-stone-600 text-stone-400";
+            }
+          }
+
+          return `
+            <button type="button" data-option-idx="${idx}" class="${btnCls}">
+              <span class="${letterCls}">${letter}</span>
+              <span class="text-xs sm:text-sm leading-relaxed">${escapeHtml(opt)}</span>
+              ${isAnswered && idx === q.answer ? '<span class="ml-auto text-emerald-600 font-bold text-xs shrink-0">✓ Đúng</span>' : ''}
+              ${isAnswered && idx === userAnswer && idx !== q.answer ? '<span class="ml-auto text-rose-600 font-bold text-xs shrink-0">✕ Sai</span>' : ''}
+            </button>
+          `;
+        }).join('');
+
+        // Gắn sự kiện click option
+        if (!isAnswered) {
+          quizOptionsContainer.querySelectorAll('[data-option-idx]').forEach(btn => {
+            btn.onclick = () => {
+              const optIdx = parseInt(btn.getAttribute('data-option-idx'), 10);
+              selectQuizOption(optIdx);
+            };
+          });
+        }
+      }
+
+      // Explanation box
+      if (quizExplanationBox && quizExplanationText) {
+        const userAnswer = currentQuizUserAnswers[currentQuizIndex];
+        if (typeof userAnswer === 'number') {
+          quizExplanationText.innerText = q.explanation || 'Không có giải thích bổ sung.';
+          quizExplanationBox.classList.remove('hidden');
+        } else {
+          quizExplanationBox.classList.add('hidden');
+        }
+      }
+
+      // Prev / Next button state
+      if (btnQuizPrev) btnQuizPrev.disabled = (currentQuizIndex === 0);
+      if (btnQuizNextLabel) {
+        btnQuizNextLabel.innerText = (currentQuizIndex === total - 1) ? 'Xem kết quả' : 'Câu tiếp theo →';
+      }
+    }
+
+    function selectQuizOption(optIdx) {
+      if (typeof currentQuizUserAnswers[currentQuizIndex] === 'number') return;
+      currentQuizUserAnswers[currentQuizIndex] = optIdx;
+
+      const q = currentQuizQueue[currentQuizIndex];
+      const isCorrect = (optIdx === q.answer);
+
+      if (isCorrect) {
+        currentQuizCorrectCount++;
+      } else {
+        currentQuizWrongList.push(q);
+        recordWrongQuestion(q, currentQuizDeckRef || { title: quizModalTitle?.innerText || 'Trắc nghiệm' }, optIdx);
+      }
+
+      // Record daily analytics
+      const today = getTodayDateStr();
+      if (!state.learningData.analytics.dailyActivity[today]) {
+        state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+      }
+      state.learningData.analytics.dailyActivity[today].cardsReviewed =
+        (state.learningData.analytics.dailyActivity[today].cardsReviewed || 0) + 1;
+      saveLearningData();
+
+      renderCurrentQuizQuestion();
+    }
+
+    if (btnQuizStarCurrent) {
+      btnQuizStarCurrent.onclick = () => {
+        if (!currentQuizQueue || currentQuizIndex >= currentQuizQueue.length) return;
+        const q = currentQuizQueue[currentQuizIndex];
+        toggleStarQuestion(q, currentQuizDeckRef || { title: quizModalTitle?.innerText || 'Trắc nghiệm' });
+        renderCurrentQuizQuestion();
+      };
+    }
+
+    if (btnQuizPrev) {
+      btnQuizPrev.onclick = () => {
+        if (currentQuizIndex > 0) {
+          currentQuizIndex--;
+          renderCurrentQuizQuestion();
+        }
+      };
+    }
+
+    if (btnQuizNext) {
+      btnQuizNext.onclick = () => {
+        if (currentQuizIndex < currentQuizQueue.length - 1) {
+          currentQuizIndex++;
+          renderCurrentQuizQuestion();
+        } else {
+          showQuizSummary();
+        }
+      };
+    }
+
+    function showQuizSummary() {
+      if (quizActiveView) quizActiveView.classList.add('hidden');
+      if (quizFooterActions) quizFooterActions.classList.add('hidden');
+      if (quizSummaryView) quizSummaryView.classList.remove('hidden');
+
+      const total = currentQuizQueue.length;
+      const pct = total > 0 ? Math.round((currentQuizCorrectCount / total) * 100) : 100;
+
+      if (quizSummaryScoreText) {
+        quizSummaryScoreText.innerText = `Bạn đạt ${currentQuizCorrectCount} / ${total} câu đúng (${pct}%)`;
+      }
+
+      // Cập nhật điểm cao nhất vào Deck nếu có
+      if (currentQuizDeckRef) {
+        currentQuizDeckRef.stats = currentQuizDeckRef.stats || {};
+        currentQuizDeckRef.stats.timesPracticed = (currentQuizDeckRef.stats.timesPracticed || 0) + 1;
+        currentQuizDeckRef.stats.lastScore = pct;
+        if (!currentQuizDeckRef.stats.bestScore || pct > currentQuizDeckRef.stats.bestScore) {
+          currentQuizDeckRef.stats.bestScore = pct;
+        }
+        saveStudyDecksAndItems();
+      }
+
+      if (btnQuizRetryWrongOnly) {
+        if (currentQuizWrongList.length > 0) {
+          btnQuizRetryWrongOnly.classList.remove('hidden');
+          btnQuizRetryWrongOnly.innerText = `🔁 Ôn lại ${currentQuizWrongList.length} câu làm sai`;
+          btnQuizRetryWrongOnly.onclick = () => {
+            startQuizSession(currentQuizWrongList, `Ôn lại câu làm sai: ${quizModalTitle?.innerText || ''}`, currentQuizDeckRef);
+          };
+        } else {
+          btnQuizRetryWrongOnly.classList.add('hidden');
+        }
+      }
+    }
+
+    if (btnQuizRestart) {
+      btnQuizRestart.onclick = () => {
+        startQuizSession(currentQuizQueue, quizModalTitle?.innerText || 'Trắc nghiệm tự kiểm tra', currentQuizDeckRef);
+      };
+    }
+
+    if (btnQuizFinishToHub) {
+      btnQuizFinishToHub.onclick = () => {
+        hideModalAnimated(quizModal);
+        openStudyDecksManagerModal();
+      };
+    }
+
+    if (btnCloseQuiz) {
+      btnCloseQuiz.onclick = () => hideModalAnimated(quizModal);
+    }
+
+    // Keyboard support cho Quiz (Phím 1, 2, 3, 4 chọn đáp án A, B, C, D; Phím mũi tên chuyển câu)
+    document.addEventListener('keydown', (e) => {
+      if (quizModal && !quizModal.classList.contains('hidden')) {
+        if (['Digit1', 'KeyA'].includes(e.code)) selectQuizOption(0);
+        else if (['Digit2', 'KeyB'].includes(e.code)) selectQuizOption(1);
+        else if (['Digit3', 'KeyC'].includes(e.code)) selectQuizOption(2);
+        else if (['Digit4', 'KeyD'].includes(e.code)) selectQuizOption(3);
+        else if (e.code === 'ArrowRight' || e.code === 'Enter') {
+          if (btnQuizNext) btnQuizNext.click();
+        } else if (e.code === 'ArrowLeft') {
+          if (btnQuizPrev) btnQuizPrev.click();
+        }
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // KẾT NỐI SỰ KIỆN: NÚT "TỰ KIỂM TRA" TRÊN BÀI HỌC VÀ ICON 2 TRÊN HEADER
+    // -------------------------------------------------------------------------
+
+    // 1. Nút Tự kiểm tra Flashcards/Quiz từ thanh tiêu đề bài học (#descriptionBox)
     const btnStudyDesc = document.getElementById('btnStudyLessonFlashcards');
     if (btnStudyDesc) {
       btnStudyDesc.addEventListener('click', () => {
-        const cur = (state.lessons || []).find(l => l.id === state.activeLessonId);
-        if (!cur) return;
-        const cards = extractFlashcardsFromDescription(cur);
-        if (cards.length === 0) {
-          showToast("Chưa có câu hỏi trọng tâm (hãy thêm câu hỏi vào phần Mô tả).", "info");
-          return;
-        }
-        startFlashcardSession(cards, `Tự kiểm tra: ${cur.title}`);
+        openSelfTestConfigModal();
       });
     }
 
-    // Nút Flashcard trên Header (ôn toàn thư viện)
+    // 2. Icon 2 ở ảnh 2 trên Header: Mở Trung tâm Quản lý Bộ thẻ & Trắc nghiệm
     const btnHeaderFc = document.getElementById('btnHeaderFlashcards');
     if (btnHeaderFc) {
       btnHeaderFc.addEventListener('click', () => {
-        const allCards = [];
-        for (const les of (state.lessons || [])) {
-          const fromDesc = extractFlashcardsFromDescription(les);
-          allCards.push(...fromDesc);
-        }
-        if (state.learningData.flashcards) {
-          allCards.push(...state.learningData.flashcards);
-        }
-        if (allCards.length === 0) {
-          showToast("Chưa có câu hỏi hoặc flashcard nào trong thư viện.", "info");
-          return;
-        }
-        // Shuffle cards
-        allCards.sort(() => Math.random() - 0.5);
-        startFlashcardSession(allCards, "Flashcard Toàn Thư Viện");
+        openStudyDecksManagerModal();
       });
     }
+
+    // Phím tắt C đã tự động gọi btnHeaderFc.click() để mở Trung tâm Bộ thẻ & Trắc nghiệm
+    window.openSelfTestConfigModal = openSelfTestConfigModal;
+    window.openStudyDecksManagerModal = openStudyDecksManagerModal;
+    window.startQuizSession = startQuizSession;
 
     function openCreateFlashcardQuick(initialFront) {
       const back = prompt("Nhập đáp án / giải thích cho thẻ này:");

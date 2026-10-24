@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
       {
+        version: 'v5.8.38',
+        date: '2026-10-24T17:25:00+07:00',
+        title: 'Hệ Thống Tự Kiểm Tra & Bộ Đề AI Thông Minh Tối Ưu Token Siêu Cấp',
+        items: [
+          { type: 'new', text: 'Tự kiểm tra đa bài học linh hoạt (Multi-Lesson Selection): Người dùng có thể tùy chọn 1 hoặc nhiều bài học cùng lúc (mặc định bài đang học) để AI tổng hợp kiến thức tạo bộ đề trắc nghiệm 4 đáp án và Flashcards thông minh.' },
+          { type: 'improved', text: '5 cơ chế tối ưu hóa Token API triệt để: Áp dụng Lọc thô DOM (giảm 90% rác HTML), Lọc mỏ neo tri thức (trích xuất câu định nghĩa/công thức trọng tâm), Ghép lô đa bài (Batch Merging trong 1 lượt gọi), Schema JSON siêu nén (Key rút gọn q/options/ans) và Bộ nhớ đệm cục bộ kèm hỗ trợ API Key riêng (BYOK).' },
+          { type: 'new', text: 'Trung tâm Quản lý Bộ đề tại Icon Thẻ ghi nhớ (Icon 2 Toolbar): AI tự đặt tên gợi nhớ khoa học cho bộ đề, lưu trữ an toàn trong Hub với 3 phân khu chuyên biệt: Tất cả bộ đề, ⭐ Đã gắn sao (Lưu lại) và ❌ Cần học lại (Làm sai).' },
+          { type: 'improved', text: 'Trình luyện thi trắc nghiệm 4 đáp án & Flashcards tương tác chuẩn Editorial: Chấm điểm tức thì với hiệu ứng màu xanh/đỏ mượt mà, khung giải thích AI chi tiết, thanh tiến độ trực quan và tự động ghi nhận câu sai để ôn luyện đến khi thành thạo.' }
+        ]
+      },
+      {
         version: 'v5.8.37',
         date: '2026-10-24T17:15:00+07:00',
         title: 'Thiết Kế Riêng Biểu Tượng Vector SVG Cho Huy Hiệu "Đã Lưu" (AI Fast Cache)',
