@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.58',
+    date: '2026-10-25T11:45:00+07:00',
+    title: 'Hiệu Ứng Chuyển Cảnh & Animation Hoàn Thành Bài Kiểm Tra Đẳng Cấp & Chặn Autofill Form Rác',
+    items: [
+      { type: 'improved', text: 'Hiệu ứng hoàn thành bài kiểm tra & phiên ôn tập siêu mượt (Delight Completion Polish): Nâng cấp chuyển cảnh mượt mà 60 FPS GPU Compositor khi kết thúc bài trắc nghiệm và thẻ nhớ. Icon checkmark bung nảy nhẹ nhàng (Spring Pop-in) kèm hào quang pulse ring lan tỏa, tiêu đề, điểm số và các nút hành động trượt nhẹ tuần tự (Staggered Fade-in-up), kết hợp chùm hạt ngọc thanh lịch (Micro-confetti) tự dọn sạch sau 2 giây.' },
+      { type: 'fix', text: 'Chặn triệt để lỗi tự động điền tài khoản & mật khẩu vào form Tạo bài kiểm tra AI: Thiết lập cơ chế phòng thủ đa tầng (Decoy inputs mồi nhử ẩn, semantic search attributes, one-time/new-password tags, và runtime sanitization guard), ngăn chặn 100% việc trình duyệt tự ý điền tên đăng nhập vào ô "Tìm nhanh bài học" và mật khẩu vào ô "Google Gemini API Key cá nhân".' },
+      { type: 'improved', text: 'Bổ sung nút con mắt (Eye Toggle) cho ô Google Gemini API Key: Người dùng có thể dễ dàng nhấp để xem lại khóa API cá nhân vừa dán hoặc ẩn lại dưới dạng chấm tròn an toàn.' }
+    ]
+  },
+  {
     version: 'v5.8.57',
     date: '2026-10-24T22:15:00+07:00',
     title: 'Tăng Tốc Phản Hồi AI Vượt Bậc (~1s) & Tự Động Thu Nhỏ (Auto-Collapse) Trong Lúc Chờ Trả Lời',

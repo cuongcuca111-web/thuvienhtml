@@ -4734,3 +4734,139 @@
     transition: opacity 0.15s ease-out !important;
   }
 }
+
+
+/* ========================================================================= */
+/* HIỆU ỨNG HOÀN THÀNH BÀI KIỂM TRA & ÔN TẬP ĐẲNG CẤP (TRỤ CỘT 3 & 5 /thietkeweb) */
+/* ========================================================================= */
+
+/* Container kết quả tổng kết: fade-in và scale nhẹ nhàng */
+.quiz-summary-anim-container {
+  animation: quizSummaryViewEnter 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes quizSummaryViewEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Icon Checkmark trung tâm: Spring Pop-in nảy nhẹ nhàng */
+.quiz-summary-icon-box {
+  animation: quizSummaryIconPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  position: relative;
+}
+
+@keyframes quizSummaryIconPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Vòng hào quang lan tỏa nhẹ nhàng (Soft Glowing Pulse Ring) quanh icon */
+.quiz-summary-icon-box::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 2px solid rgba(79, 70, 229, 0.25);
+  animation: quizSummaryPulseRing 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  pointer-events: none;
+}
+.dark .quiz-summary-icon-box::after {
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+@keyframes quizSummaryPulseRing {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.22);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* Các thành phần xuất hiện trượt nhẹ lên (Staggered Fade-in-up) */
+.quiz-summary-stagger-1 {
+  animation: quizSummaryStaggerIn 280ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+}
+.quiz-summary-stagger-2 {
+  animation: quizSummaryStaggerIn 280ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+.quiz-summary-stagger-3 {
+  animation: quizSummaryStaggerIn 280ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+}
+.quiz-summary-stagger-4 {
+  animation: quizSummaryStaggerIn 280ms cubic-bezier(0.16, 1, 0.3, 1) 240ms both;
+}
+
+@keyframes quizSummaryStaggerIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Nút bấm hành động với Subtle Hover Lift (Trụ cột 4 /thietkeweb) */
+@media (hover: hover) and (pointer: fine) {
+  .quiz-summary-btn-lift {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  }
+  .quiz-summary-btn-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px -3px rgba(79, 70, 229, 0.25), 0 2px 6px -1px rgba(0, 0, 0, 0.06);
+  }
+  .dark .quiz-summary-btn-lift:hover {
+    box-shadow: 0 8px 20px -3px rgba(99, 102, 241, 0.35), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+  .quiz-summary-btn-lift-subtle {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  }
+  .quiz-summary-btn-lift-subtle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  }
+  .dark .quiz-summary-btn-lift-subtle:hover {
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-summary-anim-container,
+  .quiz-summary-icon-box,
+  .quiz-summary-stagger-1,
+  .quiz-summary-stagger-2,
+  .quiz-summary-stagger-3,
+  .quiz-summary-stagger-4 {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .quiz-summary-icon-box::after {
+    display: none !important;
+  }
+}

@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.57"></script>
+  <script src="./changelog.js?v=5.8.58"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.57',
+        version: 'v5.8.58',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.57';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.58';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.57">
-  <script src="./bridge.js?v=5.8.57"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.58">
+  <script src="./bridge.js?v=5.8.58"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.57 • build 24/10/2026 22:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.58 • build 25/10/2026 11:45</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3224,7 +3224,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.57</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.58</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3246,7 +3246,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.57 • build 24/10/2026 22:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.58 • build 25/10/2026 11:45</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3966,17 +3966,17 @@
       </div>
 
       <!-- Kết quả phiên học (Hiện khi xong tất cả thẻ) -->
-      <div id="fcSessionSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4">
-        <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs">
+      <div id="fcSessionSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4 quiz-summary-anim-container">
+        <div id="fcSummaryIconBox" class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs quiz-summary-icon-box">
           <svg class="w-8 h-8" aria-hidden="true"><use href="#icon-check-check"></use></svg>
         </div>
-        <h4 class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8]">Hoàn thành phiên kiểm tra!</h4>
-        <p id="fcSummaryStats" class="text-sm text-[#57534E] dark:text-[#9AA3B2]">Bạn đã nhớ 4 / 5 câu hỏi (80%)</p>
-        <div class="flex items-center gap-3 pt-2">
-          <button id="btnFcRetryUnknown" class="touch-target min-h-[44px] px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-950/40" aria-label="Ôn lại thẻ chưa nhớ">
+        <h4 class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8] quiz-summary-stagger-1">Hoàn thành phiên kiểm tra!</h4>
+        <p id="fcSummaryStats" class="text-sm text-[#57534E] dark:text-[#9AA3B2] quiz-summary-stagger-2">Bạn đã nhớ 4 / 5 câu hỏi (80%)</p>
+        <div class="flex items-center gap-3 pt-2 quiz-summary-stagger-3">
+          <button id="btnFcRetryUnknown" class="touch-target min-h-[44px] px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-950/40 quiz-summary-btn-lift-subtle" aria-label="Ôn lại thẻ chưa nhớ">
             Ôn lại thẻ chưa nhớ
           </button>
-          <button id="btnFcFinish" class="touch-target min-h-[44px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs" aria-label="Hoàn tất phiên kiểm tra">
+          <button id="btnFcFinish" class="touch-target min-h-[44px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs quiz-summary-btn-lift" aria-label="Hoàn tất phiên kiểm tra">
             Hoàn tất
           </button>
         </div>
@@ -4017,6 +4017,12 @@
       <!-- Body Scrollable -->
       <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 no-scrollbar">
 
+        <!-- Mồi nhử vô hình chặn trình duyệt tự động điền tài khoản & mật khẩu vào modal -->
+        <div style="position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; overflow: hidden;" aria-hidden="true" tabindex="-1">
+          <input type="text" name="fake_username_remember" tabindex="-1" autocomplete="off" />
+          <input type="password" name="fake_password_remember" tabindex="-1" autocomplete="new-password" />
+        </div>
+
         <!-- MỤC 1: CHỌN BÀI HỌC (Chọn 1 hoặc nhiều bài, mặc định là bài hiện tại) -->
         <div class="space-y-2.5">
           <div class="flex flex-wrap items-center justify-between gap-1.5">
@@ -4033,10 +4039,21 @@
             </div>
           </div>
 
-          <!-- Ô tìm kiếm bài học nhanh -->
+          <!-- Ô tìm kiếm bài học nhanh (Chặn autofill username) -->
           <div class="relative">
             <svg class="w-3.5 h-3.5 absolute left-3 top-3 text-stone-400 pointer-events-none"><use href="#icon-search"></use></svg>
-            <input id="searchLessonForTestInput" type="text" placeholder="Tìm nhanh bài học theo tên..." class="w-full text-xs pl-8 pr-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none placeholder:text-stone-400" />
+            <input id="searchLessonForTestInput"
+                   type="search"
+                   name="search_lesson_query_no_autofill"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   data-lpignore="true"
+                   data-1p-ignore="true"
+                   data-form-type="other"
+                   placeholder="Tìm nhanh bài học theo tên..."
+                   class="w-full text-xs pl-8 pr-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none placeholder:text-stone-400" />
           </div>
 
           <!-- Danh sách bài học cuộn -->
@@ -4112,14 +4129,31 @@
           </div>
         </div>
 
-        <!-- TÙY CHỌN API KEY CÁ NHÂN -->
+        <!-- TÙY CHỌN API KEY CÁ NHÂN (Chặn autofill password & có nút Toggle ẩn/hiện) -->
         <details class="text-xs group">
           <summary class="cursor-pointer font-medium text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 select-none">
             <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90"><use href="#icon-chevron-right"></use></svg>
             <span>Tùy chọn: Nhập Google Gemini API Key cá nhân của bạn</span>
           </summary>
           <div class="pt-2 pl-5 space-y-2">
-            <input id="customGeminiApiKeyInput" type="password" placeholder="Dán khóa API Google Gemini (bắt đầu bằng AIzaSy...)" class="w-full text-xs px-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none" />
+            <div class="relative flex items-center">
+              <input id="customGeminiApiKeyInput"
+                     type="password"
+                     name="google_gemini_api_key_field"
+                     autocomplete="new-password"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false"
+                     data-lpignore="true"
+                     data-1p-ignore="true"
+                     data-form-type="other"
+                     placeholder="Dán khóa API Google Gemini (bắt đầu bằng AIzaSy...)"
+                     class="w-full text-xs pl-3 pr-10 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] focus:border-indigo-500 focus:outline-none font-mono text-[11px]" />
+              <button id="btnToggleCustomApiKeyVisibility" type="button" class="touch-target absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition cursor-pointer" title="Ẩn / Hiện khóa API" aria-label="Ẩn / Hiện khóa API">
+                <svg id="iconApiKeyShow" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="iconApiKeyHide" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+              </button>
+            </div>
             <p class="text-[11px] text-stone-500 dark:text-stone-400">Nếu để trống, hệ thống sẽ tự động dùng API Key an toàn có sẵn của hệ thống. Khóa cá nhân sẽ được lưu an toàn trong trình duyệt của bạn.</p>
           </div>
         </details>
@@ -4330,23 +4364,23 @@
       </div>
 
       <!-- Quiz Summary View (When quiz ends) -->
-      <div id="quizSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4">
-        <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs">
+      <div id="quizSummaryView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center text-center space-y-4 quiz-summary-anim-container">
+        <div id="quizSummaryIconBox" class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shadow-xs quiz-summary-icon-box">
           <svg class="w-8 h-8"><use href="#icon-check-check"></use></svg>
         </div>
-        <h4 class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8]">Hoàn thành bài kiểm tra!</h4>
-        <p id="quizSummaryScoreText" class="text-base text-[#1C1917] dark:text-[#EDECE8] font-medium font-sans">Bạn đạt 8 / 10 câu đúng (80%)</p>
-        <p id="quizSummarySubtext" class="text-xs text-[#57534E] dark:text-[#9AA3B2] max-w-sm">Kết quả làm bài đã được tự động lưu lại vào hệ thống ôn tập.</p>
+        <h4 id="quizSummaryTitle" class="font-serif text-xl font-bold text-[#1C1917] dark:text-[#EDECE8] quiz-summary-stagger-1">Hoàn thành bài kiểm tra!</h4>
+        <p id="quizSummaryScoreText" class="text-base text-[#1C1917] dark:text-[#EDECE8] font-medium font-sans quiz-summary-stagger-2">Bạn đạt 8 / 10 câu đúng (80%)</p>
+        <p id="quizSummarySubtext" class="text-xs text-[#57534E] dark:text-[#9AA3B2] max-w-sm quiz-summary-stagger-3">Kết quả làm bài đã được tự động lưu lại vào hệ thống ôn tập.</p>
 
-        <div class="flex flex-wrap items-center justify-center gap-2.5 pt-3">
-          <button id="btnQuizRetryWrongOnly" type="button" class="hidden touch-target px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold hover:bg-rose-100 transition cursor-pointer flex items-center gap-1.5">
+        <div class="flex flex-wrap items-center justify-center gap-2.5 pt-3 quiz-summary-stagger-4">
+          <button id="btnQuizRetryWrongOnly" type="button" class="hidden touch-target px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold hover:bg-rose-100 transition cursor-pointer flex items-center gap-1.5 quiz-summary-btn-lift-subtle">
             <svg class="w-3.5 h-3.5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true"><use href="#icon-retry-wrong"></use></svg>
             <span id="btnQuizRetryWrongLabel">Ôn lại câu làm sai</span>
           </button>
-          <button id="btnQuizRestart" type="button" class="touch-target px-4 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] text-xs font-medium hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
+          <button id="btnQuizRestart" type="button" class="touch-target px-4 py-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] text-xs font-medium hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer quiz-summary-btn-lift-subtle">
             Làm lại từ đầu
           </button>
-          <button id="btnQuizFinishToHub" type="button" class="touch-target px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+          <button id="btnQuizFinishToHub" type="button" class="touch-target px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer quiz-summary-btn-lift">
             Về kho bài kiểm tra
           </button>
         </div>
@@ -6647,8 +6681,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.57</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.57</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.58</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.58</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -38567,7 +38601,12 @@
 
     function showFlashcardSummary() {
       if (fcActiveView) fcActiveView.classList.add('hidden');
-      if (fcSummaryView) fcSummaryView.classList.remove('hidden');
+      if (fcSummaryView) {
+        fcSummaryView.classList.remove('quiz-summary-anim-container');
+        void fcSummaryView.offsetWidth;
+        fcSummaryView.classList.add('quiz-summary-anim-container');
+        fcSummaryView.classList.remove('hidden');
+      }
 
       const total = fcKnownCount + fcUnknownCount;
       const pct = total > 0 ? Math.round((fcKnownCount / total) * 100) : 100;
@@ -38591,6 +38630,15 @@
       if (typeof renderStudyDecksModalTabs === 'function') {
         renderStudyDecksModalTabs();
       }
+
+      try {
+        const iconBox = document.getElementById('fcSummaryIconBox');
+        if (typeof shootMicroConfetti === 'function') {
+          setTimeout(() => {
+            shootMicroConfetti(iconBox || fcSummaryView);
+          }, 160);
+        }
+      } catch (_) {}
     }
 
     const flippableCard = document.getElementById('fcFlippableCard');
@@ -39010,8 +39058,14 @@
         selfTestSelectedLessonIds.add(state.lessons[0].id);
       }
 
+      const savedCustomApiKey = localStorage.getItem('thuvienhtml_custom_gemini_api_key') || '';
       if (customGeminiApiKeyInput) {
-        customGeminiApiKeyInput.value = localStorage.getItem('thuvienhtml_custom_gemini_api_key') || '';
+        customGeminiApiKeyInput.value = savedCustomApiKey;
+        customGeminiApiKeyInput.type = 'password';
+        const iconShow = document.getElementById('iconApiKeyShow');
+        const iconHide = document.getElementById('iconApiKeyHide');
+        if (iconShow) iconShow.classList.remove('hidden');
+        if (iconHide) iconHide.classList.add('hidden');
       }
 
       if (searchLessonForTestInput) searchLessonForTestInput.value = '';
@@ -39020,6 +39074,23 @@
 
       renderSelfTestLessonPicker('');
       showModalAnimated(selfTestModal);
+
+      // Phòng thủ tự động dọn sạch autofill rác từ trình duyệt
+      const purgeAutofillArtifacts = () => {
+        if (searchLessonForTestInput && searchLessonForTestInput.value) {
+          searchLessonForTestInput.value = '';
+          renderSelfTestLessonPicker('');
+        }
+        if (customGeminiApiKeyInput) {
+          const curVal = customGeminiApiKeyInput.value.trim();
+          if (curVal !== savedCustomApiKey && !curVal.startsWith('AIzaSy')) {
+            customGeminiApiKeyInput.value = savedCustomApiKey;
+          }
+        }
+      };
+
+      setTimeout(purgeAutofillArtifacts, 50);
+      setTimeout(purgeAutofillArtifacts, 180);
 
       // YÊU CẦU 1: Tự động cuộn danh sách bài học tới đúng vị trí bài học hiện tại đang đọc
       setTimeout(() => {
@@ -39084,6 +39155,20 @@
     const btnCancelSelfTest = document.getElementById('btnCancelSelfTestConfig');
     if (btnCancelSelfTest) btnCancelSelfTest.onclick = closeSelfTestConfigModal;
 
+    const btnToggleCustomApiKeyVisibility = document.getElementById('btnToggleCustomApiKeyVisibility');
+    if (btnToggleCustomApiKeyVisibility && customGeminiApiKeyInput) {
+      btnToggleCustomApiKeyVisibility.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isPassword = customGeminiApiKeyInput.type === 'password';
+        customGeminiApiKeyInput.type = isPassword ? 'text' : 'password';
+        const iconShow = document.getElementById('iconApiKeyShow');
+        const iconHide = document.getElementById('iconApiKeyHide');
+        if (iconShow) iconShow.classList.toggle('hidden', isPassword);
+        if (iconHide) iconHide.classList.toggle('hidden', !isPassword);
+      });
+    }
+
     // -------------------------------------------------------------------------
     // HÀM GỌI AI TẠO BÀI TỰ KIỂM TRA (TOKEN-OPTIMIZED AI GENERATOR)
     // -------------------------------------------------------------------------
@@ -39098,6 +39183,8 @@
       const customKey = (customGeminiApiKeyInput ? customGeminiApiKeyInput.value : '').trim();
       if (customKey) {
         localStorage.setItem('thuvienhtml_custom_gemini_api_key', customKey);
+      } else {
+        localStorage.removeItem('thuvienhtml_custom_gemini_api_key');
       }
 
       // Cập nhật giao diện đang xử lý
@@ -40020,7 +40107,13 @@
     function showQuizSummary() {
       if (quizActiveView) quizActiveView.classList.add('hidden');
       if (quizFooterActions) quizFooterActions.classList.add('hidden');
-      if (quizSummaryView) quizSummaryView.classList.remove('hidden');
+      if (quizSummaryView) {
+        // Kích hoạt lại animation mượt mà mỗi lần hoàn thành
+        quizSummaryView.classList.remove('quiz-summary-anim-container');
+        void quizSummaryView.offsetWidth; // Reflow reset animation
+        quizSummaryView.classList.add('quiz-summary-anim-container');
+        quizSummaryView.classList.remove('hidden');
+      }
 
       const total = currentQuizQueue.length;
       const pct = total > 0 ? Math.round((currentQuizCorrectCount / total) * 100) : 100;
@@ -40052,6 +40145,16 @@
       if (typeof renderStudyDecksModalTabs === 'function') {
         renderStudyDecksModalTabs();
       }
+
+      // Khen thưởng tinh tế chuẩn Trụ cột 5 /thietkeweb: Bắn chùm hạt ngọc mềm mại
+      try {
+        const iconBox = document.getElementById('quizSummaryIconBox');
+        if (typeof shootMicroConfetti === 'function') {
+          setTimeout(() => {
+            shootMicroConfetti(iconBox || quizSummaryView);
+          }, 160);
+        }
+      } catch (_) {}
 
       if (btnQuizRetryWrongOnly) {
         if (currentQuizWrongList.length > 0) {
