@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.71',
+    date: '2026-10-26T01:10:00+07:00',
+    title: 'Thiết Lập Vị Trí Tải File Mặc Định Là Ở "Phần Ngoài" (Không Trong Thư Mục Nào)',
+    items: [
+      { type: 'new', text: 'Tùy chọn Phần ngoài trong Modal Tải file: Bổ sung tùy chọn "Phần ngoài (Không trong thư mục nào)" ở vị trí ưu tiên đầu tiên trong ô "Lưu vào mục:" và thiết lập làm lựa chọn mặc định khi mở modal thêm bài học.' },
+      { type: 'improved', text: 'Cơ chế lưu độc lập không ép mục: Khi chọn Phần ngoài, bài học được lưu độc lập với categoryId = null, không bị tự động ép vào các thư mục đã có hay tự tạo thư mục mới.' },
+      { type: 'improved', text: 'Tự động mở và làm nổi bật bài mới: Nhóm "Phần ngoài (Chưa phân loại)" trên thanh mục lục sidebar sẽ tự động mở rộng và cuộn đến bài học vừa tải để người dùng bắt đầu đọc ngay lập tức.' }
+    ]
+  },
+  {
     version: 'v5.8.70',
     date: '2026-10-25T22:38:00+07:00',
     title: 'Tự Động Điều Hướng Về Popup Bộ Thẻ Khi Bấm "Hoàn Tất" Phiên Học Flashcard',

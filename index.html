@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.70"></script>
+  <script src="./changelog.js?v=5.8.71"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.70',
+        version: 'v5.8.71',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.70';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.71';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.70">
-  <script src="./bridge.js?v=5.8.70"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.71">
+  <script src="./bridge.js?v=5.8.71"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.70 • build 25/10/2026 22:38</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.71 • build 26/10/2026 01:10</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.70</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.71</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.70 • build 25/10/2026 22:38</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.71 • build 26/10/2026 01:10</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6851,8 +6851,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.70</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.70</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.71</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.71</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -23957,7 +23957,7 @@
               <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
                 <svg class="cat-chevron w-3.5 h-3.5 text-[#4F46E5] dark:text-[#818CF8] shrink-0 transition-transform"><use href="#icon-chevron-right"></use></svg>
                 <span class="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8] leading-tight break-words">
-                  Chưa phân loại
+                  Phần ngoài (Chưa phân loại)
                 </span>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
@@ -24179,8 +24179,9 @@
 
       container.querySelectorAll('[data-add-lesson-cat]').forEach(el => {
         el.addEventListener('click', () => {
-          state.activeCategoryId = el.getAttribute('data-add-lesson-cat');
-          openUploadModal();
+          const specificCatId = el.getAttribute('data-add-lesson-cat');
+          state.activeCategoryId = specificCatId;
+          openUploadModal('upload', specificCatId);
         });
       });
 
@@ -28005,13 +28006,17 @@
       }
     });
 
-    function populateUploadCategoriesDropdown() {
+    function populateUploadCategoriesDropdown(preferredCatId = '__uncategorized__') {
       if (!uploadTargetCategorySelect) return;
       const categories = state.categories || [];
-      const currentActiveId = state.activeCategoryId || (categories[0] ? categories[0].id : '');
 
-      let html = categories.map(c => `
-        <option value="${c.id}" ${c.id === currentActiveId ? 'selected' : ''}>${escapeHtml(c.title)}</option>
+      // Mặc định vị trí lưu là ở phần ngoài (không có trong thư mục nào cả) theo yêu cầu người dùng
+      let html = `
+        <option value="__uncategorized__" ${preferredCatId === '__uncategorized__' ? 'selected' : ''}>Phần ngoài (Không trong thư mục nào)</option>
+      `;
+
+      html += categories.map(c => `
+        <option value="${c.id}" ${c.id === preferredCatId ? 'selected' : ''}>${escapeHtml(c.title)}</option>
       `).join('');
 
       html += `<option value="__new_category__">+ Tạo mục mới…</option>`;
@@ -28044,11 +28049,11 @@
                 await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', newCatId), newCat);
               } catch (_) {}
             }
-            populateUploadCategoriesDropdown();
+            populateUploadCategoriesDropdown(newCatId);
             renderCategoriesAndLessons();
             showToast(`Đã tạo mục "${trimmed}"`);
           } else {
-            populateUploadCategoriesDropdown();
+            populateUploadCategoriesDropdown('__uncategorized__');
           }
         }
       });
@@ -28083,13 +28088,13 @@
       }
     }
 
-    function openUploadModal(initialTab = 'upload') {
+    function openUploadModal(initialTab = 'upload', preferredCatId = '__uncategorized__') {
       if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('lesson', 1)) {
         return;
       }
       updateUploadQuotaDisplay();
       state.stagedUploadFiles = [];
-      populateUploadCategoriesDropdown();
+      populateUploadCategoriesDropdown(preferredCatId);
       setUploadTab(initialTab);
       if (pasteInputTitle) pasteInputTitle.value = '';
       if (pasteInputTextarea) {
@@ -29631,41 +29636,24 @@
       const progressEl = document.getElementById('btnConfirmUploadProgress');
       const textEl = document.getElementById('btnConfirmUploadText');
 
-      // Xác định mục lưu từ dropdown
+      // Xác định mục lưu từ dropdown (Mặc định là phần ngoài: categoryId = null)
       const selectEl = document.getElementById('uploadTargetCategorySelect');
-      let targetCatId = selectEl ? selectEl.value : null;
+      let targetCatId = selectEl ? selectEl.value : '__uncategorized__';
 
-      if (!targetCatId || targetCatId === '__new_category__') {
+      let catTitle = 'Phần ngoài';
+      if (targetCatId === '__uncategorized__' || !targetCatId) {
+        targetCatId = null; // Lưu ở phần ngoài (không thuộc thư mục nào cả)
+      } else if (targetCatId === '__new_category__') {
         const found = (state.categories || []).find(c => c.id === state.activeCategoryId) || state.categories[0];
         targetCatId = found ? found.id : null;
-      }
-
-      // Nếu chưa có mục nào, tạo mục mặc định
-      if (!targetCatId) {
-        if (typeof checkAndEnforceLimit === 'function' && !checkAndEnforceLimit('section', 1)) {
-          btnConfirmUpload.disabled = false;
-          return;
+        if (targetCatId) {
+          const catObj = (state.categories || []).find(c => c.id === targetCatId);
+          catTitle = catObj ? catObj.title : 'Thư viện';
         }
-        targetCatId = 'cat_default_' + Date.now();
-        const defaultCat = {
-          id: targetCatId,
-          title: 'Tài liệu của tôi',
-          order: 10,
-          createdAt: new Date().toISOString()
-        };
-        if (!state.categories) state.categories = [];
-        state.categories.push(defaultCat);
-        state.activeCategoryId = targetCatId;
-        saveLocalCategories();
-        if (!state.useLocalFallback && db && state.userId) {
-          try {
-            await setDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'categories', targetCatId), defaultCat);
-          } catch (_) {}
-        }
+      } else {
+        const catObj = (state.categories || []).find(c => c.id === targetCatId);
+        catTitle = catObj ? catObj.title : 'Thư viện';
       }
-
-      const catObj = (state.categories || []).find(c => c.id === targetCatId);
-      const catTitle = catObj ? catObj.title : 'Thư viện';
 
       try {
         const addedLessonIds = [];
@@ -29756,6 +29744,11 @@
         if (addedLessonIds.length > 0) {
           state.activeLessonId = addedLessonIds[0];
           state.activeCategoryId = targetCatId;
+        }
+
+        // Tự động mở mục Chưa phân loại (Phần ngoài) nếu lưu bài vào đây
+        if (!targetCatId && typeof setSectionOpen === 'function') {
+          setSectionOpen('__uncategorized__', true);
         }
 
         renderCategoriesAndLessons();

@@ -1,40 +1,44 @@
-# SPEC.md — Đặc Tả Kỹ Thuật: Điều Hướng Nút "Hoàn Tất" Flashcard Về Popup Bộ Thẻ & Trắc Nghiệm (v5.8.70)
+# SPEC.md — Đặc Tả Kỹ Thuật: Thiết Lập Vị Trí Tải File Mặc Định Là Ở "Phần Ngoài" (Không Trong Thư Mục Nào) (v5.8.71)
 
 ## 1. YÊU CẦU & BỐI CẢNH
 - **Yêu cầu người dùng**:
-  * Khi người dùng học xong phiên Flashcard và ở màn hình tổng kết hoàn thành (*"Hoàn thành phiên kiểm tra!" - Ảnh 1*), bấm nút **`[ Hoàn tất ]`** (`#btnFcFinish`) thì hệ thống phải tự động điều hướng quay trở lại popup **"Bộ thẻ & Trắc nghiệm tự kiểm tra"** (*Ảnh 2*).
+  * Khi mở modal tải file ("Thêm bài học vào thư viện" - Ảnh 1), vị trí lưu mặc định tại ô *"Lưu vào mục:"* phải là ở **phần ngoài (phần không có trong thư mục nào cả)**.
 - **Phân tích hiện trạng**:
-  * Tại dòng 39056 của [`index.html`](file:///C:/Users/PV/.gemini/antigravity/scratch/thuvienhtml/index.html), sự kiện click của nút `#btnFcFinish` hiện chỉ gọi `hideModalAnimated(fcModal)`. Do đó sau khi bấm xong, popup đóng lại và màn hình trả về nền bài học, khiến luồng học tập bị đứt quãng.
-  * Trong khi đó, ở modal Trắc nghiệm (Quiz), nút `#btnQuizFinishToHub` tại dòng 40859 đã gọi:
-    ```javascript
-    hideModalAnimated(quizModal);
-    openStudyDecksManagerModal();
-    ```
-    cho phép người dùng quay lại Kho bài kiểm tra để chọn đề khác hoặc xem thống kê.
+  * Trong [`index.html`](file:///C:/Users/PV/.gemini/antigravity/scratch/thuvienhtml/index.html) tại hàm `populateUploadCategoriesDropdown()` (dòng 28008), ô chọn `#uploadTargetCategorySelect` hiện chỉ nạp danh sách các thư mục hiện có và tự động chọn thư mục đầu tiên (`categories[0].id`) hoặc `state.activeCategoryId`.
+  * Không có tùy chọn riêng cho "Phần ngoài (Không trong thư mục nào)" trong dropdown tải file.
+  * Khi lưu bài học trong `btnConfirmUpload` (dòng 29638), nếu `targetCatId` rỗng thì hệ thống tự động gán vào thư mục đầu tiên hoặc tự tạo mục mới "Tài liệu của tôi", thay vì lưu độc lập ở phần ngoài thư mục (`categoryId: null`).
 
 ---
 
 ## 2. GIẢI PHÁP THIẾT KẾ & TRIỂN KHAI (ARCHITECTURE & DESIGN)
-1. **Sự kiện nút `#btnFcFinish`**:
-   - Khi người dùng bấm nút `[ Hoàn tất ]` trên màn hình tổng kết `#fcSessionSummaryView`:
-     * Đóng modal Flashcard: `hideModalAnimated(fcModal)`.
-     * Mở modal Trung tâm Quản lý Bộ thẻ & Trắc nghiệm:
-       ```javascript
-       if (typeof openStudyDecksManagerModal === 'function') {
-         openStudyDecksManagerModal();
-       } else if (typeof window.openStudyDecksManagerModal === 'function') {
-         window.openStudyDecksManagerModal();
-       }
-       ```
-     * Modal Bộ thẻ sẽ tự động cập nhật thống kê số lượng thẻ nhớ, điểm số, và làm mới các tab (Tất cả bộ đề, Đã gắn sao, Cần học lại).
-2. **Trải nghiệm đóng qua nút 'X' ở màn hình kết thúc**:
-   - Nếu người dùng bấm nút đóng `X` (`#btnCloseFcModal`) khi đã ở màn hình hoàn thành (summary view đang hiển thị), cũng hỗ trợ điều hướng quay về `openStudyDecksManagerModal()` để giữ tính nhất quán công thái học.
+1. **Bổ sung tùy chọn "Phần ngoài (Không trong thư mục nào)" vào dropdown `#uploadTargetCategorySelect`**:
+   - Giá trị quy ước: `value="__uncategorized__"`.
+   - Vị trí: Đặt ở **đầu tiên** trong danh sách dropdown và được đánh dấu `selected` làm mặc định khi mở modal tải file.
+   - Nhãn hiển thị: `Phần ngoài (Không trong thư mục nào)`.
+2. **Cập nhật hàm `populateUploadCategoriesDropdown(preferredCatId = '__uncategorized__')`**:
+   - Tham số `preferredCatId` mặc định là `'__uncategorized__'`.
+   - Nếu người dùng bấm "Tải file" từ chân sidebar (`#btnSidebarQuickUpload`) hoặc header, modal tải file luôn tự động chọn "Phần ngoài".
+   - Nếu người dùng chủ động bấm "Thêm bài vào mục này" từ menu của một thư mục cụ thể, hệ thống sẽ chọn đúng thư mục đó.
+3. **Cập nhật luồng xử lý lưu bài học (`btnConfirmUpload`)**:
+   - Nếu `targetCatId === '__uncategorized__'` hoặc không chọn mục:
+     * Đặt `targetCatId = null;`
+     * Tiêu đề mục thông báo: `catTitle = 'Phần ngoài'`.
+     * Từng bài học mới sẽ được tạo với thuộc tính `categoryId: null`.
+     * Không tự động ép tạo thư mục "Tài liệu của tôi" khi người dùng cố ý lưu ở phần ngoài.
+   - Khi hoàn tất tải file:
+     * Kích hoạt mở tự động nhóm `__uncategorized__` trong sidebar: `setSectionOpen('__uncategorized__', true)`.
+     * Thông báo toast: `Đã thêm X bài vào Phần ngoài!`.
+     * Bài học mới hiển thị ngay lập tức ở khu vực "Phần ngoài (Chưa phân loại)" trên sidebar và tự động cuộn đến highlight.
+4. **Đồng bộ nhãn hiển thị trong Sidebar**:
+   - Cập nhật nhãn nhóm chưa phân loại trên thanh mục lục thành: `Phần ngoài (Chưa phân loại)` để người dùng nhận diện ngay lập tức nơi lưu bài.
 
 ---
 
 ## 3. KẾ HOẠCH KIỂM THỬ & NGHIỆM THU (QA CRITERIA)
-1. Mở một bộ thẻ Flashcard bất kỳ và hoàn thành phiên học đến thẻ cuối cùng.
-2. Màn hình "Hoàn thành phiên kiểm tra!" xuất hiện (Ảnh 1).
-3. Bấm nút **`[ Hoàn tất ]`**: Modal Flashcard đóng lại và modal **"Bộ thẻ & Trắc nghiệm tự kiểm tra"** (Ảnh 2) lập tức hiển thị mượt mà.
-4. Cú pháp Node.js trên toàn bộ script và inline tags đạt 100% OK (`check_syntax.py`).
-5. Ghi nhận nhật ký cập nhật vào `changelog.js`, đồng bộ phiên bản `v5.8.70` và đẩy Git lên main.
+1. Bấm nút "Tải file" ở chân sidebar (Ảnh 2) hoặc trên header.
+2. Kiểm tra ô *"Lưu vào mục:"* trên modal "Thêm bài học vào thư viện" (Ảnh 1): Mặc định hiển thị và chọn sẵn **"Phần ngoài (Không trong thư mục nào)"**.
+3. Thử tải một file HTML/Markdown bất kỳ và bấm "Lưu bài học":
+   - Bài học được lưu với `categoryId: null`.
+   - Sidebar xuất hiện nhóm "Phần ngoài (Chưa phân loại)" chứa bài vừa tải, không bị rơi vào bất kỳ thư mục nào trong 5 nhóm hiện có.
+4. Kiểm thử cú pháp Node.js trên toàn bộ script (`check_syntax.py`).
+5. Ghi nhận `changelog.js`, đồng bộ phiên bản `v5.8.71`, commit và đẩy Git.
