@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.66',
+    date: '2026-10-25T22:05:00+07:00',
+    title: 'Khắc Phục Triệt Để Lỗi "actualWordCount is not defined" Trong Modal Tự Kiểm Tra AI',
+    items: [
+      { type: 'fix', text: 'Khắc phục triệt Để lỗi ReferenceError "actualWordCount is not defined" (trên Chrome/Desktop) và "Can\'t find variable: actualWordCount" (trên Safari/iOS) khi người dùng bấm tạo bài tự kiểm tra / flashcard bằng AI.' },
+      { type: 'fix', text: 'Tối ưu hóa phạm vi biến (Scoping Hoisting): Đưa toàn bộ tính toán độ dài từ thực tế và đề xuất số lượng câu hỏi/thẻ nhớ ra phạm vi chung của hàm generateSelfTestAiDeck, giúp cả luồng trực tiếp với Gemini API cá nhân và luồng máy chủ mặc định (/api/ai/explain) đều truy cập dữ liệu chính xác 100%.' },
+      { type: 'improved', text: 'Bảo vệ đa tầng (Defensive Guarding): Bổ sung cơ chế fallback an toàn tự động (Math.max(50, rawWordsFromSnippet) và typeof check) trước khi gửi payload JSON lên máy chủ, ngăn chặn dứt điểm mọi ngoại lệ ném ra trình duyệt.' }
+    ]
+  },
+  {
     version: 'v5.8.65',
     date: '2026-10-25T21:58:00+07:00',
     title: 'Khắc Phục Lỗi Nút Thu Nhỏ "-" Popup AI & Tự Động Lưu Lịch Sử Câu Trả Lời AI Theo Bài Học',

@@ -1,36 +1,40 @@
-# SPEC.md — Đặc Tả Kỹ Thuật: Sửa Nút Tạm Ẩn AI (-) & Tự Động Lưu Lịch Sử AI Bài Học (v5.8.65)
+# SPEC.md — Đặc Tả Kỹ Thuật: Sửa Lỗi "actualWordCount is not defined" trong Modal Tự Kiểm Tra AI (v5.8.66)
 
-## 1. TỔNG QUAN & MỤC TIÊU CỐT LÕI
-1. **Sửa dứt điểm tính năng bấm vào dấu "-" để tạm ẩn Popup AI**:
-   - Khắc phục hiện tượng khi bấm nút `-` (`btnMinimizeAiPopover`), hàm `positionAiPopover()` lập tức gỡ bỏ class `is-minimized` vì đoạn văn bản bôi đen vẫn nằm trong viewport.
-   - Thêm biến cờ trạng thái `isAiPopoverUserMinimized = true/false` độc lập.
-   - Khi người dùng bấm `-`: popup lập tức thu nhỏ êm ái thành thanh Mini Pill Bar nổi ở góc đáy màn hình (`bottom-6` hoặc giữa đáy), không bị logic cuộn trang tự động mở lại.
-   - Khi nhấp vào Mini Pill Bar (hoặc icon mở rộng): mở to lại popup về kích thước đầy đủ (`isAiPopoverUserMinimized = false`).
-2. **Tính năng Tự Động Lưu & Xem Lại Lịch Sử Câu Trả Lời AI Theo Từng Bài Học**:
-   - Tự động lưu tất cả câu trả lời AI (Giải thích, Ví dụ, Dịch...) gắn liền với ID bài học hiện tại (`state.activeLessonId`).
-   - Lưu trữ bền vững trong `state.learningData.aiHistory[lessonId]` và backup độc lập `localStorage`.
-   - Cung cấp giao diện Modal Lịch Sử AI (`#lessonAiHistoryModal`):
-     * Mở từ nút Lịch sử trên Header của AI Popover (`#btnAiOpenHistory`).
-     * Mở từ nút Lịch sử AI trên thanh công cụ đọc bài (`#btnStickyLessonAiHistory`).
-     * Hiển thị danh sách câu trả lời theo thứ tự mới nhất: đoạn trích dẫn, câu trả lời đầy đủ, thuật ngữ, ví dụ, thời gian.
-     * Nút tiện ích trên từng câu: "Sao chép", "Lưu thành ghi chú", "Xóa câu này".
+## 1. NGUYÊN NHÂN GỐC RỄ (ROOT CAUSE ANALYSIS)
+- **Triệu chứng**:
+  * Khi người dùng mở Modal "Tạo bài Tự kiểm tra bằng AI" và bấm bắt đầu tạo bài mà không thiết lập `customGeminiApiKey` (sử dụng API máy chủ mặc định của Thư viện HTML trên production `https://thuvienhtml.vercel.app/`), hệ thống báo lỗi toast đỏ:
+    - Chrome / Desktop: `actualWordCount is not defined`
+    - Safari / iOS: `Can't find variable: actualWordCount`
+- **Nguyên nhân kỹ thuật**:
+  * Trong hàm [`generateSelfTestAiDeck(lessonIds, config)`](file:///C:/Users/PV/.gemini/antigravity/scratch/thuvienhtml/index.html#L39466), biến `actualWordCount` được khai báo bằng `const actualWordCount = ...` bên trong khối `if (customKey) { ... }` (dành cho người dùng dùng API Key cá nhân).
+  * Khi người dùng không có `customKey`, luồng rẽ vào khối `else { ... }` (gọi server proxy `/api/ai/explain`).
+  * Trong payload `JSON.stringify`, thuộc tính `wordCount: actualWordCount` cố gắng truy xuất `actualWordCount` vốn chỉ nằm trong block-scope của `if (customKey)`.
+  * Trình duyệt lập tức ném ra ngoại lệ `ReferenceError: actualWordCount is not defined` trước khi request mạng được gửi đi, kích hoạt catch block và hiển thị toast đỏ.
 
 ---
 
-## 2. DESIGN TOKENS & GIAO DIỆN
-- **Mini Pill Bar khi thu nhỏ**:
-  - Chiều cao `44px`, bo tròn viên thuốc `rounded-full`, viền sáng tinh tế, hiệu ứng glassmorphism `backdrop-blur-md`.
-  - Icon chỉ báo trạng thái đang xử lý (xoay tròn) hoặc đã hoàn tất (dấu tích xanh).
-- **Modal Lịch Sử AI (`#lessonAiHistoryModal`)**:
-  - Chuẩn Dark Glassmorphism, chiều rộng `max-w-2xl`, hỗ trợ scroll mượt mà `overscroll-contain`.
-  - Thẻ câu trả lời: bo góc `rounded-xl`, nền `#FAF9F5` / `#161A20`, viền sáng nhẹ.
+## 2. PHƯƠNG ÁN XỬ LÝ 3 TẦNG (ARCHITECTURE SOLUTION)
+1. **Tầng 1: Đưa khai báo lên Scope hàm chung (Outer Scope Hoisting)**:
+   - Di chuyển toàn bộ việc tính toán:
+     * `actualWordCount`
+     * `lessonN`
+     * `isAuto`
+     * `expected = calculateSelfTestExpectedCounts(actualWordCount, lessonN, config.testType)`
+     * `coverageDirect`
+     * `countInstruction`
+     lên ngay sau khi trích xuất `fullDistilledText`, trước khối rẽ nhánh `if (customKey)`.
+2. **Tầng 2: Phòng vệ đa tầng (Defensive Guarding)**:
+   - Trong `body: JSON.stringify`: truyền `wordCount: (typeof actualWordCount === 'number' && actualWordCount > 0) ? actualWordCount : 500`.
+   - Đảm bảo `actualWordCount` luôn là một số nguyên dương hợp lệ (`Math.max(50, ...)`).
+3. **Tầng 3: Kiểm thử toàn diện & Tính năng đồng bộ**:
+   - Kiểm tra cả 2 luồng: Luồng 1 (Custom Gemini API Key) và Luồng 2 (Server Proxy `/api/ai/explain`).
+   - Đảm bảo số lượng câu trắc nghiệm / flashcard tự động đề xuất theo số từ hoạt động hoàn hảo và chính xác trên cả 2 luồng.
 
 ---
 
-## 3. ACCEPTANCE CRITERIA (TIÊU CHÍ NGHIỆM THU)
-- [x] 1. Bấm vào nút `-` trên Popup AI thì popup thu nhỏ tạm ẩn thành Mini Pill Bar ngay lập tức, không bị nảy lại chế độ to.
-- [x] 2. Bấm vào Mini Pill Bar thì popup mở to trở lại đầy đủ kích thước.
-- [x] 3. Khi AI sinh xong câu trả lời, hệ thống tự động lưu câu trả lời vào lịch sử của bài học đó.
-- [x] 4. Mở bài học lên, bấm vào nút "Lịch sử AI" trên thanh công cụ hoặc trong popup AI là thấy toàn bộ các câu trả lời trước đó của bài học.
-- [x] 5. Có thể sao chép, lưu thành ghi chú, hoặc xóa từng câu trả lời trong lịch sử.
-- [x] 6. Cú pháp Node.js trên toàn bộ script (`scripts/check_syntax.py`) đạt 100% OK.
+## 3. TIÊU CHÍ NGHIỆM THU (ACCEPTANCE CRITERIA)
+- [x] 1. Khai báo `actualWordCount` nằm ở phạm vi hàm `generateSelfTestAiDeck`, sẵn sàng cho cả luồng `customKey` và luồng server proxy.
+- [x] 2. Không còn bất kỳ lỗi `ReferenceError: actualWordCount is not defined` hay `Can't find variable: actualWordCount` nào xuất hiện.
+- [x] 3. Payload gửi đến `/api/ai/explain` có trường `wordCount` chính xác với số từ thực tế của các bài học.
+- [x] 4. Bộ kiểm tra cú pháp Node.js (`scripts/check_syntax.py`) vượt qua 100% không có lỗi.
+- [x] 5. Đồng bộ phiên bản v5.8.66 trên toàn bộ hệ thống (`scripts/sync_version.py`).
