@@ -2,6 +2,18 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.68',
+    date: '2026-10-25T22:25:00+07:00',
+    title: 'Tái Thiết Kế Bố Cục Flashcard Công Thái Học, Hiệu Ứng Chuyển Thẻ 60fps & Sửa Triệt Để Phím Space Cùng Cụm Nút Công Cụ',
+    items: [
+      { type: 'improved', text: 'Tái thiết kế bố cục Flashcard công thái học: Xử lý dứt điểm tình trạng vỡ rớt dòng chữ "Lật đáp án" thành 3 dòng trên màn hình; tích hợp thanh tiến trình mỏng (Progress Bar) theo dõi tỷ lệ học trực quan ngay dưới tiêu đề modal.' },
+      { type: 'new', text: 'Hiệu ứng chuyển thẻ 60fps mượt mà: Thêm hiệu ứng trượt nhẹ và làm mờ tinh tế (slide & subtle fade) gia tốc phần cứng GPU khi chuyển tới hoặc lùi thẻ (Next/Prev), nâng tầm trải nghiệm thị giác hiện đại và êm dịu.' },
+      { type: 'fix', text: 'Sửa triệt để lỗi phím Space không lật thẻ: Khắc phục hiện tượng xung đột giữa 2 bộ lắng nghe phím Space cùng lúc (bộ cũ và bộ SM-2 mới) dẫn đến việc thẻ bị kích hoạt lật kép và triệt tiêu trạng thái.' },
+      { type: 'fix', text: 'Kích hoạt 100% cụm công cụ tiện ích thanh đáy: Sửa lỗi tham chiếu và gắn lắng nghe sự kiện trực tiếp cho toàn bộ nút: Đọc to phát âm (TTS Web Speech API tiếng Việt), Xáo trộn ngẫu nhiên (🔀 Shuffle), Học ngược (🔄 Đảo 2 mặt Câu hỏi ↔ Đáp án), và Bảng phím tắt tiện lợi.' },
+      { type: 'improved', text: 'Thanh điều hướng hợp nhất dạng Capsule: Gộp nút Lùi/Tiến thẻ với bộ đếm vị trí trực quan [◀] 1 / 8 [▶] giúp thao tác công thái học, liền mạch mà không bị chia cắt rời rạc.' }
+    ]
+  },
+  {
     version: 'v5.8.67',
     date: '2026-10-25T22:20:00+07:00',
     title: 'Đồng Bộ 100% Số Lượng AI Dự Đoán & Khôi Phục Thanh Điều Khiển Flashcard Toàn Diện Trên Desktop',

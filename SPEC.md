@@ -1,61 +1,56 @@
-# SPEC.md — Đặc Tả Kỹ Thuật: Đồng Bộ Số Lượng AI Dự Đoán & Nâng Cấp Thanh Điều Khiển Flashcard Toàn Diện (v5.8.67)
+# SPEC.md — Đặc Tả Kỹ Thuật: Thiết Kế Lại Bố Cục Flashcard Công Thái Học, Transition 60fps & Sửa Lỗi Phím Space / Toolbar (v5.8.68)
 
-## 1. TỔNG QUAN YÊU CẦU & NGUYÊN NHÂN GỐC RỄ
-1. **Lỗi lệch số lượng dự đoán vs số lượng thực tế AI tạo ra**:
-   - *Triệu chứng*: Trong modal "Tạo bài Tự kiểm tra bằng AI", hệ thống hiển thị: `💡 AI đề xuất dự kiến: ~10 thẻ flashcard (~668 từ...)`. Nhưng khi AI tạo xong chỉ có **7 thẻ nhớ**.
-   - *Nguyên nhân kỹ thuật*:
-     * Giao diện modal tính số từ dựa trên toàn văn bài học ban đầu (`getLessonWordCount(les)` $\to$ 668 từ $\to$ tính ra 10 thẻ).
-     * Khi bắt đầu tạo (`generateSelfTestAiDeck`), nội dung bài học được chắt lọc qua hàm `extractDistilledLessonText` để tối ưu token, khiến văn bản gửi đi chỉ còn ~350 từ.
-     * Code hàm tạo deck lại lấy độ dài của văn bản chắt lọc (`rawWordsFromSnippet` ~380 từ) để tính lại `expected` và truyền vào prompt/server proxy (`expected.flashcards = 7` thay vì 10).
-     * Do đó, AI nhận lệnh tạo 7 thẻ và trả về đúng 7 thẻ, dẫn đến lệch so với con số 10 thẻ mà modal đã hứa với người dùng.
-   - *Yêu cầu bổ sung*: "Thêm cơ chế đợi để AI dự đoán chính xác" — Khi nạp bài học chưa có trong cache, phải có trạng thái chờ (Loading state / Spinner / Disabled button) để tính toán chính xác 100% dung lượng thực tế trước khi cho phép bấm tạo, không đưa ra con số ước lượng tạm bợ.
-
-2. **Khôi phục nút "Chưa nhớ", "Đã nhớ" & Bổ sung các nút quan trọng trên Desktop (Ảnh 3)**:
-   - *Triệu chứng*: Khi xem thẻ Flashcard ở mặt trước (Câu hỏi), trên desktop chỉ có duy nhất 1 nút `[🔄 Lật xem đáp án (Phím cách)]`. Hai nút quen thuộc "Chưa nhớ" và "Đã nhớ" trước đây đã bị ẩn vào `class="hidden"`.
-   - *Giải pháp*:
-     * Khôi phục ngay ở mặt trước 3 nút điều khiển chính:
-       - `[❌ Chưa nhớ (Phím 1)]`: Đánh dấu chưa nhớ ngay lập tức, xếp vào hàng đợi ôn lại.
-       - `[🔄 Lật đáp án (Phím Space)]`: Nút to ở giữa để lật xem mặt sau.
-       - `[✅ Đã nhớ (Phím 3)]`: Đánh dấu đã nhớ ngay lập tức, chuyển sang thẻ tiếp theo.
-     * Bổ sung thanh công cụ chuyên nghiệp (Secondary Action Toolbar) gồm các tính năng tối quan trọng:
-       - 🔊 **Phát âm / Đọc to (TTS - Text to Speech)**: Đọc to câu hỏi/đáp án qua Web Speech API (hỗ trợ phím tắt `A`).
-       - ⭐ **Đánh dấu sao (Star / Thẻ trọng tâm)**: Gắn sao trực tiếp ngay trên thẻ (hỗ trợ phím tắt `S`).
-       - ◀ **Thẻ trước (Prev)** & **Thẻ sau ▶ (Next)**: Điều hướng tới/lùi giữa các thẻ bằng chuột không cần nộp điểm.
-       - 🔀 **Xáo trộn thẻ (Shuffle)**: Đảo lộn ngẫu nhiên thứ tự ôn tập.
-       - 🔄 **Đảo 2 mặt (Swap Front/Back)**: Học ngược từ đáp án $\to$ câu hỏi.
-       - ⌨️ **Trợ giúp phím tắt**: Modal / Tooltip hiển thị bảng phím tắt tiện lợi.
+## 1. NGUYÊN NHÂN GỐC RỄ & PHÂN TÍCH LỖI
+1. **Lỗi phím Space không hoạt động hoặc bị giật lật qua lật lại**:
+   - Trong `index.html` có 2 `keydown` event listener đồng thời cùng bắt `e.code === 'Space'` hoặc `e.key === ' '`:
+     * Listener cũ (dòng 38981) gọi `flipCurrentFlashcard()`.
+     * Listener mới SM-2 (dòng 46776) cũng gọi `flipCurrentFlashcard()`.
+   - Kết quả: Khi người dùng bấm phím cách, hàm bị gọi 2 lần liên tiếp (True $\to$ False), khiến trạng thái bị triệt tiêu ngay lập tức.
+2. **Lỗi các tính năng ở Ảnh 2 (Đọc, Trộn, Đảo mặt, Cài đặt phím tắt)**:
+   - Các hàm `speakCurrentFlashcard`, `shuffleFlashcards`, `toggleSwapFlashcardFaces`, `toggleFlashcardShortcutsGuide` được định nghĩa trong phạm vi hàm/closure nhưng chưa được export ra `window` và chưa có `addEventListener` trực tiếp trong script.
+   - Khi người dùng bấm vào các nút inline HTML `onclick="..."`, trình duyệt ném ra `ReferenceError: [tên hàm] is not defined`.
+3. **Bố cục bị co rúm, rớt chữ và rời rạc (Ảnh 1)**:
+   - Nút `Lật xem đáp án` ở giữa bị ép chữ rớt thành 3 dòng ("Lật" - "đáp" - "án") do `flex-1` thiếu `whitespace-nowrap` và padding chưa tối ưu.
+   - Thanh công cụ điều hướng bên dưới bị phân mảnh thành 2 cụm xa nhau (cụm `< >` bên trái và cụm icon chữ bên phải), thiếu chỉ số vị trí thẻ trung tâm và thiếu thanh tiến trình trực quan.
+   - Khi chuyển giữa các thẻ không có hiệu ứng chuyển cảnh (instant text replacement), tạo cảm giác giật cục.
 
 ---
 
-## 2. KIẾN TRÚC TRIỂN KHAI CHI TIẾT (ARCHITECTURE)
+## 2. GIẢI PHÁP THIẾT KẾ & TRIỂN KHAI (ARCHITECTURE & DESIGN)
 
-### 2.1. Đồng bộ số từ và cơ chế đợi dự đoán:
-- **Cơ chế đợi (Async Analyzing State)**:
-  * Khi mở modal hoặc đổi bài học: nếu có bài chưa có trong `lessonWordCountCache`:
-    - Hiển thị badge: `(Đang tính...)`.
-    - Hiển thị hint: `<svg animate-spin ...></svg> Đang đọc nội dung & phân tích dung lượng tối ưu...`.
-    - Disable nút: `btnStartGenerateSelfTest.disabled = true` với hiệu ứng `opacity-75 cursor-not-allowed`.
-    - Gọi nạp ngầm từ IndexedDB: `await Promise.all(missingLessons.map(l => getLessonWordCount(l)))`.
-    - Khi xong: cập nhật số từ chính xác, hiển thị số câu/thẻ chính xác, mở lại nút `disabled = false`.
-- **Đồng bộ hóa 100% Word Count**:
-  * Trong `generateSelfTestAiDeck`: dùng đúng `totalWords` đã được tính từ toàn bộ bài học (hoặc `lessonWordCountCache`), đảm bảo con số truyền vào prompt (`expected.flashcards = 10`) trùng khớp 100% với con số đã hiển thị cho người dùng.
-  * Bổ sung chỉ dẫn nghiêm ngặt trong Prompt (cả Direct Gemini và Server Proxy):
-    `BẮT BUỘC biên soạn ĐỦ ĐÚNG ${count} thẻ flashcard (không được ít hơn hoặc nhiều hơn, mảng flashcards phải có đúng ${count} phần tử).`
+### 2.1. Thiết kế lại Bố cục Công thái học (Ergonomic Layout Redesign):
+- **Thanh tiến trình mỏng tinh tế (`#fcProgressBar`)**:
+  * Đặt ngay dưới Header modal: thanh gradient `from-indigo-500 to-indigo-600` mượt mà, tự động cập nhật `%` hoàn thành theo từng thẻ.
+- **Hàng nút chính (Main Action Trio)**:
+  * Nút `[❌ Chưa nhớ]` (🔴 Rose soft, viền nhẹ, icon X, phím tắt 1).
+  * Nút `[🔄 Lật đáp án (Space)]` (Indigo gradient nổi bật, `whitespace-nowrap`, không bị rớt dòng).
+  * Nút `[✅ Đã nhớ]` (🟢 Emerald soft, viền nhẹ, icon Check, phím tắt 3).
+  * Chiều cao `min-h-[50px]`, bo góc `rounded-xl`, cân đối hoàn hảo.
+- **Thanh công cụ hợp nhất (Unified Toolbar Capsule)**:
+  * Cụm điều hướng trung tâm: `[◀ Trước]` + `[1 / 8]` + `[Tiếp ▶]`.
+  * Vạch ngăn dọc tinh tế `w-px h-4 bg-stone-300 dark:bg-stone-700 mx-1.5`.
+  * Cụm tính năng thông minh:
+    - 🔊 **Đọc (TTS)**: Đọc to phát âm bằng Web Speech API, có hiệu ứng hoạt họa khi đang phát âm.
+    - 🔀 **Trộn (Shuffle)**: Xáo trộn ngẫu nhiên thẻ với toast thông báo.
+    - 🔄 **Đảo mặt (Reverse Mode)**: Học ngược từ đáp án $\to$ câu hỏi.
+    - ⌨️ **Phím tắt**: Mở bảng hướng dẫn phím tắt trực quan.
 
-### 2.2. Giao diện điều khiển Flashcard công thái học:
-- **Khối `#fcUnflippedControls`**:
-  * Hàng nút chính: `[Chưa nhớ]` + `[Lật đáp án (Space)]` + `[Đã nhớ]`.
-  * Hàng công cụ phụ (Toolbar): `[◀ Trước]` | `[🔊 Đọc]` | `[⭐ Gắn sao]` | `[🔀 Xáo]` | `[🔄 Đảo mặt]` | `[Tiếp ▶]` | `[⌨️ Phím tắt]`.
-- **Khối `#fcFlippedControls`**:
-  * 4 nút SM-2 khoa học: `[🔴 Lại (1d)]`, `[🟡 Khó (3d)]`, `[🟢 Tốt (6d)]`, `[🔵 Dễ (10d+)]`.
-  * Nút phụ: `[Lật về mặt câu hỏi]` và cùng thanh công cụ hỗ trợ `[◀] [🔊] [⭐] [🔀] [🔄] [▶]`.
+### 2.2. Hiệu ứng Transition nhẹ nhàng khi chuyển thẻ (60 FPS Card Transition):
+- Thêm keyframe `@keyframes fcSlideInNext` và `@keyframes fcSlideInPrev` trong `styles.css`.
+- Khi chuyển sang thẻ tiếp theo (`direction = 'next'`): Thẻ lướt nhẹ từ phải sang trái kèm fade-in mượt mà (`translate3d(24px, 0, 0)` $\to$ `0`).
+- Khi lùi thẻ trước (`direction = 'prev'`): Thẻ lướt nhẹ từ trái sang phải (`translate3d(-24px, 0, 0)` $\to$ `0`).
+
+### 2.3. Sửa dứt điểm phím Space & Bộ công cụ Ảnh 2:
+- Gỡ bỏ hoàn toàn listener phím Space thừa tại dòng 38981.
+- Hợp nhất vào 1 listener duy nhất, chống duplicate event.
+- Export toàn bộ hàm ra `window` và gắn `addEventListener` tường minh cho tất cả các nút: `btnFcSpeak`, `btnFcShuffle`, `btnFcSwapFaces`, `btnFcShortcutsGuide`, `btnFcPrev`, `btnFcNext`.
 
 ---
 
 ## 3. TIÊU CHÍ NGHIỆM THU (ACCEPTANCE CRITERIA)
-- [x] 1. Khi mở modal tạo tự kiểm tra AI, có cơ chế đợi (spinner + disable nút tạo) nếu bài chưa nạp xong số từ từ IndexedDB.
-- [x] 2. Số lượng câu hỏi/thẻ nhớ dự kiến trong hint box và badge trùng khớp 100% với số lượng thực tế AI tạo ra.
-- [x] 3. Thẻ Flashcard trên Desktop hiển thị rõ ràng 2 nút "Chưa nhớ" và "Đã nhớ" ngay ở mặt trước.
-- [x] 4. Bổ sung đầy đủ các nút quan trọng: Đọc to phát âm (TTS), Đánh dấu sao, Điều hướng Trước/Sau, Xáo trộn thẻ, Đảo mặt thẻ, Hướng dẫn phím tắt.
-- [x] 5. Toàn bộ phím tắt (`1`, `2`, `3`, `4`, `Space`, `Enter`, `←`, `→`, `A`, `S`) hoạt động mượt mà.
-- [x] 6. Kiểm tra cú pháp Node.js đạt 100% OK và đồng bộ phiên bản v5.8.67.
+- [x] 1. Phím `Space` lật thẻ mượt mà 100%, không bị lật 2 lần hay giật cục.
+- [x] 2. Nút "Lật đáp án" ở giữa hiển thị trên 1 dòng duy nhất, không bị rớt chữ.
+- [x] 3. Cả 4 nút ở Ảnh 2 (Đọc, Trộn, Đảo mặt, Bảng phím tắt) hoạt động trơn tru 100%.
+- [x] 4. Có hiệu ứng transition trượt mượt mà 60fps khi chuyển giữa các thẻ.
+- [x] 5. Có thanh tiến trình (Progress Bar) chạy theo từng câu thẻ.
+- [x] 6. Kiểm tra cú pháp Node.js đạt 100% OK và đồng bộ phiên bản v5.8.68.

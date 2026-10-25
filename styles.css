@@ -4891,3 +4891,36 @@
     padding-bottom: max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.2rem)) !important;
   }
 }
+
+/* ========================================================================= */
+/* FLASHCARD 60FPS SMOOTH TRANSITIONS                                        */
+/* ========================================================================= */
+@keyframes fcSlideInNext {
+  0% {
+    opacity: 0.15;
+    transform: translate3d(24px, 0, 0) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fcSlideInPrev {
+  0% {
+    opacity: 0.15;
+    transform: translate3d(-24px, 0, 0) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.fc-card-anim-next {
+  animation: fcSlideInNext 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fc-card-anim-prev {
+  animation: fcSlideInPrev 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
