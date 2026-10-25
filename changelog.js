@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.69',
+    date: '2026-10-25T22:35:00+07:00',
+    title: 'Bỏ Chữ "Space" Trên Nút Lật Thẻ Flashcard & Bổ Sung Tính Năng Xóa Câu Cần Học Lại Toàn Diện',
+    items: [
+      { type: 'improved', text: 'Tinh gọn nút Lật đáp án Flashcard: Loại bỏ nhãn "Space" trên giao diện nút bấm theo phản hồi người dùng, giúp nút hiển thị tinh tế, cân đối và tập trung tuyệt đối vào thao tác lật thẻ (phím cách Space trên bàn phím vẫn hoạt động mượt mà trong nền).' },
+      { type: 'new', text: 'Tính năng Xóa tất cả câu cần học lại (Batch Clear): Bổ sung nút "Xóa tất cả" ở banner tab Cần học lại (Làm sai) kèm hộp thoại xác nhận an toàn, giúp người dùng dọn sạch lịch sử câu hỏi làm sai chỉ với 1 thao tác.' },
+      { type: 'new', text: 'Tính năng Xóa từng câu cần học lại (Item Delete): Bổ sung nút icon thùng rác "Xóa" trên từng thẻ câu hỏi làm sai bên cạnh nút "Đã hiểu", cho phép người dùng chủ động gỡ bỏ từng câu hỏi không còn nhu cầu ôn tập.' },
+      { type: 'improved', text: 'Tự động đồng bộ số đếm và trạng thái rỗng: Cập nhật tức thì badge số lượng câu sai trên tab Cần học lại (Làm sai), nút Xóa tất cả và Luyện tập câu sai tự động mờ khi danh sách rỗng, hiển thị minh họa hoàn thành trực quan.' }
+    ]
+  },
+  {
     version: 'v5.8.68',
     date: '2026-10-25T22:25:00+07:00',
     title: 'Tái Thiết Kế Bố Cục Flashcard Công Thái Học, Hiệu Ứng Chuyển Thẻ 60fps & Sửa Triệt Để Phím Space Cùng Cụm Nút Công Cụ',

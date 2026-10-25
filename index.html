@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.68"></script>
+  <script src="./changelog.js?v=5.8.69"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.68',
+        version: 'v5.8.69',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.68';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.69';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.68">
-  <script src="./bridge.js?v=5.8.68"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.69">
+  <script src="./bridge.js?v=5.8.69"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.68 • build 25/10/2026 22:25</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.69 • build 25/10/2026 22:35</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.68</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.69</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.68 • build 25/10/2026 22:25</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.69 • build 25/10/2026 22:35</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -4016,7 +4016,6 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
                 <span class="whitespace-nowrap">Lật đáp án</span>
-                <span class="hidden sm:inline-flex items-center text-[10px] px-1.5 py-0.5 rounded bg-white/20 font-mono leading-none">Space</span>
               </button>
 
               <!-- Nút Đã nhớ (🟢) -->
@@ -4456,6 +4455,10 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
+              <button id="btnClearAllWrong" type="button" class="touch-target px-3 py-1.5 rounded-xl bg-white dark:bg-[#1C212B] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-600 dark:text-stone-300 hover:text-rose-600 dark:hover:text-rose-400 font-semibold text-xs border border-stone-200 dark:border-stone-700/60 hover:border-rose-300 dark:hover:border-rose-800 transition cursor-pointer flex items-center gap-1.5 shadow-2xs" title="Xóa tất cả câu khỏi danh sách cần học lại">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                <span>Xóa tất cả</span>
+              </button>
               <button id="btnPracticeWrongOnly" type="button" class="touch-target px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-2xs transition cursor-pointer flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 shrink-0 text-white" aria-hidden="true"><use href="#icon-retry-wrong"></use></svg>
                 <span>Luyện tập các câu sai ngay</span>
@@ -6848,8 +6851,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.68</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.68</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.69</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.69</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -39316,6 +39319,67 @@
       }
     }
 
+    function deleteWrongQuestion(itemOrId, showNotice = true) {
+      if (!itemOrId) return;
+      const itemId = (typeof itemOrId === 'object' && itemOrId !== null) ? itemOrId.id : itemOrId;
+      const targetObj = (typeof itemOrId === 'object' && itemOrId !== null) ? itemOrId : null;
+
+      if (state.learningData && state.learningData.wrongItems) {
+        state.learningData.wrongItems = state.learningData.wrongItems.filter(x => {
+          if (itemId && x.id === itemId) return false;
+          if (targetObj) {
+            if (targetObj.question && x.question && x.question.trim() === targetObj.question.trim()) return false;
+            if (targetObj.front && x.front && x.front.trim() === targetObj.front.trim()) return false;
+          }
+          return true;
+        });
+      }
+
+      (state.learningData.studyDecks || []).forEach(d => {
+        (d.quizzes || []).forEach(q => {
+          if (itemId && q.id === itemId) q.isWrong = false;
+          else if (targetObj && targetObj.question && q.question && q.question.trim() === targetObj.question.trim()) q.isWrong = false;
+        });
+        (d.flashcards || []).forEach(f => {
+          if (itemId && f.id === itemId) f.isWrong = false;
+          else if (targetObj && targetObj.front && f.front && f.front.trim() === targetObj.front.trim()) f.isWrong = false;
+        });
+      });
+
+      saveStudyDecksAndItems();
+      if (showNotice) {
+        showToast("Đã xóa câu hỏi khỏi danh sách cần học lại!", "info");
+      }
+      if (typeof renderStudyDecksModalTabs === 'function') {
+        renderStudyDecksModalTabs();
+      }
+    }
+
+    function clearAllWrongQuestions() {
+      const wrong = state.learningData.wrongItems || [];
+      if (wrong.length === 0) {
+        showToast("Không có câu nào trong danh sách cần học lại!", "info");
+        return;
+      }
+      if (!confirm(`Bạn có chắc chắn muốn xóa toàn bộ ${wrong.length} câu hỏi khỏi danh sách cần học lại không?`)) {
+        return;
+      }
+      const count = wrong.length;
+      state.learningData.wrongItems = [];
+      (state.learningData.studyDecks || []).forEach(d => {
+        (d.quizzes || []).forEach(q => { q.isWrong = false; });
+        (d.flashcards || []).forEach(f => { f.isWrong = false; });
+      });
+      saveStudyDecksAndItems();
+      showToast(`Đã xóa toàn bộ ${count} câu hỏi khỏi danh sách cần học lại!`, "success");
+      if (typeof renderStudyDecksModalTabs === 'function') {
+        renderStudyDecksModalTabs();
+      }
+    }
+
+    window.deleteWrongQuestion = deleteWrongQuestion;
+    window.clearAllWrongQuestions = clearAllWrongQuestions;
+
     // -------------------------------------------------------------------------
     // MODAL 1: THIẾT LẬP TỰ KIỂM TRA BẰNG AI (#selfTestConfigModal)
     // -------------------------------------------------------------------------
@@ -40093,6 +40157,18 @@
       if (badgeCountWrong) badgeCountWrong.innerText = wrong.length;
 
       // Cập nhật trạng thái nút Luyện tập câu sai & câu gắn sao
+      const btnClearAllWrong = document.getElementById('btnClearAllWrong');
+      if (btnClearAllWrong) {
+        if (wrong.length === 0) {
+          btnClearAllWrong.classList.add('opacity-50', 'pointer-events-none');
+          btnClearAllWrong.setAttribute('disabled', 'true');
+        } else {
+          btnClearAllWrong.classList.remove('opacity-50', 'pointer-events-none');
+          btnClearAllWrong.removeAttribute('disabled');
+        }
+        btnClearAllWrong.onclick = clearAllWrongQuestions;
+      }
+
       if (btnPracticeWrongOnly) {
         if (wrong.length === 0) {
           btnPracticeWrongOnly.classList.add('opacity-50', 'pointer-events-none');
@@ -40358,10 +40434,16 @@
                     <span class="text-[11px] text-stone-400 truncate max-w-xs">${escapeHtml((item.deckTitle || '').replace(/🔁/g, '').trim())}</span>
                   </div>
 
-                  <button data-resolve-wrong="${escapeHtml(item.id)}" class="touch-target px-2.5 py-1 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center gap-1 transition cursor-pointer" title="Đánh dấu đã hiểu để gỡ khỏi danh sách">
-                    <svg class="w-3.5 h-3.5"><use href="#icon-check-check"></use></svg>
-                    <span>Đã hiểu</span>
-                  </button>
+                  <div class="flex items-center gap-1.5">
+                    <button data-resolve-wrong="${escapeHtml(item.id)}" class="touch-target px-2.5 py-1 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center gap-1 transition cursor-pointer" title="Đánh dấu đã hiểu để gỡ khỏi danh sách">
+                      <svg class="w-3.5 h-3.5"><use href="#icon-check-check"></use></svg>
+                      <span>Đã hiểu</span>
+                    </button>
+                    <button data-delete-wrong="${escapeHtml(item.id)}" class="touch-target px-2 py-1 rounded-lg text-stone-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold flex items-center gap-1 transition cursor-pointer" title="Xóa câu này khỏi danh sách cần học lại">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <span>Xóa</span>
+                    </button>
+                  </div>
                 </div>
 
                 <p class="font-serif font-bold text-sm text-[#1C1917] dark:text-[#EDECE8] leading-relaxed">
@@ -40394,6 +40476,13 @@
             btn.onclick = () => {
               const wId = btn.getAttribute('data-resolve-wrong');
               resolveWrongQuestion(wId);
+            };
+          });
+
+          wrongItemsListContainer.querySelectorAll('[data-delete-wrong]').forEach(btn => {
+            btn.onclick = () => {
+              const wId = btn.getAttribute('data-delete-wrong');
+              deleteWrongQuestion(wId);
             };
           });
         }
