@@ -519,8 +519,8 @@ D. [Phương án D]
 
         if (testType === 'flashcard') {
           const fcCountDesc = isAutoCount
-            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): ĐÚNG ${autoSingleCount} thẻ flashcard (phân bổ đều cho tất cả các bài)`
-            : `${targetCountNum} thẻ flashcard`;
+            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): BẮT BUỘC ĐỦ ĐÚNG ${autoSingleCount} thẻ flashcard (mảng flashcards phải có đúng ${autoSingleCount} phần tử)`
+            : `BẮT BUỘC ĐỦ ĐÚNG ${targetCountNum} thẻ flashcard (mảng flashcards phải có đúng ${targetCountNum} phần tử)`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và biên soạn tài liệu học tập của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ THẺ NHỚ FLASHCARD ôn tập chuyên sâu với số lượng: ${fcCountDesc}.
@@ -547,8 +547,8 @@ ${rawText}
 
         } else if (testType === 'quiz') {
           const quizCountDesc = isAutoCount
-            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): ĐÚNG ${autoSingleCount} câu trắc nghiệm (phân bổ đều cho tất cả các bài)`
-            : `${targetCountNum} câu trắc nghiệm`;
+            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): BẮT BUỘC ĐỦ ĐÚNG ${autoSingleCount} câu trắc nghiệm (mảng quizzes phải có đúng ${autoSingleCount} phần tử)`
+            : `BẮT BUỘC ĐỦ ĐÚNG ${targetCountNum} câu trắc nghiệm (mảng quizzes phải có đúng ${targetCountNum} phần tử)`;
 
           systemPrompt = `Bạn là chuyên gia khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ ĐỀ TRẮC NGHIỆM 4 ĐÁP ÁN với số lượng: ${quizCountDesc}.
@@ -577,8 +577,8 @@ ${rawText}
 
         } else {
           const mixedCountDesc = isAutoCount
-            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): ĐÚNG ${autoQuizzesCount} câu trắc nghiệm VÀ ${autoFlashcardsCount} thẻ flashcard (Tổng cộng ${autoQuizzesCount + autoFlashcardsCount} mục, phân bổ đều cho cả ${lessonCount} bài học)`
-            : `${targetCountNum} phần (gồm ${Math.ceil(targetCountNum / 2)} câu trắc nghiệm và ${Math.floor(targetCountNum / 2)} thẻ flashcard)`;
+            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): BẮT BUỘC ĐỦ ĐÚNG ${autoQuizzesCount} câu trắc nghiệm VÀ ${autoFlashcardsCount} thẻ flashcard (Tổng cộng ĐÚNG ${autoQuizzesCount + autoFlashcardsCount} mục)`
+            : `BẮT BUỘC ĐỦ ĐÚNG ${Math.ceil(targetCountNum / 2)} câu trắc nghiệm VÀ ${Math.floor(targetCountNum / 2)} thẻ flashcard (Tổng cộng ĐÚNG ${targetCountNum} mục)`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để biên soạn trọn bộ TỰ KIỂM TRA & THẺ NHỚ kết hợp với số lượng: ${mixedCountDesc}.

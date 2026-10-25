@@ -2,6 +2,18 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.67',
+    date: '2026-10-25T22:20:00+07:00',
+    title: 'Đồng Bộ 100% Số Lượng AI Dự Đoán & Khôi Phục Thanh Điều Khiển Flashcard Toàn Diện Trên Desktop',
+    items: [
+      { type: 'fix', text: 'Khắc phục triệt để lỗi lệch số lượng AI: Đồng bộ hóa 100% nguồn tính số từ thực tế giữa modal dự đoán và hàm gọi AI. Khắc phục hiện tượng văn bản chắt lọc làm sụt giảm số từ tính toán khiến AI sinh thiếu thẻ (từ 10 thẻ xuống 7 thẻ).' },
+      { type: 'new', text: 'Cơ chế đợi phân tích dung lượng bài học: Tự động hiển thị trạng thái chờ với spinner phân tích khi nạp số từ từ IndexedDB, tạm thời khóa nút tạo bài để đảm bảo AI đưa ra dự đoán chính xác tuyệt đối trước khi bắt đầu tạo.' },
+      { type: 'improved', text: 'Ràng buộc số lượng nghiêm ngặt: Bổ sung chỉ dẫn BẮT BUỘC ĐỦ ĐÚNG số lượng thẻ/câu vào cả prompt trực tiếp và API máy chủ, ngăn chặn tình trạng AI tự ý cắt giảm câu hỏi.' },
+      { type: 'new', text: 'Khôi phục nút "Chưa nhớ" (🔴) và "Đã nhớ" (🟢) trên Desktop: Bố trí đối xứng công thái học cạnh nút Lật đáp án (Space) ở mặt trước, cho phép đánh dấu nhanh độ thuộc mà không bắt buộc phải lật thẻ.' },
+      { type: 'new', text: 'Thanh công cụ phụ Flashcard (Secondary Utility Toolbar): Bổ sung 6 tính năng đắc lực: Phát âm / Đọc to (TTS bằng Web Speech API), Gắn sao (⭐), Điều hướng Trước/Sau (◀ / ▶), Xáo trộn ngẫu nhiên (🔀), Đảo 2 mặt (Học ngược câu hỏi ↔ đáp án), và bảng hướng dẫn phím tắt (Space, 1-4, ←/→, A, S, R).' }
+    ]
+  },
+  {
     version: 'v5.8.66',
     date: '2026-10-25T22:05:00+07:00',
     title: 'Khắc Phục Triệt Để Lỗi "actualWordCount is not defined" Trong Modal Tự Kiểm Tra AI',
