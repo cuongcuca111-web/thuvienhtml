@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.63',
+    date: '2026-10-25T21:42:00+07:00',
+    title: 'Gỡ Bỏ Tính Năng Mục Lục Tự Động & Duy Trì Cấu Trúc Bộ Đệm Tối Ưu P0',
+    items: [
+      { type: 'removed', text: 'Gỡ bỏ hoàn toàn Mục Lục Tự Động (Auto Table of Contents / Outline Drawer): Loại bỏ toàn bộ giao diện ngăn kéo mục lục, nút mở trên thanh công cụ đọc sách, nút nổi nhanh và các phím tắt T / Esc liên quan theo yêu cầu người dùng.' },
+      { type: 'cleanup', text: 'Dọn dẹp mã nguồn & bộ nhớ: Thu hồi toàn bộ hook trích xuất tiêu đề trong bridge.js, dọn dẹp các event listener cuộn trang (Scroll Spy) và các định kiểu CSS liên quan, đảm bảo không còn bộ nhớ thừa chạy ngầm.' },
+      { type: 'improved', text: 'Duy trì tối ưu hóa tải trang P0: Tiếp tục duy trì chính sách Cache-Control tối ưu trong vercel.json (max-age=86400, stale-while-revalidate), mang lại tốc độ mở bài đọc tức thì từ disk cache.' }
+    ]
+  },
+  {
     version: 'v5.8.62',
     date: '2026-10-25T21:35:00+07:00',
     title: 'Tích Hợp Mục Lục Tự Động (Auto Table of Contents / Outline Drawer) & Tối Ưu Tải Trang P0',

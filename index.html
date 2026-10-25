@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.62"></script>
+  <script src="./changelog.js?v=5.8.63"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.62',
+        version: 'v5.8.63',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.62';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.63';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.62">
-  <script src="./bridge.js?v=5.8.62"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.63">
+  <script src="./bridge.js?v=5.8.63"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.62 • build 25/10/2026 21:35</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.63 • build 25/10/2026 21:42</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -2521,15 +2521,6 @@
           <button id="btnToggleLearned" class="reader-ctrl-btn touch-target min-h-[44px] sm:min-h-[36px] sm:h-9 px-3.5 rounded-[10px] font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shadow-2xs border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] hover:border-emerald-400 active:scale-95 shrink-0 cursor-pointer select-none" title="Đánh dấu đã học bài" aria-label="Đánh dấu đã học">
             <svg id="learnedIcon" class="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" aria-hidden="true"><use href="#icon-circle"></use></svg>
             <span id="learnedLabel" class="inline">Đã học</span>
-          </button>
-
-          <!-- Nút Mục lục tự động (TOC Drawer) -->
-          <button id="btnToggleTOC" type="button" onclick="toggleTableOfContents()" class="reader-ctrl-btn group/btn-toc touch-target min-h-[44px] sm:min-h-[36px] sm:h-9 px-3 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-cyan-50/70 dark:hover:bg-cyan-950/40 hover:border-cyan-300 dark:hover:border-cyan-700/60 text-[#1C1917] dark:text-[#EDECE8] hover:text-cyan-600 dark:hover:text-cyan-400 flex items-center gap-1.5 font-medium transition-all duration-200 shadow-2xs active:scale-95 shrink-0 cursor-pointer select-none" title="Mục lục bài học (Phím T)" aria-label="Mở mục lục bài học">
-            <svg class="w-4 h-4 text-cyan-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
-            </svg>
-            <span class="hidden sm:inline font-medium text-xs sm:text-[13px]">Mục lục</span>
-            <span id="tocHeaderCountBadge" class="hidden text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400">0</span>
           </button>
 
           <!-- Nút Tải xuống file hiện tại -->
@@ -3233,7 +3224,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.62</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.63</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3255,7 +3246,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.62 • build 25/10/2026 21:35</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.63 • build 25/10/2026 21:42</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6698,8 +6689,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.62</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.62</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.63</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.63</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -16047,10 +16038,6 @@
       activeLessonId: null,
       activeFilter: 'all',
       searchKeyword: '',
-      tocData: [],
-      activeHeadingId: null,
-      isTOCOpen: false,
-      tocQuery: '',
       fontSizeOffset: 0,
       isDarkMode: false,
       preserveOriginalTheme: true,
@@ -17695,9 +17682,6 @@
           if (msg.ttsChunks && Array.isArray(msg.ttsChunks)) {
             bridgeReadableChunks = msg.ttsChunks;
           }
-          if (msg.toc && Array.isArray(msg.toc)) {
-            updateTableOfContents(msg.toc);
-          }
           if (typeof pendingSearchJump !== 'undefined' && pendingSearchJump && pendingSearchJump.lessonId === state.activeLessonId) {
             const jumpPayload = pendingSearchJump;
             setTimeout(() => {
@@ -17706,19 +17690,6 @@
             setTimeout(() => {
               postMessageToLessonIframe(jumpPayload);
             }, 350);
-          }
-          break;
-        }
-
-        case 'TOC_DATA': {
-          if (msg.headings && Array.isArray(msg.headings)) {
-            updateTableOfContents(msg.headings);
-          }
-          break;
-        }
-        case 'CURRENT_HEADING': {
-          if (msg.id) {
-            highlightActiveHeadingInTOC(msg.id);
           }
           break;
         }
@@ -25218,7 +25189,6 @@
         const floatingNav = document.getElementById('searchInArticleFloatingNav');
         if (floatingNav) floatingNav.classList.add('hidden');
         postMessageToLessonIframe({ type: 'CLEAR_BOX_OVERLAY' });
-        if (typeof resetTableOfContents === 'function') resetTableOfContents();
 
         if (!updateSidebarActiveLessonFast(lessonId)) {
           renderCategoriesAndLessons();
@@ -46109,504 +46079,6 @@ QUY TẮC:
 
     console.log("%c Thư viện Sách HTML v5.8.15 - build 18/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
-  
-
-  // =========================================================================
-  // // TABLE OF CONTENTS (TOC) DRAWER & SCROLL SPY ENGINE
-  // =========================================================================
-
-  function toggleTableOfContents() {
-    if (state.isTOCOpen) {
-      closeTableOfContents();
-    } else {
-      openTableOfContents();
-    }
-  }
-
-  function openTableOfContents() {
-    const drawer = document.getElementById('tableOfContentsDrawer');
-    const backdrop = document.getElementById('tableOfContentsBackdrop');
-    if (!drawer) return;
-
-    state.isTOCOpen = true;
-    if (backdrop) backdrop.classList.remove('hidden');
-    drawer.classList.remove('hidden');
-
-    // Force layout reflow before removing translate class for smooth transition
-    void drawer.offsetWidth;
-    drawer.classList.remove('translate-x-full');
-    drawer.classList.add('translate-x-0');
-
-    // If TOC is empty, try requesting from iframe
-    if (!state.tocData || state.tocData.length === 0) {
-      requestTableOfContentsFromIframe();
-    } else {
-      renderTableOfContents();
-    }
-
-    // Auto-focus search input if on desktop
-    if (window.innerWidth >= 640) {
-      setTimeout(() => {
-        const input = document.getElementById('tocSearchInput');
-        if (input) input.focus();
-      }, 150);
-    }
-  }
-
-  function closeTableOfContents() {
-    const drawer = document.getElementById('tableOfContentsDrawer');
-    const backdrop = document.getElementById('tableOfContentsBackdrop');
-    if (!drawer) return;
-
-    state.isTOCOpen = false;
-    drawer.classList.remove('translate-x-0');
-    drawer.classList.add('translate-x-full');
-
-    if (backdrop) backdrop.classList.add('hidden');
-    setTimeout(() => {
-      if (!state.isTOCOpen) {
-        drawer.classList.add('hidden');
-      }
-    }, 300);
-  }
-
-  function resetTableOfContents() {
-    state.tocData = [];
-    state.activeHeadingId = null;
-    state.tocQuery = '';
-    const input = document.getElementById('tocSearchInput');
-    if (input) input.value = '';
-    const clearBtn = document.getElementById('btnClearTOCSearch');
-    if (clearBtn) clearBtn.classList.add('hidden');
-    const headerBadge = document.getElementById('tocHeaderCountBadge');
-    if (headerBadge) headerBadge.classList.add('hidden');
-    renderTableOfContents();
-  }
-
-  function updateTableOfContents(headings) {
-    state.tocData = Array.isArray(headings) ? headings : [];
-    renderTableOfContents();
-    // Update floating button visibility based on heading availability
-    const floatingBtn = document.getElementById('btnFloatingTOC');
-    if (floatingBtn) {
-      if (state.tocData.length > 0 && state.activeLessonId) {
-        floatingBtn.classList.remove('hidden');
-      } else {
-        floatingBtn.classList.add('hidden');
-      }
-    }
-  }
-
-  function renderTableOfContents() {
-    const container = document.getElementById('tocListContainer');
-    const countBadge = document.getElementById('tocCounterBadge');
-    const headerCountBadge = document.getElementById('tocHeaderCountBadge');
-    const clearBtn = document.getElementById('btnClearTOCSearch');
-    if (!container) return;
-
-    const headings = state.tocData || [];
-    const query = (state.tocQuery || '').trim().toLowerCase();
-
-    // Update badge counts
-    if (countBadge) {
-      countBadge.textContent = headings.length + ' mục';
-    }
-    if (headerCountBadge) {
-      if (headings.length > 0) {
-        headerCountBadge.textContent = String(headings.length);
-        headerCountBadge.classList.remove('hidden');
-      } else {
-        headerCountBadge.classList.add('hidden');
-      }
-    }
-
-    // Filter by search query
-    let filtered = headings;
-    if (query) {
-      filtered = headings.filter(h => (h.text || '').toLowerCase().includes(query));
-      if (clearBtn) clearBtn.classList.remove('hidden');
-    } else {
-      if (clearBtn) clearBtn.classList.add('hidden');
-    }
-
-    // Empty state
-    if (filtered.length === 0) {
-      if (query) {
-        container.innerHTML = `
-          <div class="py-12 px-4 text-center select-none">
-            <svg class="w-10 h-10 mx-auto text-stone-300 dark:text-stone-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <p class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8]">Không tìm thấy phân đoạn khớp</p>
-            <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] mt-1">Thử tìm kiếm với từ khóa khác</p>
-            <button type="button" onclick="clearTOCSearch()" class="mt-3 px-3 py-1 text-xs text-cyan-600 dark:text-cyan-400 font-medium hover:underline cursor-pointer">
-              Xóa bộ lọc
-            </button>
-          </div>
-        `;
-      } else {
-        container.innerHTML = `
-          <div class="py-12 px-4 text-center select-none">
-            <div class="w-12 h-12 mx-auto rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-3">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h10M4 18h7" />
-              </svg>
-            </div>
-            <h3 class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">Bài học không có tiêu đề phân đoạn</h3>
-            <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] mt-1.5 leading-relaxed max-w-[240px] mx-auto">
-              Nội dung không chứa các thẻ H1, H2, H3. Bạn có thể sử dụng các nút nhảy nhanh dưới đây.
-            </p>
-            <div class="mt-4 flex items-center justify-center gap-2">
-              <button type="button" onclick="scrollToTopFromTOC()" class="px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
-                Lên đầu bài
-              </button>
-              <button type="button" onclick="scrollToBottomFromTOC()" class="px-3 py-1.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] text-[11px] font-medium text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
-                Xuống cuối bài
-              </button>
-            </div>
-          </div>
-        `;
-      }
-      return;
-    }
-
-    // Build items list
-    let html = '';
-    filtered.forEach(item => {
-      const level = Math.min(Math.max(item.level || 2, 1), 6);
-      let indentClass = 'pl-2';
-      if (level === 1) indentClass = 'pl-1.5 font-bold';
-      else if (level === 2) indentClass = 'pl-3';
-      else if (level === 3) indentClass = 'pl-6 text-[11.5px]';
-      else if (level >= 4) indentClass = 'pl-9 text-[11px] opacity-85';
-
-      const isActive = item.id === state.activeHeadingId;
-      const activeClasses = isActive 
-        ? 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 font-semibold border-l-2 border-cyan-500 shadow-xs' 
-        : 'text-[#57534E] dark:text-[#9AA3B2] hover:bg-black/5 dark:hover:bg-white/5';
-
-      let badgeColor = 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400';
-      if (level === 1) badgeColor = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
-      else if (level === 2) badgeColor = 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300';
-      else if (level === 3) badgeColor = 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
-
-      const tagBadge = '<span class="shrink-0 text-[9px] font-mono px-1 py-0.2 rounded font-semibold ' + badgeColor + '">' + escapeHtml(item.tag || ('H' + level)) + '</span>';
-
-      html += '<button type="button" class="toc-item-btn w-full text-left py-1.5 pr-2.5 rounded-lg flex items-start gap-2 transition-all duration-150 cursor-pointer select-none text-xs group ' + indentClass + ' ' + activeClasses + '" data-heading-id="' + escapeHtml(item.id) + '" onclick="scrollToHeading(\'' + escapeHtml(item.id) + '\')" title="' + escapeHtml(item.text) + '">'
-        + tagBadge
-        + '<span class="truncate flex-1 leading-snug">' + escapeHtml(item.text) + '</span>'
-        + '</button>';
-    });
-
-    container.innerHTML = html;
-  }
-
-  function handleTOCSearch(val) {
-    state.tocQuery = val || '';
-    renderTableOfContents();
-  }
-
-  function clearTOCSearch() {
-    state.tocQuery = '';
-    const input = document.getElementById('tocSearchInput');
-    if (input) {
-      input.value = '';
-      input.focus();
-    }
-    renderTableOfContents();
-  }
-
-  function highlightActiveHeadingInTOC(activeId) {
-    const list = document.getElementById('tocListContainer');
-    if (!list) return;
-
-    const allItems = list.querySelectorAll('.toc-item-btn');
-    allItems.forEach(btn => {
-      const isCurrent = btn.getAttribute('data-heading-id') === activeId;
-      if (isCurrent) {
-        btn.classList.add('bg-cyan-50', 'dark:bg-cyan-950/40', 'text-cyan-700', 'dark:text-cyan-300', 'font-semibold', 'border-l-2', 'border-cyan-500', 'shadow-xs');
-        btn.classList.remove('text-[#57534E]', 'dark:text-[#9AA3B2]', 'hover:bg-black/5', 'dark:hover:bg-white/5');
-        if (state.isTOCOpen) {
-          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      } else {
-        btn.classList.remove('bg-cyan-50', 'dark:bg-cyan-950/40', 'text-cyan-700', 'dark:text-cyan-300', 'font-semibold', 'border-l-2', 'border-cyan-500', 'shadow-xs');
-        btn.classList.add('text-[#57534E]', 'dark:text-[#9AA3B2]', 'hover:bg-black/5', 'dark:hover:bg-white/5');
-      }
-    });
-  }
-
-  function scrollToHeading(id) {
-    const iframe = document.getElementById('lessonIframe');
-    const readingArea = document.getElementById('readingArea');
-    if (!iframe || !readingArea) return;
-
-    try {
-      const doc = iframe.contentDocument;
-      if (doc) {
-        const el = doc.getElementById(id);
-        if (el) {
-          const readingRect = readingArea.getBoundingClientRect();
-          const elRect = el.getBoundingClientRect();
-          const targetScroll = readingArea.scrollTop + (elRect.top - readingRect.top) - 60;
-
-          readingArea.scrollTo({
-            top: Math.max(0, targetScroll),
-            behavior: 'smooth'
-          });
-
-          el.classList.add('heading-jump-highlight');
-          setTimeout(() => {
-            try { el.classList.remove('heading-jump-highlight'); } catch (_) {}
-          }, 1600);
-
-          state.activeHeadingId = id;
-          highlightActiveHeadingInTOC(id);
-          return;
-        }
-      }
-    } catch (_) {}
-
-    // Fallback via postMessage
-    postMessageToLessonIframe({ type: 'SCROLL_TO_HEADING', id: id });
-    state.activeHeadingId = id;
-    highlightActiveHeadingInTOC(id);
-  }
-
-  function scrollToTopFromTOC() {
-    const readingArea = document.getElementById('readingArea');
-    if (readingArea) {
-      readingArea.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  function scrollToBottomFromTOC() {
-    const readingArea = document.getElementById('readingArea');
-    if (readingArea) {
-      readingArea.scrollTo({ top: readingArea.scrollHeight, behavior: 'smooth' });
-    }
-  }
-
-  function requestTableOfContentsFromIframe() {
-    const iframe = document.getElementById('lessonIframe');
-    if (!iframe) return;
-
-    try {
-      const doc = iframe.contentDocument;
-      if (doc) {
-        const headingEls = doc.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]');
-        if (headingEls && headingEls.length > 0) {
-          const headings = [];
-          headingEls.forEach((h, idx) => {
-            const text = (h.innerText || h.textContent || '').trim();
-            if (!text) return;
-            if (!h.id) {
-              h.id = 'thuvienhtml-heading-' + (idx + 1);
-            }
-            let level = 2;
-            const tagName = h.tagName ? h.tagName.toLowerCase() : '';
-            if (tagName.startsWith('h') && tagName.length === 2) {
-              level = parseInt(tagName.charAt(1), 10) || 2;
-            } else if (h.getAttribute('aria-level')) {
-              level = parseInt(h.getAttribute('aria-level'), 10) || 2;
-            }
-            headings.push({
-              id: h.id,
-              text: text,
-              level: level,
-              tag: tagName.toUpperCase() || ('H' + level)
-            });
-          });
-          if (headings.length > 0) {
-            updateTableOfContents(headings);
-            return;
-          }
-        }
-      }
-    } catch (_) {}
-
-    postMessageToLessonIframe({ type: 'GET_TOC' });
-  }
-
-  let isTOCScrollSpyPending = false;
-  function setupTOCScrollSpy() {
-    const readingArea = document.getElementById('readingArea');
-    if (!readingArea) return;
-
-    readingArea.addEventListener('scroll', () => {
-      if (isTOCScrollSpyPending) return;
-      isTOCScrollSpyPending = true;
-      requestAnimationFrame(() => {
-        isTOCScrollSpyPending = false;
-        updateActiveHeadingOnScroll();
-      });
-    }, { passive: true });
-  }
-
-  function updateActiveHeadingOnScroll() {
-    if (!state.tocData || state.tocData.length === 0) return;
-
-    const iframe = document.getElementById('lessonIframe');
-    const readingArea = document.getElementById('readingArea');
-    if (!iframe || !readingArea) return;
-
-    try {
-      const doc = iframe.contentDocument;
-      if (!doc) return;
-
-      const readingTop = readingArea.getBoundingClientRect().top;
-      let currentId = null;
-
-      for (let i = 0; i < state.tocData.length; i++) {
-        const item = state.tocData[i];
-        const el = doc.getElementById(item.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= readingTop + 100) {
-            currentId = item.id;
-          } else {
-            break;
-          }
-        }
-      }
-
-      if (!currentId && state.tocData.length > 0) {
-        currentId = state.tocData[0].id;
-      }
-
-      if (currentId && currentId !== state.activeHeadingId) {
-        state.activeHeadingId = currentId;
-        highlightActiveHeadingInTOC(currentId);
-      }
-    } catch (_) {}
-  }
-
-  function initTableOfContents() {
-    setupTOCScrollSpy();
-
-    // Global keyboard listener for TOC (Key T and Escape)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (state.isTOCOpen) {
-          e.preventDefault();
-          closeTableOfContents();
-          return;
-        }
-      }
-
-      if ((e.key === 't' || e.key === 'T') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        const active = document.activeElement;
-        const tag = active ? active.tagName.toLowerCase() : '';
-        if (tag === 'input' || tag === 'textarea' || (active && active.isContentEditable)) {
-          return;
-        }
-        if (state.activeLessonId) {
-          e.preventDefault();
-          toggleTableOfContents();
-        }
-      }
-    });
-  }
-
-  // Export functions globally
-  window.toggleTableOfContents = toggleTableOfContents;
-  window.openTableOfContents = openTableOfContents;
-  window.closeTableOfContents = closeTableOfContents;
-  window.resetTableOfContents = resetTableOfContents;
-  window.updateTableOfContents = updateTableOfContents;
-  window.renderTableOfContents = renderTableOfContents;
-  window.handleTOCSearch = handleTOCSearch;
-  window.clearTOCSearch = clearTOCSearch;
-  window.scrollToHeading = scrollToHeading;
-  window.scrollToTopFromTOC = scrollToTopFromTOC;
-  window.scrollToBottomFromTOC = scrollToBottomFromTOC;
-  window.highlightActiveHeadingInTOC = highlightActiveHeadingInTOC;
-  window.requestTableOfContentsFromIframe = requestTableOfContentsFromIframe;
-
-  // Initialize TOC when script executes
-  initTableOfContents();
-
-</script>
-  <!-- ========================================== -->
-  <!-- TABLE OF CONTENTS (TOC) DRAWER & BACKDROP  -->
-  <!-- ========================================== -->
-  <div id="tableOfContentsBackdrop" onclick="closeTableOfContents()" class="hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-200" aria-hidden="true"></div>
-
-  <div id="tableOfContentsDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[380px] max-w-full bg-[#FAF9F5]/98 dark:bg-[#111317]/98 backdrop-blur-xl border-l border-[#E7E5DF] dark:border-[#262C36] shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out hidden select-none" role="dialog" aria-modal="true" aria-label="Mục lục bài đọc">
-    
-    <!-- Drawer Header -->
-    <div class="h-14 px-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-3 shrink-0 bg-white/50 dark:bg-black/20">
-      <div class="flex items-center gap-2 min-w-0">
-        <div class="w-8 h-8 rounded-lg bg-cyan-500/10 dark:bg-cyan-400/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
-          </svg>
-        </div>
-        <div class="min-w-0">
-          <h2 class="text-sm font-bold text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-1.5">
-            <span>Mục lục bài học</span>
-            <span id="tocCounterBadge" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#E7E5DF] dark:bg-[#262C36] text-[#57534E] dark:text-[#9AA3B2]">0 mục</span>
-          </h2>
-        </div>
-      </div>
-      <div class="flex items-center gap-1 shrink-0">
-        <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono text-[#57534E] dark:text-[#9AA3B2] bg-[#F2F0EB] dark:bg-[#1E232B] rounded border border-[#E7E5DF] dark:border-[#262C36]" title="Phím tắt">T</kbd>
-        <button type="button" onclick="closeTableOfContents()" class="touch-target min-w-[36px] min-h-[36px] p-2 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center justify-center cursor-pointer" aria-label="Đóng mục lục" title="Đóng (Esc / T)">
-          <svg class="w-4 h-4"><use href="#icon-x"></use></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Quick Search / Filter Input -->
-    <div class="px-4 py-2.5 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#F7F6F1] dark:bg-[#16181E] shrink-0">
-      <div class="relative">
-        <svg class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input 
-          id="tocSearchInput" 
-          type="text" 
-          placeholder="Lọc tiêu đề phân đoạn..." 
-          class="w-full pl-8.5 pr-8 py-1.5 text-xs rounded-lg bg-white dark:bg-[#1E232B] border border-[#E7E5DF] dark:border-[#262C36] text-[#1C1917] dark:text-[#EDECE8] placeholder-stone-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition" 
-          oninput="handleTOCSearch(this.value)"
-        />
-        <button id="btnClearTOCSearch" type="button" onclick="clearTOCSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-xs">
-          <svg class="w-3.5 h-3.5"><use href="#icon-x"></use></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- TOC Items Tree List -->
-    <div id="tocListContainer" class="flex-1 overflow-y-auto p-3 space-y-1 overscroll-contain">
-      <!-- Generated TOC items will be injected here -->
-    </div>
-
-    <!-- Drawer Footer: Quick jumps -->
-    <div class="p-3 border-t border-[#E7E5DF] dark:border-[#262C36] bg-white/40 dark:bg-black/20 flex items-center justify-between gap-2 text-xs shrink-0">
-      <button type="button" onclick="scrollToTopFromTOC()" class="flex-1 py-1.5 px-2.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-center gap-1.5 transition text-[11px] font-medium">
-        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-        </svg>
-        <span>Lên đầu bài</span>
-      </button>
-      <button type="button" onclick="scrollToBottomFromTOC()" class="flex-1 py-1.5 px-2.5 rounded-lg border border-[#E7E5DF] dark:border-[#262C36] hover:bg-black/5 dark:hover:bg-white/5 text-[#57534E] dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] flex items-center justify-center gap-1.5 transition text-[11px] font-medium">
-        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-        <span>Xuống cuối bài</span>
-      </button>
-    </div>
-
-  </div>
-
-  <!-- Floating Table of Contents Shortcut Button (Phím T) -->
-  <button id="btnFloatingTOC" onclick="toggleTableOfContents()" class="hidden fixed bottom-24 right-5 sm:right-8 z-30 p-3 rounded-full bg-stone-900/90 dark:bg-white/90 text-white dark:text-stone-900 shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border border-stone-700/50 dark:border-stone-200/50 flex items-center justify-center cursor-pointer group" title="Mục lục bài học (Phím T)" aria-label="Mở mục lục bài học">
-    <svg class="w-5 h-5 text-cyan-400 dark:text-cyan-600 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
-    </svg>
-    <span class="sr-only">Mục lục</span>
-  </button>
-
-
+  </script>
 </body>
 </html>

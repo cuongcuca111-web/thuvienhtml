@@ -23,12 +23,6 @@
     .tts-active-highlight { outline: 2px solid #6366F1 !important; background-color: rgba(99, 102, 241, 0.18) !important; border-radius: 4px; transition: all 0.2s ease; }
     .search-match-highlight { background-color: #FDE047 !important; color: #000 !important; border-radius: 2px; }
     .search-match-active { background-color: #EA580C !important; color: #FFF !important; font-weight: bold; border-radius: 2px; }
-    .heading-jump-highlight {
-      outline: 2.5px solid #6366F1 !important;
-      background-color: rgba(99, 102, 241, 0.15) !important;
-      border-radius: 6px !important;
-      transition: background-color 1.5s ease, outline 1.5s ease !important;
-    }
     @keyframes searchBoxPulse {
       0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.65), 0 4px 12px rgba(0,0,0,0.18); }
       50% { transform: scale(1.02); box-shadow: 0 0 0 7px rgba(99, 102, 241, 0.32), 0 6px 18px rgba(0,0,0,0.24); }
@@ -1488,44 +1482,6 @@
     }, '*');
   });
 
-  // 6.1. Trích xuất Cây Mục lục Bài học (Table of Contents / Outline)
-  function extractHeadingsTOC() {
-    try {
-      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"], .section-title, .chapter-title, .bai-hoc-title');
-      const list = [];
-      let autoIdx = 0;
-      headings.forEach((el) => {
-        if (el.closest('script, style, button, nav, .hidden, #ann-layer, [aria-hidden="true"]')) return;
-        const text = (el.innerText || el.textContent || '').trim();
-        if (!text || text.length < 2) return;
-        if (el.parentElement && el.parentElement.closest('h1, h2, h3, h4, h5, h6')) return;
-
-        let id = el.id;
-        if (!id) {
-          id = 'toc_heading_' + (++autoIdx);
-          el.id = id;
-        }
-        let level = 2;
-        if (el.tagName && el.tagName.match(/^H[1-6]$/i)) {
-          level = parseInt(el.tagName.charAt(1), 10);
-        } else if (el.classList && (el.classList.contains('chapter-title') || el.classList.contains('bai-hoc-title'))) {
-          level = 1;
-        }
-
-        list.push({
-          id: id,
-          text: text.replace(/\s+/g, ' ').substring(0, 120),
-          tag: (el.tagName || 'H2').toUpperCase(),
-          level: Math.min(Math.max(level, 1), 6)
-        });
-      });
-      return list;
-    } catch (err) {
-      console.warn('[bridge] Lỗi extractHeadingsTOC:', err);
-      return [];
-    }
-  }
-
   // 6. Trích xuất Readable Chunks cho TTS
   function extractTTSChunks() {
     const chunks = [];
@@ -1597,14 +1553,12 @@
           applySavedHighlights(msg.highlights);
         }
         const chunks = extractTTSChunks();
-        const toc = typeof extractHeadingsTOC === 'function' ? extractHeadingsTOC() : [];
         const readyH = typeof measureRealContentHeight === 'function' ? measureRealContentHeight() : 250;
         window.parent.postMessage({
           type: 'BRIDGE_READY',
           height: readyH,
           bg: getNativeBg(),
-          ttsChunks: chunks,
-          toc: toc
+          ttsChunks: chunks
         }, '*');
         sendHeight();
         break;
@@ -1710,29 +1664,6 @@
           }
         }
         sendHeight();
-        break;
-      }
-
-      case 'SCROLL_TO_HEADING': {
-        if (msg.id) {
-          const el = document.getElementById(msg.id);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            el.classList.remove('heading-jump-highlight');
-            void el.offsetWidth;
-            el.classList.add('heading-jump-highlight');
-            setTimeout(() => el.classList.remove('heading-jump-highlight'), 1800);
-          }
-        }
-        break;
-      }
-
-      case 'GET_TOC': {
-        const toc = typeof extractHeadingsTOC === 'function' ? extractHeadingsTOC() : [];
-        window.parent.postMessage({
-          type: 'TOC_DATA',
-          toc: toc
-        }, '*');
         break;
       }
 
@@ -2382,14 +2313,12 @@
   function announceReadyImmediate() {
     try {
       const chunks = typeof extractTTSChunks === 'function' ? extractTTSChunks() : [];
-      const toc = typeof extractHeadingsTOC === 'function' ? extractHeadingsTOC() : [];
       const readyH = typeof measureRealContentHeight === 'function' ? measureRealContentHeight() : 250;
       window.parent.postMessage({
         type: 'BRIDGE_READY',
         height: readyH,
         bg: typeof getNativeBg === 'function' ? getNativeBg() : '#FFFFFF',
-        ttsChunks: chunks,
-        toc: toc
+        ttsChunks: chunks
       }, '*');
       if (typeof sendHeight === 'function') sendHeight();
     } catch (_) {}
