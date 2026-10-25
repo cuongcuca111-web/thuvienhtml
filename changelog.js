@@ -2,6 +2,15 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.70',
+    date: '2026-10-25T22:38:00+07:00',
+    title: 'Tự Động Điều Hướng Về Popup Bộ Thẻ Khi Bấm "Hoàn Tất" Phiên Học Flashcard',
+    items: [
+      { type: 'improved', text: 'Hoàn thiện vòng lặp học tập liền mạch (Seamless Learning Loop): Khi kết thúc phiên lật thẻ Flashcard (màn hình "Hoàn thành phiên kiểm tra!"), bấm nút "Hoàn tất" sẽ tự động đóng phiên học và mở ngay popup "Bộ thẻ & Trắc nghiệm tự kiểm tra" để người dùng tiện theo dõi tiến độ, xem thống kê hoặc chuyển sang bộ đề khác.' },
+      { type: 'improved', text: 'Đồng bộ hành vi đóng thẻ thông minh: Bấm nút đóng "X" trên góc phải màn hình tổng kết Flashcard cũng tự động chuyển tiếp về Kho bộ thẻ tương tự nút Hoàn tất, giữ vững trải nghiệm nhất quán với bài thi trắc nghiệm.' }
+    ]
+  },
+  {
     version: 'v5.8.69',
     date: '2026-10-25T22:35:00+07:00',
     title: 'Bỏ Chữ "Space" Trên Nút Lật Thẻ Flashcard & Bổ Sung Tính Năng Xóa Câu Cần Học Lại Toàn Diện',

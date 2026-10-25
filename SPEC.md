@@ -1,58 +1,40 @@
-# SPEC.md — Đặc Tả Kỹ Thuật: Bỏ Chữ "Space" Trên Nút Lật Thẻ & Thêm Tính Năng Xóa Câu Cần Học Lại (v5.8.69)
+# SPEC.md — Đặc Tả Kỹ Thuật: Điều Hướng Nút "Hoàn Tất" Flashcard Về Popup Bộ Thẻ & Trắc Nghiệm (v5.8.70)
 
-## 1. PHÂN TÍCH YÊU CẦU & BỐI CẢNH
-1. **Yêu cầu 1: Ở ảnh 1, hãy bỏ chữ "space"**:
-   - Trên giao diện modal Flashcard ("Thẻ 1 / 3"), nút chính ở giữa đang hiển thị: `[ 🔄 Lật đáp án  Space ]` với badge `<span class="... font-mono ...">Space</span>`.
-   - Người dùng yêu cầu bỏ chữ "space" này để nút bấm tinh gọn, hiện đại và tập trung vào hành động cốt lõi ("Lật đáp án"), tránh rườm rà về thị giác.
-   - Thao tác bấm phím cách (Spacebar) trên bàn phím vẫn được giữ nguyên hoạt động trong nền và trong bảng hướng dẫn phím tắt (nút 🎚️).
-2. **Yêu cầu 2: Thêm tính năng xóa các câu cần học lại (Ảnh 2)**:
-   - Trong modal "Bộ thẻ & Trắc nghiệm tự kiểm tra", tab "Cần học lại (Làm sai)" hiện chỉ có:
-     * Nút "Luyện tập các câu sai ngay" trên banner.
-     * Nút "Đã hiểu" trên từng câu hỏi làm sai.
-   - Hạn chế hiện tại:
-     * Người dùng không có nút xóa nhanh toàn bộ danh sách khi muốn làm sạch lịch sử ôn tập.
-     * Người dùng chưa thấy rõ hành động "Xóa" trên từng câu (nút "Đã hiểu" nghe giống xác nhận ghi nhớ chứ không mang ý nghĩa xóa/loại bỏ khỏi danh sách ôn lại).
-   - Giải pháp:
-     * **Cấp độ danh sách (Batch Clear)**: Bổ sung nút `🗑️ Xóa tất cả` trên thanh banner cạnh nút "Luyện tập các câu sai ngay", có hộp thoại xác nhận an toàn (`confirm`).
-     * **Cấp độ từng câu (Item Delete)**: Bổ sung nút `🗑️ Xóa` (icon thùng rác tinh tế) trên từng thẻ câu hỏi làm sai bên cạnh nút "Đã hiểu".
-     * Cập nhật tức thời số đếm trên tab `Cần học lại (Làm sai) (X)` và trạng thái trống (Empty state) khi danh sách về 0.
+## 1. YÊU CẦU & BỐI CẢNH
+- **Yêu cầu người dùng**:
+  * Khi người dùng học xong phiên Flashcard và ở màn hình tổng kết hoàn thành (*"Hoàn thành phiên kiểm tra!" - Ảnh 1*), bấm nút **`[ Hoàn tất ]`** (`#btnFcFinish`) thì hệ thống phải tự động điều hướng quay trở lại popup **"Bộ thẻ & Trắc nghiệm tự kiểm tra"** (*Ảnh 2*).
+- **Phân tích hiện trạng**:
+  * Tại dòng 39056 của [`index.html`](file:///C:/Users/PV/.gemini/antigravity/scratch/thuvienhtml/index.html), sự kiện click của nút `#btnFcFinish` hiện chỉ gọi `hideModalAnimated(fcModal)`. Do đó sau khi bấm xong, popup đóng lại và màn hình trả về nền bài học, khiến luồng học tập bị đứt quãng.
+  * Trong khi đó, ở modal Trắc nghiệm (Quiz), nút `#btnQuizFinishToHub` tại dòng 40859 đã gọi:
+    ```javascript
+    hideModalAnimated(quizModal);
+    openStudyDecksManagerModal();
+    ```
+    cho phép người dùng quay lại Kho bài kiểm tra để chọn đề khác hoặc xem thống kê.
 
 ---
 
 ## 2. GIẢI PHÁP THIẾT KẾ & TRIỂN KHAI (ARCHITECTURE & DESIGN)
-
-### 2.1. Loại bỏ chữ "Space" trên nút Lật đáp án Flashcard
-- Trong HTML `#btnFcFlipBig`:
-  * Xóa bỏ thẻ `<span class="hidden sm:inline-flex items-center text-[10px] px-1.5 py-0.5 rounded bg-white/20 font-mono leading-none">Space</span>`.
-  * Giữ nguyên cấu trúc icon SVG xoay tròn và nhãn `<span class="whitespace-nowrap">Lật đáp án</span>`.
-  * Giữ nguyên xử lý phím tắt Space ở nền JS (`initFlashcardControlsEvents`).
-
-### 2.2. Giao diện & Trải nghiệm Xóa câu cần học lại (UX/UI)
-1. **Banner Tab "Cần học lại" (`#paneDecksWrong`)**:
-   - Thêm nút `btnClearAllWrong`:
-     ```html
-     <button id="btnClearAllWrong" type="button" class="touch-target px-3 py-1.5 rounded-xl bg-white dark:bg-[#1C212B] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-600 dark:text-stone-300 hover:text-rose-600 dark:hover:text-rose-400 font-semibold text-xs border border-stone-200 dark:border-stone-700/60 hover:border-rose-300 dark:hover:border-rose-800 transition cursor-pointer flex items-center gap-1.5" title="Xóa tất cả câu khỏi danh sách cần học lại">
-       <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-       <span>Xóa tất cả</span>
-     </button>
-     ```
-   - Tự động disabled/opacity-50 khi `wrong.length === 0`.
-2. **Thẻ câu hỏi làm sai (`wrongItemsListContainer`)**:
-   - Bố trí cụm thao tác góc phải trên:
-     * Nút `✓ Đã hiểu` (màu ngọc lục bảo emerald).
-     * Nút `🗑️ Xóa` (màu đá xám chuyển sang đỏ rose khi hover).
-3. **Logic JavaScript**:
-   - `deleteWrongQuestion(id)`: Lọc bỏ item khỏi `state.learningData.wrongItems`, đặt lại `isWrong = false` trên các deck gốc, lưu storage, gọi toast và render lại tab.
-   - `clearAllWrongQuestions()`: Kiểm tra số lượng, hiển thị confirm dialog tiếng Việt, dọn sạch `state.learningData.wrongItems = []`, reset flag trên deck, lưu storage và toast chúc mừng/xác nhận thành công.
+1. **Sự kiện nút `#btnFcFinish`**:
+   - Khi người dùng bấm nút `[ Hoàn tất ]` trên màn hình tổng kết `#fcSessionSummaryView`:
+     * Đóng modal Flashcard: `hideModalAnimated(fcModal)`.
+     * Mở modal Trung tâm Quản lý Bộ thẻ & Trắc nghiệm:
+       ```javascript
+       if (typeof openStudyDecksManagerModal === 'function') {
+         openStudyDecksManagerModal();
+       } else if (typeof window.openStudyDecksManagerModal === 'function') {
+         window.openStudyDecksManagerModal();
+       }
+       ```
+     * Modal Bộ thẻ sẽ tự động cập nhật thống kê số lượng thẻ nhớ, điểm số, và làm mới các tab (Tất cả bộ đề, Đã gắn sao, Cần học lại).
+2. **Trải nghiệm đóng qua nút 'X' ở màn hình kết thúc**:
+   - Nếu người dùng bấm nút đóng `X` (`#btnCloseFcModal`) khi đã ở màn hình hoàn thành (summary view đang hiển thị), cũng hỗ trợ điều hướng quay về `openStudyDecksManagerModal()` để giữ tính nhất quán công thái học.
 
 ---
 
 ## 3. KẾ HOẠCH KIỂM THỬ & NGHIỆM THU (QA CRITERIA)
-1. Giao diện Flashcard (Ảnh 1): Nút "Lật đáp án" hoàn toàn không còn chữ "Space", giao diện thoáng, cân đối.
-2. Bấm phím Space trên bàn phím vẫn lật thẻ bình thường 100%.
-3. Tab "Cần học lại" (Ảnh 2):
-   - Nút "Xóa tất cả" hiển thị rõ ràng trên banner. Khi danh sách có câu sai, nút bấm hoạt động; khi danh sách rỗng, nút tự động vô hiệu hóa.
-   - Bấm "Xóa tất cả" hiển thị hộp thoại xác nhận. Khi đồng ý, danh sách câu sai biến mất ngay lập tức và số đếm trên tab chuyển về 0.
-   - Mỗi thẻ câu hỏi có nút "Xóa" riêng lẻ; bấm vào câu nào câu đó được gỡ bỏ ngay lập tức.
-4. Toàn bộ inline scripts vượt qua kiểm thử `check_syntax.py` của Node.js.
-5. Cập nhật `changelog.js`, đồng bộ phiên bản `v5.8.69` và commit/push Git.
+1. Mở một bộ thẻ Flashcard bất kỳ và hoàn thành phiên học đến thẻ cuối cùng.
+2. Màn hình "Hoàn thành phiên kiểm tra!" xuất hiện (Ảnh 1).
+3. Bấm nút **`[ Hoàn tất ]`**: Modal Flashcard đóng lại và modal **"Bộ thẻ & Trắc nghiệm tự kiểm tra"** (Ảnh 2) lập tức hiển thị mượt mà.
+4. Cú pháp Node.js trên toàn bộ script và inline tags đạt 100% OK (`check_syntax.py`).
+5. Ghi nhận nhật ký cập nhật vào `changelog.js`, đồng bộ phiên bản `v5.8.70` và đẩy Git lên main.
