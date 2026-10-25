@@ -1,75 +1,75 @@
-# SPEC.md — Đặc tả Kỹ thuật: Hiệu ứng Hoàn thành Bài kiểm tra & Chặn Autofill Form Rác
+# SPEC.md — Đặc tả Kỹ thuật: Phân bổ Số lượng Câu hỏi AI theo Số Bài học & Hiển thị Số lượng Dự kiến
 
 ## 1. Mục tiêu Cốt lõi
-- **Mục tiêu 1:** Nâng cấp hiệu ứng chuyển cảnh (transition) và animation khi hoàn thành bài kiểm tra (Quiz) và phiên ôn thẻ nhớ (Flashcards) theo chuẩn `/thietkeweb` (Trụ cột 3 & Trụ cột 5): Mượt mà 60 FPS GPU Compositor, chuyển đổi dịu mắt từ câu hỏi sang màn hình kết quả, icon Checkmark nảy nhẹ (Subtle Spring Pop-in) kèm hào quang pulse ring, các khối text và nút xuất hiện tuần tự (Staggered Fade-in-up), và bắn chùm hạt ngọc thanh lịch (Micro-confetti).
-- **Mục tiêu 2:** Khắc phục triệt để lỗi trình duyệt tự động điền (autofill) tên tài khoản vào ô "Tìm nhanh bài học theo tên..." và mật khẩu vào ô "Tùy chọn: Nhập Google Gemini API Key cá nhân" trong modal `selfTestConfigModal` (Ảnh 2 & 3).
+- **Mục tiêu 1 (Fix bug số lượng câu quá ít khi chọn nhiều bài):** Khi người dùng chọn nhiều bài học (ví dụ: 4, 6, 8 bài), số lượng câu hỏi trắc nghiệm và thẻ nhớ tự động do AI đề xuất hiện tại chỉ có 6 câu (quá ít, trung bình mỗi bài chỉ có 1 câu). Cần nâng cấp thuật toán phân bổ thông minh theo số lượng bài học $N$: Mỗi bài học phải được phân bổ ít nhất 2 đến 4 câu hỏi trắc nghiệm và 2 đến 4 thẻ nhớ (với 6 bài học, tổng số lượng sẽ đạt khoảng 20 - 30 câu/thẻ), đảm bảo ôn tập toàn diện kiến thức cho tất cả các bài đã chọn mà không bài nào bị bỏ sót.
+- **Mục tiêu 2 (Thêm hiển thị số lượng dự kiến trực quan):** Trên giao diện modal Tạo bài kiểm tra AI (`selfTestConfigModal`), tại tùy chọn "Tự động (AI đề xuất)", hiển thị rõ ràng số lượng câu hỏi và thẻ nhớ dự kiến theo thời gian thực (Real-time Dynamic Reactivity). Số lượng này tự động nhảy số theo số bài học đang chọn và dạng bài đang chọn (Trắc nghiệm + Thẻ nhớ / Chỉ Trắc nghiệm / Chỉ Flashcards).
+- **Mục tiêu 3 (Mở rộng Token trần an toàn):** Nâng `optimalMaxTokens` trên máy chủ và `maxOutputTokens` khi gọi API trực tiếp từ 2500 lên 6000 tokens, đảm bảo JSON sinh ra cho 20 - 35 câu hỏi luôn trọn vẹn 100% không bao giờ bị cắt ngắn.
 
 ---
 
-## 2. Design Tokens
-- **Bảng màu (Colors):**
-  - Indigo Brand: `#4F46E5` (light), `#6366F1` (hover), `#312E81` (dark bg).
-  - Emerald Success: `#10B981` (light), `#059669` (dark text), `rgba(16, 185, 129, 0.12)` (glow / ring).
-  - Surface Background: Light `#FAF9F5` / `#FFFFFF`, Dark `#12151B` / `#161A20`.
-  - Border Lines: Light `#E7E5DF`, Dark `#262C36`.
-  - Text: Light `#1C1917`, Subtle `#57534E`, Dark `#EDECE8`, Subtle `#9AA3B2`.
-- **Typography:**
-  - Font-serif cho tiêu đề ("Hoàn thành bài kiểm tra!").
-  - Font-sans cho điểm số, huy hiệu và nhãn nút bấm.
-  - Font-mono cho khóa API Key.
-- **Timing & Curves (Trụ cột 3):**
-  - Easing: `cubic-bezier(0.16, 1, 0.3, 1)` (ease-out tự nhiên).
-  - Duration: `260ms` cho view crossfade, `400ms` cho checkmark spring bounce, stagger step `60ms`.
-  - Hỗ trợ đầy đủ `@media (prefers-reduced-motion: reduce)`.
+## 2. Công thức Tính toán Số lượng Câu hỏi & Thẻ nhớ Thông minh
+
+Gọi $N$ là số lượng bài học được người dùng chọn ($N \ge 1$).
+
+### 2.1. Dạng bài kết hợp: Trắc nghiệm + Thẻ nhớ (`mixed`)
+- Số câu trắc nghiệm: $Q = \min(20, \max(5, \text{round}(N \times 2.5)))$
+- Số thẻ flashcard: $F = \min(20, \max(5, \text{round}(N \times 2.5)))$
+- Tổng số lượng: $T = Q + F$
+  - Ví dụ $N = 1$ bài: $Q = 5$, $F = 5 \implies$ Tổng 10 câu/thẻ.
+  - Ví dụ $N = 2$ bài: $Q = 6$, $F = 6 \implies$ Tổng 12 câu/thẻ.
+  - Ví dụ $N = 4$ bài: $Q = 10$, $F = 10 \implies$ Tổng 20 câu/thẻ.
+  - Ví dụ $N = 6$ bài: $Q = 15$, $F = 15 \implies$ Tổng 30 câu/thẻ (mỗi bài ~2.5 câu trắc nghiệm + 2.5 thẻ flashcard!).
+  - Ví dụ $N \ge 8$ bài: $Q = 18 - 20$, $F = 18 - 20 \implies$ Tổng 36 - 40 câu/thẻ.
+
+### 2.2. Dạng bài đơn lẻ: Chỉ Trắc nghiệm (`quiz`) hoặc Chỉ Flashcards (`flashcard`)
+- Số lượng: $C = \min(35, \max(8, \text{round}(N \times 4.2)))$
+  - Ví dụ $N = 1$ bài: 8 - 10 câu/thẻ.
+  - Ví dụ $N = 4$ bài: 16 - 18 câu/thẻ.
+  - Ví dụ $N = 6$ bài: 24 - 26 câu/thẻ.
+  - Ví dụ $N \ge 8$ bài: 30 - 35 câu/thẻ.
 
 ---
 
 ## 3. Kiến trúc File & Logic Triển khai
 
-### 3.1. File `styles.css`
-- Thêm keyframes và CSS classes:
-  - `@keyframes quizSummaryViewEnter`: Fade-in và scale nhẹ nhàng `translateY(12px) scale(0.98) -> translateY(0) scale(1)`.
-  - `@keyframes quizSummaryIconPop`: Pop-in nhẹ nhàng cho icon hoàn thành từ `scale(0.6)` lên `scale(1.08)` về `scale(1)`.
-  - `@keyframes quizSummaryPulseRing`: Vòng hào quang xanh/indigo lan tỏa nhẹ quanh icon checkmark.
-  - `@keyframes quizSummaryStaggerIn`: Hiệu ứng trượt lên nhẹ `translateY(8px) -> translateY(0)` kết hợp `opacity: 0 -> 1`.
-  - `.quiz-summary-stagger-1`, `.quiz-summary-stagger-2`, `.quiz-summary-stagger-3`, `.quiz-summary-stagger-4` với delay so le 60ms, 120ms, 180ms, 240ms.
-  - Nút bấm với Subtle Hover Lift (`.quiz-summary-btn-lift`, `.quiz-summary-btn-lift-subtle`).
+### 3.1. File `api/ai/explain.js`
+- Đọc `lessonCount` từ client truyền lên hoặc đếm qua `body.lessonTitles.length` / `lessonCount`:
+  - `const lessonCount = Math.max(1, parseInt(body.lessonCount, 10) || (Array.isArray(body.lessonTitles) ? body.lessonTitles.length : 1));`
+- Áp dụng công thức tính toán $Q, F, C$ tương ứng cho `isAutoCount`.
+- Chỉ thị prompt bắt buộc:
+  `"TÀI LIỆU GỒM ${lessonCount} BÀI HỌC KHÁC NHAU. BẠN PHẢI BIÊN SOẠN CÂU HỎI VÀ THẺ NHỚ PHÂN BỔ ĐỒNG ĐỀU CHO TẤT CẢ ${lessonCount} BÀI HỌC (mỗi bài học tối thiểu 2-3 câu). TUYỆT ĐỐI KHÔNG ĐƯỢC BỎ SÓT BÀI NÀO!"`
+- Nâng `optimalMaxTokens = 6000` cho chế độ `self_test`.
 
-### 3.2. File `index.html` (Markup & Logic)
-- **Hiệu ứng Hoàn thành (Ảnh 1):**
-  - Nâng cấp cấu trúc `#quizSummaryView` và `#fcSessionSummaryView`:
-    + Thêm wrapper `#quizSummaryIconBox` và `#fcSummaryIconBox` với pulse ring.
-    + Thêm các animation classes khi hiển thị.
-  - Cập nhật hàm `showQuizSummary()` & `showFlashcardSummary()`:
-    + Kích hoạt animation khi chuyển sang summary view bằng reflow reset.
-    + Tự động kích hoạt `shootMicroConfetti(iconBox)` sau 160ms.
-- **Chặn Autofill Tài khoản & Mật khẩu (Ảnh 2 & 3):**
-  - Thêm thẻ mồi nhử ẩn (Decoy inputs) ngay sau header của `#selfTestConfigModal`.
-  - Cập nhật `#searchLessonForTestInput`:
-    + Chuyển sang `type="search"`.
-    + Bổ sung `name="search_lesson_query_no_autofill"`, `autocomplete="off"`, `autocorrect="off"`, `autocapitalize="off"`, `spellcheck="false"`, `data-lpignore="true"`, `data-1p-ignore="true"`, `data-form-type="other"`.
-  - Cập nhật `#customGeminiApiKeyInput`:
-    + Bổ sung `name="google_gemini_api_key_field"`, `autocomplete="new-password"`, `data-lpignore="true"`, `data-1p-ignore="true"`, `data-form-type="other"`.
-    + Thêm nút Toggle Con mắt `#btnToggleCustomApiKeyVisibility` (Show/Hide API Key) với icon SVG độc bản chuẩn Trụ cột 2.
-  - Cập nhật hàm `openSelfTestConfigModal()`:
-    + Reset `searchLessonForTestInput.value = ''`.
-    + Đọc `savedCustomApiKey = localStorage.getItem('thuvienhtml_custom_gemini_api_key') || ''`.
-    + Hàm `purgeAutofillArtifacts` dọn sạch sau 50ms & 180ms để loại trừ hành vi autofill ép buộc từ trình duyệt.
+### 3.2. File `index.html`
+- **Giao diện Modal cấu hình (`selfTestConfigModal`):**
+  - Cập nhật nút số lượng "Tự động (AI đề xuất)":
+    - Thêm nhãn phụ số lượng dự kiến: `<span id="selfTestAutoCountBadge" class="text-[10px] opacity-80 font-mono">(~... câu)</span>`.
+  - Thêm dòng thông tin hỗ trợ trực quan ngay dưới hàng chọn số lượng:
+    - `<div id="selfTestCountHint" class="text-[11px] text-indigo-700 dark:text-indigo-300 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 rounded-xl px-3 py-1.5 flex items-center gap-1.5 transition-all">...</div>`
+- **Hàm tính toán & cập nhật hiển thị (`updateSelfTestExpectedCountUI`):**
+  - Được gọi bất cứ khi nào:
+    + Người dùng chọn thêm/bỏ bớt bài học (`selfTestSelectedLessonIds`).
+    + Người dùng nhấn "Chỉ bài này", "Chọn tất cả", "Bỏ chọn".
+    + Người dùng đổi dạng bài ("Trắc nghiệm + Thẻ nhớ", "Chỉ Trắc nghiệm", "Chỉ Flashcards").
+    + Người dùng đổi số lượng (Tự động vs 5 vs 10 vs 15).
+  - Tự động hiển thị chi tiết số lượng dự kiến (VD: *"💡 AI đề xuất: ~30 câu (gồm 15 trắc nghiệm + 15 thẻ nhớ, phân bổ đều cho 6 bài học đã chọn)"*).
+- **Hàm gọi tạo đề AI (`generateSelfTestAiDeck`):**
+  - Truyền `lessonCount: selectedLessons.length` và `expectedCount` tương ứng lên API máy chủ.
+  - Khi người dùng có Custom Gemini API Key, prompt trực tiếp cũng được áp dụng công thức số lượng tương tự với `maxOutputTokens = 6000`.
 
 ---
 
 ## 4. Acceptance Criteria (Tiêu chuẩn Nghiệm thu QA)
-- [x] 1. Màn hình hoàn thành bài kiểm tra (`#quizSummaryView`) có transition mượt mà, icon checkmark nảy nhẹ (spring pop-in), các dòng chữ trượt lên nhẹ nhàng so le, không bị giật lag hay snap đột ngột.
-- [x] 2. Màn hình hoàn thành bài kiểm tra có hiệu ứng pháo giấy hạt ngọc tinh tế (Micro-confetti) bắn nhẹ nhàng và tự dọn sạch sau 2 giây.
-- [x] 3. Nút bấm trong màn hình hoàn thành có hiệu ứng hover nâng nhẹ (Subtle Hover Lift) chuẩn Trụ cột 4.
-- [x] 4. Màn hình tổng kết Flashcard (`#fcSessionSummaryView`) cũng được đồng bộ hiệu ứng chuyển cảnh mượt mà.
-- [x] 5. Ô "Tìm nhanh bài học theo tên..." trong modal Tạo bài kiểm tra AI KHÔNG CÒN bị trình duyệt tự động điền tên tài khoản / email.
-- [x] 6. Ô "Tùy chọn: Nhập Google Gemini API Key cá nhân" KHÔNG CÒN bị trình duyệt tự động điền mật khẩu đăng nhập.
-- [x] 7. Ô API Key có nút bấm xem/ẩn (Eye icon) trực quan, chuyển đổi mượt mà giữa dạng ẩn chấm tròn và ký tự thực.
-- [x] 8. Toàn bộ mã nguồn vượt qua kiểm tra cú pháp Node.js & HTML (`check_syntax.py`), không có lỗi Console hay biến rác.
-- [x] 9. Đã đồng bộ số phiên bản `v5.8.58` trong changelog và các tệp liên quan.
+- [ ] 1. Khi chọn 6 bài học ở chế độ AI tự động, số lượng câu hỏi/thẻ nhớ dự kiến tăng tương ứng (khoảng 24 - 30 câu/thẻ), không còn bị kẹt ở mức 6 câu ít ỏi.
+- [ ] 2. Mỗi bài học trong số các bài đã chọn đều có nội dung câu hỏi/thẻ nhớ tương ứng, không bị AI bỏ sót.
+- [ ] 3. Trên modal tạo bài kiểm tra, nút "Tự động (AI đề xuất)" hiển thị số lượng dự kiến tức thì và phản hồi ngay lập tức khi người dùng click chọn thêm/bớt bài học hoặc đổi dạng bài.
+- [ ] 4. Dòng ghi chú dự kiến bên dưới giải thích rõ ràng cơ cấu phân bổ (số lượng câu trắc nghiệm, số lượng thẻ flashcard, số bài học).
+- [ ] 5. Token trần được nâng lên 6000 tokens, đảm bảo không bao giờ bị cắt cụt JSON khi tạo nhiều câu.
+- [ ] 6. Cả 2 luồng gọi AI (Máy chủ `/api/ai/explain` và Trực tiếp bằng Gemini API Key cá nhân) đều được đồng bộ logic số lượng theo số bài học.
+- [ ] 7. Toàn bộ mã nguồn vượt qua kiểm tra cú pháp Node.js & HTML (`check_syntax.py`).
+- [ ] 8. Đồng bộ số phiên bản `v5.8.59` trên toàn bộ hệ thống.
 
 ---
 
 ## 5. Bug Report (Dành cho QA vòng lặp kiểm thử)
-- Không có lỗi nào được ghi nhận. Hệ thống đạt 100% tiêu chí nghiệm thu.
+*(Chưa có lỗi ghi nhận)*

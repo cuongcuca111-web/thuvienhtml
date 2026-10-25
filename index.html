@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.58"></script>
+  <script src="./changelog.js?v=5.8.59"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.58',
+        version: 'v5.8.59',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.58';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.59';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.58">
-  <script src="./bridge.js?v=5.8.58"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.59">
+  <script src="./bridge.js?v=5.8.59"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.58 • build 25/10/2026 11:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.59 • build 25/10/2026 12:00</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3224,7 +3224,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.58</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.59</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3246,7 +3246,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.58 • build 25/10/2026 11:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.59 • build 25/10/2026 12:00</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -4097,16 +4097,24 @@
           </div>
 
           <!-- Số lượng câu hỏi -->
-          <div class="flex flex-wrap items-center gap-2 pt-1">
-            <span class="text-xs font-medium text-[#57534E] dark:text-[#9AA3B2]">Số lượng:</span>
-            <div class="inline-flex flex-wrap items-center bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl p-1 text-xs gap-1 font-medium">
-              <button type="button" data-count="auto" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5" title="AI tự ước lượng số lượng câu hỏi phù hợp nhất theo độ dài tài liệu">
-                <svg class="w-3.5 h-3.5 shrink-0 self-test-auto-icon" aria-hidden="true"><use href="#icon-ai-auto"></use></svg>
-                <span>Tự động (AI đề xuất)</span>
-              </button>
-              <button type="button" data-count="5" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer">5 câu (Nhanh)</button>
-              <button type="button" data-count="10" class="self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer">10 câu (Chuẩn)</button>
-              <button type="button" data-count="15" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer">15 câu (Chuyên sâu)</button>
+          <div class="flex flex-col gap-2 pt-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-medium text-[#57534E] dark:text-[#9AA3B2]">Số lượng:</span>
+              <div class="inline-flex flex-wrap items-center bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl p-1 text-xs gap-1 font-medium">
+                <button type="button" id="btnSelfTestCountAuto" data-count="auto" class="self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5" title="AI tự ước lượng số lượng câu hỏi phù hợp nhất theo số lượng bài học">
+                  <svg class="w-3.5 h-3.5 shrink-0 self-test-auto-icon" aria-hidden="true"><use href="#icon-ai-auto"></use></svg>
+                  <span>Tự động (AI đề xuất)</span>
+                  <span id="selfTestAutoCountBadge" class="text-[10.5px] font-mono opacity-90 font-medium ml-0.5">(~10 câu)</span>
+                </button>
+                <button type="button" data-count="5" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5">5 câu (Nhanh)</button>
+                <button type="button" data-count="10" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5">10 câu (Chuẩn)</button>
+                <button type="button" data-count="15" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5">15 câu (Chuyên sâu)</button>
+              </div>
+            </div>
+            <!-- Chú thích số lượng dự kiến trực quan realtime -->
+            <div id="selfTestCountHintBox" class="text-[11px] text-indigo-700 dark:text-indigo-300 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 px-3 py-2 rounded-xl flex items-start gap-2 transition-all">
+              <svg class="w-3.5 h-3.5 shrink-0 mt-0.5 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-ai-lightbulb"></use></svg>
+              <div id="selfTestCountHintText" class="leading-relaxed">💡 <strong>AI đề xuất dự kiến:</strong> ~10 câu (gồm 5 trắc nghiệm + 5 flashcards, phân bổ đều theo 1 bài học đã chọn).</div>
             </div>
           </div>
         </div>
@@ -6681,8 +6689,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.58</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.58</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.59</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.59</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -38949,8 +38957,56 @@
     const tokenOptDetailsBox = document.getElementById('tokenOptDetailsBox');
 
     let selfTestSelectedLessonIds = new Set();
-    let selfTestTargetCount = 10;
+    let selfTestTargetCount = 'auto';
     let selfTestActiveType = 'mixed';
+
+    function calculateSelfTestExpectedCounts(lessonCount, testType = 'mixed') {
+      const n = Math.max(1, parseInt(lessonCount, 10) || 1);
+      if (testType === 'flashcard') {
+        const fc = Math.min(35, Math.max(8, Math.round(n * 4.2)));
+        return { total: fc, quizzes: 0, flashcards: fc, perLesson: Math.max(1, Math.round(fc / n)) };
+      }
+      if (testType === 'quiz') {
+        const qz = Math.min(35, Math.max(8, Math.round(n * 4.2)));
+        return { total: qz, quizzes: qz, flashcards: 0, perLesson: Math.max(1, Math.round(qz / n)) };
+      }
+      // mixed
+      const qz = Math.min(20, Math.max(5, Math.round(n * 2.5)));
+      const fc = Math.min(20, Math.max(5, Math.round(n * 2.5)));
+      const total = qz + fc;
+      return { total, quizzes: qz, flashcards: fc, perLesson: Math.max(1, Math.round(total / n)) };
+    }
+
+    function updateSelfTestExpectedCountUI() {
+      const lessonCount = Math.max(1, selfTestSelectedLessonIds.size);
+      const checkedTypeRadio = document.querySelector('input[name="selfTestType"]:checked');
+      const testType = (checkedTypeRadio && checkedTypeRadio.value) || selfTestActiveType || 'mixed';
+      const expected = calculateSelfTestExpectedCounts(lessonCount, testType);
+
+      // Cập nhật badge trên nút "Tự động"
+      const autoBadge = document.getElementById('selfTestAutoCountBadge');
+      if (autoBadge) {
+        autoBadge.innerText = `(~${expected.total} câu)`;
+      }
+
+      // Cập nhật hộp chú thích trực quan dưới hàng chọn số lượng
+      const hintBox = document.getElementById('selfTestCountHintBox');
+      const hintText = document.getElementById('selfTestCountHintText');
+      if (hintBox && hintText) {
+        if (selfTestTargetCount === 'auto') {
+          if (testType === 'flashcard') {
+            hintText.innerHTML = `💡 <strong>AI đề xuất dự kiến:</strong> ~${expected.total} thẻ flashcard (phân bổ đều cho ${lessonCount} bài học đã chọn, trung bình ~${expected.perLesson} thẻ/bài).`;
+          } else if (testType === 'quiz') {
+            hintText.innerHTML = `💡 <strong>AI đề xuất dự kiến:</strong> ~${expected.total} câu trắc nghiệm (phân bổ đều cho ${lessonCount} bài học đã chọn, trung bình ~${expected.perLesson} câu/bài).`;
+          } else {
+            hintText.innerHTML = `💡 <strong>AI đề xuất dự kiến:</strong> ~${expected.total} câu (gồm ${expected.quizzes} trắc nghiệm + ${expected.flashcards} flashcards, phân bổ đều cho ${lessonCount} bài học đã chọn, trung bình ~${expected.perLesson} câu/bài).`;
+          }
+        } else {
+          const fixedNum = parseInt(selfTestTargetCount, 10) || 10;
+          hintText.innerHTML = `💡 <strong>Số lượng cố định:</strong> ${fixedNum} câu/thẻ (phân bổ cho ${lessonCount} bài học đã chọn, trung bình ~${Math.max(1, Math.round(fixedNum / lessonCount))} câu/bài).`;
+        }
+      }
+    }
 
     if (btnToggleTokenOptDetails && tokenOptDetailsBox) {
       btnToggleTokenOptDetails.onclick = () => {
@@ -38962,11 +39018,12 @@
     document.querySelectorAll('.self-test-count-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('.self-test-count-btn').forEach(b => {
-          b.className = "self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1";
+          b.className = "self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5";
         });
-        btn.className = "self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1";
+        btn.className = "self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5";
         const val = btn.getAttribute('data-count');
         selfTestTargetCount = val === 'auto' ? 'auto' : (parseInt(val, 10) || 10);
+        updateSelfTestExpectedCountUI();
       };
     });
 
@@ -38985,6 +39042,7 @@
             if (dot) dot.className = "w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600";
           }
         });
+        updateSelfTestExpectedCountUI();
       };
     });
 
@@ -39038,6 +39096,7 @@
       if (selfTestSelectedCountBadge) {
         selfTestSelectedCountBadge.innerText = `Đã chọn ${selfTestSelectedLessonIds.size} bài`;
       }
+      updateSelfTestExpectedCountUI();
     }
 
     function openSelfTestConfigModal() {
@@ -39072,7 +39131,16 @@
       if (selfTestLoadingState) selfTestLoadingState.classList.add('hidden');
       if (btnStartGenerateSelfTest) btnStartGenerateSelfTest.disabled = false;
 
+      selfTestTargetCount = 'auto';
+      document.querySelectorAll('.self-test-count-btn').forEach(b => {
+        if (b.getAttribute('data-count') === 'auto') {
+          b.className = "self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5";
+        } else {
+          b.className = "self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5";
+        }
+      });
       renderSelfTestLessonPicker('');
+      updateSelfTestExpectedCountUI();
       showModalAnimated(selfTestModal);
 
       // Phòng thủ tự động dọn sạch autofill rác từ trình duyệt
@@ -39252,9 +39320,26 @@
           const directEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(customKey)}`;
           let directSystem = '';
           let directPrompt = '';
-          const countInstruction = config.count === 'auto'
-            ? 'hãy tự ước lượng và đề xuất số lượng tối ưu nhất (từ 5 đến 15 câu/thẻ) dựa theo độ dài và mật độ kiến thức của tài liệu'
-            : `gồm ${config.count || 10} câu/thẻ`;
+          const lessonN = selectedLessons.length || 1;
+          const isAuto = config.count === 'auto';
+          const expected = calculateSelfTestExpectedCounts(lessonN, config.testType || 'mixed');
+          const coverageDirect = lessonN > 1
+            ? `Tài liệu gồm ${lessonN} bài học khác nhau, BẮT BUỘC biên soạn câu hỏi/thẻ nhớ phân bổ đồng đều cho TẤT CẢ các bài học (mỗi bài tối thiểu 2-3 câu), không được bỏ sót bài học nào!`
+            : `Khai thác toàn diện các khái niệm, định nghĩa và nội dung trọng tâm của bài học.`;
+
+          let countInstruction = '';
+          if (isAuto) {
+            if (config.testType === 'flashcard') {
+              countInstruction = `gồm đúng ${expected.flashcards} thẻ flashcard (~${Math.max(1, Math.round(expected.flashcards / lessonN))} thẻ/bài). ${coverageDirect}`;
+            } else if (config.testType === 'quiz') {
+              countInstruction = `gồm đúng ${expected.quizzes} câu trắc nghiệm (~${Math.max(1, Math.round(expected.quizzes / lessonN))} câu/bài). ${coverageDirect}`;
+            } else {
+              countInstruction = `gồm đúng ${expected.quizzes} câu trắc nghiệm và ${expected.flashcards} thẻ flashcard (Tổng ${expected.total} mục). ${coverageDirect}`;
+            }
+          } else {
+            const fixedTotal = parseInt(config.count, 10) || 10;
+            countInstruction = `gồm khoảng ${fixedTotal} câu/thẻ. ${coverageDirect}`;
+          }
 
           if (config.testType === 'flashcard') {
             directSystem = `Bạn là chuyên gia sư phạm của Thư viện Sách HTML. Hãy CHỈ biên soạn bộ Thẻ nhớ Flashcard gồm title (bắt đầu bằng "Thẻ nhớ:"), summary và flashcards (mỗi thẻ gồm "q" câu hỏi/thuật ngữ mặt trước và "a" đáp án mặt sau). TUYỆT ĐỐI không tạo câu hỏi trắc nghiệm. Bắt buộc trả về đúng định dạng JSON.`;
@@ -39276,7 +39361,7 @@
               generationConfig: {
                 responseMimeType: "application/json",
                 temperature: 0.2,
-                maxOutputTokens: 2500
+                maxOutputTokens: 6000
               }
             })
           });
@@ -39304,7 +39389,8 @@
               mode: 'self_test',
               text: fullDistilledText,
               testType: config.testType || 'mixed',
-              count: config.count || 10,
+              count: config.count || 'auto',
+              lessonCount: selectedLessons.length,
               lessonTitles: selectedLessons.map(l => l.title)
             })
           });

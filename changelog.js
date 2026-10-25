@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.59',
+    date: '2026-10-25T12:00:00+07:00',
+    title: 'Phân Bổ Câu Hỏi AI Tự Động Thông Minh Theo Số Lượng Bài Học & Hiển Thị Số Lượng Dự Kiến Real-time',
+    items: [
+      { type: 'improved', text: 'Tự động tính toán và phân bổ câu hỏi thông minh theo số lượng bài học: Khắc phục triệt để lỗi chọn 6 bài chỉ sinh ra 6 câu. Thiết lập công thức toán học thích ứng theo N bài học đã chọn: chế độ kết hợp sinh ~5 câu/bài (ví dụ: 6 bài sinh đúng 30 câu gồm 15 trắc nghiệm + 15 thẻ flashcard), chế độ đơn lẻ sinh ~4.2 câu/bài (6 bài sinh ~25 câu), kèm chỉ thị bắt buộc phân bổ đồng đều cho mọi bài học.' },
+      { type: 'improved', text: 'Hiển thị số lượng câu dự kiến theo thời gian thực (Real-time Dynamic Expected Count): Bổ sung badge số lượng linh hoạt ngay trên nút "Tự động (AI đề xuất): (~X câu)" cùng hộp thông tin trực quan chi tiết bên dưới, tự động cập nhật ngay tức thì khi thêm/bớt bài học hoặc đổi dạng đề thi.' },
+      { type: 'improved', text: 'Nâng trần Token an toàn lên 6000 Tokens: Đảm bảo trọn bộ 30 - 40 câu trắc nghiệm và thẻ nhớ luôn được sinh đầy đủ, toàn vẹn 100% không bao giờ bị cắt cụt JSON.' }
+    ]
+  },
+  {
     version: 'v5.8.58',
     date: '2026-10-25T11:45:00+07:00',
     title: 'Hiệu Ứng Chuyển Cảnh & Animation Hoàn Thành Bài Kiểm Tra Đẳng Cấp & Chặn Autofill Form Rác',

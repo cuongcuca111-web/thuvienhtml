@@ -483,18 +483,34 @@ D. [Phương án D]
           `<selected_text>\n${rawText}\n</selected_text>`
         ].filter(Boolean).join('\n\n');
       } else if (mode === 'self_test') {
-        optimalMaxTokens = 2500;
+        optimalMaxTokens = 6000;
         const isAutoCount = body.count === 'auto';
-        const targetCountNum = Math.min(20, Math.max(3, parseInt(body.count, 10) || 10));
+        const lessonCount = Math.max(1, parseInt(body.lessonCount, 10) || (Array.isArray(body.lessonTitles) ? body.lessonTitles.length : 1));
+        const targetCountNum = Math.min(40, Math.max(5, parseInt(body.count, 10) || 10));
+
+        let autoQuizzesCount = 0;
+        let autoFlashcardsCount = 0;
+        let autoSingleCount = 0;
+
+        if (isAutoCount) {
+          autoQuizzesCount = Math.min(20, Math.max(5, Math.round(lessonCount * 2.5)));
+          autoFlashcardsCount = Math.min(20, Math.max(5, Math.round(lessonCount * 2.5)));
+          autoSingleCount = Math.min(35, Math.max(8, Math.round(lessonCount * 4.2)));
+        }
+
+        const coverageInstruction = lessonCount > 1
+          ? `[QUY TẮC PHÂN BỔ BẮT BUỘC]: Tài liệu gồm ${lessonCount} BÀI HỌC KHÁC NHAU. Bạn PHẢI biên soạn câu hỏi và thẻ nhớ phân bổ đồng đều cho TẤT CẢ ${lessonCount} bài học (mỗi bài tối thiểu 2-3 câu). Tuyệt đối không được bỏ sót bất kỳ bài học nào!`
+          : `[QUY TẮC]: Khai thác toàn diện các khái niệm, định nghĩa và nội dung trọng tâm của bài học.`;
 
         if (testType === 'flashcard') {
           const fcCountDesc = isAutoCount
-            ? 'TỰ ĐỘNG ƯỚC LƯỢNG (từ 5 đến 15 thẻ flashcard tùy thuộc vào độ dài và mật độ kiến thức của tài liệu)'
+            ? `TỰ ĐỘNG THEO ${lessonCount} BÀI HỌC: ĐÚNG ${autoSingleCount} thẻ flashcard (trung bình ~${Math.max(1, Math.round(autoSingleCount / lessonCount))} thẻ/bài học, phân bổ đều cho tất cả các bài)`
             : `${targetCountNum} thẻ flashcard`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và biên soạn tài liệu học tập của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ THẺ NHỚ FLASHCARD ôn tập chuyên sâu với số lượng: ${fcCountDesc}.
 TUYỆT ĐỐI KHÔNG TẠO CÂU HỎI TRẮC NGHIỆM (quizzes).
+${coverageInstruction}
 YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ THẺ (title): Bắt đầu bằng "Thẻ nhớ: [Tên bài học hoặc chủ đề]" (Ví dụ: "Thẻ nhớ: Chiến lược và Quá trình Logistics").
 2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm các khái niệm cốt lõi trong bộ thẻ nhớ.
@@ -507,6 +523,7 @@ Bắt buộc trả về đúng định dạng JSON Schema chỉ gồm title, sum
           userPrompt = [
             `<task>
 Hãy đọc kỹ tài liệu bài học sau đây và CHỈ BIÊN SOẠN BỘ THẺ NHỚ FLASHCARD (${fcCountDesc}). Tuyệt đối không tạo câu hỏi trắc nghiệm.
+${coverageInstruction}
 </task>`,
             `<lesson_content>
 ${rawText}
@@ -515,12 +532,13 @@ ${rawText}
 
         } else if (testType === 'quiz') {
           const quizCountDesc = isAutoCount
-            ? 'TỰ ĐỘNG ƯỚC LƯỢNG (từ 5 đến 15 câu trắc nghiệm tùy thuộc vào độ dài và mật độ kiến thức của tài liệu)'
+            ? `TỰ ĐỘNG THEO ${lessonCount} BÀI HỌC: ĐÚNG ${autoSingleCount} câu trắc nghiệm (trung bình ~${Math.max(1, Math.round(autoSingleCount / lessonCount))} câu/bài học, phân bổ đều cho tất cả các bài)`
             : `${targetCountNum} câu trắc nghiệm`;
 
           systemPrompt = `Bạn là chuyên gia khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ ĐỀ TRẮC NGHIỆM 4 ĐÁP ÁN với số lượng: ${quizCountDesc}.
 TUYỆT ĐỐI KHÔNG TẠO THẺ FLASHCARD (flashcards).
+${coverageInstruction}
 YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ ĐỀ (title): Bắt đầu bằng "Trắc nghiệm: [Tên bài học hoặc chủ đề]" (Ví dụ: "Trắc nghiệm: Chiến lược và Quá trình Logistics").
 2. TÓM TẮT (summary): 1-2 câu tóm tắt phạm vi và kiến thức trọng tâm của bài kiểm tra.
@@ -535,6 +553,7 @@ Bắt buộc trả về đúng định dạng JSON Schema chỉ gồm title, sum
           userPrompt = [
             `<task>
 Hãy đọc kỹ tài liệu bài học sau đây và CHỈ BIÊN SOẠN BỘ CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (${quizCountDesc}). Tuyệt đối không tạo thẻ flashcard.
+${coverageInstruction}
 </task>`,
             `<lesson_content>
 ${rawText}
@@ -543,11 +562,13 @@ ${rawText}
 
         } else {
           const mixedCountDesc = isAutoCount
-            ? 'TỰ ĐỘNG ƯỚC LƯỢNG (khoảng 3 đến 8 câu trắc nghiệm VÀ 3 đến 8 thẻ flashcard tùy theo bài học)'
+            ? `TỰ ĐỘNG THEO ${lessonCount} BÀI HỌC: ĐÚNG ${autoQuizzesCount} câu trắc nghiệm VÀ ${autoFlashcardsCount} thẻ flashcard (Tổng cộng ${autoQuizzesCount + autoFlashcardsCount} mục, phân bổ đều cho cả ${lessonCount} bài học)`
             : `${targetCountNum} phần (gồm ${Math.ceil(targetCountNum / 2)} câu trắc nghiệm và ${Math.floor(targetCountNum / 2)} thẻ flashcard)`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
-Nhiệm vụ của bạn là dựa vào tài liệu bài học để biên soạn trọn bộ TỰ KIỂM TRA & THẺ NHỚ kết hợp với số lượng: ${mixedCountDesc}, bao gồm:
+Nhiệm vụ của bạn là dựa vào tài liệu bài học để biên soạn trọn bộ TỰ KIỂM TRA & THẺ NHỚ kết hợp với số lượng: ${mixedCountDesc}.
+${coverageInstruction}
+YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ ĐỀ (title): Đặt tên dạng "Kiểm tra & Flashcard: [Tên bài học]" (Ví dụ: "Kiểm tra & Flashcard: Cấu trúc Dữ liệu Cây").
 2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm kiểm tra và ôn tập.
 3. CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (quizzes):
@@ -562,7 +583,8 @@ Bắt buộc trả về đúng định dạng JSON Schema.`;
 
           userPrompt = [
             `<task>
-Hãy đọc kỹ tài liệu bài học sau đây và biên soạn bộ đề Tự kiểm tra & Thẻ nhớ kết hợp theo định dạng JSON.
+Hãy đọc kỹ tài liệu bài học sau đây và biên soạn bộ đề Tự kiểm tra & Thẻ nhớ kết hợp theo định dạng JSON với số lượng: ${mixedCountDesc}.
+${coverageInstruction}
 </task>`,
             `<lesson_content>
 ${rawText}
