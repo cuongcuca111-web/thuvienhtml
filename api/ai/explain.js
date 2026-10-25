@@ -486,6 +486,8 @@ D. [Phương án D]
         optimalMaxTokens = 6000;
         const isAutoCount = body.count === 'auto';
         const lessonCount = Math.max(1, parseInt(body.lessonCount, 10) || (Array.isArray(body.lessonTitles) ? body.lessonTitles.length : 1));
+        const rawWordsFromText = rawText ? rawText.trim().split(/\s+/).filter(Boolean).length : 500;
+        const totalWords = Math.max(50, parseInt(body.wordCount, 10) || rawWordsFromText);
         const targetCountNum = Math.min(40, Math.max(5, parseInt(body.count, 10) || 10));
 
         let autoQuizzesCount = 0;
@@ -493,18 +495,31 @@ D. [Phương án D]
         let autoSingleCount = 0;
 
         if (isAutoCount) {
-          autoQuizzesCount = Math.min(20, Math.max(5, Math.round(lessonCount * 2.5)));
-          autoFlashcardsCount = Math.min(20, Math.max(5, Math.round(lessonCount * 2.5)));
-          autoSingleCount = Math.min(35, Math.max(8, Math.round(lessonCount * 4.2)));
+          if (testType === 'flashcard') {
+            const minFC = Math.max(5, lessonCount * 2);
+            const wordsFC = Math.round(3 + totalWords / 95);
+            autoSingleCount = Math.min(35, Math.max(minFC, wordsFC));
+          } else if (testType === 'quiz') {
+            const minQuiz = Math.max(5, lessonCount * 2);
+            const wordsQuiz = Math.round(3 + totalWords / 115);
+            autoSingleCount = Math.min(35, Math.max(minQuiz, wordsQuiz));
+          } else {
+            // mixed
+            const minTotal = Math.max(6, lessonCount * 3);
+            const wordsTotal = Math.round(4 + totalWords / 130);
+            const totalMixed = Math.min(40, Math.max(minTotal, wordsTotal));
+            autoQuizzesCount = Math.round(totalMixed / 2);
+            autoFlashcardsCount = totalMixed - autoQuizzesCount;
+          }
         }
 
         const coverageInstruction = lessonCount > 1
-          ? `[QUY TẮC PHÂN BỔ BẮT BUỘC]: Tài liệu gồm ${lessonCount} BÀI HỌC KHÁC NHAU. Bạn PHẢI biên soạn câu hỏi và thẻ nhớ phân bổ đồng đều cho TẤT CẢ ${lessonCount} bài học (mỗi bài tối thiểu 2-3 câu). Tuyệt đối không được bỏ sót bất kỳ bài học nào!`
-          : `[QUY TẮC]: Khai thác toàn diện các khái niệm, định nghĩa và nội dung trọng tâm của bài học.`;
+          ? `[QUY TẮC PHÂN BỔ BẮT BUỘC]: Tài liệu gồm ${lessonCount} BÀI HỌC KHÁC NHAU (tổng khoảng ${totalWords} từ). Bạn PHẢI biên soạn câu hỏi và thẻ nhớ phân bổ đồng đều cho TẤT CẢ ${lessonCount} bài học (mỗi bài tối thiểu 2-3 câu). Tuyệt đối không được bỏ sót bất kỳ bài học nào!`
+          : `[QUY TẮC]: Khai thác toàn diện các khái niệm, định nghĩa và nội dung trọng tâm của bài học (khoảng ${totalWords} từ).`;
 
         if (testType === 'flashcard') {
           const fcCountDesc = isAutoCount
-            ? `TỰ ĐỘNG THEO ${lessonCount} BÀI HỌC: ĐÚNG ${autoSingleCount} thẻ flashcard (trung bình ~${Math.max(1, Math.round(autoSingleCount / lessonCount))} thẻ/bài học, phân bổ đều cho tất cả các bài)`
+            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): ĐÚNG ${autoSingleCount} thẻ flashcard (phân bổ đều cho tất cả các bài)`
             : `${targetCountNum} thẻ flashcard`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và biên soạn tài liệu học tập của ứng dụng "Thư viện Sách HTML".
@@ -532,7 +547,7 @@ ${rawText}
 
         } else if (testType === 'quiz') {
           const quizCountDesc = isAutoCount
-            ? `TỰ ĐỘNG THEO ${lessonCount} BÀI HỌC: ĐÚNG ${autoSingleCount} câu trắc nghiệm (trung bình ~${Math.max(1, Math.round(autoSingleCount / lessonCount))} câu/bài học, phân bổ đều cho tất cả các bài)`
+            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): ĐÚNG ${autoSingleCount} câu trắc nghiệm (phân bổ đều cho tất cả các bài)`
             : `${targetCountNum} câu trắc nghiệm`;
 
           systemPrompt = `Bạn là chuyên gia khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
@@ -562,7 +577,7 @@ ${rawText}
 
         } else {
           const mixedCountDesc = isAutoCount
-            ? `TỰ ĐỘNG THEO ${lessonCount} BÀI HỌC: ĐÚNG ${autoQuizzesCount} câu trắc nghiệm VÀ ${autoFlashcardsCount} thẻ flashcard (Tổng cộng ${autoQuizzesCount + autoFlashcardsCount} mục, phân bổ đều cho cả ${lessonCount} bài học)`
+            ? `TỰ ĐỘNG THEO DUNG LƯỢNG TÀI LIỆU (${totalWords} từ, ${lessonCount} bài học): ĐÚNG ${autoQuizzesCount} câu trắc nghiệm VÀ ${autoFlashcardsCount} thẻ flashcard (Tổng cộng ${autoQuizzesCount + autoFlashcardsCount} mục, phân bổ đều cho cả ${lessonCount} bài học)`
             : `${targetCountNum} phần (gồm ${Math.ceil(targetCountNum / 2)} câu trắc nghiệm và ${Math.floor(targetCountNum / 2)} thẻ flashcard)`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".

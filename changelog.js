@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.60',
+    date: '2026-10-25T12:15:00+07:00',
+    title: 'Phân Bổ Số Lượng Câu Hỏi AI Biến Đổi Linh Hoạt Theo Dung Lượng Chữ (Word Count) Của Tài Liệu',
+    items: [
+      { type: 'improved', text: 'Khắc phục triệt để hiện tượng số lượng câu hỏi bị "cứng" theo số file: Thay vì chỉ dựa trên số lượng file N đơn thuần dẫn đến việc file ngắn hay file dài đều ra 8 câu, hệ thống đã tích hợp thuật toán phân bổ câu hỏi & thẻ nhớ thích ứng động theo mật độ chữ thực tế (Word Count W).' },
+      { type: 'improved', text: 'Tự động co giãn số câu thông minh theo độ dài bài học: File ngắn (dưới 300 từ) tự động đề xuất 4 - 6 câu tinh gọn, tránh lan man hay trùng lặp; file chuẩn (800 - 1.500 từ) đề xuất 8 - 14 câu; file dài chuyên sâu (> 2.500 từ) đề xuất 18 - 35 câu bao quát toàn diện.' },
+      { type: 'improved', text: 'Hiển thị tổng số từ thực tế trên giao diện: Hộp chú thích trực quan cập nhật tức thì (0ms latency): "💡 AI đề xuất dự kiến: ~X thẻ flashcard (~Y từ, phân bổ đều cho Z bài học đã chọn)", phản hồi mượt mà và minh bạch mọi thông số cho người học.' }
+    ]
+  },
+  {
     version: 'v5.8.59',
     date: '2026-10-25T12:00:00+07:00',
     title: 'Phân Bổ Câu Hỏi AI Tự Động Thông Minh Theo Số Lượng Bài Học & Hiển Thị Số Lượng Dự Kiến Real-time',
