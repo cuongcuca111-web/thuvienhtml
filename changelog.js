@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.65',
+    date: '2026-10-25T21:58:00+07:00',
+    title: 'Khắc Phục Lỗi Nút Thu Nhỏ "-" Popup AI & Tự Động Lưu Lịch Sử Câu Trả Lời AI Theo Bài Học',
+    items: [
+      { type: 'fix', text: 'Khắc phục triệt để lỗi nút "-" (Thu nhỏ) trên Popup AI: Bổ sung cờ trạng thái thu nhỏ thủ công isAiPopoverUserMinimized, ngăn chặn hàm định vị cuộn trang ghi đè hoặc tự ý bung to khi đoạn văn bản bôi đen vẫn nằm trong viewport. Cho phép người dùng thu nhỏ êm ái thành Mini Pill Bar ở đáy màn hình để quan sát văn bản xung quanh và nhấp để mở rộng lại bất cứ lúc nào.' },
+      { type: 'new', text: 'Tự động lưu lịch sử câu trả lời AI theo bài học: Mọi câu trả lời giải thích, ví dụ, dịch thuật từ AI đều được tự động lưu trữ bền vững gắn liền với ID bài học hiện tại (chống trùng lặp, lưu trữ đa tầng cả state, localStorage và backup độc lập).' },
+      { type: 'new', text: 'Modal Xem Lịch Sử AI Bài Học: Bổ sung nút mở Lịch sử AI trên thanh công cụ bài đọc (Sticky Reader Header) và ngay trên Header của Popup AI. Cho phép xem lại toàn bộ các câu trả lời trước đó, kèm trích dẫn gốc, thời gian, tìm kiếm/lọc nội dung, sao chép hoặc lưu thành ghi chú bài học chỉ với 1 cú nhấp chuột.' }
+    ]
+  },
+  {
     version: 'v5.8.64',
     date: '2026-10-25T21:50:00+07:00',
     title: 'Nâng Cấp Mobile Bottom Nav Công Thái Học, Cử Chỉ Vuốt (Swipe Gestures) & Thuật Toán Lặp Lại Ngắt Quãng SM-2',

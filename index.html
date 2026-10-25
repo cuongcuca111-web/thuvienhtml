@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.64"></script>
+  <script src="./changelog.js?v=5.8.65"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.64',
+        version: 'v5.8.65',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.64';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.65';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.64">
-  <script src="./bridge.js?v=5.8.64"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.65">
+  <script src="./bridge.js?v=5.8.65"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.64 • build 25/10/2026 21:50</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.65 • build 25/10/2026 21:58</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -2524,6 +2524,15 @@
           </button>
 
           <!-- Nút Tải xuống file hiện tại -->
+          <!-- Nút Lịch sử AI bài học -->
+          <button id="btnStickyLessonAiHistory" type="button" onclick="openLessonAiHistoryModal()" class="reader-ctrl-btn group/btn-ai-hist touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:h-9 px-3 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 hover:border-indigo-300 dark:hover:border-indigo-700/60 text-[#1C1917] dark:text-[#EDECE8] hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 font-medium transition-all duration-200 shadow-2xs active:scale-95 shrink-0 cursor-pointer select-none" title="Xem tất cả câu trả lời AI đã lưu của bài học này" aria-label="Lịch sử giải thích AI bài học">
+            <svg class="w-4 h-4 text-indigo-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/>
+            </svg>
+            <span class="hidden sm:inline font-medium text-xs sm:text-[13px]">Lịch sử AI</span>
+            <span id="stickyAiHistoryCountBadge" class="hidden text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">0</span>
+          </button>
+
           <button id="btnDownloadCurrentLesson" type="button" class="reader-ctrl-btn group/btn-dl touch-target min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] sm:h-9 sm:w-9 rounded-[10px] border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#181B20] hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 hover:border-indigo-300 dark:hover:border-indigo-700/60 text-[#1C1917] dark:text-[#EDECE8] hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-all duration-200 shadow-2xs active:scale-90 shrink-0 cursor-pointer select-none relative overflow-hidden" title="Tải xuống file hiện tại (.html / .md / .txt)" aria-label="Tải xuống file hiện tại">
             <svg class="w-4 h-4 text-stone-500 dark:text-stone-400 group-hover/btn-dl:text-indigo-600 dark:group-hover/btn-dl:text-indigo-400 transition-all duration-200 group-hover/btn-dl:translate-y-0.5 group-hover/btn-dl:scale-110 shrink-0" aria-hidden="true">
               <use href="#icon-download"></use>
@@ -3249,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.64</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.65</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3271,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.64 • build 25/10/2026 21:50</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.65 • build 25/10/2026 21:58</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3615,6 +3624,13 @@
           </span>
         </div>
         <div class="flex items-center gap-0.5 shrink-0">
+          <!-- Nút Mở Lịch Sử AI của bài học này -->
+          <button id="btnAiOpenHistory" type="button" onclick="openLessonAiHistoryModal()" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer relative" title="Xem lịch sử các câu trả lời AI của bài học này" aria-label="Lịch sử AI bài học">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/>
+            </svg>
+            <span id="aiHeaderHistoryBadge" class="hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white dark:ring-[#181B20]"></span>
+          </button>
           <button id="btnMinimizeAiPopover" type="button" class="touch-target w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-stone-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Thu nhỏ" title="Thu nhỏ (để dễ xem văn bản xung quanh)">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
@@ -6759,8 +6775,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.64</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.64</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.65</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.65</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -16792,6 +16808,7 @@
 
         renderCategoriesAndLessons();
         renderActiveLesson();
+        if (typeof updateLessonAiHistoryBadges === 'function') updateLessonAiHistoryBadges();
         setSyncStatus(false);
 
         // BƯỚC 2: Thông báo Toast kèm nút HOÀN TÁC
@@ -35782,6 +35799,7 @@
     }
 
     let currentAiStatus = 'idle'; // 'idle' | 'generating' | 'done' | 'error'
+    let isAiPopoverUserMinimized = false; // Cờ thu nhỏ thủ công của người dùng khi bấm dấu '-'
 
     function updateAiMiniScrollHint(direction = 'top') {
       const hintText = document.getElementById('aiMiniScrollText');
@@ -35815,7 +35833,7 @@
       };
       titleEl.textContent = modeTitles[currentAiActiveMode] || 'Trợ lý AI';
 
-      if (currentAiStatus === 'generating') {
+      if (currentAiStatus === 'generating' || isAiPopoverUserMinimized) {
         iconEl.innerHTML = `
           <div class="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
             <svg class="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -36263,6 +36281,7 @@
     }
 
     function closeAiResultPopover() {
+      isAiPopoverUserMinimized = false;
       if (currentAiAbortController) {
         currentAiAbortController.abort();
         currentAiAbortController = null;
@@ -36354,6 +36373,7 @@
 
     function renderAiSuccessResult(data) {
       currentAiStatus = 'done';
+      if (typeof saveAiResponseToLessonHistory === 'function') { saveAiResponseToLessonHistory(data); }
       if (typeof updateAiMiniStatusUI === 'function') updateAiMiniStatusUI();
       const bodyEl = document.getElementById('aiResultBody');
       const cachedBadge = document.getElementById('aiCachedBadge');
@@ -37001,6 +37021,7 @@
           e.stopPropagation();
           const pop = document.getElementById('aiResultPopover');
           if (pop) {
+            isAiPopoverUserMinimized = true;
             triggerAiMorphing(pop);
             pop.classList.add('is-minimized', 'is-minimized-bottom');
             pop.classList.remove('is-minimized-top');
@@ -37083,6 +37104,7 @@
             return;
           }
           // Khi bấm vào thanh mini: Cuộn mượt đưa đoạn văn bản bôi đen trở lại và mở rộng lại pop-up
+          isAiPopoverUserMinimized = false;
           scrollBackToAiSelection();
           const pop = document.getElementById('aiResultPopover');
           if (pop) {
@@ -46596,6 +46618,446 @@ QUY TẮC:
   window.updateSm2IntervalPreviews = updateSm2IntervalPreviews;
   window.answerFlashcardWithSM2 = answerFlashcardWithSM2;
 
+
+
+  // =========================================================================
+  // // LƯU & XEM LỊCH SỬ CÂU TRẢ LỜI AI THEO TỪNG BÀI HỌC (LESSON AI HISTORY)
+  // =========================================================================
+
+  /**
+   * Lấy danh sách lịch sử câu trả lời AI của một bài học
+   */
+  function getLessonAiHistory(lessonId) {
+    if (!lessonId) return [];
+    if (!state.learningData) state.learningData = {};
+    if (!state.learningData.aiHistory) state.learningData.aiHistory = {};
+
+    let list = state.learningData.aiHistory[lessonId];
+    if (!Array.isArray(list)) {
+      // Thử khôi phục từ backup riêng biệt trong localStorage
+      try {
+        const backupStr = localStorage.getItem('thuvienhtml_ai_history_' + lessonId);
+        if (backupStr) {
+          list = JSON.parse(backupStr);
+          if (Array.isArray(list)) {
+            state.learningData.aiHistory[lessonId] = list;
+          }
+        }
+      } catch (_) {}
+    }
+
+    return Array.isArray(list) ? list : [];
+  }
+
+  /**
+   * Tự động lưu câu trả lời AI vào bài học hiện tại
+   */
+  function saveAiResponseToLessonHistory(data) {
+    if (!data || !data.text || !state.activeLessonId) return;
+
+    const lessonId = state.activeLessonId;
+    const currentList = getLessonAiHistory(lessonId);
+
+    const modeTitles = {
+      explain: 'Giải thích đơn giản',
+      example: 'Ví dụ thực tế',
+      translate: 'Dịch nhanh',
+      flashcard: 'Tạo Flashcard',
+      quiz: 'Tạo Trắc nghiệm'
+    };
+
+    const mode = (typeof currentAiActiveMode !== 'undefined' && currentAiActiveMode) ? currentAiActiveMode : 'explain';
+    const style = (typeof currentAiPromptStyle !== 'undefined' && currentAiPromptStyle) ? currentAiPromptStyle : 'casual';
+    const selectedText = (typeof currentAiSelectedText !== 'undefined' && currentAiSelectedText) ? currentAiSelectedText : '';
+
+    // Chống lưu trùng lặp: nếu câu trả lời mới giống hệt câu trả lời gần nhất trong vòng 2 phút
+    if (currentList.length > 0) {
+      const latest = currentList[0];
+      if (latest.text === data.text && latest.selectedText === selectedText && (Date.now() - (latest.createdAt || 0) < 120000)) {
+        return;
+      }
+    }
+
+    const d = new Date();
+    const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+
+    const curLesson = (state.lessons || []).find(l => l.id === lessonId);
+    const lessonTitle = curLesson ? (curLesson.title || 'Bài học') : 'Bài học';
+
+    const newItem = {
+      id: 'aih_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      selectedText: selectedText,
+      mode: mode,
+      modeTitle: modeTitles[mode] || 'Giải thích AI',
+      style: style,
+      text: data.text,
+      terms: Array.isArray(data.terms) ? data.terms : [],
+      examples: Array.isArray(data.examples) ? data.examples : [],
+      createdAt: Date.now(),
+      timeStr: timeStr
+    };
+
+    currentList.unshift(newItem);
+    state.learningData.aiHistory[lessonId] = currentList;
+
+    // Lưu bền vững vào localStorage
+    try {
+      if (typeof saveLearningData === 'function') saveLearningData();
+      localStorage.setItem('thuvienhtml_ai_history_' + lessonId, JSON.stringify(currentList));
+    } catch (_) {}
+
+    updateLessonAiHistoryBadges();
+  }
+
+  /**
+   * Cập nhật huy hiệu số lượng câu trả lời AI trên giao diện
+   */
+  function updateLessonAiHistoryBadges() {
+    const lessonId = state.activeLessonId;
+    const history = getLessonAiHistory(lessonId);
+    const count = history.length;
+
+    // 1. Badge trên thanh công cụ đọc bài (Sticky Header)
+    const stickyBadge = document.getElementById('stickyAiHistoryCountBadge');
+    if (stickyBadge) {
+      if (count > 0) {
+        stickyBadge.textContent = String(count);
+        stickyBadge.classList.remove('hidden');
+      } else {
+        stickyBadge.classList.add('hidden');
+      }
+    }
+
+    // 2. Chấm đỏ nhỏ trên Header của AI Popover
+    const popoverBadge = document.getElementById('aiHeaderHistoryBadge');
+    if (popoverBadge) {
+      if (count > 0) {
+        popoverBadge.classList.remove('hidden');
+      } else {
+        popoverBadge.classList.add('hidden');
+      }
+    }
+
+    // 3. Badge trong modal lịch sử AI
+    const modalBadge = document.getElementById('lessonAiHistoryCountBadge');
+    if (modalBadge) {
+      modalBadge.textContent = count + ' câu';
+    }
+
+    const btnClearAll = document.getElementById('btnAiHistoryClearAll');
+    if (btnClearAll) {
+      if (count > 0) btnClearAll.classList.remove('hidden');
+      else btnClearAll.classList.add('hidden');
+    }
+  }
+
+  /**
+   * Mở modal xem lịch sử câu trả lời AI của bài học hiện tại
+   */
+  function openLessonAiHistoryModal() {
+    const modal = document.getElementById('lessonAiHistoryModal');
+    if (!modal) return;
+
+    const lessonId = state.activeLessonId;
+    const curLesson = (state.lessons || []).find(l => l.id === lessonId);
+    const titleEl = document.getElementById('lessonAiHistoryLessonTitle');
+    if (titleEl) {
+      titleEl.textContent = curLesson ? curLesson.title : 'Bài học hiện tại';
+    }
+
+    const searchInput = document.getElementById('aiHistorySearchInput');
+    if (searchInput) searchInput.value = '';
+
+    modal.classList.remove('hidden');
+    renderLessonAiHistoryList();
+    updateLessonAiHistoryBadges();
+  }
+
+  /**
+   * Đóng modal xem lịch sử câu trả lời AI
+   */
+  function closeLessonAiHistoryModal() {
+    const modal = document.getElementById('lessonAiHistoryModal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  /**
+   * Render danh sách các câu trả lời AI trong bài học
+   */
+  function renderLessonAiHistoryList(filterQuery = '') {
+    const container = document.getElementById('lessonAiHistoryList');
+    if (!container) return;
+
+    const lessonId = state.activeLessonId;
+    const list = getLessonAiHistory(lessonId);
+    const query = (filterQuery || '').trim().toLowerCase();
+
+    let filtered = list;
+    if (query) {
+      filtered = list.filter(item => {
+        return (item.text || '').toLowerCase().includes(query) ||
+               (item.selectedText || '').toLowerCase().includes(query) ||
+               (item.modeTitle || '').toLowerCase().includes(query);
+      });
+    }
+
+    if (filtered.length === 0) {
+      if (query) {
+        container.innerHTML = `
+          <div class="py-12 px-4 text-center">
+            <svg class="w-10 h-10 mx-auto text-stone-300 dark:text-stone-600 mb-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <p class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8]">Không tìm thấy kết quả</p>
+            <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] mt-1">Không có câu trả lời nào khớp với từ khóa "${escapeHtml(query)}"</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="py-12 px-4 text-center">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/>
+              </svg>
+            </div>
+            <h3 class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8]">Chưa có câu trả lời AI nào trong bài này</h3>
+            <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] mt-1.5 max-w-sm mx-auto leading-relaxed">
+              Khi bạn bôi đen bất kỳ đoạn văn bản nào trong bài và sử dụng tính năng Giải thích AI, câu trả lời sẽ tự động được lưu lại ở đây để bạn dễ dàng xem lại bất cứ lúc nào!
+            </p>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    let html = '';
+    filtered.forEach((item) => {
+      const safeSnippet = escapeHtml(item.selectedText || '');
+      const safeText = escapeHtml(item.text || '').replace(/\n/g, '<br/>');
+
+      let termsHtml = '';
+      if (item.terms && item.terms.length > 0) {
+        termsHtml += '<div class="mt-2 pt-2 border-t border-indigo-100/70 dark:border-indigo-950/70 space-y-1">';
+        termsHtml += '<div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Thuật ngữ:</div>';
+        item.terms.forEach(t => {
+          termsHtml += '<div class="text-[11.5px] text-[#57534E] dark:text-[#9AA3B2]"><strong class="text-indigo-700 dark:text-indigo-300">' + escapeHtml(t.term) + ':</strong> ' + escapeHtml(t.meaning) + '</div>';
+        });
+        termsHtml += '</div>';
+      }
+
+      let examplesHtml = '';
+      if (item.examples && item.examples.length > 0) {
+        examplesHtml += '<div class="mt-2 pt-2 border-t border-amber-100/70 dark:border-amber-950/70 space-y-1">';
+        examplesHtml += '<div class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Ví dụ:</div>';
+        item.examples.forEach(ex => {
+          examplesHtml += '<div class="text-[11.5px] text-[#57534E] dark:text-[#9AA3B2] italic">• ' + escapeHtml(ex) + '</div>';
+        });
+        examplesHtml += '</div>';
+      }
+
+      html += `
+        <div class="bg-[#FAF9F5] dark:bg-[#111317] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl p-3.5 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-700/60 transition group" data-ai-history-id="${escapeHtml(item.id)}">
+          
+          <!-- Card Header: Mode Badge + Time -->
+          <div class="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-[#E7E5DF]/60 dark:border-[#262C36]/60 text-xs">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="px-2 py-0.5 rounded-md font-bold text-[10.5px] bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
+                ${escapeHtml(item.modeTitle || 'Giải thích AI')}
+              </span>
+              <span class="text-[10.5px] text-stone-400 dark:text-stone-500 font-mono">
+                ${escapeHtml(item.timeStr || '')}
+              </span>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="copyAiHistoryItem('${escapeHtml(item.id)}')" class="touch-target px-2 py-1 rounded-lg text-[11px] font-medium text-stone-600 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1 transition cursor-pointer" title="Sao chép nội dung">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span>Sao chép</span>
+              </button>
+              <button type="button" onclick="saveAiHistoryAsNote('${escapeHtml(item.id)}')" class="touch-target px-2 py-1 rounded-lg text-[11px] font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 flex items-center gap-1 transition cursor-pointer" title="Lưu thành ghi chú bài học">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                <span>Ghi chú</span>
+              </button>
+              <button type="button" onclick="deleteAiHistoryItem('${escapeHtml(item.id)}')" class="touch-target p-1 rounded-lg text-stone-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer" title="Xóa câu này">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Snippet -->
+          ${safeSnippet ? `
+            <div class="mb-2.5 px-2.5 py-1.5 rounded-lg bg-black/3 dark:bg-white/3 border-l-2 border-indigo-500 text-xs text-[#57534E] dark:text-[#9AA3B2] italic leading-relaxed">
+              "${safeSnippet}"
+            </div>
+          ` : ''}
+
+          <!-- AI Answer Content -->
+          <div class="text-xs text-[#1C1917] dark:text-[#EDECE8] leading-relaxed select-text space-y-1.5">
+            ${safeText}
+          </div>
+
+          ${termsHtml}
+          ${examplesHtml}
+
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  /**
+   * Sao chép một câu trả lời AI từ lịch sử
+   */
+  function copyAiHistoryItem(itemId) {
+    const list = getLessonAiHistory(state.activeLessonId);
+    const item = list.find(i => i.id === itemId);
+    if (!item) return;
+
+    let content = item.text || '';
+    if (item.selectedText) content = `Đoạn trích: "${item.selectedText}"\n\n` + content;
+    if (item.terms && item.terms.length > 0) {
+      content += '\n\nThuật ngữ:\n' + item.terms.map(t => `- ${t.term}: ${t.meaning}`).join('\n');
+    }
+    if (item.examples && item.examples.length > 0) {
+      content += '\n\nVí dụ:\n' + item.examples.map(ex => `- ${ex}`).join('\n');
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(content).then(() => {
+        showToast('Đã sao chép câu trả lời AI!');
+      }).catch(() => fallbackCopyText(content));
+    } else {
+      fallbackCopyText(content);
+    }
+  }
+
+  /**
+   * Lưu câu trả lời từ lịch sử thành ghi chú bài học
+   */
+  function saveAiHistoryAsNote(itemId) {
+    const list = getLessonAiHistory(state.activeLessonId);
+    const item = list.find(i => i.id === itemId);
+    if (!item) return;
+
+    const noteContent = `[${item.modeTitle || 'AI'}]: ${item.text}`;
+    if (typeof applyFramingToCurrentSelection === 'function') {
+      applyFramingToCurrentSelection('purple', 'AI', noteContent, null);
+      showToast('Đã lưu câu trả lời AI vào ghi chú bài học!');
+    }
+  }
+
+  /**
+   * Xóa một câu trả lời khỏi lịch sử
+   */
+  function deleteAiHistoryItem(itemId) {
+    const lessonId = state.activeLessonId;
+    let list = getLessonAiHistory(lessonId);
+    list = list.filter(i => i.id !== itemId);
+    state.learningData.aiHistory[lessonId] = list;
+
+    try {
+      if (typeof saveLearningData === 'function') saveLearningData();
+      localStorage.setItem('thuvienhtml_ai_history_' + lessonId, JSON.stringify(list));
+    } catch (_) {}
+
+    renderLessonAiHistoryList();
+    updateLessonAiHistoryBadges();
+    showToast('Đã xóa câu trả lời khỏi lịch sử');
+  }
+
+  /**
+   * Xóa toàn bộ lịch sử AI của bài học
+   */
+  function clearLessonAiHistory() {
+    const lessonId = state.activeLessonId;
+    if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử câu trả lời AI của bài học này?')) return;
+
+    state.learningData.aiHistory[lessonId] = [];
+    try {
+      if (typeof saveLearningData === 'function') saveLearningData();
+      localStorage.removeItem('thuvienhtml_ai_history_' + lessonId);
+    } catch (_) {}
+
+    renderLessonAiHistoryList();
+    updateLessonAiHistoryBadges();
+    showToast('Đã dọn sạch lịch sử AI của bài này');
+  }
+
+  // Lắng nghe phím Esc để đóng modal lịch sử AI
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('lessonAiHistoryModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        closeLessonAiHistoryModal();
+      }
+    }
+  });
+
+  // Export toàn cục
+  window.getLessonAiHistory = getLessonAiHistory;
+  window.saveAiResponseToLessonHistory = saveAiResponseToLessonHistory;
+  window.updateLessonAiHistoryBadges = updateLessonAiHistoryBadges;
+  window.openLessonAiHistoryModal = openLessonAiHistoryModal;
+  window.closeLessonAiHistoryModal = closeLessonAiHistoryModal;
+  window.renderLessonAiHistoryList = renderLessonAiHistoryList;
+  window.copyAiHistoryItem = copyAiHistoryItem;
+  window.saveAiHistoryAsNote = saveAiHistoryAsNote;
+  window.deleteAiHistoryItem = deleteAiHistoryItem;
+  window.clearLessonAiHistory = clearLessonAiHistory;
+
 </script>
+  <!-- MODAL XEM LỊCH SỬ CÂU TRẢ LỜI AI THEO BÀI HỌC -->
+  <div id="lessonAiHistoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm select-none" role="dialog" aria-modal="true" aria-labelledby="lessonAiHistoryTitle">
+    <div class="bg-white dark:bg-[#161A20] border border-[#E7E5DF] dark:border-[#262C36] rounded-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header -->
+      <div class="p-4 border-b border-[#E7E5DF] dark:border-[#262C36] flex items-center justify-between gap-3 shrink-0 bg-[#FAF9F5]/80 dark:bg-[#111317]/80">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+          </div>
+          <div class="min-w-0">
+            <h2 id="lessonAiHistoryTitle" class="font-serif font-bold text-sm sm:text-base text-[#1C1917] dark:text-[#EDECE8] truncate flex items-center gap-2">
+              <span>Lịch sử câu trả lời AI</span>
+              <span id="lessonAiHistoryCountBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold">0 câu</span>
+            </h2>
+            <p id="lessonAiHistoryLessonTitle" class="text-xs text-[#57534E] dark:text-[#9AA3B2] truncate mt-0.5"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="btnAiHistoryClearAll" type="button" onclick="clearLessonAiHistory()" class="hidden touch-target text-xs text-rose-600 dark:text-rose-400 hover:underline px-2.5 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer">
+            Xóa tất cả
+          </button>
+          <button type="button" onclick="closeLessonAiHistoryModal()" class="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-stone-500 dark:text-[#9AA3B2] hover:text-[#1C1917] dark:hover:text-[#EDECE8] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer" aria-label="Đóng" title="Đóng (Esc)">
+            <svg class="w-5 h-5" aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search / Filter input -->
+      <div id="aiHistoryFilterBar" class="px-4 py-2 border-b border-[#E7E5DF] dark:border-[#262C36] bg-[#FAF9F5]/40 dark:bg-[#14161C]/40 flex items-center gap-2 shrink-0">
+        <svg class="w-3.5 h-3.5 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input 
+          id="aiHistorySearchInput" 
+          type="text" 
+          placeholder="Tìm kiếm trong lịch sử AI bài này..." 
+          class="w-full bg-transparent text-xs text-[#1C1917] dark:text-[#EDECE8] placeholder-stone-400 focus:outline-none"
+          oninput="renderLessonAiHistoryList(this.value)"
+        />
+      </div>
+
+      <!-- History List Container -->
+      <div id="lessonAiHistoryList" class="flex-1 overflow-y-auto p-4 space-y-3.5 overscroll-contain select-text">
+        <!-- AI history cards will be injected here -->
+      </div>
+
+    </div>
+  </div>
+
+
 </body>
 </html>
