@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.61',
+    date: '2026-10-25T14:45:00+07:00',
+    title: 'Khắc Phục Lỗi Phân Quyền Chọn Màu Khung Ghi Chú & Mở Khóa Đổi Màu Toàn Diện Cho Gói Pro/Plus',
+    items: [
+      { type: 'fix', text: 'Sửa lỗi phân quyền gói Pro/Plus khi chọn màu khung: Khắc phục triệt để hiện tượng người dùng đang ở phiên bản Pro nhưng khi chọn màu viền khung trên thanh công cụ nổi lại bị báo thông báo "Tính năng chọn màu khung dành cho gói Plus trở lên". Chuẩn hóa thứ tự ưu tiên kiểm tra tier trong getUserTier, canUseFrameColors, canUseCustomColor và requestFrameColor, đảm bảo quyền Pro/Plus luôn được nhận diện chính xác 100%.' },
+      { type: 'fix', text: 'Khắc phục sự cố không chọn được màu trong Modal Chi tiết Ghi chú (Ảnh 1): Tối ưu phạm vi sự kiện click của các nút màu (#highlightDetailModal .hl-color-btn), khôi phục và liên kết dữ liệu item ghi chú bền vững, cập nhật vòng tròn viền màu tức thì trên giao diện modal và đồng bộ trực tiếp sang iframe bài đọc.' },
+      { type: 'improved', text: 'Đồng bộ phản hồi thị giác siêu nhạy (0ms latency): Đổi màu viền khung, ánh sáng hào quang (glow), và nhãn màu tiêu đề modal tức thì khi nhấp chọn bất kỳ màu nào (Vàng cam, Xanh lá, Hồng, Tím, Custom).' }
+    ]
+  },
+  {
     version: 'v5.8.60',
     date: '2026-10-25T12:15:00+07:00',
     title: 'Phân Bổ Số Lượng Câu Hỏi AI Biến Đổi Linh Hoạt Theo Dung Lượng Chữ (Word Count) Của Tài Liệu',
