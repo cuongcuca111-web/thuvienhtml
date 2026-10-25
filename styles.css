@@ -4870,3 +4870,38 @@
     display: none !important;
   }
 }
+
+
+/* ========================================================================= */
+/* AUTO TABLE OF CONTENTS (MỤC LỤC TỰ ĐỘNG) STYLES - CHUẨN /thietkeweb       */
+/* ========================================================================= */
+#tableOfContentsDrawer {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  will-change: transform, opacity;
+}
+
+#tableOfContentsDrawer.toc-drawer-active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .toc-item-btn {
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .toc-item-btn:hover {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #tableOfContentsDrawer {
+    transition: none !important;
+  }
+  .toc-item-btn {
+    transition: none !important;
+    transform: none !important;
+  }
+}

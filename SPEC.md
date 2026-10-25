@@ -1,44 +1,67 @@
-# SPEC.md — Đặc tả Kỹ thuật: Khắc phục Lỗi Phân quyền Gói Pro/Plus khi Chọn Màu Khung & Modal Ghi chú
+# SPEC.md — Đặc tả Kỹ thuật: Mục Lục Tự Động (Auto Table of Contents / Outline) & Tối Ưu Hiệu Năng (P0)
 
-## 1. Mục tiêu & Vấn đề Cốt lõi
-- **Hiện tượng lỗi:**
-  1. **Ảnh 1 (Modal Chi tiết Ghi chú Khung - `highlightDetailModal`):** Người dùng không chọn được màu (bấm vào các chấm màu Vàng, Xanh, Hồng, Tím nhưng không có tác dụng đổi màu).
-  2. **Ảnh 2 (Thanh công cụ nổi - `highlightFloatingToolbar`):** Người dùng đang ở phiên bản Pro (`state.userTier === 'pro'` hoặc `thuvienhtml_cached_user_tier === 'pro'`), nhưng khi chọn màu khung (hoặc tùy chọn màu) hệ thống lại hiện thông báo cảnh báo: *"Tính năng chọn màu khung dành cho gói Plus trở lên"*.
-- **Nguyên nhân cốt lõi (Root Cause):**
-  1. Trong hàm `getUserTier(user)` (dòng ~8992):
-     Kiểm tra `const u = user || state.user; if (!u || u.isAnonymous) return 'guest';` được đặt ở đầu hàm, trước cả khi kiểm tra `state.isAdmin`, `state.userTier` hoặc `localStorage.getItem('thuvienhtml_cached_user_tier')`. Khi người dùng ở chế độ khách, ẩn danh (anonymous Firebase), hoặc `state.user` chưa nạp xong, hàm lập tức trả về `'guest'`.
-  2. Trong hàm `canUseFrameColors()` (dòng ~26200):
-     Kiểm tra `if (typeof can === 'function') return Boolean(can('frameColors'));` được gọi ngay. Do `can('frameColors')` gọi `getPlan()` -> `getUserTier()` và bị trả về `'guest'`, nên `can('frameColors')` trả về `false`. Khối fallback phía sau `currentTier === 'plus' || currentTier === 'pro'` không bao giờ được chạm tới.
-  3. Trong hàm `requestFrameColor(color)` (dòng ~26239):
-     Khi `canUseFrameColors()` trả về `false`, hàm hiển thị Toast cảnh báo *"Tính năng chọn màu khung dành cho gói Plus trở lên"* và trả về `false`.
-  4. Trong Modal Ghi chú (`highlightDetailModal`):
-     Sự kiện click vào các chấm màu gọi `requestFrameColor(color, btn)`. Do bị `requestFrameColor` trả về `false`, luồng xử lý bị chặn ngay lập tức, không cập nhật `targetItem.color`, không lưu vào `learningData`, và không gửi thông điệp đổi màu tới iframe. Đồng thời selector `document.querySelectorAll('.hl-color-btn')` được gán dùng chung cho cả toolbar lẫn modal gây tranh chấp logic.
+## 1. Mục tiêu Cốt lõi
+1. **Mục Lục Tự Động (Auto Table of Contents / Outline Sidebar):**
+   - Tự động trích xuất các tiêu đề (`h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `[role="heading"]`, v.v.) từ nội dung bài học trong iframe `lessonIframe`.
+   - Xây dựng Cây mục lục phân cấp chuẩn Editorial (H1 $\to$ H2 $\to$ H3 $\to$ H4) có thụt lề, phân cấp thị giác rõ ràng và đếm số lượng phân đoạn.
+   - **Scroll Spy 60 FPS:** Tự động theo dõi vị trí cuộn của người đọc trong iframe để phát sáng phân đoạn hiện tại trên mục lục trong thời gian thực.
+   - **Smooth Jump & Pulse Highlight:** Khi nhấp vào bất kỳ mục nào trên mục lục, iframe cuộn mượt (smooth scroll) đến chính xác vị trí đó, kèm hiệu ứng phát quang nhẹ (Spring Highlight Pulse) giúp mắt người đọc bắt nhịp tức thì.
+   - **Tích hợp linh hoạt:** Bổ sung nút "Mục lục" trên thanh công cụ đọc bài (`stickyReaderHeader`), nút nổi nhanh (`btnFloatingTOC`), và phím tắt `T` để đóng/mở tiện lợi.
+   - **Tìm kiếm lọc nhanh trong mục lục:** Cho phép gõ tìm nhanh các phần trong bài học dài hàng chục trang.
+   - **Empty State thông minh:** Nếu bài học không có thẻ tiêu đề, hiển thị hướng dẫn tinh tế và cung cấp 2 nút nhảy nhanh "Lên đầu bài" / "Xuống cuối bài".
+
+2. **Tối ưu Hóa Hiệu Năng P0 (Performance & Asset Caching):**
+   - Cấu hình `vercel.json` bổ sung chính sách bộ đệm tối ưu cho các tài nguyên tĩnh (`styles.css`, `bridge.js`, `changelog.js`, webfonts, SVGs) với `stale-while-revalidate` và `max-age=86400`, giúp tải lại trang tức thì từ disk cache.
+   - Tối ưu tài nguyên trong `<head>`: Bổ sung `dns-prefetch` cho Google Fonts và CDN.
+   - Tinh gọn các vòng lặp DOM và khởi tạo trễ (Lazy init / `requestIdleCallback`) cho các subsystem không trọng yếu lúc tải trang đầu tiên.
 
 ---
 
-## 2. Giải pháp Kỹ thuật Chi tiết
+## 2. Design Tokens & Visual Hierarchy (Chuẩn /thietkeweb)
+- **Bảng màu Mục Lục:**
+  * Light Mode:
+    - Nền panel: `#FAF9F5` / `rgba(255, 255, 255, 0.96)` kết hợp `backdrop-blur-md`
+    - Viền: `#E7E5DF` / `rgba(0, 0, 0, 0.08)`
+    - Chữ chính: `#1C1917` (Font Editorial/Inter)
+    - Phân đoạn Active: Nền `#EEF2FF` (`indigo-50`), Chữ `#4338CA` (`indigo-700`), Viền trái 3px `#4F46E5` (`indigo-600`)
+  * Dark Mode:
+    - Nền panel: `#15181E` / `rgba(21, 24, 30, 0.96)` kết hợp `backdrop-blur-md`
+    - Viền: `#262C36`
+    - Chữ chính: `#EDECE8`
+    - Phân đoạn Active: Nền `rgba(79, 70, 229, 0.15)` (`indigo-950/60`), Chữ `#A5B4FC` (`indigo-300`), Viền trái 3px `#818CF8`
+- **Icon SVG Độc Bản:**
+  * Icon Mục lục: `viewBox="0 0 24 24"`, nét vẽ đồng bộ `1.8px`, `stroke-linecap="round"`, `stroke-linejoin="round"`, `currentColor`.
+- **Transitions (60 FPS GPU Compositor):**
+  * Drawer trượt vào: `transform: translateX(0); opacity: 1;` (`duration-220 ease-[cubic-bezier(0.16,1,0.3,1)]`).
+  * Drawer trượt ra: `transform: translateX(18px); opacity: 0;` (`duration-180 ease-in`).
+  * Hover item: `transform: translateX(3px);` nhẹ nhàng, `duration-150`.
+  * Highlight trong iframe: Viền sáng nhẹ và nền `#4F46E5/10`, tự nhạt dần sau 1.5 giây.
 
-### 2.1. Thống nhất cơ chế xác định Tier trong `getUserTier(user)`
-- Nếu người dùng là Admin (`state.isAdmin`), luôn trả về `'pro'`.
-- Kiểm tra `state.userTier` và `thuvienhtml_cached_user_tier`: Nếu đang là `'pro'` hoặc `'plus'`, lập tức trả về gói tương ứng mà không bị chặn bởi `u.isAnonymous` hay `!u`.
-- Chỉ coi là `'guest'` khi không có cờ Pro/Plus nào và người dùng chưa đăng nhập hoặc là anonymous.
-- Hỗ trợ trường hợp truyền tham số `user` cụ thể độc lập với session hiện tại.
+---
 
-### 2.2. Chuẩn hóa `canUseFrameColors()` và `canUseCustomColor()`
-- Đồng bộ cơ chế kiểm tra tier:
-  1. Nếu `state.isAdmin` $\implies$ `true`.
-  2. Nếu `state.userTier === 'plus' || state.userTier === 'pro'` $\implies$ `true`.
-  3. Nếu `thuvienhtml_cached_user_tier === 'plus' || 'pro'` $\implies$ `true`.
-  4. Nếu `getUserTier() === 'plus' || 'pro'` $\implies$ `true`.
-  5. Fallback qua `can('frameColors')` hoặc `can('customColor')`.
+## 3. Kiến Trúc Dữ Liệu & Luồng Tương Tác (Architecture)
+1. **Phía Iframe (`bridge.js`):**
+   - Hàm `extractHeadingsTOC()`: Quét `h1, h2, h3, h4, h5, h6, [role="heading"]`.
+   - Tự động gán `id = 'heading-anchor-' + idx` nếu phần tử chưa có id.
+   - Gửi gói tin `TOC_DATA` sang parent khi `BRIDGE_READY` hoặc khi nhận lệnh `GET_TOC`.
+   - Lắng nghe `IntersectionObserver` / scroll để gửi `ACTIVE_HEADING_CHANGED` với `id` và `% tiến độ cuộn`.
+   - Lắng nghe `SCROLL_TO_HEADING`: Gọi `el.scrollIntoView({ behavior: 'smooth', block: 'start' })` và chèn class `.heading-jump-highlight`.
+2. **Phía Parent (`index.html`):**
+   - Lắng nghe sự kiện `TOC_DATA` và `ACTIVE_HEADING_CHANGED` trong `handleBridgeMessageFromIframe`.
+   - Fallback: Nếu iframe cùng nguồn (same-origin), tự động trích xuất trực tiếp từ DOM của iframe nếu cần.
+   - Render cây phân cấp vào `#tableOfContentsDrawer` và cập nhật huy hiệu số lượng phân đoạn `#tocCountBadge`.
+   - Lưu trạng thái mở/đóng vào `localStorage` nếu người dùng muốn ghim.
 
-### 2.3. Tối ưu bộ cổng `requestFrameColor(color, targetEl)`
-- Nhận biết chính xác quyền Pro/Plus/Admin thông qua `canUseFrameColors()`.
-- Với màu cam mặc định: Luôn cho phép đối với mọi người dùng.
-- Với màu green, pink, purple: Mở khóa tức thì cho Plus, Pro, Admin mà không bao giờ hiện toast cảnh báo hay popup.
-- Với màu custom: Mở khóa tức thì cho Plus, Pro, Admin.
+---
 
-### 2.4. Khắc phục chọn màu trong Modal Chi tiết Ghi chú (`#highlightDetailModal`)
-- Phạm vi selector rõ ràng: `#highlightDetailModal .hl-color-btn` để không xung đột với toolbar.
-- Lấy mục tiêu ghi chú bền bỉ: `targetItem = activeHighlightItem || window._currentEditingFrameItem || (fallback từ hlDetailModal.dataset.frameId)`.
-- Cập nhật `targetItem.color`, cập nhật UI viền chấm màu (`updateNoteModalColorUI`), cập nhật chấm màu tiêu đề modal (`#hlModalColorDot`), lưu dữ liệu (`persistCurrentFrameData`), gửi tin nhắn `UPDATE_FRAME_COLOR` tới iframe và cập nhật trực tiếp DOM của iframe nếu cùng origin.
+## 4. Acceptance Criteria (Tiêu chuẩn Nghiệm thu cho QA)
+- [ ] `[ ]` Nút "Mục lục" hiển thị sắc nét trên thanh công cụ bài đọc (`stickyReaderHeader`) và có phím tắt `T`.
+- [ ] `[ ]` Bấm nút "Mục lục" mở ra bảng Mục Lục Tự Động (Auto TOC Drawer) với animation trượt mượt mà 60 FPS.
+- [ ] `[ ]` Các tiêu đề H1, H2, H3 được trích xuất đầy đủ, có thụt lề phân cấp trực quan và hiển thị số lượng phân đoạn chính xác.
+- [ ] `[ ]` Nhấp vào bất kỳ tiêu đề nào: iframe cuộn mượt (smooth scroll) đến đúng vị trí và có hiệu ứng phát quang nhẹ vị trí đáp.
+- [ ] `[ ]` Scroll Spy hoạt động chuẩn xác: Khi người dùng cuộn nội dung bài đọc, tiêu đề tương ứng trên mục lục tự động sáng đèn nổi bật.
+- [ ] `[ ]` Có ô tìm kiếm lọc nhanh tiêu đề mục lục khi bài học dài.
+- [ ] `[ ]` Có nút nổi nhanh (Floating Quick TOC button) ở góc màn hình để mở mục lục mà không cần cuộn lên đầu trang.
+- [ ] `[ ]` Có empty state tao nhã cho các bài học không có tiêu đề, kèm 2 nút nhảy nhanh lên đầu trang và xuống cuối bài.
+- [ ] `[ ]` `vercel.json` được cập nhật header cache tối ưu cho static assets (`bridge.js`, `styles.css`, `changelog.js`, v.v.).
+- [ ] `[ ]` Chạy `scripts/check_syntax.py` thành công 100% không có lỗi cú pháp.

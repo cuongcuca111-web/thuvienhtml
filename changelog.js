@@ -2,6 +2,18 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.62',
+    date: '2026-10-25T21:35:00+07:00',
+    title: 'Tích Hợp Mục Lục Tự Động (Auto Table of Contents / Outline Drawer) & Tối Ưu Tải Trang P0',
+    items: [
+      { type: 'new', text: 'Mục Lục Tự Động Thông Minh (Auto Table of Contents): Tự động trích xuất cấu trúc phân cấp các tiêu đề (H1, H2, H3, H4, aria-heading) từ nội dung bài học, hiển thị dạng cây phân đoạn có phân cấp thụt lề chuẩn Editorial và gắn nhãn thẻ trực quan.' },
+      { type: 'new', text: 'Scroll Spy 60 FPS Thời Gian Thực: Cơ chế theo dõi vị trí đọc sách mượt mà với requestAnimationFrame, tự động làm sáng và cuộn theo phân đoạn đang đọc trên thanh mục lục.' },
+      { type: 'improved', text: 'Smooth Jump & Hiệu Ứng Sáng Hào Quang (Pulse Highlight): Khi nhấp vào mục lục, bài đọc tự động cuộn mượt đến đúng vị trí dưới thanh công cụ đọc sách, kèm hiệu ứng phát quang nhẹ viền phân đoạn trong 1.5s để người đọc nhận biết ngay lập tức.' },
+      { type: 'new', text: 'Ngăn Kéo Mục Lục (TOC Drawer) & Phím Tắt Tiện Lợi: Hỗ trợ phím tắt T để mở/đóng tức thì mục lục, phím Esc để đóng nhanh, tích hợp ô tìm kiếm lọc tiêu đề phân đoạn và nút nhảy nhanh lên đầu trang / xuống cuối bài.' },
+      { type: 'improved', text: 'Tối Ưu Hóa Tải Trang P0 (Performance & Asset Caching): Cấu hình bộ đệm tài nguyên tĩnh (styles.css, bridge.js, changelog.js, fonts, icons) trong vercel.json với Cache-Control stale-while-revalidate và max-age=86400, tải trang siêu tốc từ disk cache.' }
+    ]
+  },
+  {
     version: 'v5.8.61',
     date: '2026-10-25T14:45:00+07:00',
     title: 'Khắc Phục Lỗi Phân Quyền Chọn Màu Khung Ghi Chú & Mở Khóa Đổi Màu Toàn Diện Cho Gói Pro/Plus',
