@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.64',
+    date: '2026-10-25T21:50:00+07:00',
+    title: 'Nâng Cấp Mobile Bottom Nav Công Thái Học, Cử Chỉ Vuốt (Swipe Gestures) & Thuật Toán Lặp Lại Ngắt Quãng SM-2',
+    items: [
+      { type: 'new', text: 'Thanh Điều Hướng Đáy Cho Mobile (Ergonomic Mobile Bottom Nav): Thiết kế lại thanh điều hướng đáy 5 tab chuẩn ngón tay cái (Bài học, Bài trước, Ôn tập SM-2 với badge đếm số lượng thông minh, Tìm kiếm, Bài tiếp theo), hỗ trợ chuẩn safe-area-inset-bottom và hiệu ứng glassmorphism mượt mà.' },
+      { type: 'new', text: 'Hệ Thống Cử Chỉ Vuốt (Swipe Gestures): Hỗ trợ vuốt trái/phải trên khung đọc bài (kể cả trên bề mặt iframe qua bridge.js) để chuyển bài tức thì; vuốt từ mép trái màn hình để mở sidebar; và vuốt kéo thẻ Flashcard trái/phải với hiệu ứng vật lý xoay 3D trực quan.' },
+      { type: 'new', text: 'Thuật Toán Lặp Lại Ngắt Quãng Chuẩn SuperMemo-2 (SM-2): Nâng cấp toàn diện cơ chế ôn tập Flashcard với thuật toán SM-2 chuẩn xác (Repetition, Interval, Easiness Factor). Cung cấp 4 mức đánh giá (Lại 1d, Khó 3d, Tốt 6d, Dễ 10d+) có hiển thị số ngày dự kiến thực tế trước khi bấm.' },
+      { type: 'improved', text: 'Tối ưu hóa khả năng sử dụng & Phím tắt: Bổ sung phím tắt 1, 2, 3, 4 và mũi tên trái/phải trong chế độ ôn Flashcard; tự động đồng bộ huy hiệu số lượng bài và thẻ đến hạn lên cả Desktop Sidebar lẫn Mobile Bottom Nav.' }
+    ]
+  },
+  {
     version: 'v5.8.63',
     date: '2026-10-25T21:42:00+07:00',
     title: 'Gỡ Bỏ Tính Năng Mục Lục Tự Động & Duy Trì Cấu Trúc Bộ Đệm Tối Ưu P0',

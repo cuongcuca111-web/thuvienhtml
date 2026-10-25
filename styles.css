@@ -4870,3 +4870,24 @@
     display: none !important;
   }
 }
+
+
+/* ========================================================================= */
+/* MOBILE BOTTOM NAV & SWIPE GESTURES STYLES - CHUẨN /thietkeweb              */
+/* ========================================================================= */
+#mobileBottomBar {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+#fcFlippableCard {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (max-width: 767px) {
+  #readingArea {
+    /* Đảm bảo nội dung không bị che bởi Bottom Nav */
+    padding-bottom: max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.2rem)) !important;
+  }
+}

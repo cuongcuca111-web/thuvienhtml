@@ -2309,7 +2309,51 @@
     } catch (_) {}
   });
 
-  // Tự động thông báo ngay khi Bridge Script tải xong trong Iframe (chủ động giải phóng skeleton ở app cha)
+  // =========================================================================
+  // 6.2. CỬ CHỈ VUỐT TRÊN NỘI DUNG BÀI ĐỌC (SWIPE GESTURES FOR MOBILE)
+  // =========================================================================
+  (function initIframeSwipeGestures() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    document.addEventListener('touchstart', function(e) {
+      if (!e.touches || e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+      if (!e.changedTouches || e.changedTouches.length !== 1) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      const deltaTime = Date.now() - touchStartTime;
+
+      // Điều kiện kích hoạt vuốt chuyển bài:
+      // 1. Quãng đường ngang tối thiểu 55px
+      // 2. Độ dốc ngang vượt trội so với cuộn dọc (chống xung đột cuộn bài)
+      // 3. Thời gian thao tác nhanh dưới 500ms
+      if (Math.abs(deltaX) >= 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && deltaTime <= 500) {
+        // Kiểm tra xem người dùng có đang bôi đen chọn chữ hay không
+        const selection = window.getSelection();
+        if (selection && selection.toString().trim().length > 0) return;
+
+        const direction = deltaX < 0 ? 'next' : 'prev';
+        try {
+          window.parent.postMessage({
+            type: 'SWIPE_NAV',
+            direction: direction
+          }, '*');
+        } catch (_) {}
+      }
+    }, { passive: true });
+  })();
+
+
+    // Tự động thông báo ngay khi Bridge Script tải xong trong Iframe (chủ động giải phóng skeleton ở app cha)
   function announceReadyImmediate() {
     try {
       const chunks = typeof extractTTSChunks === 'function' ? extractTTSChunks() : [];

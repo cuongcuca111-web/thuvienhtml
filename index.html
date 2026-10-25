@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.63"></script>
+  <script src="./changelog.js?v=5.8.64"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.63',
+        version: 'v5.8.64',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.63';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.64';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.63">
-  <script src="./bridge.js?v=5.8.63"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.64">
+  <script src="./bridge.js?v=5.8.64"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.63 • build 25/10/2026 21:42</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.64 • build 25/10/2026 21:50</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -2864,27 +2864,52 @@
   </div>
 
   <!-- BOTTOM BAR CỐ ĐỊNH CHO MOBILE -->
-  <nav id="mobileBottomBar" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#181B20]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-md px-3 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-lg">
-    <button id="mbBtnPrev" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Bài trước">
-      <svg class="w-5 h-5"><use href="#icon-chevron-left"></use></svg>
-      <span class="text-[10px] mt-0.5 font-medium">Trước</span>
+  <!-- BOTTOM BAR CỐ ĐỊNH CHO MOBILE (Ergonomic 5-Tab Navigation) -->
+  <nav id="mobileBottomBar" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#14171C]/95 border-t border-[#E7E5DF] dark:border-[#262C36] backdrop-blur-xl px-2 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-[0_-4px_20px_rgba(0,0,0,0.06)] select-none">
+    
+    <!-- Tab 1: Danh mục bài học -->
+    <button id="mbBtnLessons" type="button" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 active:scale-95 transition min-w-[50px] min-h-[44px] cursor-pointer" aria-label="Danh sách bài học">
+      <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      </svg>
+      <span class="text-[10px] mt-0.5 font-medium leading-none">Bài học</span>
     </button>
-    <button id="mbBtnToc" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Mục lục bài học">
-      <svg class="w-5 h-5"><use href="#icon-list"></use></svg>
-      <span class="text-[10px] mt-0.5 font-medium">Mục lục</span>
+
+    <!-- Tab 2: Bài trước -->
+    <button id="mbBtnPrev" type="button" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 active:scale-95 transition min-w-[50px] min-h-[44px] cursor-pointer" aria-label="Bài trước">
+      <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      <span class="text-[10px] mt-0.5 font-medium leading-none">Trước</span>
     </button>
-    <button id="mbBtnSearch" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Tìm kiếm">
-      <svg class="w-5 h-5"><use href="#icon-search"></use></svg>
-      <span class="text-[10px] mt-0.5 font-medium">Tìm kiếm</span>
+
+    <!-- Tab 3: Ôn tập SM-2 (Trung tâm với badge) -->
+    <button id="mbBtnReview" type="button" class="touch-target relative flex flex-col items-center justify-center text-amber-600 dark:text-amber-400 hover:text-amber-700 active:scale-95 transition min-w-[54px] min-h-[44px] cursor-pointer" aria-label="Ôn tập thẻ ghi nhớ">
+      <div class="relative">
+        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <span id="mbReviewBadge" class="hidden absolute -top-1.5 -right-2.5 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full ring-2 ring-white dark:ring-[#14171C] animate-pulse">0</span>
+      </div>
+      <span class="text-[10px] mt-0.5 font-bold leading-none">Ôn tập</span>
     </button>
-    <button id="mbBtnShare" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 active:scale-95 transition min-w-[44px] min-h-[44px]" aria-label="Chia sẻ link">
-      <svg class="w-5 h-5"><use href="#icon-share-2"></use></svg>
-      <span class="text-[10px] mt-0.5 font-medium">Chia sẻ</span>
+
+    <!-- Tab 4: Tìm kiếm -->
+    <button id="mbBtnSearch" type="button" class="touch-target flex flex-col items-center justify-center text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 active:scale-95 transition min-w-[50px] min-h-[44px] cursor-pointer" aria-label="Tìm kiếm bài đọc">
+      <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <span class="text-[10px] mt-0.5 font-medium leading-none">Tìm kiếm</span>
     </button>
-    <button id="mbBtnNext" class="touch-target flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 active:scale-95 transition font-semibold min-w-[44px] min-h-[44px]" aria-label="Bài tiếp">
-      <svg class="w-5 h-5"><use href="#icon-chevron-right"></use></svg>
-      <span class="text-[10px] mt-0.5">Tiếp</span>
+
+    <!-- Tab 5: Bài tiếp (Nổi bật) -->
+    <button id="mbBtnNext" type="button" class="touch-target flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 active:scale-95 transition font-semibold min-w-[50px] min-h-[44px] cursor-pointer" aria-label="Bài tiếp theo">
+      <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+      </svg>
+      <span class="text-[10px] mt-0.5 font-bold leading-none">Sau</span>
     </button>
+
   </nav>
 
   <!-- // FIX-2: THANH CÔNG CỤ BÔI ĐEN CỐ ĐỊNH Ở ĐÁY MÀN HÌNH CHO THIẾT BỊ CẢM ỨNG (TOUCH / COARSE POINTER) -->
@@ -3224,7 +3249,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.63</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.64</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3246,7 +3271,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.63 • build 25/10/2026 21:42</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.64 • build 25/10/2026 21:50</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -3951,17 +3976,62 @@
           </div>
         </div>
 
-        <!-- Nút thao tác dưới thẻ -->
-        <div class="flex items-center justify-center gap-3 w-full max-w-md mt-6">
-          <button id="btnFcForgot" class="flex-1 touch-target min-h-[44px] py-2.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 border border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-100 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs" aria-label="Chưa nhớ thẻ này">
-            <span>← Chưa nhớ</span>
-          </button>
-          <button id="btnFcFlip" class="touch-target min-h-[44px] py-2.5 px-4 rounded-xl bg-[#F2F0EB] dark:bg-[#181B20] text-[#1C1917] dark:text-[#EDECE8] text-xs sm:text-sm font-semibold transition hover:bg-black/5 shadow-2xs" aria-label="Lật thẻ">
-            <span>Lật thẻ</span>
-          </button>
-          <button id="btnFcRemembered" class="flex-1 touch-target min-h-[44px] py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 shadow-xs" aria-label="Đã nhớ thẻ này">
-            <span>Nhớ rồi →</span>
-          </button>
+<!-- Nút thao tác dưới thẻ (Tích hợp SM-2 & Lật thẻ) -->
+        <div class="w-full max-w-md mt-6">
+          
+          <!-- Trạng thái 1: Khi chưa lật thẻ (Nút Lật thẻ to rõ) -->
+          <div id="fcUnflippedControls" class="flex items-center justify-center gap-3">
+            <button id="btnFcFlipBig" type="button" onclick="flipCurrentFlashcard()" class="w-full touch-target min-h-[48px] py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-sm cursor-pointer" aria-label="Lật xem đáp án">
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Lật xem đáp án (Phím cách)</span>
+            </button>
+          </div>
+
+          <!-- Trạng thái 2: Khi đã lật thẻ (4 nút đánh giá SM-2 chuẩn công thái học) -->
+          <div id="fcFlippedControls" class="hidden flex flex-col gap-2.5">
+            <div class="grid grid-cols-4 gap-2 w-full">
+              <!-- Nút 1: Lặp lại / Again (1d) -->
+              <button id="btnSm2Again" type="button" onclick="answerFlashcardWithSM2(1)" class="touch-target min-h-[50px] py-2 px-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 shadow-2xs group" title="Phím tắt: 1 hoặc ←">
+                <span class="text-xs sm:text-sm font-bold">Lại</span>
+                <span id="sm2AgainInterval" class="text-[10px] opacity-75 font-mono">1 ngày</span>
+              </button>
+
+              <!-- Nút 2: Khó / Hard (3d) -->
+              <button id="btnSm2Hard" type="button" onclick="answerFlashcardWithSM2(3)" class="touch-target min-h-[50px] py-2 px-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-900/60 text-amber-700 dark:text-amber-300 transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 shadow-2xs group" title="Phím tắt: 2">
+                <span class="text-xs sm:text-sm font-bold">Khó</span>
+                <span id="sm2HardInterval" class="text-[10px] opacity-75 font-mono">3 ngày</span>
+              </button>
+
+              <!-- Nút 3: Tốt / Good (6d) -->
+              <button id="btnSm2Good" type="button" onclick="answerFlashcardWithSM2(4)" class="touch-target min-h-[50px] py-2 px-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-300 transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 shadow-2xs group" title="Phím tắt: 3 hoặc →">
+                <span class="text-xs sm:text-sm font-bold">Tốt</span>
+                <span id="sm2GoodInterval" class="text-[10px] opacity-75 font-mono">6 ngày</span>
+              </button>
+
+              <!-- Nút 4: Dễ / Easy (10d+) -->
+              <button id="btnSm2Easy" type="button" onclick="answerFlashcardWithSM2(5)" class="touch-target min-h-[50px] py-2 px-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 transition-all flex flex-col items-center justify-center cursor-pointer active:scale-95 shadow-2xs group" title="Phím tắt: 4">
+                <span class="text-xs sm:text-sm font-bold">Dễ</span>
+                <span id="sm2EasyInterval" class="text-[10px] opacity-75 font-mono">10 ngày</span>
+              </button>
+            </div>
+            
+            <!-- Nút lật lại mặt trước nếu muốn xem lại -->
+            <div class="flex items-center justify-center">
+              <button type="button" onclick="flipCurrentFlashcard()" class="text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>Lật về mặt câu hỏi</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Nút backward-compat fallback (ẩn nhưng giữ DOM ID để không gãy code cũ) -->
+          <div class="hidden">
+            <button id="btnFcForgot"></button>
+            <button id="btnFcFlip"></button>
+            <button id="btnFcRemembered"></button>
+          </div>
+
         </div>
       </div>
 
@@ -6689,8 +6759,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.63</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.63</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.64</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.64</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -17690,6 +17760,15 @@
             setTimeout(() => {
               postMessageToLessonIframe(jumpPayload);
             }, 350);
+          }
+          break;
+        }
+
+        case 'SWIPE_NAV': {
+          if (msg.direction === 'next') {
+            goRelative(1);
+          } else if (msg.direction === 'prev') {
+            goRelative(-1);
           }
           break;
         }
@@ -46079,6 +46158,444 @@ QUY TẮC:
 
     console.log("%c Thư viện Sách HTML v5.8.15 - build 18/10/2026 %c", "background:#4F46E5;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;", "");
 
-  </script>
+  
+
+  // =========================================================================
+  // // THUẬT TOÁN LẶP LẠI NGẮT QUÃNG SUPERMEMO-2 (SM-2 ENGINE) & CỬ CHỈ VUỐT
+  // =========================================================================
+
+  /**
+   * Tính toán khoảng cách ôn tập tiếp theo theo chuẩn thuật toán SuperMemo-2 (SM-2)
+   * @param {Object} card Thẻ ôn tập { repetition, interval, ef, ... }
+   * @param {number} quality Chất lượng câu trả lời (1: Lại, 3: Khó, 4: Tốt, 5: Dễ)
+   * @returns {Object} Các thông số SM-2 mới { repetition, interval, ef, dueDate, nextReviewDate, lastReviewedAt }
+   */
+  function calculateSM2(card, quality) {
+    let repetition = (card && typeof card.repetition === 'number') ? card.repetition : 0;
+    let interval = (card && typeof card.interval === 'number') ? card.interval : 1;
+    let ef = (card && typeof card.ef === 'number') ? card.ef : 2.5;
+
+    // Quality >= 3: Ôn thành công
+    if (quality >= 3) {
+      if (repetition === 0) {
+        interval = 1;
+      } else if (repetition === 1) {
+        interval = (quality === 3) ? 3 : 6;
+      } else {
+        const factor = (quality === 5) ? (ef * 1.3) : (quality === 3 ? Math.max(1.15, ef * 0.85) : ef);
+        interval = Math.max(1, Math.round(interval * factor));
+      }
+      repetition++;
+    } else {
+      // Quality < 3: Quên / Cần lặp lại -> Reset chuỗi
+      repetition = 0;
+      interval = 1;
+    }
+
+    // Cập nhật Hệ số dễ (Easiness Factor EF)
+    ef = ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    if (ef < 1.3) ef = 1.3;
+    if (ef > 3.2) ef = 3.2;
+
+    const nextDate = addDaysToDate(getTodayDateStr(), interval);
+
+    return {
+      repetition: repetition,
+      interval: interval,
+      ef: Math.round(ef * 100) / 100,
+      dueDate: nextDate,
+      nextReviewDate: nextDate,
+      lastReviewedAt: Date.now()
+    };
+  }
+
+  /**
+   * Lấy danh sách thẻ flashcard đến hạn ôn tập hôm nay
+   */
+  function getDueFlashcardsForToday() {
+    const today = getTodayDateStr();
+    const dueCards = [];
+    const seenIds = new Set();
+
+    // 1. Quét từ state.learningData.flashcards
+    if (Array.isArray(state.learningData?.flashcards)) {
+      state.learningData.flashcards.forEach(card => {
+        if (!card || !card.id || seenIds.has(card.id)) return;
+        const due = card.dueDate || card.nextReviewDate || today;
+        if (due <= today) {
+          dueCards.push(card);
+          seenIds.add(card.id);
+        }
+      });
+    }
+
+    // 2. Quét từ studyDecks items
+    if (Array.isArray(state.learningData?.studyDecks)) {
+      state.learningData.studyDecks.forEach(deck => {
+        if (deck && Array.isArray(deck.items)) {
+          deck.items.forEach(card => {
+            if (!card || !card.id || seenIds.has(card.id)) return;
+            const due = card.dueDate || card.nextReviewDate || today;
+            if (due <= today) {
+              dueCards.push(card);
+              seenIds.add(card.id);
+            }
+          });
+        }
+      });
+    }
+
+    return dueCards;
+  }
+
+  /**
+   * Cập nhật số ngày dự kiến lên 4 nút đánh giá SM-2
+   */
+  function updateSm2IntervalPreviews(card) {
+    if (!card) return;
+    const againCalc = calculateSM2(card, 1);
+    const hardCalc = calculateSM2(card, 3);
+    const goodCalc = calculateSM2(card, 4);
+    const easyCalc = calculateSM2(card, 5);
+
+    const elAgain = document.getElementById('sm2AgainInterval');
+    const elHard = document.getElementById('sm2HardInterval');
+    const elGood = document.getElementById('sm2GoodInterval');
+    const elEasy = document.getElementById('sm2EasyInterval');
+
+    if (elAgain) elAgain.textContent = againCalc.interval + ' ngày';
+    if (elHard) elHard.textContent = hardCalc.interval + ' ngày';
+    if (elGood) elGood.textContent = goodCalc.interval + ' ngày';
+    if (elEasy) elEasy.textContent = easyCalc.interval + ' ngày';
+  }
+
+  /**
+   * Đánh giá thẻ với cấp độ SM-2
+   */
+  function answerFlashcardWithSM2(quality) {
+    if (!flashcardQueue || flashcardIndex >= flashcardQueue.length) return;
+    const card = flashcardQueue[flashcardIndex];
+
+    // Áp dụng thuật toán SM-2
+    const sm2 = calculateSM2(card, quality);
+    card.repetition = sm2.repetition;
+    card.interval = sm2.interval;
+    card.ef = sm2.ef;
+    card.dueDate = sm2.dueDate;
+    card.nextReviewDate = sm2.nextReviewDate;
+    card.lastReviewedAt = sm2.lastReviewedAt;
+
+    if (quality >= 3) {
+      fcKnownCount++;
+      if (typeof resolveWrongQuestion === 'function') {
+        resolveWrongQuestion(card, false);
+      }
+    } else {
+      fcUnknownCount++;
+      fcUnknownQueue.push(card);
+    }
+
+    // Ghi nhận hoạt động hàng ngày
+    const today = getTodayDateStr();
+    if (!state.learningData.analytics.dailyActivity[today]) {
+      state.learningData.analytics.dailyActivity[today] = { minutes: 0, lessonsCompleted: 0, cardsReviewed: 0, notesCount: 0 };
+    }
+    state.learningData.analytics.dailyActivity[today].cardsReviewed = 
+      (state.learningData.analytics.dailyActivity[today].cardsReviewed || 0) + 1;
+
+    saveLearningData();
+    if (typeof saveStudyDecksAndItems === 'function') {
+      saveStudyDecksAndItems();
+    }
+    updateSpacedReviewDueUI();
+
+    flashcardIndex++;
+    renderCurrentFlashcard();
+  }
+
+  // Hook nâng cấp vào hàm renderCurrentFlashcard để reset trạng thái nút bấm
+  const originalRenderCurrentFlashcard = window.renderCurrentFlashcard;
+  window.renderCurrentFlashcard = function() {
+    // Reset controls visibility
+    const unflippedControls = document.getElementById('fcUnflippedControls');
+    const flippedControls = document.getElementById('fcFlippedControls');
+    if (unflippedControls) unflippedControls.classList.remove('hidden');
+    if (flippedControls) flippedControls.classList.add('hidden');
+
+    if (typeof originalRenderCurrentFlashcard === 'function') {
+      originalRenderCurrentFlashcard();
+    }
+  };
+
+  // Hook nâng cấp vào hàm flipCurrentFlashcard để hiển thị 4 nút SM-2 và preview interval
+  const originalFlipCurrentFlashcard = window.flipCurrentFlashcard;
+  window.flipCurrentFlashcard = function() {
+    if (typeof originalFlipCurrentFlashcard === 'function') {
+      originalFlipCurrentFlashcard();
+    }
+    const unflippedControls = document.getElementById('fcUnflippedControls');
+    const flippedControls = document.getElementById('fcFlippedControls');
+
+    if (fcIsFlipped) {
+      if (unflippedControls) unflippedControls.classList.add('hidden');
+      if (flippedControls) {
+        flippedControls.classList.remove('hidden');
+        if (flashcardQueue && flashcardIndex < flashcardQueue.length) {
+          updateSm2IntervalPreviews(flashcardQueue[flashcardIndex]);
+        }
+      }
+    } else {
+      if (unflippedControls) unflippedControls.classList.remove('hidden');
+      if (flippedControls) flippedControls.classList.add('hidden');
+    }
+  };
+
+  // Cập nhật hàm updateSpacedReviewDueUI để đồng bộ cả bài học & flashcard vào Mobile Bottom Nav
+  const originalUpdateSpacedReviewDueUI = window.updateSpacedReviewDueUI;
+  window.updateSpacedReviewDueUI = function() {
+    if (typeof originalUpdateSpacedReviewDueUI === 'function') {
+      originalUpdateSpacedReviewDueUI();
+    }
+
+    const dueLessons = (typeof getDueLessonsForToday === 'function') ? getDueLessonsForToday() : [];
+    const dueCards = getDueFlashcardsForToday();
+    const totalDue = dueLessons.length + dueCards.length;
+
+    // Cập nhật badge trên Mobile Bottom Bar
+    const mbReviewBadge = document.getElementById('mbReviewBadge');
+    if (mbReviewBadge) {
+      if (totalDue > 0) {
+        mbReviewBadge.textContent = totalDue > 99 ? '99+' : String(totalDue);
+        mbReviewBadge.classList.remove('hidden');
+      } else {
+        mbReviewBadge.classList.add('hidden');
+      }
+    }
+
+    // Cập nhật badge trên Desktop Sidebar
+    const sidebarBadge = document.getElementById('sidebarReviewDueBadge');
+    if (sidebarBadge && totalDue > 0) {
+      sidebarBadge.textContent = `${totalDue} mục`;
+    }
+  };
+
+  // Khởi tạo các sự kiện click cho Bottom Navigation Bar Mobile
+  function initMobileBottomBarActions() {
+    const mbBtnLessons = document.getElementById('mbBtnLessons');
+    const mbBtnReview = document.getElementById('mbBtnReview');
+
+    if (mbBtnLessons) {
+      mbBtnLessons.addEventListener('click', () => {
+        if (typeof openMobileSidebar === 'function') openMobileSidebar();
+      });
+    }
+
+    if (mbBtnReview) {
+      mbBtnReview.addEventListener('click', () => {
+        const dueCards = getDueFlashcardsForToday();
+        if (dueCards.length > 0) {
+          if (typeof startFlashcardSession === 'function') {
+            startFlashcardSession(dueCards, 'Ôn tập thẻ đến hạn hôm nay (SM-2)');
+          }
+        } else if (typeof openStudyDecksManagerModal === 'function') {
+          openStudyDecksManagerModal();
+        } else {
+          showToast('Hôm nay bạn đã hoàn thành tất cả các mục ôn tập! 🎉');
+        }
+      });
+    }
+  }
+
+  // Khởi tạo cử chỉ vuốt Swipe Gestures trên giao diện chính
+  function initMainSwipeGestures() {
+    const readingArea = document.getElementById('readingArea');
+    if (!readingArea) return;
+
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+
+    readingArea.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startTime = Date.now();
+    }, { passive: true });
+
+    readingArea.addEventListener('touchend', (e) => {
+      if (!e.changedTouches || e.changedTouches.length !== 1) return;
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const deltaX = endX - startX;
+      const deltaY = endY - startY;
+      const deltaTime = Date.now() - startTime;
+
+      // 1. Vuốt từ mép trái màn hình (startX < 35px) để mở sidebar
+      if (startX < 35 && deltaX > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+        if (typeof openMobileSidebar === 'function') {
+          openMobileSidebar();
+          return;
+        }
+      }
+
+      // 2. Vuốt chuyển bài
+      if (Math.abs(deltaX) >= 60 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && deltaTime <= 500) {
+        const target = e.target;
+        if (target && target.closest('input, textarea, button, select, [role="dialog"], #highlightFloatingToolbar')) return;
+
+        if (deltaX < 0) {
+          goRelative(1);
+        } else {
+          goRelative(-1);
+        }
+      }
+    }, { passive: true });
+
+    // Vuốt đóng sidebar trên mobileSidebar
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    if (mobileSidebar) {
+      let sbStartX = 0;
+      let sbStartY = 0;
+      mobileSidebar.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length !== 1) return;
+        sbStartX = e.touches[0].clientX;
+        sbStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      mobileSidebar.addEventListener('touchend', (e) => {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        const sbDeltaX = e.changedTouches[0].clientX - sbStartX;
+        const sbDeltaY = e.changedTouches[0].clientY - sbStartY;
+        if (sbDeltaX < -60 && Math.abs(sbDeltaX) > Math.abs(sbDeltaY) * 1.3) {
+          if (typeof closeMobileSidebar === 'function') closeMobileSidebar();
+        }
+      }, { passive: true });
+    }
+  }
+
+  // Khởi tạo cử chỉ vuốt vật lý trên thẻ Flashcard
+  function initFlashcardCardSwipe() {
+    const cardEl = document.getElementById('fcFlippableCard');
+    if (!cardEl) return;
+
+    let fcStartX = 0;
+    let fcStartY = 0;
+    let isDragging = false;
+    let currentDeltaX = 0;
+
+    cardEl.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      fcStartX = e.touches[0].clientX;
+      fcStartY = e.touches[0].clientY;
+      isDragging = true;
+      currentDeltaX = 0;
+      cardEl.style.transition = 'none';
+    }, { passive: true });
+
+    cardEl.addEventListener('touchmove', (e) => {
+      if (!isDragging || !e.touches || e.touches.length !== 1) return;
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+      const deltaX = touchX - fcStartX;
+      const deltaY = touchY - fcStartY;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        currentDeltaX = deltaX;
+        const rot = deltaX * 0.08;
+        cardEl.style.transform = `translateX(${deltaX}px) rotate(${rot}deg)`;
+        
+        const inner = document.getElementById('fcCardInner');
+        if (inner) {
+          if (deltaX > 40) {
+            inner.style.borderColor = 'rgba(16, 185, 129, 0.7)';
+            inner.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.25)';
+          } else if (deltaX < -40) {
+            inner.style.borderColor = 'rgba(245, 158, 11, 0.7)';
+            inner.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.25)';
+          } else {
+            inner.style.borderColor = '';
+            inner.style.boxShadow = '';
+          }
+        }
+      }
+    }, { passive: true });
+
+    const handleTouchEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      cardEl.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+      const inner = document.getElementById('fcCardInner');
+      if (inner) {
+        inner.style.borderColor = '';
+        inner.style.boxShadow = '';
+      }
+
+      if (currentDeltaX > 75) {
+        cardEl.style.transform = 'translateX(250px) rotate(20deg)';
+        setTimeout(() => {
+          cardEl.style.transform = 'none';
+          answerFlashcardWithSM2(4); // Good
+        }, 180);
+      } else if (currentDeltaX < -75) {
+        cardEl.style.transform = 'translateX(-250px) rotate(-20deg)';
+        setTimeout(() => {
+          cardEl.style.transform = 'none';
+          answerFlashcardWithSM2(1); // Again
+        }, 180);
+      } else {
+        cardEl.style.transform = 'none';
+      }
+      currentDeltaX = 0;
+    };
+
+    cardEl.addEventListener('touchend', handleTouchEnd, { passive: true });
+    cardEl.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    // Lắng nghe phím số 1, 2, 3, 4 khi đang mở flashcard
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('flashcardStudyModal');
+      if (!modal || modal.classList.contains('hidden')) return;
+
+      const active = document.activeElement;
+      const tag = active ? active.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'textarea') return;
+
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        flipCurrentFlashcard();
+      } else if (e.key === '1') {
+        e.preventDefault();
+        answerFlashcardWithSM2(1);
+      } else if (e.key === '2') {
+        e.preventDefault();
+        answerFlashcardWithSM2(3);
+      } else if (e.key === '3') {
+        e.preventDefault();
+        answerFlashcardWithSM2(4);
+      } else if (e.key === '4') {
+        e.preventDefault();
+        answerFlashcardWithSM2(5);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        answerFlashcardWithSM2(1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        answerFlashcardWithSM2(4);
+      }
+    });
+  }
+
+  // Khởi động toàn bộ các thành phần khi script nạp xong
+  initMobileBottomBarActions();
+  initMainSwipeGestures();
+  initFlashcardCardSwipe();
+
+  // Export các hàm toàn cục
+  window.calculateSM2 = calculateSM2;
+  window.getDueFlashcardsForToday = getDueFlashcardsForToday;
+  window.updateSm2IntervalPreviews = updateSm2IntervalPreviews;
+  window.answerFlashcardWithSM2 = answerFlashcardWithSM2;
+
+</script>
 </body>
 </html>
