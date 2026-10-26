@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.75',
+    date: '2026-10-26T15:52:00+07:00',
+    title: 'Tái Thiết Kế Toàn Diện Bộ Icon SVG Độc Bản & Bố Cục Công Thái Học Cho Dual-Mode AI Generator',
+    items: [
+      { type: 'improved', text: 'Hệ thống Icon Vector SVG độc bản 100%: Thay thế toàn bộ emojis hệ thống bằng các biểu tượng SVG chuyên nghiệp (Target tâm ngắm, FileText phân tích, Tia sét tốc độ, Trí tuệ bản chất, Huy chương vinh danh A+, Bóng đèn AI).' },
+      { type: 'improved', text: 'Tái cấu trúc bố cục Thẻ Mục Tiêu AI: Thiết kế dạng Squircle Icon Box cao cấp, tách rời nhãn Khuyên dùng thanh lịch, tích hợp vòng chọn Radio tròn tinh tế và thanh thống kê số câu sắc nét ở chân thẻ.' },
+      { type: 'improved', text: 'Nâng cấp giao diện Tab Số Lượng theo dung lượng: Hiển thị thanh thông số Stats Bar dạng chip (số từ, phút đọc, số câu đề xuất) và 3 thẻ số lượng trực quan có icon và phân cấp tốc độ rõ ràng.' }
+    ]
+  },
+  {
     version: 'v5.8.74',
     date: '2026-10-26T15:45:00+07:00',
     title: 'Hệ Thống Dual-Mode AI Flashcard & Quiz Generator (Phân Hóa Mục Tiêu & Co Giãn Số Chữ)',

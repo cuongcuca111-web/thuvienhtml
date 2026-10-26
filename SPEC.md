@@ -1,75 +1,71 @@
-# SPEC.md — Hệ Thống Dual-Mode AI Flashcard & Quiz Generator (v5.8.74)
+# SPEC.md — Tái Thiết Kế Icon Độc Bản & Bố Cục Công Thái Học Cho Dual-Mode AI Generator (v5.8.75)
 
-## 1. TỔNG QUAN YÊU CẦU & BỐI CẢNH
-Người dùng yêu cầu phân tách bộ chọn số lượng câu hỏi hiện tại thành **2 Chế độ (Dual-Mode)** rõ ràng:
-1. **Tab 1: 🎯 Chế độ AI (Theo mục tiêu học tập)**:
-   - ⚡ **Học sơ qua để thi** (Cramming / Skim for Exam): Trích xuất ý chính, định nghĩa đóng khung, công thức cốt lõi. Câu hỏi ngắn, trực diện.
-   - 🧠 **Học để hiểu** (Deep Understanding): Phủ đều các phần lớn của bài, tập trung câu hỏi bản chất, cơ chế, nguyên lý, so sánh A vs B.
-   - 🏆 **Học để đạt điểm A+** (Mastery / A+ Grade): Quét vét cạn 100% ngóc ngách, chi tiết phụ, ngoại lệ, tình huống thực tế và bẫy đề (distractors sát sao).
-2. **Tab 2: 📊 Theo số chữ bài học**:
-   - Tự động đo số chữ thực tế của các bài học được chọn và hiển thị thanh trạng thái trực quan.
-   - Tự động co giãn 3 mốc số lượng đề xuất động (Nhanh • Chuẩn [Khuyên dùng] • Chi tiết) khớp chính xác với dung lượng của bài học.
+## 1. MỤC TIÊU & PHÂN TÍCH THỰC TRẠNG (UX/UI AUDIT)
+Người dùng yêu cầu: *"thiết kế lại icon và sắp xếp khoa học và đẹp nhất có thể"*, đính kèm 2 ảnh chụp thực tế giao diện hiện tại:
+- **Ảnh 1 (Tab Chế độ AI - Mục tiêu):**
+  * Emojis hệ thống thô (`🎯`, `📊`, `⚡`, `🧠`, `🏆`, `💡`) hiển thị nhạt và không đồng nhất giữa các hệ điều hành (Windows/macOS/iOS/Android).
+  * Nút radio tròn chỉ là chấm nhỏ `w-2 h-2` nằm lệch góc phải trên.
+  * Nhãn "Khuyên dùng" bị dính chùm vào dòng tiêu đề `"Học để hiểu Khuyên dùng"`.
+  * Badge số lượng (`~5 câu`, `~8 câu`, `~12 câu`) nằm lẻ loi ở góc trái dưới, nửa bên phải để trống lãng phí không gian.
+- **Ảnh 2 (Tab Theo số chữ bài học):**
+  * Thanh thông số dung lượng chữ nhìn đơn điệu, các con số quan trọng (492 từ, 2 phút, 6 câu) chưa được đóng khung nổi bật.
+  * 3 thẻ số lượng (`4 câu`, `6 câu`, `8 câu`) phẳng lì, thiếu icon phân loại theo tốc độ/chi tiết, typography thiếu điểm nhấn.
 
 ---
 
-## 2. THIẾT KẾ KIẾN TRÚC & GIAO DIỆN
+## 2. THIẾT KẾ BỐ CỤC & HỆ THỐNG ICON SVG ĐỘC BẢN
 
-### 2.1. Cấu trúc Giao diện (UI) trong Modal Tạo Tự Kiểm Tra
-Khu vực cấu hình câu hỏi được chia làm 2 phần:
-```html
-<!-- Bộ chuyển đổi 2 Tab chế độ -->
-<div class="flex items-center p-1 bg-stone-100 dark:bg-stone-800/80 rounded-xl">
-  <button id="btnTabModeAiGoal" class="...">🎯 Chế độ AI (Theo mục tiêu)</button>
-  <button id="btnTabModeWordCount" class="...">📊 Theo số chữ bài học</button>
-</div>
+### 2.1. Bộ Icon Vector SVG Độc Bản (Zero-Emoji, 100% Vector)
+1. **Tab Switcher:**
+   - Tab 1: Icon **Target Compass** SVG tinh xảo (`<svg>` tâm ngắm mục tiêu).
+   - Tab 2: Icon **Bar Analytics & FileText** SVG tinh xảo.
+2. **Tab 1 — 3 Thẻ Mục Tiêu AI:**
+   - **Thẻ 1 (Học sơ qua để thi):** Squircle Icon Box nền `bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/80` chứa Icon **Tia Sét Tốc Độ (Speed Lightning)**.
+   - **Thẻ 2 (Học để hiểu):** Squircle Icon Box nền `bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80` chứa Icon **Khám Phá Tri Thức (Brain Spark Insight)**.
+   - **Thẻ 3 (Học để đạt điểm A+):** Squircle Icon Box nền `bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80` chứa Icon **Huy Chương Vinh Danh & Ngôi Sao A+ (Award Badge & Star)**.
+3. **Tab 2 — 3 Thẻ Số Lượng Theo Số Chữ:**
+   - Mốc 1 (Nhanh): Icon SVG **Đồng hồ / Tên lửa (Rocket Speed)**.
+   - Mốc 2 (Chuẩn - Đề xuất): Icon SVG **Ngôi sao lấp lánh (Sparkles / Crown)**.
+   - Mốc 3 (Chi tiết): Icon SVG **Quyển sách mở / Lớp tri thức (Book Layers)**.
+4. **Hint Box:**
+   - Icon SVG **Bóng đèn phát sáng 3D** với vòng tỏa hào quang tinh tế.
 
-<!-- Nội dung Tab 1: 3 Thẻ Mục Tiêu AI -->
-<div id="selfTestAiGoalPanel" class="grid grid-cols-3 gap-2">
-  - Nút 1: ⚡ Học sơ qua để thi (Badge ước tính câu)
-  - Nút 2: 🧠 Học để hiểu (Badge ước tính câu)
-  - Nút 3: 🏆 Học để đạt điểm A+ (Badge ước tính câu)
-</div>
+---
 
-<!-- Nội dung Tab 2: Đo Dung Lượng & 3 Mốc Co Giãn -->
-<div id="selfTestWordCountPanel" class="hidden flex flex-col gap-2">
-  - Badge dung lượng: 📄 Bài học gồm W từ (~M phút đọc) • Khuyên dùng: K câu
-  - 3 Mốc động: [Nhanh] • [✨ Chuẩn - Đề xuất] • [Chi tiết]
-</div>
+### 2.2. Tái Cấu Trúc Bố Cục Thẻ Công Thái Học (Card Anatomy)
 
-<!-- Hint Box động giải thích trực quan thời gian thực -->
-<div id="selfTestCountHintBox">...</div>
+#### A. Cấu trúc mỗi Thẻ Mục Tiêu AI (Tab 1):
 ```
+┌────────────────────────────────────────────────────────┐
+│  [ [Icon Box 36px] ]             [ (o) Radio Ring 20px ]│
+│                                                        │
+│  Tiêu đề in đậm (VD: Học để hiểu)                      │
+│  [✨ Khuyên dùng (Pill riêng biệt, trang nhã)]          │
+│                                                        │
+│  Mô tả: Hiểu sâu bản chất, nguyên lý & mối liên hệ     │
+│                                                        │
+│  ────────────────────────────────────────────────────  │
+│  [ Badge Đáy: ⚡ ~8 câu hỏi • Độ phủ cốt lõi ]         │
+└────────────────────────────────────────────────────────┘
+```
+- Khi thẻ được chọn (Active): Viền đổi sang `border-2 border-indigo-600 dark:border-indigo-500`, nền `bg-indigo-50/70 dark:bg-indigo-950/40`, đổ bóng êm `shadow-sm`, Radio Ring bên phải chuyển sang màu indigo có chấm tròn hoặc dấu tích SVG.
 
-### 2.2. Thuật toán Tính toán & Co giãn Số lượng (`calculateSelfTestExpectedCounts`)
-* Nhận đầu vào: `totalWords` ($W$), `lessonCount` ($n$), `testType` (mixed/quiz/flashcard), `mode` (ai_goal/word_count), `goal` (cram/understand/mastery).
-* **Mốc chuẩn cơ sở ($N_{base}$):**
-  - Flashcard: $N_{base} = \text{clamp}(5, 3 + \text{round}(W / 110), 25)$
-  - Quiz: $N_{base} = \text{clamp}(5, 3 + \text{round}(W / 125), 25)$
-  - Mixed: $N_{base} = \text{clamp}(6, 4 + \text{round}(W / 135), 30)$
-* **Hệ số Mục tiêu AI:**
-  - `cram`: Hệ số $\times 0.6$ (tối thiểu 4-5 câu, tối đa 10 câu).
-  - `understand`: Hệ số $\times 1.0$ (tối thiểu 6-8 câu, tối đa 16 câu).
-  - `mastery`: Hệ số $\times 1.5$ (tối thiểu 10-14 câu, tối đa 26 câu).
-* **3 Mốc Tab Số Chữ:**
-  - Phân tích theo dung lượng $W < 500$, $500 \le W < 1500$, $1500 \le W < 3000$, $W \ge 3000$ để tự động điền nhãn nút.
-
-### 2.3. Tối ưu Prompt & Token cho AI (Client & Server)
-* Truyền `goal` và `countMode` vào payload request (`index.html` direct call & `/api/ai/explain`).
-* Bổ sung quy tắc sư phạm phân tầng theo thang nhận thức Bloom vào System Prompt:
-  - `cram`: "Chỉ nhặt định nghĩa đóng khung, ý chính cốt lõi nhất. Câu hỏi ngắn gọn trực diện."
-  - `understand`: "Phủ đều các mục lớn của bài. Hỏi về cơ chế, bản chất, nguyên nhân - kết quả."
-  - `mastery`: "Quét vét cạn 100% ngóc ngách, chi tiết phụ, ngoại lệ và bẫy đề."
-* Tự động nâng `maxOutputTokens` lên `8192` khi chọn `mastery` hoặc $N > 15$ để tránh cắt cụt JSON.
+#### B. Cấu trúc Thanh Chỉ Số & 3 Thẻ Số Chữ (Tab 2):
+- **Thanh Chỉ Số (Stats Bar):** Thiết kế dạng các chip thông tin:
+  `[ 📄 492 từ ] • [ ⏱️ ~2 phút đọc ] ──> [ ✨ Đề xuất: 6 câu ]`
+- **3 Thẻ Số Chữ:**
+  - Có con số chính in to rõ nét (`text-base font-extrabold`).
+  - Đi kèm icon nhận diện và nhãn phân cấp tốc độ:
+    * Thẻ 1: `⚡ 4 câu • Nhanh`
+    * Thẻ 2: `✨ 6 câu • Chuẩn (Khuyên dùng)`
+    * Thẻ 3: `📖 8 câu • Chi tiết`
 
 ---
 
 ## 3. KẾ HOẠCH TRIỂN KHAI (BUILDER CHECKLIST)
-1. Cập nhật HTML Modal Tạo Bộ Đề trong `index.html`: Thêm 2 Tab chuyển đổi và 2 panel tương ứng.
-2. Nâng cấp JavaScript điều khiển trong `index.html`:
-   - State `selfTestCountMode` ('ai_goal' | 'word_count'), `selfTestAiGoal` ('cram' | 'understand' | 'mastery').
-   - Mở rộng hàm `calculateSelfTestExpectedCounts`.
-   - Cập nhật hàm `updateSelfTestExpectedCountUI` phản hồi realtime theo từ và bài học được chọn.
-   - Đồng bộ trong hàm `generateSelfTestDeck` (truyền `goal`, `countMode`, phân phối section).
-3. Nâng cấp `api/ai/explain.js`: Xử lý `goal` (`cram`, `understand`, `mastery`), phân phối số câu và cấu hình token tối ưu.
-4. Kiểm thử cú pháp Node.js 100% PASS qua `scripts/check_syntax.py`.
-5. Cập nhật `changelog.js`, chạy `sync_version.py` nâng lên `v5.8.74`, commit Git & backup Google Drive.
+1. Cập nhật mã HTML trong `index.html` (thay thế khối `selfTestAiGoalPanel`, `selfTestWordCountPanel`, `btnSelfTestTabAiGoal`, `btnSelfTestTabWordCount`).
+2. Cập nhật mã JavaScript trong `index.html`:
+   - Hàm `updateSelfTestExpectedCountUI()`: Render giao diện thẻ Tab 2 với các icon SVG và cấu trúc thẻ mới.
+   - Cập nhật hiệu ứng active/inactive của Radio Ring và viền thẻ.
+3. Kiểm thử cú pháp Node.js qua `scripts/check_syntax.py`.
+4. Cập nhật `changelog.js`, chạy `sync_version.py` lên `v5.8.75`, commit Git và sao lưu Google Drive.

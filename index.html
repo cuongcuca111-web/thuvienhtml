@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.74"></script>
+  <script src="./changelog.js?v=5.8.75"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.74',
+        version: 'v5.8.75',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.74';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.75';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.74">
-  <script src="./bridge.js?v=5.8.74"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.75">
+  <script src="./bridge.js?v=5.8.75"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.74 • build 26/10/2026 15:45</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.75 • build 26/10/2026 15:52</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.74</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.75</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.74 • build 26/10/2026 15:45</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.75 • build 26/10/2026 15:52</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -4254,83 +4254,125 @@
             </label>
           </div>
 
-          <!-- Bộ chọn Cơ chế Số lượng & Mục tiêu (Dual-Mode AI Generator) -->
-          <div class="flex flex-col gap-2.5 pt-1">
+          <!-- Bộ chọn Cơ chế Số lượng & Mục tiêu (Dual-Mode AI Generator - Redesigned) -->
+          <div class="flex flex-col gap-3 pt-1">
             <!-- Header chuyển đổi 2 Tab Chế độ -->
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
                 Cơ chế tạo câu hỏi:
               </span>
               
               <!-- Tab Switcher Segmented Control -->
-              <div class="inline-flex items-center p-0.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl text-xs font-medium">
-                <button type="button" id="btnSelfTestTabAiGoal" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5">
-                  <span>🎯 Chế độ AI (Mục tiêu)</span>
+              <div class="inline-flex items-center p-1 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl text-xs font-semibold shadow-2xs">
+                <button type="button" id="btnSelfTestTabAiGoal" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold shadow-xs transition-all duration-200 cursor-pointer flex items-center gap-1.5" title="Chọn mục tiêu học tập (Học sơ qua, Hiểu bản chất hoặc Đạt A+)">
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  <span>Chế độ AI (Mục tiêu)</span>
                 </button>
-                <button type="button" id="btnSelfTestTabWordCount" class="px-2.5 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer flex items-center gap-1.5">
-                  <span>📊 Theo số chữ bài học</span>
+                <button type="button" id="btnSelfTestTabWordCount" class="px-3 py-1.5 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 cursor-pointer flex items-center gap-1.5" title="Chọn số lượng đề xuất theo dung lượng chữ của bài học">
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <span>Theo số chữ bài học</span>
                 </button>
               </div>
             </div>
 
             <!-- Panel 1: 🎯 Chế độ AI (3 Tùy chọn Mục tiêu Học tập) -->
-            <div id="selfTestAiGoalPanel" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div id="selfTestAiGoalPanel" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <!-- Nút 1: Học sơ qua để thi -->
-              <button type="button" data-goal="cram" class="self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none">
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
-                    <span>⚡ Học sơ qua để thi</span>
-                  </span>
-                  <span class="goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+              <button type="button" data-goal="cram" class="self-test-goal-btn relative p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-2xs">
+                <div>
+                  <div class="flex items-center justify-between w-full mb-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/80 dark:border-amber-900/60 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <div class="goal-radio-circle w-4 h-4 rounded-full border-2 border-stone-300 dark:border-stone-600 flex items-center justify-center transition-all">
+                      <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+                    </div>
+                  </div>
+                  <div class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    Học sơ qua để thi
+                  </div>
+                  <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-relaxed line-clamp-2">
+                    Chỉ nắm ý chính, định nghĩa cốt lõi nhất để qua môn
+                  </p>
                 </div>
-                <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Chỉ nắm ý chính, định nghĩa cốt lõi nhất để thi</span>
-                <span id="badgeGoalCram" class="mt-2 text-[10px] font-mono font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md inline-block w-fit">~6 câu</span>
+                <div class="mt-3 pt-2 border-t border-stone-100 dark:border-stone-800/80 flex items-center justify-between">
+                  <span id="badgeGoalCram" class="text-[10.5px] font-mono font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-200/50 dark:border-amber-900/40">~6 câu</span>
+                  <span class="text-[10px] text-stone-400 dark:text-stone-500 font-medium">Cốt lõi</span>
+                </div>
               </button>
 
               <!-- Nút 2: Học để hiểu (Active mặc định) -->
-              <button type="button" data-goal="understand" class="self-test-goal-btn p-2.5 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 text-left transition cursor-pointer flex flex-col justify-between group select-none shadow-2xs">
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-xs font-bold text-indigo-950 dark:text-indigo-200 flex items-center gap-1">
-                    <span>🧠 Học để hiểu</span>
-                    <span class="text-[9.5px] px-1 py-0.2 rounded bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 font-normal">Khuyên dùng</span>
-                  </span>
-                  <span class="goal-radio-circle w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
+              <button type="button" data-goal="understand" class="self-test-goal-btn relative p-3 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-xs">
+                <div>
+                  <div class="flex items-center justify-between w-full mb-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-900/60 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="10" y1="21" x2="14" y2="21"/></svg>
+                    </div>
+                    <div class="goal-radio-circle w-4 h-4 rounded-full border-2 border-indigo-600 dark:border-indigo-400 flex items-center justify-center transition-all bg-indigo-600 dark:bg-indigo-400">
+                      <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="text-xs font-bold text-indigo-950 dark:text-indigo-200">Học để hiểu</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200">Khuyên dùng</span>
+                  </div>
+                  <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-relaxed line-clamp-2">
+                    Hiểu sâu bản chất, nguyên lý & mối liên hệ toàn bài
+                  </p>
                 </div>
-                <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Hiểu sâu bản chất, nguyên lý & mối liên hệ</span>
-                <span id="badgeGoalUnderstand" class="mt-2 text-[10px] font-mono font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-900/60 px-2 py-0.5 rounded-md inline-block w-fit">~10 câu</span>
+                <div class="mt-3 pt-2 border-t border-indigo-200/50 dark:border-indigo-800/40 flex items-center justify-between">
+                  <span id="badgeGoalUnderstand" class="text-[10.5px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-900/60 px-2 py-0.5 rounded-md border border-indigo-200/80 dark:border-indigo-800/60">~10 câu</span>
+                  <span class="text-[10px] text-indigo-600/80 dark:text-indigo-400/80 font-semibold">Bản chất</span>
+                </div>
               </button>
 
               <!-- Nút 3: Học để đạt điểm A+ -->
-              <button type="button" data-goal="mastery" class="self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none">
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
-                    <span>🏆 Học để đạt A+</span>
-                  </span>
-                  <span class="goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+              <button type="button" data-goal="mastery" class="self-test-goal-btn relative p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-2xs">
+                <div>
+                  <div class="flex items-center justify-between w-full mb-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-900/60 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    </div>
+                    <div class="goal-radio-circle w-4 h-4 rounded-full border-2 border-stone-300 dark:border-stone-600 flex items-center justify-center transition-all">
+                      <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+                    </div>
+                  </div>
+                  <div class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    Học để đạt A+
+                  </div>
+                  <p class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-relaxed line-clamp-2">
+                    Quét sạch 100% chi tiết, tình huống thực tế & bẫy đề
+                  </p>
                 </div>
-                <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Quét sạch 100% chi tiết, tình huống & bẫy đề</span>
-                <span id="badgeGoalMastery" class="mt-2 text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md inline-block w-fit">~16 câu</span>
+                <div class="mt-3 pt-2 border-t border-stone-100 dark:border-stone-800/80 flex items-center justify-between">
+                  <span id="badgeGoalMastery" class="text-[10.5px] font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-900/40">~16 câu</span>
+                  <span class="text-[10px] text-stone-400 dark:text-stone-500 font-medium">Toàn diện</span>
+                </div>
               </button>
             </div>
 
             <!-- Panel 2: 📊 Theo số chữ bài học (Ẩn mặc định, tự co giãn mốc theo số từ) -->
-            <div id="selfTestWordCountPanel" class="hidden flex flex-col gap-2">
-              <div class="flex items-center justify-between text-xs text-[#57534E] dark:text-[#9AA3B2] bg-[#FAF9F5] dark:bg-[#12151B] px-3 py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36]">
-                <span id="selfTestWordCountMeta" class="flex items-center gap-1.5 font-medium">
-                  <svg class="w-3.5 h-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                  Đang tính dung lượng bài học...
+            <div id="selfTestWordCountPanel" class="hidden flex flex-col gap-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36]">
+                <div id="selfTestWordCountMeta" class="flex flex-wrap items-center gap-2 font-medium">
+                  <!-- Rendered dynamically by JS with elegant chips -->
+                </div>
+                <span class="text-[11px] text-stone-400 dark:text-stone-500 font-medium flex items-center gap-1 shrink-0">
+                  <svg class="w-3.5 h-3.5 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Tự động cân đối thời lượng
                 </span>
-                <span class="text-[11px] text-stone-400">Tự động cân đối theo thời lượng đọc</span>
               </div>
-              <div id="selfTestWordCountBtnGroup" class="grid grid-cols-3 gap-2">
+              <div id="selfTestWordCountBtnGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <!-- 3 nút co giãn sẽ được JS tự động render theo số từ của bài -->
               </div>
             </div>
 
             <!-- Chú thích số lượng & mục tiêu dự kiến trực quan realtime -->
-            <div id="selfTestCountHintBox" class="text-[11px] text-indigo-700 dark:text-indigo-300 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 px-3 py-2 rounded-xl flex items-start gap-2 transition-all">
-              <svg class="w-3.5 h-3.5 shrink-0 mt-0.5 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-ai-lightbulb"></use></svg>
+            <div id="selfTestCountHintBox" class="text-[11px] text-indigo-900 dark:text-indigo-200 bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800/50 p-2.5 rounded-xl flex items-start gap-2.5 transition-all shadow-2xs">
+              <div class="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="10" y1="21" x2="14" y2="21"/></svg>
+              </div>
               <div id="selfTestCountHintText" class="leading-relaxed">💡 <strong>Mục tiêu: Học để hiểu</strong> — Dự kiến ~10 câu (phân bổ đều theo bài học đã chọn).</div>
             </div>
           </div>
@@ -6910,8 +6952,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.74</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.74</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.75</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.75</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -39788,26 +39830,60 @@
         const recTier = tiers.find(t => t.isRecommended) || tiers[1];
 
         if (wordMeta) {
-          wordMeta.innerHTML = `<svg class="w-3.5 h-3.5 text-indigo-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-            <span>Bài học gồm <strong>${formattedWords} từ</strong> (~${estMinutes} phút đọc) • Khuyên dùng: <strong>${recTier.count} câu</strong></span>`;
+          wordMeta.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-stone-200/70 dark:bg-stone-800 text-[#1C1917] dark:text-[#EDECE8] text-[11px] font-bold">
+              <svg class="w-3.5 h-3.5 text-stone-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              ${formattedWords} từ
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-stone-200/70 dark:bg-stone-800 text-[#1C1917] dark:text-[#EDECE8] text-[11px] font-bold">
+              <svg class="w-3.5 h-3.5 text-stone-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ~${estMinutes} phút đọc
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold border border-indigo-200/80 dark:border-indigo-800/60 shadow-2xs">
+              <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Đề xuất: ${recTier.count} câu
+            </span>`;
         }
 
         const btnGroup = document.getElementById('selfTestWordCountBtnGroup');
         if (btnGroup) {
           btnGroup.innerHTML = '';
-          tiers.forEach(t => {
+          tiers.forEach((t, tIdx) => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.setAttribute('data-count', String(t.count));
             const isSelected = (selfTestCountMode === 'word_count' && selfTestTargetCount === t.count) ||
                                (selfTestCountMode === 'word_count' && selfTestTargetCount === 'auto' && t.isRecommended);
 
-            btn.className = isSelected
-              ? "self-test-wc-btn p-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold text-xs transition cursor-pointer flex flex-col items-center justify-center gap-0.5 shadow-2xs"
-              : "self-test-wc-btn p-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 text-[#57534E] dark:text-[#9AA3B2] text-xs transition cursor-pointer flex flex-col items-center justify-center gap-0.5";
+            // Icon SVG theo phân cấp: Nhanh (Zap), Chuẩn (Sparkles), Chi tiết (BookOpen)
+            let tierIconSvg = '';
+            let tierBadgeText = '';
+            if (tIdx === 0) {
+              tierIconSvg = '<svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+              tierBadgeText = 'Nhanh';
+            } else if (tIdx === 1) {
+              tierIconSvg = '<svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+              tierBadgeText = 'Khuyên dùng';
+            } else {
+              tierIconSvg = '<svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
+              tierBadgeText = 'Chi tiết';
+            }
 
-            btn.innerHTML = `<span class="font-bold text-xs">${t.label}</span>
-                             <span class="text-[10px] opacity-75 font-mono">${t.count} mục</span>`;
+            btn.className = isSelected
+              ? "self-test-wc-btn relative p-3 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-xs"
+              : "self-test-wc-btn relative p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
+
+            btn.innerHTML = `
+              <div class="flex items-center justify-between w-full mb-1.5">
+                <div class="w-7 h-7 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-2xs">
+                  ${tierIconSvg}
+                </div>
+                ${t.isRecommended ? '<span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200">Đề xuất</span>' : `<span class="text-[9px] text-stone-400 font-medium">${tierBadgeText}</span>`}
+              </div>
+              <div class="w-full text-left">
+                <div class="text-sm font-extrabold text-[#1C1917] dark:text-[#EDECE8] leading-tight">${t.count} câu</div>
+                <div class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] font-medium mt-0.5">${t.label.replace(/^.*?\s/, '')}</div>
+              </div>`;
 
             btn.onclick = () => {
               selfTestTargetCount = t.count;
@@ -39926,11 +40002,17 @@
           const circle = b.querySelector('.goal-radio-circle');
           const isThis = b.getAttribute('data-goal') === selfTestAiGoal;
           if (isThis) {
-            b.className = "self-test-goal-btn p-2.5 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 text-left transition cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
-            if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400";
+            b.className = "self-test-goal-btn relative p-3 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-xs";
+            if (circle) {
+              circle.className = "goal-radio-circle w-4 h-4 rounded-full border-2 border-indigo-600 dark:border-indigo-400 flex items-center justify-center transition-all bg-indigo-600 dark:bg-indigo-400";
+              circle.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-white"></span>';
+            }
           } else {
-            b.className = "self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none";
-            if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600";
+            b.className = "self-test-goal-btn relative p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
+            if (circle) {
+              circle.className = "goal-radio-circle w-4 h-4 rounded-full border-2 border-stone-300 dark:border-stone-600 flex items-center justify-center transition-all";
+              circle.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>';
+            }
           }
         });
 
@@ -40057,11 +40139,17 @@
       document.querySelectorAll('.self-test-goal-btn').forEach(b => {
         const circle = b.querySelector('.goal-radio-circle');
         if (b.getAttribute('data-goal') === 'understand') {
-          b.className = "self-test-goal-btn p-2.5 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 text-left transition cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
-          if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400";
+          b.className = "self-test-goal-btn relative p-3 rounded-2xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-xs";
+          if (circle) {
+            circle.className = "goal-radio-circle w-4 h-4 rounded-full border-2 border-indigo-600 dark:border-indigo-400 flex items-center justify-center transition-all bg-indigo-600 dark:bg-indigo-400";
+            circle.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-white"></span>';
+          }
         } else {
-          b.className = "self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none";
-          if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600";
+          b.className = "self-test-goal-btn relative p-3 rounded-2xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
+          if (circle) {
+            circle.className = "goal-radio-circle w-4 h-4 rounded-full border-2 border-stone-300 dark:border-stone-600 flex items-center justify-center transition-all";
+            circle.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>';
+          }
         }
       });
       renderSelfTestLessonPicker('');
