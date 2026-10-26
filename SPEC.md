@@ -1,44 +1,61 @@
-# SPEC.md — Đặc Tả Kỹ Thuật: Thiết Lập Vị Trí Tải File Mặc Định Là Ở "Phần Ngoài" (Không Trong Thư Mục Nào) (v5.8.71)
+# SPEC.md — Gói Tối Ưu Hiệu Năng & Bộ Nhớ Cốt Lõi P0 (v5.8.72)
 
-## 1. YÊU CẦU & BỐI CẢNH
-- **Yêu cầu người dùng**:
-  * Khi mở modal tải file ("Thêm bài học vào thư viện" - Ảnh 1), vị trí lưu mặc định tại ô *"Lưu vào mục:"* phải là ở **phần ngoài (phần không có trong thư mục nào cả)**.
-- **Phân tích hiện trạng**:
-  * Trong [`index.html`](file:///C:/Users/PV/.gemini/antigravity/scratch/thuvienhtml/index.html) tại hàm `populateUploadCategoriesDropdown()` (dòng 28008), ô chọn `#uploadTargetCategorySelect` hiện chỉ nạp danh sách các thư mục hiện có và tự động chọn thư mục đầu tiên (`categories[0].id`) hoặc `state.activeCategoryId`.
-  * Không có tùy chọn riêng cho "Phần ngoài (Không trong thư mục nào)" trong dropdown tải file.
-  * Khi lưu bài học trong `btnConfirmUpload` (dòng 29638), nếu `targetCatId` rỗng thì hệ thống tự động gán vào thư mục đầu tiên hoặc tự tạo mục mới "Tài liệu của tôi", thay vì lưu độc lập ở phần ngoài thư mục (`categoryId: null`).
-
----
-
-## 2. GIẢI PHÁP THIẾT KẾ & TRIỂN KHAI (ARCHITECTURE & DESIGN)
-1. **Bổ sung tùy chọn "Phần ngoài (Không trong thư mục nào)" vào dropdown `#uploadTargetCategorySelect`**:
-   - Giá trị quy ước: `value="__uncategorized__"`.
-   - Vị trí: Đặt ở **đầu tiên** trong danh sách dropdown và được đánh dấu `selected` làm mặc định khi mở modal tải file.
-   - Nhãn hiển thị: `Phần ngoài (Không trong thư mục nào)`.
-2. **Cập nhật hàm `populateUploadCategoriesDropdown(preferredCatId = '__uncategorized__')`**:
-   - Tham số `preferredCatId` mặc định là `'__uncategorized__'`.
-   - Nếu người dùng bấm "Tải file" từ chân sidebar (`#btnSidebarQuickUpload`) hoặc header, modal tải file luôn tự động chọn "Phần ngoài".
-   - Nếu người dùng chủ động bấm "Thêm bài vào mục này" từ menu của một thư mục cụ thể, hệ thống sẽ chọn đúng thư mục đó.
-3. **Cập nhật luồng xử lý lưu bài học (`btnConfirmUpload`)**:
-   - Nếu `targetCatId === '__uncategorized__'` hoặc không chọn mục:
-     * Đặt `targetCatId = null;`
-     * Tiêu đề mục thông báo: `catTitle = 'Phần ngoài'`.
-     * Từng bài học mới sẽ được tạo với thuộc tính `categoryId: null`.
-     * Không tự động ép tạo thư mục "Tài liệu của tôi" khi người dùng cố ý lưu ở phần ngoài.
-   - Khi hoàn tất tải file:
-     * Kích hoạt mở tự động nhóm `__uncategorized__` trong sidebar: `setSectionOpen('__uncategorized__', true)`.
-     * Thông báo toast: `Đã thêm X bài vào Phần ngoài!`.
-     * Bài học mới hiển thị ngay lập tức ở khu vực "Phần ngoài (Chưa phân loại)" trên sidebar và tự động cuộn đến highlight.
-4. **Đồng bộ nhãn hiển thị trong Sidebar**:
-   - Cập nhật nhãn nhóm chưa phân loại trên thanh mục lục thành: `Phần ngoài (Chưa phân loại)` để người dùng nhận diện ngay lập tức nơi lưu bài.
+## 1. MỤC TIÊU & BỐI CẢNH
+Gói **P0 (Tối ưu Hiệu năng & Bộ nhớ Cốt lõi)** giải quyết 3 điểm nghẽn quan trọng nhất của dự án:
+1. **Chống tràn hạn mức 5MB LocalStorage (QuotaExceededError)**:
+   - Hiện tại: Bộ đề Flashcard & Trắc nghiệm (`thuvienhtml_study_decks`), câu sai (`thuvienhtml_wrong_items`), câu gắn sao (`thuvienhtml_starred_items`) và lịch sử câu trả lời AI (`thuvienhtml_ai_history_*`) đang lưu trực tiếp vào `localStorage`.
+   - Vấn đề: Trình duyệt áp trần 5MB cho toàn bộ domain. Khi người dùng sinh nhiều bài học và bộ đề AI, `localStorage` bị đầy sẽ dẫn đến lỗi không lưu được dữ liệu mới.
+   - Giải pháp: Nâng cấp IndexedDB `thuvienhtml_db` lên version 2, bổ sung Object Store `app_data` để lưu trữ bộ đề và lịch sử AI với dung lượng hàng Gigabytes, kèm cơ chế tự động chuyển đổi (Auto-migration) và fallback an toàn 2 chiều.
+2. **Dọn dẹp mã nguồn thư mục `scripts/`**:
+   - Hiện tại: Hơn 150 kịch bản `.py` tạm (`inspect_*.py`, `patch_*.py`, `find_*.py`...) từ các phiên debug trước đó đang nằm trong thư mục `scripts/`.
+   - Giải pháp: Dọn dẹp sạch sẽ các kịch bản dùng một lần, chỉ giữ lại các công cụ hệ thống chuẩn (`check_syntax.py`, `sync_version.py`, `analyze_health.py`, `backup_to_gdrive.py`, `create_project_zip.py`, các script admin).
+3. **Bảo toàn và Tối ưu hóa Bộ nhớ đệm (Cache/SW)**:
+   - Đồng bộ version `v5.8.72`, cập nhật changelog và xác thực 100% cú pháp script.
 
 ---
 
-## 3. KẾ HOẠCH KIỂM THỬ & NGHIỆM THU (QA CRITERIA)
-1. Bấm nút "Tải file" ở chân sidebar (Ảnh 2) hoặc trên header.
-2. Kiểm tra ô *"Lưu vào mục:"* trên modal "Thêm bài học vào thư viện" (Ảnh 1): Mặc định hiển thị và chọn sẵn **"Phần ngoài (Không trong thư mục nào)"**.
-3. Thử tải một file HTML/Markdown bất kỳ và bấm "Lưu bài học":
-   - Bài học được lưu với `categoryId: null`.
-   - Sidebar xuất hiện nhóm "Phần ngoài (Chưa phân loại)" chứa bài vừa tải, không bị rơi vào bất kỳ thư mục nào trong 5 nhóm hiện có.
-4. Kiểm thử cú pháp Node.js trên toàn bộ script (`check_syntax.py`).
-5. Ghi nhận `changelog.js`, đồng bộ phiên bản `v5.8.71`, commit và đẩy Git.
+## 2. THIẾT KẾ KIẾN TRÚC & TRIỂN KHAI KỸ THUẬT
+
+### 2.1. Nâng cấp IndexedDB `thuvienhtml_db` (Version 2)
+* Tăng `IDB_VERSION = 2`.
+* Tại sự kiện `onupgradeneeded`:
+  ```javascript
+  if (!idb.objectStoreNames.contains('app_data')) {
+    idb.createObjectStore('app_data', { keyPath: 'key' });
+  }
+  ```
+* Bổ sung bộ 3 hàm thao tác bất đồng bộ:
+  - `putAppDataIDB(key, value)`: Lưu trữ đối tượng vào IndexedDB không giới hạn dung lượng.
+  - `getAppDataIDB(key)`: Đọc đối tượng từ IndexedDB.
+  - `deleteAppDataIDB(key)`: Xóa đối tượng khỏi IndexedDB.
+
+### 2.2. Cơ chế Tự động Di trú Dữ liệu (Auto-Migration)
+* Khi khởi động ứng dụng:
+  - Kiểm tra và tự động sao chép `thuvienhtml_study_decks`, `thuvienhtml_starred_items`, `thuvienhtml_wrong_items` từ `localStorage` sang `app_data` trong IndexedDB.
+  - Quét tất cả các khóa `thuvienhtml_ai_history_*` để đồng bộ sang IndexedDB.
+  - Khi lưu dữ liệu (`saveStudyDecksAndItems`, `recordLessonAiResponse`):
+    * Ghi bất đồng bộ vào IndexedDB `app_data`.
+    * Vẫn duy trì ghi `localStorage` có bọc khối `try-catch QuotaExceededError`. Nếu `localStorage` bị đầy, dữ liệu trong IndexedDB vẫn bảo toàn 100% và không làm gián đoạn trải nghiệm người dùng.
+
+### 2.3. Dọn dẹp thư mục `scripts/`
+* Giữ lại danh sách file cần thiết:
+  - `analyze_health.py`
+  - `backup_to_gdrive.py`
+  - `check_syntax.py`
+  - `create_project_zip.py`
+  - `sync_version.py`
+  - `verify.py`
+  - `create-admin.js`
+  - `seed-payment-config.js`
+  - `set-admin.js`
+* Di chuyển/xóa các file tạm khác.
+
+---
+
+## 3. TIÊU CHUẨN KIỂM THỬ (QA CHECKLIST)
+1. Cú pháp JavaScript của `index.html` và toàn bộ script phải đạt 100% PASS khi chạy `check_syntax.py`.
+2. Kiểm tra IndexedDB trên trình duyệt: Object store `app_data` được khởi tạo thành công khi tải trang.
+3. Tạo bộ đề AI, gắn sao, làm sai câu hỏi: Dữ liệu được ghi thành công vào IndexedDB.
+4. Lịch sử câu trả lời AI: Được lưu và nạp mượt mà từ IndexedDB.
+5. Thư mục `scripts/` gọn gàng, sạch sẽ.
+6. Đồng bộ phiên bản `v5.8.72`, commit và đẩy Git thành công.

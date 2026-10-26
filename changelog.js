@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.72',
+    date: '2026-10-26T15:00:00+07:00',
+    title: 'Nâng Cấp IndexedDB v2 Chống Tràn 5MB & Dọn Dẹp Kho Mã Nguồn Chuẩn Hóa',
+    items: [
+      { type: 'new', text: 'Nâng cấp IndexedDB App Storage (v2): Bổ sung Object Store app_data không giới hạn dung lượng cho Bộ đề Flashcard, Trắc nghiệm, Câu làm sai, Câu gắn sao và Lịch sử câu hỏi AI, triệt tiêu hoàn toàn nguy cơ QuotaExceededError 5MB của LocalStorage.' },
+      { type: 'improved', text: 'Cơ chế Tự động Di trú 2 Chiều: Tự động sao lưu và đồng bộ toàn bộ bộ đề, câu làm sai, câu gắn sao và lịch sử AI từ LocalStorage sang IndexedDB khi mở ứng dụng, duy trì bộ đệm trong suốt hai chiều an toàn tuyệt đối.' },
+      { type: 'improved', text: 'Dọn dẹp và tinh gọn mã nguồn: Thanh lọc hơn 150 kịch bản tạm, chuẩn hóa kho kịch bản hệ thống giúp dự án vận hành mượt mà, sạch sẽ và chuyên nghiệp.' }
+    ]
+  },
+  {
     version: 'v5.8.71',
     date: '2026-10-26T01:10:00+07:00',
     title: 'Thiết Lập Vị Trí Tải File Mặc Định Là Ở "Phần Ngoài" (Không Trong Thư Mục Nào)',

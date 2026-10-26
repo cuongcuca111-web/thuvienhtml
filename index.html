@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.71"></script>
+  <script src="./changelog.js?v=5.8.72"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.71',
+        version: 'v5.8.72',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.71';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.72';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.71">
-  <script src="./bridge.js?v=5.8.71"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.72">
+  <script src="./bridge.js?v=5.8.72"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.71 • build 26/10/2026 01:10</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.72 • build 26/10/2026 15:00</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.71</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.72</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.71 • build 26/10/2026 01:10</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.72 • build 26/10/2026 15:00</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6851,8 +6851,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.71</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.71</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.72</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.72</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -18393,9 +18393,10 @@
     // // HANGMUC-3: HỆ THỐNG SAO LƯU TỰ ĐỘNG VÀ KHÔI PHỤC (INDEXEDDB SNAPSHOT)
     // =========================================================================
     const IDB_NAME = 'thuvienhtml_db';
-    const IDB_VERSION = 1;
+    const IDB_VERSION = 2;
     const IDB_STORE_SNAPSHOTS = 'snapshots';
     const IDB_STORE_LESSONS = 'lesson_contents';
+    const IDB_STORE_APP_DATA = 'app_data';
     const MAX_SNAPSHOTS = 7;
     const JSON_REMINDER_DAYS = 7;
 
@@ -18419,6 +18420,9 @@
               const lessonStore = idb.createObjectStore(IDB_STORE_LESSONS, { keyPath: 'id' });
               lessonStore.createIndex('updatedAt', 'updatedAt', { unique: false });
             }
+            if (!idb.objectStoreNames.contains(IDB_STORE_APP_DATA)) {
+              idb.createObjectStore(IDB_STORE_APP_DATA, { keyPath: 'key' });
+            }
           };
           request.onsuccess = () => resolve(request.result);
           request.onerror = () => {
@@ -18429,6 +18433,59 @@
       }
       return dbPromise;
     }
+
+    // // P0-OPTIMIZE: Helper lưu trữ Key-Value không giới hạn dung lượng vào IndexedDB
+    async function putAppDataIDB(key, val) {
+      if (!key) return;
+      try {
+        const idb = await openAppDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_APP_DATA, 'readwrite');
+          tx.objectStore(IDB_STORE_APP_DATA).put({ key, val, updatedAt: Date.now() });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (e) {
+        console.warn('[IDB] Lỗi lưu app data:', key, e);
+        return false;
+      }
+    }
+
+    async function getAppDataIDB(key) {
+      if (!key) return null;
+      try {
+        const idb = await openAppDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_APP_DATA, 'readonly');
+          const req = tx.objectStore(IDB_STORE_APP_DATA).get(key);
+          req.onsuccess = () => resolve(req.result ? req.result.val : null);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        console.warn('[IDB] Lỗi đọc app data:', key, e);
+        return null;
+      }
+    }
+
+    async function deleteAppDataIDB(key) {
+      if (!key) return;
+      try {
+        const idb = await openAppDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = idb.transaction(IDB_STORE_APP_DATA, 'readwrite');
+          tx.objectStore(IDB_STORE_APP_DATA).delete(key);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (e) {
+        console.warn('[IDB] Lỗi xóa app data:', key, e);
+        return false;
+      }
+    }
+
+    window.putAppDataIDB = putAppDataIDB;
+    window.getAppDataIDB = getAppDataIDB;
+    window.deleteAppDataIDB = deleteAppDataIDB;
 
     // Nén chuỗi sang gzip Uint8Array (CompressionStream)
     async function compressStringToGzip(str) {
@@ -33540,6 +33597,60 @@
           else if (!state.learningData.wrongItems) state.learningData.wrongItems = [];
         } catch (_) {}
 
+        // // P0-OPTIMIZE: Tự động di trú Study Decks và Lịch sử AI từ LocalStorage sang IndexedDB
+        if (typeof getAppDataIDB === 'function') {
+          setTimeout(async () => {
+            try {
+              // Di trú Study Decks
+              const idbDecks = await getAppDataIDB('thuvienhtml_study_decks');
+              if (Array.isArray(idbDecks) && idbDecks.length > 0) {
+                if (!state.learningData.studyDecks || state.learningData.studyDecks.length < idbDecks.length) {
+                  state.learningData.studyDecks = idbDecks;
+                  if (typeof renderStudyDecksModalTabs === 'function') renderStudyDecksModalTabs();
+                }
+              } else if (state.learningData.studyDecks && state.learningData.studyDecks.length > 0) {
+                putAppDataIDB('thuvienhtml_study_decks', state.learningData.studyDecks);
+              }
+
+              // Di trú Starred Items
+              const idbStarred = await getAppDataIDB('thuvienhtml_starred_items');
+              if (Array.isArray(idbStarred) && idbStarred.length > 0) {
+                if (!state.learningData.starredItems || state.learningData.starredItems.length < idbStarred.length) {
+                  state.learningData.starredItems = idbStarred;
+                }
+              } else if (state.learningData.starredItems && state.learningData.starredItems.length > 0) {
+                putAppDataIDB('thuvienhtml_starred_items', state.learningData.starredItems);
+              }
+
+              // Di trú Wrong Items
+              const idbWrong = await getAppDataIDB('thuvienhtml_wrong_items');
+              if (Array.isArray(idbWrong) && idbWrong.length > 0) {
+                if (!state.learningData.wrongItems || state.learningData.wrongItems.length < idbWrong.length) {
+                  state.learningData.wrongItems = idbWrong;
+                }
+              } else if (state.learningData.wrongItems && state.learningData.wrongItems.length > 0) {
+                putAppDataIDB('thuvienhtml_wrong_items', state.learningData.wrongItems);
+              }
+
+              // Di trú tất cả lịch sử câu trả lời AI theo bài học
+              for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.startsWith('thuvienhtml_ai_history_')) {
+                  const valStr = localStorage.getItem(k);
+                  if (valStr) {
+                    try {
+                      const parsed = JSON.parse(valStr);
+                      putAppDataIDB(k, parsed);
+                    } catch (_) {}
+                  }
+                }
+              }
+            } catch (migErr) {
+              console.warn('[Storage] Lỗi di trú IndexedDB:', migErr);
+            }
+          }, 500);
+        }
+
         if (!state.learningData.frames) state.learningData.frames = {};
         // Tự động chuyển đổi (migrate) highlights cũ sang frames
         if (state.learningData.highlights) {
@@ -39207,12 +39318,29 @@
       }
     }
 
-    // Lưu trữ và đồng bộ Study Decks, Starred Items, Wrong Items
+    // // P0-OPTIMIZE: Lưu trữ bền vững Study Decks, Starred Items, Wrong Items vào IndexedDB (chống tràn 5MB)
     function saveStudyDecksAndItems() {
       try {
-        localStorage.setItem('thuvienhtml_study_decks', JSON.stringify(state.learningData.studyDecks || []));
-        localStorage.setItem('thuvienhtml_starred_items', JSON.stringify(state.learningData.starredItems || []));
-        localStorage.setItem('thuvienhtml_wrong_items', JSON.stringify(state.learningData.wrongItems || []));
+        const decks = state.learningData.studyDecks || [];
+        const starred = state.learningData.starredItems || [];
+        const wrong = state.learningData.wrongItems || [];
+
+        // 1. Lưu vào IndexedDB không giới hạn dung lượng
+        if (typeof putAppDataIDB === 'function') {
+          putAppDataIDB('thuvienhtml_study_decks', decks);
+          putAppDataIDB('thuvienhtml_starred_items', starred);
+          putAppDataIDB('thuvienhtml_wrong_items', wrong);
+        }
+
+        // 2. Lưu dự phòng vào localStorage có bọc chống lỗi QuotaExceededError
+        try {
+          localStorage.setItem('thuvienhtml_study_decks', JSON.stringify(decks));
+          localStorage.setItem('thuvienhtml_starred_items', JSON.stringify(starred));
+          localStorage.setItem('thuvienhtml_wrong_items', JSON.stringify(wrong));
+        } catch (storageErr) {
+          console.warn('[Storage] LocalStorage đầy, dữ liệu bộ đề đã được bảo toàn an toàn trong IndexedDB:', storageErr);
+        }
+
         saveLearningData();
       } catch (e) {
         console.warn('Lỗi lưu study decks:', e);
@@ -47092,10 +47220,17 @@ QUY TẮC:
     currentList.unshift(newItem);
     state.learningData.aiHistory[lessonId] = currentList;
 
-    // Lưu bền vững vào localStorage
+    // // P0-OPTIMIZE: Lưu bền vững vào cả IndexedDB lẫn LocalStorage
     try {
       if (typeof saveLearningData === 'function') saveLearningData();
-      localStorage.setItem('thuvienhtml_ai_history_' + lessonId, JSON.stringify(currentList));
+      if (typeof putAppDataIDB === 'function') {
+        putAppDataIDB('thuvienhtml_ai_history_' + lessonId, currentList);
+      }
+      try {
+        localStorage.setItem('thuvienhtml_ai_history_' + lessonId, JSON.stringify(currentList));
+      } catch (lsErr) {
+        console.warn('[Storage] LocalStorage đầy, lịch sử AI đã được lưu an toàn trong IndexedDB:', lsErr);
+      }
     } catch (_) {}
 
     updateLessonAiHistoryBadges();
@@ -47351,7 +47486,12 @@ QUY TẮC:
 
     try {
       if (typeof saveLearningData === 'function') saveLearningData();
-      localStorage.setItem('thuvienhtml_ai_history_' + lessonId, JSON.stringify(list));
+      if (typeof putAppDataIDB === 'function') {
+        putAppDataIDB('thuvienhtml_ai_history_' + lessonId, list);
+      }
+      try {
+        localStorage.setItem('thuvienhtml_ai_history_' + lessonId, JSON.stringify(list));
+      } catch (_) {}
     } catch (_) {}
 
     renderLessonAiHistoryList();
@@ -47369,6 +47509,9 @@ QUY TẮC:
     state.learningData.aiHistory[lessonId] = [];
     try {
       if (typeof saveLearningData === 'function') saveLearningData();
+      if (typeof deleteAppDataIDB === 'function') {
+        deleteAppDataIDB('thuvienhtml_ai_history_' + lessonId);
+      }
       localStorage.removeItem('thuvienhtml_ai_history_' + lessonId);
     } catch (_) {}
 
