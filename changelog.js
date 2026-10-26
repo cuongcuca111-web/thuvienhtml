@@ -2,6 +2,14 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.77',
+    date: '2026-10-26T16:15:00+07:00',
+    title: 'Tinh Gọn Giao Diện Nút Thao Tác Flashcard (Chưa Nhớ & Đã Nhớ)',
+    items: [
+      { type: 'improved', text: 'Tối giản hóa nút Chưa nhớ & Đã nhớ: Loại bỏ hoàn toàn các badge số 1 và số 3 hiển thị dư thừa trong nút, giúp giao diện thanh thoát, trực quan và tập trung tối đa vào văn bản và biểu tượng hành động.' }
+    ]
+  },
+  {
     version: 'v5.8.76',
     date: '2026-10-26T16:00:00+07:00',
     title: 'Hệ Thống Phân Rã Kiến Thức 3 Lớp & Cơ Chế Auto Top-Up Đảm Bảo Số Lượng Câu Hỏi',
