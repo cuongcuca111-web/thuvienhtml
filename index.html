@@ -74,6 +74,7 @@
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           el.classList.add('modal-active');
+          if (typeof window.notifyPopupStateChanged === 'function') window.notifyPopupStateChanged();
         });
       });
     };
@@ -83,10 +84,12 @@
       if (el._closeTimer) clearTimeout(el._closeTimer);
       el.classList.remove('modal-active');
       el.classList.add('modal-closing');
+      if (typeof window.notifyPopupStateChanged === 'function') window.notifyPopupStateChanged();
       el._closeTimer = setTimeout(() => {
         el.classList.add('hidden');
         el.classList.remove('modal-closing');
         el._closeTimer = null;
+        if (typeof window.notifyPopupStateChanged === 'function') window.notifyPopupStateChanged();
       }, 190);
     };
 
@@ -177,14 +180,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.77"></script>
+  <script src="./changelog.js?v=5.8.78"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.77',
+        version: 'v5.8.78',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +213,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.77';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.78';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -452,19 +455,23 @@
     }
 
     window.addEventListener('error', function(e) {
+      // Bỏ qua lỗi nạp tài nguyên tĩnh phụ (ảnh, icon, font...) để không kích hoạt reload nhầm
+      if (e.target && e.target !== window && (e.target.tagName === 'IMG' || e.target.tagName === 'LINK' || e.target.tagName === 'AUDIO')) {
+        return;
+      }
       if (!window.__appBootSuccess) {
-        setTimeout(() => triggerEmergencyRecovery(e.message || 'Script error'), 1200);
+        setTimeout(() => triggerEmergencyRecovery(e.message || 'Script error'), 2500);
       }
     }, true);
 
     window.addEventListener('load', function() {
       setTimeout(function() {
         if (!window.__appBootSuccess) {
-          triggerEmergencyRecovery('Không nhận được phản hồi boot sau 2.5s');
+          triggerEmergencyRecovery('Không nhận được phản hồi boot sau 7.5s');
         } else {
           sessionStorage.removeItem('emergency_recovery_attempt');
         }
-      }, 2500);
+      }, 7500);
     });
 
 
@@ -698,8 +705,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.77">
-  <script src="./bridge.js?v=5.8.77"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.78">
+  <script src="./bridge.js?v=5.8.78"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2439,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.77 • build 26/10/2026 16:15</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.78 • build 26/10/2026 16:50</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3265,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.77</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.78</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3287,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.77 • build 26/10/2026 16:15</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.78 • build 26/10/2026 16:50</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6952,8 +6959,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.77</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.77</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.78</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.78</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -11932,9 +11939,8 @@
         // 3. Mạng nhện đỉnh Sidebar + phù hiệu bí ngô Jack-o'-Lantern bên phải
         const sidebarHeader = document.querySelector('#mainSidebar > div:first-child');
         if (sidebarHeader && !sidebarHeader.querySelector(':scope > .festival-sidebar-halloween-cap')) {
-          const computed = window.getComputedStyle(sidebarHeader);
-          if (computed.position === 'static') {
-            sidebarHeader.style.position = 'relative';
+          if (!sidebarHeader.classList.contains('relative') && !sidebarHeader.classList.contains('absolute') && !sidebarHeader.classList.contains('fixed')) {
+            sidebarHeader.classList.add('relative');
           }
           sidebarHeader.prepend(createSidebarHalloweenCapHTML());
         }
@@ -11957,9 +11963,8 @@
         targetContainers.forEach(container => {
           if (!container || container.tagName === 'HEADER') return;
 
-          const computedStyle = window.getComputedStyle(container);
-          if (computedStyle.position === 'static') {
-            container.style.position = 'relative';
+          if (!container.classList.contains('relative') && !container.classList.contains('absolute') && !container.classList.contains('fixed')) {
+            container.classList.add('relative');
           }
 
           container.querySelectorAll(':scope > .festival-top-snow-cap, :scope > .festival-top-spring-cap, :scope > .festival-top-summer-cap, :scope > .festival-popup-sticker:not([data-theme-effect="halloween"])').forEach(el => el.remove());
@@ -12007,9 +12012,8 @@
         // 3. Dải hoa xuân + đèn lồng đỏ may mắn trên Sidebar Mục lục
         const sidebarHeader = document.querySelector('#mainSidebar > div:first-child');
         if (sidebarHeader && !sidebarHeader.querySelector(':scope > .festival-sidebar-spring-cap')) {
-          const computed = window.getComputedStyle(sidebarHeader);
-          if (computed.position === 'static') {
-            sidebarHeader.style.position = 'relative';
+          if (!sidebarHeader.classList.contains('relative') && !sidebarHeader.classList.contains('absolute') && !sidebarHeader.classList.contains('fixed')) {
+            sidebarHeader.classList.add('relative');
           }
           sidebarHeader.prepend(createSidebarSpringCapHTML());
         }
@@ -12032,9 +12036,8 @@
         targetContainers.forEach(container => {
           if (!container || container.tagName === 'HEADER') return;
 
-          const computedStyle = window.getComputedStyle(container);
-          if (computedStyle.position === 'static') {
-            container.style.position = 'relative';
+          if (!container.classList.contains('relative') && !container.classList.contains('absolute') && !container.classList.contains('fixed')) {
+            container.classList.add('relative');
           }
 
           container.querySelectorAll(':scope > .festival-top-snow-cap, :scope > .festival-top-halloween-cap, :scope > .festival-top-summer-cap, :scope > .festival-popup-sticker:not([data-theme-effect="spring"])').forEach(el => el.remove());
@@ -12082,9 +12085,8 @@
         // 3. Sóng biển + mặt trời đeo kính râm trên Sidebar Mục lục
         const sidebarHeader = document.querySelector('#mainSidebar > div:first-child');
         if (sidebarHeader && !sidebarHeader.querySelector(':scope > .festival-sidebar-summer-cap')) {
-          const computed = window.getComputedStyle(sidebarHeader);
-          if (computed.position === 'static') {
-            sidebarHeader.style.position = 'relative';
+          if (!sidebarHeader.classList.contains('relative') && !sidebarHeader.classList.contains('absolute') && !sidebarHeader.classList.contains('fixed')) {
+            sidebarHeader.classList.add('relative');
           }
           sidebarHeader.prepend(createSidebarSummerCapHTML());
         }
@@ -12107,9 +12109,8 @@
         targetContainers.forEach(container => {
           if (!container || container.tagName === 'HEADER') return;
 
-          const computedStyle = window.getComputedStyle(container);
-          if (computedStyle.position === 'static') {
-            container.style.position = 'relative';
+          if (!container.classList.contains('relative') && !container.classList.contains('absolute') && !container.classList.contains('fixed')) {
+            container.classList.add('relative');
           }
 
           container.querySelectorAll(':scope > .festival-top-snow-cap, :scope > .festival-top-halloween-cap, :scope > .festival-top-spring-cap, :scope > .festival-popup-sticker:not([data-theme-effect="summer"])').forEach(el => el.remove());
@@ -12735,10 +12736,7 @@
             }
             ctx.fillStyle = p.color;
             ctx.globalAlpha = particleAlpha;
-            if (p.glowColor) {
-              ctx.shadowBlur = 4;
-              ctx.shadowColor = p.glowColor;
-            }
+            // GPU fast path: loại bỏ shadowBlur tốn kém
             ctx.fill();
           } else if (p.type === 'summer_breeze') {
             if (p.subType === 'sunglint') {
@@ -12747,8 +12745,7 @@
               ctx.translate(p.x, p.y);
               ctx.fillStyle = p.color;
               ctx.globalAlpha = currentAlpha * particleAlpha;
-              ctx.shadowBlur = 6;
-              ctx.shadowColor = p.glowColor;
+              // GPU fast path
               ctx.beginPath();
               const s = p.size;
               ctx.moveTo(0, -s);
@@ -12767,8 +12764,7 @@
               ctx.fillStyle = `rgba(45, 212, 191, ${0.2 * transAlpha})`;
               ctx.strokeStyle = `rgba(204, 251, 241, ${particleAlpha * 0.9})`;
               ctx.lineWidth = 1.1;
-              ctx.shadowBlur = 4;
-              ctx.shadowColor = `rgba(45, 212, 191, ${0.4 * transAlpha})`;
+              // GPU fast path
               ctx.fill();
               ctx.stroke();
               // Chấm sáng bóng nước
@@ -12784,8 +12780,7 @@
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
               ctx.fillStyle = p.color;
               ctx.globalAlpha = currentAlpha * particleAlpha;
-              ctx.shadowBlur = 7;
-              ctx.shadowColor = p.glowColor;
+              // GPU fast path
               ctx.fill();
             }
           } else if (p.type === 'autumn_leaves') {
@@ -12806,8 +12801,7 @@
             ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
             ctx.fillStyle = p.color;
             ctx.globalAlpha = currentAlpha * particleAlpha;
-            ctx.shadowBlur = 6;
-            ctx.shadowColor = p.color;
+            // GPU fast path
             ctx.fill();
           } else if (p.type === 'halloween') {
             if (p.subType === 'bat') {
@@ -12836,8 +12830,7 @@
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
               ctx.fillStyle = p.color;
               ctx.globalAlpha = currentAlpha * particleAlpha;
-              ctx.shadowBlur = 6;
-              ctx.shadowColor = p.glowColor || p.color;
+              // GPU fast path
               ctx.fill();
             } else {
               // wisp
@@ -12847,8 +12840,7 @@
               ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
               ctx.fillStyle = p.color;
               ctx.globalAlpha = currentAlpha * particleAlpha * 0.75;
-              ctx.shadowBlur = 8;
-              ctx.shadowColor = p.glowColor || p.color;
+              // GPU fast path
               ctx.fill();
             }
           }
@@ -12970,43 +12962,22 @@
         return false;
       };
 
-      popupFestivalObserver = new MutationObserver((mutations) => {
-        let shouldCheck = false;
-        for (const m of mutations) {
-          if (m.type === 'attributes' && (m.attributeName === 'class' || m.attributeName === 'style')) {
-            if (isLikelyPopupElement(m.target)) {
-              shouldCheck = true;
-              break;
-            }
-            continue;
-          }
-          if (m.type === 'childList') {
-            for (const n of m.addedNodes) {
-              if (isLikelyPopupElement(n)) {
-                shouldCheck = true;
-                break;
-              }
-            }
-            if (shouldCheck) break;
-            for (const n of m.removedNodes) {
-              if (isLikelyPopupElement(n)) {
-                shouldCheck = true;
-                break;
-              }
-            }
-            if (shouldCheck) break;
-          }
-        }
-        if (shouldCheck) {
-          scheduleCheckPopupState();
-        }
+      // Tối ưu hóa: Loại bỏ MutationObserver quét subtree:true toàn bộ 48.000 dòng document.body
+      // Thay bằng hàm thông báo trực tiếp 0ms từ showModalAnimated, hideModalAnimated và Popover toggles
+      window.notifyPopupStateChanged = scheduleCheckPopupState;
+
+      // Chỉ giám sát trực tiếp các modal container cấp cao nhất nếu có thao tác can thiệp DOM ngoài
+      popupFestivalObserver = new MutationObserver(() => {
+        scheduleCheckPopupState();
       });
 
-      popupFestivalObserver.observe(document.body, {
+      // Chỉ observe container chứa modal thay vì toàn bộ subtree document.body
+      const modalsContainer = document.body;
+      popupFestivalObserver.observe(modalsContainer, {
         attributes: true,
-        attributeFilter: ['class', 'style'],
-        childList: true,
-        subtree: true
+        attributeFilter: ['class'],
+        childList: false,
+        subtree: false
       });
 
       // Kiểm tra ngay khi khởi động
@@ -19445,25 +19416,8 @@
     // // DỌN DẸP DỮ LIỆU CŨ BỊ LỖI & SAO LƯU TRƯỚC KHI DỌN (TỰ ĐỘNG CHẠY KHI KHỞI ĐỘNG)
     function autoCleanupDuplicateData(silent = false) {
       try {
-        // // HANGMUC-3: Chụp bản sao trước khi dọn dữ liệu trùng
-        if (state.lessons && state.lessons.length > 0) {
-          captureSnapshot('Trước khi dọn trùng lặp');
-        }
         let dirty = false;
         let cleanedCount = 0;
-
-        // Lưu bản sao lưu trước khi dọn dẹp vào backup_before_cleanup
-        const backupData = {
-          lessons: JSON.parse(JSON.stringify(state.lessons || [])),
-          categories: JSON.parse(JSON.stringify(state.categories || [])),
-          trash: JSON.parse(JSON.stringify(state.trash || [])),
-          timestamp: Date.now()
-        };
-        try {
-          if (!localStorage.getItem('backup_before_cleanup')) {
-            localStorage.setItem('backup_before_cleanup', JSON.stringify(backupData));
-          }
-        } catch (_) {}
 
         const tombstones = getTombstones();
 
@@ -19590,6 +19544,20 @@
         }
 
         if (dirty) {
+          // Chỉ chụp snapshot và lưu bản sao lưu khi thực sự phát hiện có dữ liệu rác/trùng lặp
+          try {
+            captureSnapshot('Trước khi dọn trùng lặp');
+            const backupData = {
+              lessons: JSON.parse(JSON.stringify(state.lessons || [])),
+              categories: JSON.parse(JSON.stringify(state.categories || [])),
+              trash: JSON.parse(JSON.stringify(state.trash || [])),
+              timestamp: Date.now()
+            };
+            if (!localStorage.getItem('backup_before_cleanup')) {
+              localStorage.setItem('backup_before_cleanup', JSON.stringify(backupData));
+            }
+          } catch (_) {}
+
           saveLocalLessons();
           saveLocalTrash();
           saveLocalCategories();
@@ -19869,7 +19837,23 @@
           } catch (_) {}
         }
 
-        if (state.lessons.length > 0 && !state.activeLessonId) {
+        // Single-Pass Boot: Đọc cấu hình gần nhất từ cache để chọn đúng bài học dở dang ngay từ 0ms (chống nạp bài 0 rồi đổi sang bài khác)
+        let earlyPreferredId = null;
+        try {
+          const lastUid = localStorage.getItem('last_auth_user_uid');
+          const uKey = lastUid ? `user_cfg_${lastUid}` : 'user_cfg_guest';
+          const rawCfg = localStorage.getItem(uKey);
+          if (rawCfg) {
+            const pCfg = JSON.parse(rawCfg);
+            if (pCfg && pCfg.lastActiveLessonId) earlyPreferredId = pCfg.lastActiveLessonId;
+          }
+        } catch (_) {}
+
+        if (earlyPreferredId && state.lessons.some(l => l.id === earlyPreferredId)) {
+          state.activeLessonId = earlyPreferredId;
+          const matched = state.lessons.find(l => l.id === earlyPreferredId);
+          if (matched) state.activeCategoryId = matched.categoryId;
+        } else if (state.lessons.length > 0 && !state.activeLessonId) {
           state.activeLessonId = state.lessons[0].id;
           state.activeCategoryId = state.lessons[0].categoryId;
         } else if (state.lessons.length === 0) {
@@ -21613,12 +21597,17 @@
         });
         loadedLessons.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-        // Deduplicate loaded lessons by ID
+        // Deduplicate loaded lessons by ID & Kế thừa htmlContent đang có trong RAM để chống nạp lại Iframe
         const uniqueLessons = [];
         const seenLessons = new Set();
+        const oldLessonsMap = new Map((state.lessons || []).map(oldL => [oldL.id, oldL]));
         for (const l of loadedLessons) {
           if (!seenLessons.has(l.id)) {
             seenLessons.add(l.id);
+            const oldL = oldLessonsMap.get(l.id);
+            if (oldL && oldL.htmlContent && !l.htmlContent) {
+              l.htmlContent = oldL.htmlContent;
+            }
             uniqueLessons.push(l);
           }
         }
@@ -21674,7 +21663,12 @@
             try { renderSidebarPlans(); } catch (_) {}
           } else {
             scheduleRenderCategoriesAndLessons();
-            renderActiveLesson();
+            // Single-Pass Guard: Nếu bài học active đã được render xong và có nội dung trong Iframe, không nạp lại Iframe lần 2
+            const currentActive = state.lessons.find(l => l.id === state.activeLessonId);
+            const isAlreadyRenderedWithContent = (state.renderedLessonId === state.activeLessonId) && Boolean(currentActive && currentActive.htmlContent);
+            if (!isAlreadyRenderedWithContent) {
+              renderActiveLesson();
+            }
             try { renderSidebarPlans(); } catch (_) {}
           }
         }
@@ -25509,6 +25503,7 @@
         state.activeCategoryId = lesson.categoryId;
         // // FEATURE-6: Theo dõi thời điểm mở gần nhất
         lesson.lastOpenedAt = Date.now();
+        recentLocalLessonFieldUpdates.set(lessonId, Date.now());
         saveLocalLessons();
         if (state.userId && !state.useLocalFallback && db) {
           updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'lessons', lessonId), { lastOpenedAt: lesson.lastOpenedAt }).catch(() => {});

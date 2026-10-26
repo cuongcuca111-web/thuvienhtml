@@ -3781,25 +3781,17 @@
     @keyframes searchBackdropFadeIn {
       from {
         opacity: 0;
-        backdrop-filter: blur(0px);
-        -webkit-backdrop-filter: blur(0px);
       }
       to {
         opacity: 1;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
       }
     }
     @keyframes searchBackdropFadeOut {
       from {
         opacity: 1;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
       }
       to {
         opacity: 0;
-        backdrop-filter: blur(0px);
-        -webkit-backdrop-filter: blur(0px);
       }
     }
 
@@ -3831,25 +3823,21 @@
     @keyframes searchPaletteScaleDown {
       0% {
         opacity: 0;
-        transform: translate(-50%, -14px) scale(0.975);
-        filter: blur(4px);
+        transform: translate3d(-50%, -14px, 0) scale(0.975);
       }
       100% {
         opacity: 1;
-        transform: translate(-50%, 0) scale(1);
-        filter: blur(0);
+        transform: translate3d(-50%, 0, 0) scale(1);
       }
     }
     @keyframes searchPaletteScaleUpOut {
       0% {
         opacity: 1;
-        transform: translate(-50%, 0) scale(1);
-        filter: blur(0);
+        transform: translate3d(-50%, 0, 0) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translate(-50%, -10px) scale(0.985);
-        filter: blur(3px);
+        transform: translate3d(-50%, -10px, 0) scale(0.985);
       }
     }
 
@@ -3875,25 +3863,21 @@
     @keyframes searchPaletteSlideUp {
       0% {
         opacity: 0;
-        transform: translateY(28px) scale(0.98);
-        filter: blur(3px);
+        transform: translate3d(0, 28px, 0) scale(0.98);
       }
       100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
+        transform: translate3d(0, 0, 0) scale(1);
       }
     }
     @keyframes searchPaletteSlideDown {
       0% {
         opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
+        transform: translate3d(0, 0, 0) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translateY(20px) scale(0.985);
-        filter: blur(2px);
+        transform: translate3d(0, 20px, 0) scale(0.985);
       }
     }
 

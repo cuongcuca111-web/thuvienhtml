@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.78',
+    date: '2026-10-26T16:50:00+07:00',
+    title: 'Kiến Trúc Khởi Động Single-Pass Boot, Triệt Tiêu Nạp Kép & Gia Tốc 60/120fps Toàn Diện',
+    items: [
+      { type: 'improved', text: 'Triệt tiêu 100% lỗi nạp kép khi khởi động (Single-Pass Boot): Nhận diện đúng bài học dở dang từ bộ nhớ đệm ngay tại 0ms và kế thừa htmlContent trong RAM khi kết nối Firestore, loại bỏ hoàn toàn hiện tượng chớp nháy và nạp lại Iframe lần 2.' },
+      { type: 'improved', text: 'Triệt tiêu Re-render ngầm khi chọn bài: Ghi nhận dấu mốc thay đổi cục bộ cho thuộc tính lastOpenedAt, chặn đứng việc Firestore echo phản hồi làm vẽ lại toàn bộ danh mục và nạp lại bài học sau 200ms.' },
+      { type: 'performance', text: 'Mở Popup & Modal tức thì 0ms (Zero Reflow): Tháo bỏ MutationObserver quét cây DOM toàn trang, thay bằng trigger trực tiếp qua showModalAnimated/hideModalAnimated; loại bỏ hoàn toàn getComputedStyle và animation làm mờ filter blur() trên GPU.' },
+      { type: 'performance', text: 'Tối ưu hóa sâu autoCleanupDuplicateData & Canvas Hạt: Chỉ chụp snapshot sao lưu khi phát hiện dữ liệu trùng thực tế; loại bỏ hoàn toàn shadowBlur trên Canvas 2D, duy trì tốc độ khung hình 60/120fps siêu mượt.' }
+    ]
+  },
+  {
     version: 'v5.8.77',
     date: '2026-10-26T16:15:00+07:00',
     title: 'Tinh Gọn Giao Diện Nút Thao Tác Flashcard (Chưa Nhớ & Đã Nhớ)',
