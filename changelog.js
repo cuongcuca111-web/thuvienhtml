@@ -2,6 +2,17 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.74',
+    date: '2026-10-26T15:45:00+07:00',
+    title: 'Hệ Thống Dual-Mode AI Flashcard & Quiz Generator (Phân Hóa Mục Tiêu & Co Giãn Số Chữ)',
+    items: [
+      { type: 'new', text: 'Cơ chế Dual-Mode phân tách 2 Tab chuyên biệt: Tách biệt hoàn toàn Tab Chế độ AI (Theo mục tiêu) và Tab Theo số chữ bài học với thiết kế Segmented Control công thái học.' },
+      { type: 'new', text: '3 Tùy chọn Mục tiêu Học tập theo thang đo nhận thức Bloom: Bổ sung 3 mức Học sơ qua để thi (chắt lọc cốt lõi), Học để hiểu (phân tích bản chất & cơ chế) và Học để đạt điểm A+ (quét 100% ngóc ngách, câu hỏi vận dụng & bẫy đề) kèm badge dự kiến số câu tự động co giãn theo dung lượng.' },
+      { type: 'new', text: 'Tab Số lượng Động theo Dung lượng Bài học: Tự động đo số chữ thực tế (lọc sạch mã rác) và tính toán 3 mốc số lượng tương ứng (Nhanh, Chuẩn [Khuyên dùng], Chi tiết) khớp chính xác với độ dài file bài học.' },
+      { type: 'improved', text: 'Tối ưu hóa Prompt phân tầng & Mở trần Token: Tự động điều chỉnh Token (lên tới 8192 tokens) và chỉ thị phân bổ đều qua các phân đoạn của bài học, đảm bảo AI không bị lười về cuối hay cắt cụt JSON.' }
+    ]
+  },
+  {
     version: 'v5.8.73',
     date: '2026-10-26T15:20:00+07:00',
     title: 'Khắc Phục Triệt Để Lỗi Bấm Nút Đã Nhớ Nhảy Cóc Thẻ Flashcard',

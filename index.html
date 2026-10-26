@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.73"></script>
+  <script src="./changelog.js?v=5.8.74"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.73',
+        version: 'v5.8.74',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.73';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.74';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.73">
-  <script src="./bridge.js?v=5.8.73"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.74">
+  <script src="./bridge.js?v=5.8.74"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.73 • build 26/10/2026 15:20</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.74 • build 26/10/2026 15:45</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.73</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.74</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.73 • build 26/10/2026 15:20</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.74 • build 26/10/2026 15:45</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -4254,25 +4254,84 @@
             </label>
           </div>
 
-          <!-- Số lượng câu hỏi -->
-          <div class="flex flex-col gap-2 pt-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs font-medium text-[#57534E] dark:text-[#9AA3B2]">Số lượng:</span>
-              <div class="inline-flex flex-wrap items-center bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl p-1 text-xs gap-1 font-medium">
-                <button type="button" id="btnSelfTestCountAuto" data-count="auto" class="self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5" title="AI tự ước lượng số lượng câu hỏi phù hợp nhất theo số lượng bài học">
-                  <svg class="w-3.5 h-3.5 shrink-0 self-test-auto-icon" aria-hidden="true"><use href="#icon-ai-auto"></use></svg>
-                  <span>Tự động (AI đề xuất)</span>
-                  <span id="selfTestAutoCountBadge" class="text-[10.5px] font-mono opacity-90 font-medium ml-0.5">(~10 câu)</span>
+          <!-- Bộ chọn Cơ chế Số lượng & Mục tiêu (Dual-Mode AI Generator) -->
+          <div class="flex flex-col gap-2.5 pt-1">
+            <!-- Header chuyển đổi 2 Tab Chế độ -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-semibold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                Cơ chế tạo câu hỏi:
+              </span>
+              
+              <!-- Tab Switcher Segmented Control -->
+              <div class="inline-flex items-center p-0.5 bg-[#FAF9F5] dark:bg-[#12151B] border border-[#E7E5DF] dark:border-[#262C36] rounded-xl text-xs font-medium">
+                <button type="button" id="btnSelfTestTabAiGoal" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5">
+                  <span>🎯 Chế độ AI (Mục tiêu)</span>
                 </button>
-                <button type="button" data-count="5" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5">5 câu (Nhanh)</button>
-                <button type="button" data-count="10" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5">10 câu (Chuẩn)</button>
-                <button type="button" data-count="15" class="self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5">15 câu (Chuyên sâu)</button>
+                <button type="button" id="btnSelfTestTabWordCount" class="px-2.5 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer flex items-center gap-1.5">
+                  <span>📊 Theo số chữ bài học</span>
+                </button>
               </div>
             </div>
-            <!-- Chú thích số lượng dự kiến trực quan realtime -->
+
+            <!-- Panel 1: 🎯 Chế độ AI (3 Tùy chọn Mục tiêu Học tập) -->
+            <div id="selfTestAiGoalPanel" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <!-- Nút 1: Học sơ qua để thi -->
+              <button type="button" data-goal="cram" class="self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
+                    <span>⚡ Học sơ qua để thi</span>
+                  </span>
+                  <span class="goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+                </div>
+                <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Chỉ nắm ý chính, định nghĩa cốt lõi nhất để thi</span>
+                <span id="badgeGoalCram" class="mt-2 text-[10px] font-mono font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md inline-block w-fit">~6 câu</span>
+              </button>
+
+              <!-- Nút 2: Học để hiểu (Active mặc định) -->
+              <button type="button" data-goal="understand" class="self-test-goal-btn p-2.5 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 text-left transition cursor-pointer flex flex-col justify-between group select-none shadow-2xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-indigo-950 dark:text-indigo-200 flex items-center gap-1">
+                    <span>🧠 Học để hiểu</span>
+                    <span class="text-[9.5px] px-1 py-0.2 rounded bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 font-normal">Khuyên dùng</span>
+                  </span>
+                  <span class="goal-radio-circle w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
+                </div>
+                <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Hiểu sâu bản chất, nguyên lý & mối liên hệ</span>
+                <span id="badgeGoalUnderstand" class="mt-2 text-[10px] font-mono font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-900/60 px-2 py-0.5 rounded-md inline-block w-fit">~10 câu</span>
+              </button>
+
+              <!-- Nút 3: Học để đạt điểm A+ -->
+              <button type="button" data-goal="mastery" class="self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-[#1C1917] dark:text-[#EDECE8] flex items-center gap-1">
+                    <span>🏆 Học để đạt A+</span>
+                  </span>
+                  <span class="goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+                </div>
+                <span class="text-[11px] text-[#57534E] dark:text-[#9AA3B2] leading-tight">Quét sạch 100% chi tiết, tình huống & bẫy đề</span>
+                <span id="badgeGoalMastery" class="mt-2 text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md inline-block w-fit">~16 câu</span>
+              </button>
+            </div>
+
+            <!-- Panel 2: 📊 Theo số chữ bài học (Ẩn mặc định, tự co giãn mốc theo số từ) -->
+            <div id="selfTestWordCountPanel" class="hidden flex flex-col gap-2">
+              <div class="flex items-center justify-between text-xs text-[#57534E] dark:text-[#9AA3B2] bg-[#FAF9F5] dark:bg-[#12151B] px-3 py-1.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36]">
+                <span id="selfTestWordCountMeta" class="flex items-center gap-1.5 font-medium">
+                  <svg class="w-3.5 h-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                  Đang tính dung lượng bài học...
+                </span>
+                <span class="text-[11px] text-stone-400">Tự động cân đối theo thời lượng đọc</span>
+              </div>
+              <div id="selfTestWordCountBtnGroup" class="grid grid-cols-3 gap-2">
+                <!-- 3 nút co giãn sẽ được JS tự động render theo số từ của bài -->
+              </div>
+            </div>
+
+            <!-- Chú thích số lượng & mục tiêu dự kiến trực quan realtime -->
             <div id="selfTestCountHintBox" class="text-[11px] text-indigo-700 dark:text-indigo-300 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 px-3 py-2 rounded-xl flex items-start gap-2 transition-all">
               <svg class="w-3.5 h-3.5 shrink-0 mt-0.5 text-indigo-600 dark:text-indigo-400" aria-hidden="true"><use href="#icon-ai-lightbulb"></use></svg>
-              <div id="selfTestCountHintText" class="leading-relaxed">💡 <strong>AI đề xuất dự kiến:</strong> ~10 câu (gồm 5 trắc nghiệm + 5 flashcards, phân bổ đều theo 1 bài học đã chọn).</div>
+              <div id="selfTestCountHintText" class="leading-relaxed">💡 <strong>Mục tiêu: Học để hiểu</strong> — Dự kiến ~10 câu (phân bổ đều theo bài học đã chọn).</div>
             </div>
           </div>
         </div>
@@ -6851,8 +6910,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.73</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.73</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.74</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.74</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -39564,7 +39623,9 @@
     const tokenOptDetailsBox = document.getElementById('tokenOptDetailsBox');
 
     let selfTestSelectedLessonIds = new Set();
-    let selfTestTargetCount = 'auto';
+    let selfTestCountMode = 'ai_goal'; // 'ai_goal' | 'word_count'
+    let selfTestAiGoal = 'understand'; // 'cram' | 'understand' | 'mastery'
+    let selfTestTargetCount = 'auto'; // 'auto' hoặc số nguyên
     let selfTestActiveType = 'mixed';
     const lessonWordCountCache = new Map();
 
@@ -39604,29 +39665,83 @@
       return words;
     }
 
-    function calculateSelfTestExpectedCounts(totalWords, lessonCount = 1, testType = 'mixed') {
+    // Thuật toán tính số lượng kỳ vọng thông minh theo Dung lượng từ và Mục tiêu học tập
+    function calculateSelfTestExpectedCounts(totalWords, lessonCount = 1, testType = 'mixed', goal = 'understand') {
       const n = Math.max(1, parseInt(lessonCount, 10) || 1);
       const w = Math.max(50, parseInt(totalWords, 10) || 500);
 
+      // 1. Mốc cơ sở N_base theo độ dài từ w và testType
+      let baseCount = 10;
       if (testType === 'flashcard') {
         const minFC = Math.max(5, n * 2);
-        const wordsFC = Math.round(3 + w / 95);
-        const fc = Math.min(35, Math.max(minFC, wordsFC));
-        return { total: fc, quizzes: 0, flashcards: fc, perLesson: Math.max(1, Math.round(fc / n)), words: w };
-      }
-      if (testType === 'quiz') {
+        baseCount = Math.min(30, Math.max(minFC, Math.round(3 + w / 110)));
+      } else if (testType === 'quiz') {
         const minQuiz = Math.max(5, n * 2);
-        const wordsQuiz = Math.round(3 + w / 115);
-        const qz = Math.min(35, Math.max(minQuiz, wordsQuiz));
-        return { total: qz, quizzes: qz, flashcards: 0, perLesson: Math.max(1, Math.round(qz / n)), words: w };
+        baseCount = Math.min(30, Math.max(minQuiz, Math.round(3 + w / 125)));
+      } else {
+        const minTotal = Math.max(6, n * 3);
+        baseCount = Math.min(32, Math.max(minTotal, Math.round(4 + w / 135)));
       }
-      // mixed
-      const minTotal = Math.max(6, n * 3);
-      const wordsTotal = Math.round(4 + w / 130);
-      const total = Math.min(40, Math.max(minTotal, wordsTotal));
-      const qz = Math.round(total / 2);
-      const fc = total - qz;
-      return { total, quizzes: qz, flashcards: fc, perLesson: Math.max(1, Math.round(total / n)), words: w };
+
+      // 2. Áp dụng hệ số mục tiêu AI (cram: ~0.65x, understand: 1.0x, mastery: ~1.55x)
+      let targetTotal = baseCount;
+      if (goal === 'cram') {
+        targetTotal = Math.min(12, Math.max(Math.max(4, n * 1), Math.round(baseCount * 0.65)));
+      } else if (goal === 'mastery') {
+        targetTotal = Math.min(38, Math.max(Math.max(10, n * 4), Math.round(baseCount * 1.55)));
+      } else {
+        targetTotal = baseCount;
+      }
+
+      let qz = 0;
+      let fc = 0;
+      if (testType === 'flashcard') {
+        fc = targetTotal;
+      } else if (testType === 'quiz') {
+        qz = targetTotal;
+      } else {
+        qz = Math.round(targetTotal / 2);
+        fc = targetTotal - qz;
+      }
+
+      return {
+        total: targetTotal,
+        quizzes: qz,
+        flashcards: fc,
+        perLesson: Math.max(1, Math.round(targetTotal / n)),
+        words: w,
+        baseCount
+      };
+    }
+
+    // Tính toán 3 mốc số lượng động theo số từ của bài
+    function getWordCountDynamicTiers(totalWords) {
+      const w = Math.max(50, parseInt(totalWords, 10) || 500);
+      if (w < 500) {
+        return [
+          { count: 4, label: '4 câu (Tóm lược)' },
+          { count: 6, label: '✨ 6 câu (Đề xuất)', isRecommended: true },
+          { count: 8, label: '8 câu (Chi tiết)' }
+        ];
+      } else if (w < 1500) {
+        return [
+          { count: 6, label: '6 câu (Nhanh)' },
+          { count: 10, label: '✨ 10 câu (Đề xuất)', isRecommended: true },
+          { count: 15, label: '15 câu (Chi tiết)' }
+        ];
+      } else if (w < 3000) {
+        return [
+          { count: 10, label: '10 câu (Nhanh)' },
+          { count: 15, label: '✨ 15 câu (Đề xuất)', isRecommended: true },
+          { count: 20, label: '20 câu (Chi tiết)' }
+        ];
+      } else {
+        return [
+          { count: 12, label: '12 câu (Nhanh)' },
+          { count: 18, label: '✨ 18 câu (Đề xuất)', isRecommended: true },
+          { count: 25, label: '25 câu (Toàn diện)' }
+        ];
+      }
     }
 
     let _selfTestExpectedRenderSeq = 0;
@@ -39650,29 +39765,74 @@
       if (estimatedWords < 50) estimatedWords = 500 * lessonCount;
 
       const applyUI = (words) => {
-        const expected = calculateSelfTestExpectedCounts(words, lessonCount, testType);
-        const autoBadge = document.getElementById('selfTestAutoCountBadge');
-        if (autoBadge) {
-          autoBadge.innerText = `(~${expected.total} câu)`;
+        const formattedWords = words >= 1000 ? words.toLocaleString('vi-VN') : words;
+        const estMinutes = Math.max(1, Math.round(words / 220));
+
+        // Cập nhật số lượng ước tính trên 3 thẻ Mục Tiêu AI (Tab 1)
+        const expCram = calculateSelfTestExpectedCounts(words, lessonCount, testType, 'cram');
+        const expUnderstand = calculateSelfTestExpectedCounts(words, lessonCount, testType, 'understand');
+        const expMastery = calculateSelfTestExpectedCounts(words, lessonCount, testType, 'mastery');
+
+        const bCram = document.getElementById('badgeGoalCram');
+        if (bCram) bCram.innerText = `~${expCram.total} câu`;
+
+        const bUnderstand = document.getElementById('badgeGoalUnderstand');
+        if (bUnderstand) bUnderstand.innerText = `~${expUnderstand.total} câu`;
+
+        const bMastery = document.getElementById('badgeGoalMastery');
+        if (bMastery) bMastery.innerText = `~${expMastery.total} câu`;
+
+        // Cập nhật thông tin dung lượng và 3 mốc động (Tab 2)
+        const wordMeta = document.getElementById('selfTestWordCountMeta');
+        const tiers = getWordCountDynamicTiers(words);
+        const recTier = tiers.find(t => t.isRecommended) || tiers[1];
+
+        if (wordMeta) {
+          wordMeta.innerHTML = `<svg class="w-3.5 h-3.5 text-indigo-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <span>Bài học gồm <strong>${formattedWords} từ</strong> (~${estMinutes} phút đọc) • Khuyên dùng: <strong>${recTier.count} câu</strong></span>`;
         }
 
-        const hintBox = document.getElementById('selfTestCountHintBox');
-        const hintText = document.getElementById('selfTestCountHintText');
-        if (hintBox && hintText) {
-          const formattedWords = words >= 1000 ? words.toLocaleString('vi-VN') : words;
-          const lessonSuffix = lessonCount > 1 ? `, trung bình ~${expected.perLesson} câu/bài` : '';
+        const btnGroup = document.getElementById('selfTestWordCountBtnGroup');
+        if (btnGroup) {
+          btnGroup.innerHTML = '';
+          tiers.forEach(t => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.setAttribute('data-count', String(t.count));
+            const isSelected = (selfTestCountMode === 'word_count' && selfTestTargetCount === t.count) ||
+                               (selfTestCountMode === 'word_count' && selfTestTargetCount === 'auto' && t.isRecommended);
 
-          if (selfTestTargetCount === 'auto') {
-            if (testType === 'flashcard') {
-              hintText.innerHTML = `💡 <strong>AI đề xuất chính xác:</strong> ĐÚNG ${expected.total} thẻ flashcard (~${formattedWords} từ, phân bổ đều cho ${lessonCount} bài học đã chọn${lessonSuffix}).`;
-            } else if (testType === 'quiz') {
-              hintText.innerHTML = `💡 <strong>AI đề xuất chính xác:</strong> ĐÚNG ${expected.total} câu trắc nghiệm (~${formattedWords} từ, phân bổ đều cho ${lessonCount} bài học đã chọn${lessonSuffix}).`;
+            btn.className = isSelected
+              ? "self-test-wc-btn p-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold text-xs transition cursor-pointer flex flex-col items-center justify-center gap-0.5 shadow-2xs"
+              : "self-test-wc-btn p-2 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 text-[#57534E] dark:text-[#9AA3B2] text-xs transition cursor-pointer flex flex-col items-center justify-center gap-0.5";
+
+            btn.innerHTML = `<span class="font-bold text-xs">${t.label}</span>
+                             <span class="text-[10px] opacity-75 font-mono">${t.count} mục</span>`;
+
+            btn.onclick = () => {
+              selfTestTargetCount = t.count;
+              updateSelfTestExpectedCountUI();
+            };
+            btnGroup.appendChild(btn);
+          });
+        }
+
+        // Cập nhật Hint Box giải thích trực quan theo chế độ hiện tại
+        const hintText = document.getElementById('selfTestCountHintText');
+        if (hintText) {
+          const lessonSuffix = lessonCount > 1 ? `, phân bổ đều cho ${lessonCount} bài học` : '';
+
+          if (selfTestCountMode === 'ai_goal') {
+            if (selfTestAiGoal === 'cram') {
+              hintText.innerHTML = `💡 <strong>Mục tiêu: Học sơ qua để thi (~${expCram.total} câu)</strong> — Tập trung 100% vào định nghĩa, công thức & ý cốt lõi nhất để vượt qua kỳ thi (${formattedWords} từ${lessonSuffix}).`;
+            } else if (selfTestAiGoal === 'mastery') {
+              hintText.innerHTML = `💡 <strong>Mục tiêu: Học để đạt điểm A+ (~${expMastery.total} câu)</strong> — Quét sạch 100% chi tiết phụ, câu hỏi tình huống thực tế, bẫy đề và vận dụng cao (${formattedWords} từ${lessonSuffix}).`;
             } else {
-              hintText.innerHTML = `💡 <strong>AI đề xuất chính xác:</strong> ĐÚNG ${expected.total} câu (gồm ${expected.quizzes} trắc nghiệm + ${expected.flashcards} flashcards, ~${formattedWords} từ, phân bổ đều cho ${lessonCount} bài học đã chọn${lessonSuffix}).`;
+              hintText.innerHTML = `💡 <strong>Mục tiêu: Học để hiểu (~${expUnderstand.total} câu)</strong> — Phân tích bản chất, cơ chế hoạt động, nguyên nhân - kết quả & liên kết kiến thức toàn bài (${formattedWords} từ${lessonSuffix}).`;
             }
           } else {
-            const fixedNum = parseInt(selfTestTargetCount, 10) || 10;
-            hintText.innerHTML = `💡 <strong>Số lượng cố định:</strong> ${fixedNum} câu/thẻ (trên tổng ~${formattedWords} từ của ${lessonCount} bài học đã chọn).`;
+            const fixedCount = typeof selfTestTargetCount === 'number' ? selfTestTargetCount : recTier.count;
+            hintText.innerHTML = `💡 <strong>Số lượng theo dung lượng bài học:</strong> ĐÚNG ${fixedCount} câu/thẻ (trên tổng ~${formattedWords} từ của ${lessonCount} bài học đã chọn).`;
           }
         }
       };
@@ -39680,9 +39840,6 @@
       // 2. Cơ chế đợi: Nếu có bài chưa nạp đủ dung lượng từ IndexedDB -> Bật spinner & disable nút tạm thời
       const missingLessons = selectedLessons.filter(l => !lessonWordCountCache.has(l.id));
       if (missingLessons.length > 0) {
-        const autoBadge = document.getElementById('selfTestAutoCountBadge');
-        if (autoBadge) autoBadge.innerText = '(Đang tính...)';
-
         const hintText = document.getElementById('selfTestCountHintText');
         if (hintText) {
           hintText.innerHTML = `<span class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-medium animate-pulse">
@@ -39722,24 +39879,70 @@
       }
     }
 
+    // Gắn sự kiện chuyển đổi 2 Tab (Chế độ AI vs Theo số chữ)
+    const btnTabAiGoal = document.getElementById('btnSelfTestTabAiGoal');
+    const btnTabWordCount = document.getElementById('btnSelfTestTabWordCount');
+    const panelAiGoal = document.getElementById('selfTestAiGoalPanel');
+    const panelWordCount = document.getElementById('selfTestWordCountPanel');
+
+    function switchSelfTestCountTab(mode) {
+      selfTestCountMode = mode;
+      if (mode === 'ai_goal') {
+        if (btnTabAiGoal) {
+          btnTabAiGoal.className = "px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5";
+        }
+        if (btnTabWordCount) {
+          btnTabWordCount.className = "px-2.5 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer flex items-center gap-1.5";
+        }
+        if (panelAiGoal) panelAiGoal.classList.remove('hidden');
+        if (panelWordCount) panelWordCount.classList.add('hidden');
+        selfTestTargetCount = 'auto';
+      } else {
+        if (btnTabWordCount) {
+          btnTabWordCount.className = "px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5";
+        }
+        if (btnTabAiGoal) {
+          btnTabAiGoal.className = "px-2.5 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 dark:hover:text-indigo-400 transition cursor-pointer flex items-center gap-1.5";
+        }
+        if (panelWordCount) panelWordCount.classList.remove('hidden');
+        if (panelAiGoal) panelAiGoal.classList.add('hidden');
+        if (typeof selfTestTargetCount !== 'number') {
+          selfTestTargetCount = 10;
+        }
+      }
+      updateSelfTestExpectedCountUI();
+    }
+
+    if (btnTabAiGoal) btnTabAiGoal.onclick = () => switchSelfTestCountTab('ai_goal');
+    if (btnTabWordCount) btnTabWordCount.onclick = () => switchSelfTestCountTab('word_count');
+
+    // Gắn sự kiện chọn Mục tiêu học tập (cram, understand, mastery)
+    document.querySelectorAll('.self-test-goal-btn').forEach(btn => {
+      btn.onclick = () => {
+        const goal = btn.getAttribute('data-goal');
+        selfTestAiGoal = goal || 'understand';
+
+        document.querySelectorAll('.self-test-goal-btn').forEach(b => {
+          const circle = b.querySelector('.goal-radio-circle');
+          const isThis = b.getAttribute('data-goal') === selfTestAiGoal;
+          if (isThis) {
+            b.className = "self-test-goal-btn p-2.5 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 text-left transition cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
+            if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400";
+          } else {
+            b.className = "self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none";
+            if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600";
+          }
+        });
+
+        updateSelfTestExpectedCountUI();
+      };
+    });
+
     if (btnToggleTokenOptDetails && tokenOptDetailsBox) {
       btnToggleTokenOptDetails.onclick = () => {
         tokenOptDetailsBox.classList.toggle('hidden');
       };
     }
-
-    // Chuyển đổi số lượng câu hỏi (auto, 5, 10, 15)
-    document.querySelectorAll('.self-test-count-btn').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('.self-test-count-btn').forEach(b => {
-          b.className = "self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5";
-        });
-        btn.className = "self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5";
-        const val = btn.getAttribute('data-count');
-        selfTestTargetCount = val === 'auto' ? 'auto' : (parseInt(val, 10) || 10);
-        updateSelfTestExpectedCountUI();
-      };
-    });
 
     // Chuyển đổi loại bài (mixed, quiz, flashcard)
     document.querySelectorAll('.self-test-type-opt input[name="selfTestType"]').forEach(radio => {
@@ -39845,12 +40048,20 @@
       if (selfTestLoadingState) selfTestLoadingState.classList.add('hidden');
       if (btnStartGenerateSelfTest) btnStartGenerateSelfTest.disabled = false;
 
+      selfTestCountMode = 'ai_goal';
+      selfTestAiGoal = 'understand';
       selfTestTargetCount = 'auto';
-      document.querySelectorAll('.self-test-count-btn').forEach(b => {
-        if (b.getAttribute('data-count') === 'auto') {
-          b.className = "self-test-count-btn px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold shadow-2xs transition cursor-pointer flex items-center gap-1.5";
+      if (typeof switchSelfTestCountTab === 'function') {
+        switchSelfTestCountTab('ai_goal');
+      }
+      document.querySelectorAll('.self-test-goal-btn').forEach(b => {
+        const circle = b.querySelector('.goal-radio-circle');
+        if (b.getAttribute('data-goal') === 'understand') {
+          b.className = "self-test-goal-btn p-2.5 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 text-left transition cursor-pointer flex flex-col justify-between group select-none shadow-2xs";
+          if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400";
         } else {
-          b.className = "self-test-count-btn px-3 py-1 rounded-lg text-[#57534E] dark:text-[#9AA3B2] hover:text-indigo-600 transition cursor-pointer flex items-center gap-1.5";
+          b.className = "self-test-goal-btn p-2.5 rounded-xl border border-[#E7E5DF] dark:border-[#262C36] bg-white dark:bg-[#161A22] hover:border-indigo-400 dark:hover:border-indigo-500 text-left transition cursor-pointer flex flex-col justify-between group select-none";
+          if (circle) circle.className = "goal-radio-circle w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600";
         }
       });
       renderSelfTestLessonPicker('');
@@ -40041,19 +40252,29 @@
         const actualWordCount = Math.max(50, totalLessonWords);
         const lessonN = selectedLessons.length || 1;
         const isAuto = config.count === 'auto';
-        const expected = calculateSelfTestExpectedCounts(actualWordCount, lessonN, config.testType || 'mixed');
+        const reqGoal = config.goal || 'understand';
+        const expected = calculateSelfTestExpectedCounts(actualWordCount, lessonN, config.testType || 'mixed', reqGoal);
         const coverageDirect = lessonN > 1
           ? `Tài liệu gồm ${lessonN} bài học khác nhau (tổng ~${actualWordCount} từ), BẮT BUỘC biên soạn câu hỏi/thẻ nhớ phân bổ đồng đều cho TẤT CẢ các bài học (mỗi bài tối thiểu 2-3 câu), không được bỏ sót bài học nào!`
           : `Khai thác toàn diện các khái niệm, định nghĩa và nội dung trọng tâm của bài học (~${actualWordCount} từ).`;
 
+        let goalPedagogy = '';
+        if (reqGoal === 'cram') {
+          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC SƠ QUA ĐỂ THI]: Trích xuất các định nghĩa cốt lõi, công thức, số liệu then chốt nhất dễ xuất hiện trong đề thi. Câu hỏi ngắn gọn, trực diện (cấp độ Nhớ).`;
+        } else if (reqGoal === 'mastery') {
+          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ ĐẠT ĐIỂM A+]: Quét vét cạn 100% ngóc ngách, ý chính lẫn ý phụ, các trường hợp ngoại lệ, chú thích nhỏ. Thiết kế câu hỏi tình huống thực tế, bài tập vận dụng và các phương án nhiễu rất sát nhau để bẫy thí sinh và phân loại học lực xuất sắc (cấp độ Vận dụng cao & Đánh giá).`;
+        } else {
+          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ HIỂU]: Phủ đều các phần lớn của bài học. Tập trung câu hỏi vào bản chất khái niệm, cơ chế hoạt động, nguyên nhân - kết quả và so sánh phân tích (cấp độ Hiểu & Phân tích).`;
+        }
+
         let countInstruction = '';
         if (isAuto) {
           if (config.testType === 'flashcard') {
-            countInstruction = `BẮT BUỘC biên soạn ĐỦ ĐÚNG ${expected.flashcards} thẻ flashcard (không được ít hơn hoặc nhiều hơn, phù hợp với ~${actualWordCount} từ của ${lessonN} bài học). ${coverageDirect}`;
+            countInstruction = `${goalPedagogy} BẮT BUỘC biên soạn ĐỦ ĐÚNG ${expected.flashcards} thẻ flashcard (phù hợp với mục tiêu và ~${actualWordCount} từ của ${lessonN} bài học). ${coverageDirect}`;
           } else if (config.testType === 'quiz') {
-            countInstruction = `BẮT BUỘC biên soạn ĐỦ ĐÚNG ${expected.quizzes} câu trắc nghiệm 4 đáp án (không được ít hơn hoặc nhiều hơn, phù hợp với ~${actualWordCount} từ của ${lessonN} bài học). ${coverageDirect}`;
+            countInstruction = `${goalPedagogy} BẮT BUỘC biên soạn ĐỦ ĐÚNG ${expected.quizzes} câu trắc nghiệm 4 đáp án (phù hợp với mục tiêu và ~${actualWordCount} từ của ${lessonN} bài học). ${coverageDirect}`;
           } else {
-            countInstruction = `BẮT BUỘC biên soạn ĐỦ ĐÚNG ${expected.quizzes} câu trắc nghiệm và ${expected.flashcards} thẻ flashcard (Tổng ĐÚNG ${expected.total} mục, không được ít hơn hoặc nhiều hơn). ${coverageDirect}`;
+            countInstruction = `${goalPedagogy} BẮT BUỘC biên soạn ĐỦ ĐÚNG ${expected.quizzes} câu trắc nghiệm và ${expected.flashcards} thẻ flashcard (Tổng ĐÚNG ${expected.total} mục). ${coverageDirect}`;
           }
         } else {
           const fixedTotal = parseInt(config.count, 10) || 10;
@@ -40086,7 +40307,7 @@
               generationConfig: {
                 responseMimeType: "application/json",
                 temperature: 0.2,
-                maxOutputTokens: 6000
+                maxOutputTokens: (reqGoal === 'mastery' || expected.total > 15) ? 8192 : 6000
               }
             })
           });
@@ -40114,6 +40335,8 @@
               mode: 'self_test',
               text: fullDistilledText,
               testType: config.testType || 'mixed',
+              countMode: config.countMode || 'ai_goal',
+              goal: config.goal || 'understand',
               count: config.count || 'auto',
               wordCount: (typeof actualWordCount === 'number' && actualWordCount > 0) ? actualWordCount : 500,
               lessonCount: selectedLessons.length,
@@ -40241,7 +40464,9 @@
         const effectiveType = (checkedTypeRadio && checkedTypeRadio.value) || selfTestActiveType || 'mixed';
         generateSelfTestAiDeck(selfTestSelectedLessonIds, {
           testType: effectiveType,
-          count: selfTestTargetCount
+          countMode: selfTestCountMode,
+          goal: selfTestAiGoal,
+          count: selfTestCountMode === 'ai_goal' ? 'auto' : selfTestTargetCount
         });
       };
     }

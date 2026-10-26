@@ -1,51 +1,75 @@
-# SPEC.md — Khắc Phục Lỗi Bấm Nút "Đã Nhớ" Bị Nhảy Cóc Thẻ Flashcard (v5.8.73)
+# SPEC.md — Hệ Thống Dual-Mode AI Flashcard & Quiz Generator (v5.8.74)
 
-## 1. NGUYÊN NHÂN GỐC RỄ (ROOT CAUSE ANALYSIS)
-Người dùng phản ánh: Khi đang ở Thẻ 1/4 (ảnh 1), bấm nút "Đã nhớ" thì thẻ bị nhảy ngay tới Thẻ 3/4 (ảnh 2), bỏ qua hoàn toàn Thẻ 2/4. Người dùng mong muốn khi bấm "Đã nhớ", ứng dụng chuyển tuần tự sang đúng thẻ tiếp theo (Thẻ 2/4).
-
-Qua kiểm tra mã nguồn `index.html`:
-1. **Lỗi Double-Firing (Gắn 2 sự kiện cùng lúc cho nút bấm)**:
-   - Tại dòng 39035-39036 (`initFlashcardControlsEvents`):
-     ```javascript
-     const btnRemembered = document.getElementById('btnFcRemembered');
-     if (btnRemembered) btnRemembered.onclick = () => { if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(4); };
-     ```
-   - Đồng thời, tại dòng 39151-39152:
-     ```javascript
-     const btnFcRemembered = document.getElementById('btnFcRemembered');
-     if (btnFcRemembered) btnFcRemembered.addEventListener('click', () => answerFlashcard(true));
-     ```
-   - Khi người dùng click nút "Đã nhớ", trình duyệt kích hoạt CẢ HAI trình xử lý liên tiếp trong cùng 1 lần nhấn:
-     * Trình xử lý 1 (`onclick`): Chạy `answerFlashcardWithSM2(4)` -> Đánh giá Thẻ 1, tăng `flashcardIndex` từ 0 lên 1.
-     * Trình xử lý 2 (`addEventListener`): Chạy `answerFlashcard(true)` -> Đánh giá tiếp luôn Thẻ 2, tăng `flashcardIndex` từ 1 lên 2!
-     * Kết quả: Thẻ 2 bị lướt qua trong 0 mili-giây, giao diện lập tức hiển thị Thẻ 3 (`Thẻ 3 / 4`), đếm sai số lượng thẻ đã học (`cardsReviewed` bị cộng 2 lần, `fcKnownCount` bị cộng 2 lần).
-2. **Lỗi tương tự ở nút "Chưa nhớ" (`btnFcForgot`)**:
-   - Vừa có `btnForgot.onclick = () => answerFlashcardWithSM2(1)` vừa có `btnFcForgot.addEventListener('click', () => answerFlashcard(false))`, cũng bị nhảy cóc thẻ khi bấm "Chưa nhớ".
-3. **Lỗi dư thừa sự kiện vuốt cảm ứng (Swipe)**:
-   - Dòng 39198-39208 có một listener vuốt cảm ứng cũ (`touchstart`/`touchend` gọi `answerFlashcard`), trong khi dòng 46998 (`initFlashcardCardSwipe`) đã có hệ thống vuốt cảm ứng mượt mà 60fps kèm hiệu ứng xoay và SM-2.
-4. **4 nút đánh giá SM-2 ở mặt sau (Lại, Khó, Tốt, Dễ) chưa được gán sự kiện click**:
-   - `btnSm2Again`, `btnSm2Hard`, `btnSm2Good`, `btnSm2Easy` chưa được bind sự kiện trong `initFlashcardControlsEvents()`.
+## 1. TỔNG QUAN YÊU CẦU & BỐI CẢNH
+Người dùng yêu cầu phân tách bộ chọn số lượng câu hỏi hiện tại thành **2 Chế độ (Dual-Mode)** rõ ràng:
+1. **Tab 1: 🎯 Chế độ AI (Theo mục tiêu học tập)**:
+   - ⚡ **Học sơ qua để thi** (Cramming / Skim for Exam): Trích xuất ý chính, định nghĩa đóng khung, công thức cốt lõi. Câu hỏi ngắn, trực diện.
+   - 🧠 **Học để hiểu** (Deep Understanding): Phủ đều các phần lớn của bài, tập trung câu hỏi bản chất, cơ chế, nguyên lý, so sánh A vs B.
+   - 🏆 **Học để đạt điểm A+** (Mastery / A+ Grade): Quét vét cạn 100% ngóc ngách, chi tiết phụ, ngoại lệ, tình huống thực tế và bẫy đề (distractors sát sao).
+2. **Tab 2: 📊 Theo số chữ bài học**:
+   - Tự động đo số chữ thực tế của các bài học được chọn và hiển thị thanh trạng thái trực quan.
+   - Tự động co giãn 3 mốc số lượng đề xuất động (Nhanh • Chuẩn [Khuyên dùng] • Chi tiết) khớp chính xác với dung lượng của bài học.
 
 ---
 
-## 2. GIẢI PHÁP TRIỂN KHAI (BUILDER PLAN)
-1. **Loại bỏ hoàn toàn trình xử lý trùng lặp**:
-   - Xóa bỏ `addEventListener('click')` trùng lặp tại dòng 39151-39156 cho cả `btnFcRemembered` và `btnFcForgot`.
-   - Xóa bỏ listener vuốt cảm ứng cũ tại dòng 39198-39208 trên `flippableCard`.
-2. **Chuẩn hóa hàm `answerFlashcard`**:
-   - Chuyển `answerFlashcard(isKnown)` thành hàm chuyển tiếp (proxy) an toàn gọi tới `answerFlashcardWithSM2(isKnown ? 4 : 1)` để bất kỳ vị trí gọi nào cũng đồng bộ theo chuẩn SM-2 và lưu trữ IndexedDB.
-3. **Bổ sung cơ chế chống bấm liên hoàn (Debounce / Transit Lock)**:
-   - Đặt cờ `let isAnsweringFlashcard = false;` trong `answerFlashcardWithSM2`.
-   - Khóa trong 180ms để ngăn chặn tuyệt đối tình trạng double-click chuột phần cứng hoặc chạm đa điểm trên màn hình cảm ứng điện thoại.
-4. **Gán đầy đủ sự kiện cho 4 nút SM-2 khi lật thẻ**:
-   - Gán `onclick` cho `btnSm2Again` (1), `btnSm2Hard` (3), `btnSm2Good` (4), `btnSm2Easy` (5) trong `initFlashcardControlsEvents()`.
-5. **Cập nhật Changelog & Đồng bộ phiên bản v5.8.73**:
-   - Cập nhật `changelog.js`, chạy `sync_version.py`, kiểm thử cú pháp `check_syntax.py`, commit & push GitHub và sao lưu Google Drive.
+## 2. THIẾT KẾ KIẾN TRÚC & GIAO DIỆN
+
+### 2.1. Cấu trúc Giao diện (UI) trong Modal Tạo Tự Kiểm Tra
+Khu vực cấu hình câu hỏi được chia làm 2 phần:
+```html
+<!-- Bộ chuyển đổi 2 Tab chế độ -->
+<div class="flex items-center p-1 bg-stone-100 dark:bg-stone-800/80 rounded-xl">
+  <button id="btnTabModeAiGoal" class="...">🎯 Chế độ AI (Theo mục tiêu)</button>
+  <button id="btnTabModeWordCount" class="...">📊 Theo số chữ bài học</button>
+</div>
+
+<!-- Nội dung Tab 1: 3 Thẻ Mục Tiêu AI -->
+<div id="selfTestAiGoalPanel" class="grid grid-cols-3 gap-2">
+  - Nút 1: ⚡ Học sơ qua để thi (Badge ước tính câu)
+  - Nút 2: 🧠 Học để hiểu (Badge ước tính câu)
+  - Nút 3: 🏆 Học để đạt điểm A+ (Badge ước tính câu)
+</div>
+
+<!-- Nội dung Tab 2: Đo Dung Lượng & 3 Mốc Co Giãn -->
+<div id="selfTestWordCountPanel" class="hidden flex flex-col gap-2">
+  - Badge dung lượng: 📄 Bài học gồm W từ (~M phút đọc) • Khuyên dùng: K câu
+  - 3 Mốc động: [Nhanh] • [✨ Chuẩn - Đề xuất] • [Chi tiết]
+</div>
+
+<!-- Hint Box động giải thích trực quan thời gian thực -->
+<div id="selfTestCountHintBox">...</div>
+```
+
+### 2.2. Thuật toán Tính toán & Co giãn Số lượng (`calculateSelfTestExpectedCounts`)
+* Nhận đầu vào: `totalWords` ($W$), `lessonCount` ($n$), `testType` (mixed/quiz/flashcard), `mode` (ai_goal/word_count), `goal` (cram/understand/mastery).
+* **Mốc chuẩn cơ sở ($N_{base}$):**
+  - Flashcard: $N_{base} = \text{clamp}(5, 3 + \text{round}(W / 110), 25)$
+  - Quiz: $N_{base} = \text{clamp}(5, 3 + \text{round}(W / 125), 25)$
+  - Mixed: $N_{base} = \text{clamp}(6, 4 + \text{round}(W / 135), 30)$
+* **Hệ số Mục tiêu AI:**
+  - `cram`: Hệ số $\times 0.6$ (tối thiểu 4-5 câu, tối đa 10 câu).
+  - `understand`: Hệ số $\times 1.0$ (tối thiểu 6-8 câu, tối đa 16 câu).
+  - `mastery`: Hệ số $\times 1.5$ (tối thiểu 10-14 câu, tối đa 26 câu).
+* **3 Mốc Tab Số Chữ:**
+  - Phân tích theo dung lượng $W < 500$, $500 \le W < 1500$, $1500 \le W < 3000$, $W \ge 3000$ để tự động điền nhãn nút.
+
+### 2.3. Tối ưu Prompt & Token cho AI (Client & Server)
+* Truyền `goal` và `countMode` vào payload request (`index.html` direct call & `/api/ai/explain`).
+* Bổ sung quy tắc sư phạm phân tầng theo thang nhận thức Bloom vào System Prompt:
+  - `cram`: "Chỉ nhặt định nghĩa đóng khung, ý chính cốt lõi nhất. Câu hỏi ngắn gọn trực diện."
+  - `understand`: "Phủ đều các mục lớn của bài. Hỏi về cơ chế, bản chất, nguyên nhân - kết quả."
+  - `mastery`: "Quét vét cạn 100% ngóc ngách, chi tiết phụ, ngoại lệ và bẫy đề."
+* Tự động nâng `maxOutputTokens` lên `8192` khi chọn `mastery` hoặc $N > 15$ để tránh cắt cụt JSON.
 
 ---
 
-## 3. TIÊU CHUẨN KIỂM THỬ (QA CRITERIA)
-- [ ] Bấm "Đã nhớ" ở Thẻ 1/4: Chuyển chính xác sang Thẻ 2/4 (không nhảy cóc sang Thẻ 3/4).
-- [ ] Bấm "Chưa nhớ" ở Thẻ 1/4: Chuyển chính xác sang Thẻ 2/4 và thêm thẻ vào hàng đợi ôn lại.
-- [ ] Bấm các nút SM-2 (Lại, Khó, Tốt, Dễ) ở mặt sau hoạt động chính xác từng thẻ.
-- [ ] Cú pháp Node.js đạt 100% PASS cho toàn bộ file và script inline.
+## 3. KẾ HOẠCH TRIỂN KHAI (BUILDER CHECKLIST)
+1. Cập nhật HTML Modal Tạo Bộ Đề trong `index.html`: Thêm 2 Tab chuyển đổi và 2 panel tương ứng.
+2. Nâng cấp JavaScript điều khiển trong `index.html`:
+   - State `selfTestCountMode` ('ai_goal' | 'word_count'), `selfTestAiGoal` ('cram' | 'understand' | 'mastery').
+   - Mở rộng hàm `calculateSelfTestExpectedCounts`.
+   - Cập nhật hàm `updateSelfTestExpectedCountUI` phản hồi realtime theo từ và bài học được chọn.
+   - Đồng bộ trong hàm `generateSelfTestDeck` (truyền `goal`, `countMode`, phân phối section).
+3. Nâng cấp `api/ai/explain.js`: Xử lý `goal` (`cram`, `understand`, `mastery`), phân phối số câu và cấu hình token tối ưu.
+4. Kiểm thử cú pháp Node.js 100% PASS qua `scripts/check_syntax.py`.
+5. Cập nhật `changelog.js`, chạy `sync_version.py` nâng lên `v5.8.74`, commit Git & backup Google Drive.

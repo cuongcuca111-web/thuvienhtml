@@ -483,34 +483,57 @@ D. [Phương án D]
           `<selected_text>\n${rawText}\n</selected_text>`
         ].filter(Boolean).join('\n\n');
       } else if (mode === 'self_test') {
-        optimalMaxTokens = 6000;
+        const goal = ['cram', 'understand', 'mastery'].includes(body.goal) ? body.goal : 'understand';
+        const countMode = body.countMode === 'word_count' ? 'word_count' : 'ai_goal';
         const isAutoCount = body.count === 'auto';
         const lessonCount = Math.max(1, parseInt(body.lessonCount, 10) || (Array.isArray(body.lessonTitles) ? body.lessonTitles.length : 1));
         const rawWordsFromText = rawText ? rawText.trim().split(/\s+/).filter(Boolean).length : 500;
         const totalWords = Math.max(50, parseInt(body.wordCount, 10) || rawWordsFromText);
-        const targetCountNum = Math.min(40, Math.max(5, parseInt(body.count, 10) || 10));
+        const targetCountNum = Math.min(40, Math.max(4, parseInt(body.count, 10) || 10));
+
+        optimalMaxTokens = (goal === 'mastery' || targetCountNum > 15) ? 8192 : 6000;
 
         let autoQuizzesCount = 0;
         let autoFlashcardsCount = 0;
         let autoSingleCount = 0;
 
         if (isAutoCount) {
+          let baseCount = 10;
           if (testType === 'flashcard') {
             const minFC = Math.max(5, lessonCount * 2);
-            const wordsFC = Math.round(3 + totalWords / 95);
-            autoSingleCount = Math.min(35, Math.max(minFC, wordsFC));
+            baseCount = Math.min(30, Math.max(minFC, Math.round(3 + totalWords / 110)));
           } else if (testType === 'quiz') {
             const minQuiz = Math.max(5, lessonCount * 2);
-            const wordsQuiz = Math.round(3 + totalWords / 115);
-            autoSingleCount = Math.min(35, Math.max(minQuiz, wordsQuiz));
+            baseCount = Math.min(30, Math.max(minQuiz, Math.round(3 + totalWords / 125)));
           } else {
-            // mixed
             const minTotal = Math.max(6, lessonCount * 3);
-            const wordsTotal = Math.round(4 + totalWords / 130);
-            const totalMixed = Math.min(40, Math.max(minTotal, wordsTotal));
-            autoQuizzesCount = Math.round(totalMixed / 2);
-            autoFlashcardsCount = totalMixed - autoQuizzesCount;
+            baseCount = Math.min(32, Math.max(minTotal, Math.round(4 + totalWords / 135)));
           }
+
+          let targetTotal = baseCount;
+          if (goal === 'cram') {
+            targetTotal = Math.min(12, Math.max(Math.max(4, lessonCount * 1), Math.round(baseCount * 0.65)));
+          } else if (goal === 'mastery') {
+            targetTotal = Math.min(38, Math.max(Math.max(10, lessonCount * 4), Math.round(baseCount * 1.55)));
+          } else {
+            targetTotal = baseCount;
+          }
+
+          if (testType === 'flashcard' || testType === 'quiz') {
+            autoSingleCount = targetTotal;
+          } else {
+            autoQuizzesCount = Math.round(targetTotal / 2);
+            autoFlashcardsCount = targetTotal - autoQuizzesCount;
+          }
+        }
+
+        let goalPedagogyInstruction = '';
+        if (goal === 'cram') {
+          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC SƠ QUA ĐỂ THI]: Trích xuất các định nghĩa cốt lõi, công thức, số liệu then chốt nhất dễ xuất hiện trong đề thi. Câu hỏi ngắn gọn, trực diện, không hỏi tiểu tiết (cấp độ Nhớ - Remember).`;
+        } else if (goal === 'mastery') {
+          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ ĐẠT ĐIỂM A+]: Quét vét cạn 100% ngóc ngách, ý chính lẫn ý phụ, các trường hợp ngoại lệ, chú thích nhỏ. Thiết kế câu hỏi tình huống thực tế, bài tập vận dụng và các phương án nhiễu rất sát nhau để bẫy thí sinh (cấp độ Vận dụng cao & Đánh giá - Apply & Evaluate).`;
+        } else {
+          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ HIỂU]: Phủ đều các phần lớn của bài học. Tập trung câu hỏi vào bản chất khái niệm, cơ chế hoạt động, nguyên nhân - kết quả và so sánh phân tích (cấp độ Hiểu & Phân tích - Understand & Analyze).`;
         }
 
         const coverageInstruction = lessonCount > 1
@@ -523,7 +546,8 @@ D. [Phương án D]
             : `BẮT BUỘC ĐỦ ĐÚNG ${targetCountNum} thẻ flashcard (mảng flashcards phải có đúng ${targetCountNum} phần tử)`;
 
           systemPrompt = `Bạn là chuyên gia sư phạm và biên soạn tài liệu học tập của ứng dụng "Thư viện Sách HTML".
-Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ THẺ NHỚ FLASHCARD ôn tập chuyên sâu với số lượng: ${fcCountDesc}.
+Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ THẺ NHỚ FLASHCARD ôn tập với số lượng: ${fcCountDesc}.
+${goalPedagogyInstruction}
 TUYỆT ĐỐI KHÔNG TẠO CÂU HỎI TRẮC NGHIỆM (quizzes).
 ${coverageInstruction}
 YÊU CẦU CỤ THỂ:
@@ -552,6 +576,7 @@ ${rawText}
 
           systemPrompt = `Bạn là chuyên gia khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để CHỈ TẠO BỘ ĐỀ TRẮC NGHIỆM 4 ĐÁP ÁN với số lượng: ${quizCountDesc}.
+${goalPedagogyInstruction}
 TUYỆT ĐỐI KHÔNG TẠO THẺ FLASHCARD (flashcards).
 ${coverageInstruction}
 YÊU CẦU CỤ THỂ:
@@ -582,6 +607,7 @@ ${rawText}
 
           systemPrompt = `Bạn là chuyên gia sư phạm và khảo thí cao cấp của ứng dụng "Thư viện Sách HTML".
 Nhiệm vụ của bạn là dựa vào tài liệu bài học để biên soạn trọn bộ TỰ KIỂM TRA & THẺ NHỚ kết hợp với số lượng: ${mixedCountDesc}.
+${goalPedagogyInstruction}
 ${coverageInstruction}
 YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ ĐỀ (title): Đặt tên dạng "Kiểm tra & Flashcard: [Tên bài học]" (Ví dụ: "Kiểm tra & Flashcard: Cấu trúc Dữ liệu Cây").
