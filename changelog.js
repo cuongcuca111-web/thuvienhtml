@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.76',
+    date: '2026-10-26T16:00:00+07:00',
+    title: 'Hệ Thống Phân Rã Kiến Thức 3 Lớp & Cơ Chế Auto Top-Up Đảm Bảo Số Lượng Câu Hỏi',
+    items: [
+      { type: 'new', text: 'Khung Phân rã Đa tầng 3 Lớp (3-Layer Deconstruction): Bắt buộc AI khai thác sâu bài học theo 3 cấp độ (Lớp 1: Khái niệm cốt lõi, Lớp 2: Chi tiết quy trình & cơ chế, Lớp 3: Tình huống thực tế, ngoại lệ & bẫy đề), giúp bài học ngắn vẫn tạo đủ 11-15 câu chất lượng cao.' },
+      { type: 'improved', text: 'Chống Bias Tóm tắt (Anti-Summary Count Bias): Cấm AI tự đoán định số lượng trong phần summary, triệt tiêu hiện tượng AI tự giới hạn mảng câu hỏi theo câu mở đầu.' },
+      { type: 'new', text: 'Cơ chế Auto Top-up (Bù câu hỏi tự động): Tự động phát hiện trường hợp AI trả thiếu thẻ/câu so với mục tiêu và kích hoạt lượt bổ sung siêu tốc các câu hỏi Lớp 3, đảm bảo cung cấp chuẩn xác 100% số lượng đã cam kết.' }
+    ]
+  },
+  {
     version: 'v5.8.75',
     date: '2026-10-26T15:52:00+07:00',
     title: 'Tái Thiết Kế Toàn Diện Bộ Icon SVG Độc Bản & Bố Cục Công Thái Học Cho Dual-Mode AI Generator',

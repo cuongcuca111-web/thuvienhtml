@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.75"></script>
+  <script src="./changelog.js?v=5.8.76"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.75',
+        version: 'v5.8.76',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.75';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.76';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.75">
-  <script src="./bridge.js?v=5.8.75"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.76">
+  <script src="./bridge.js?v=5.8.76"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.75 • build 26/10/2026 15:52</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.76 • build 26/10/2026 16:00</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.75</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.76</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.75 • build 26/10/2026 15:52</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.76 • build 26/10/2026 16:00</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6952,8 +6952,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.75</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.75</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.76</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.76</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -40347,12 +40347,17 @@
           : `Khai thác toàn diện các khái niệm, định nghĩa và nội dung trọng tâm của bài học (~${actualWordCount} từ).`;
 
         let goalPedagogy = '';
+        const targetTargetNum = (config.testType === 'flashcard') ? expected.flashcards : ((config.testType === 'quiz') ? expected.quizzes : expected.total);
+
         if (reqGoal === 'cram') {
-          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC SƠ QUA ĐỂ THI]: Trích xuất các định nghĩa cốt lõi, công thức, số liệu then chốt nhất dễ xuất hiện trong đề thi. Câu hỏi ngắn gọn, trực diện (cấp độ Nhớ).`;
+          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC SƠ QUA ĐỂ THI]: Trích xuất các định nghĩa cốt lõi, công thức, số liệu then chốt nhất dễ xuất hiện trong đề thi. Câu hỏi ngắn gọn, trực diện (cấp độ Nhớ). BẮT BUỘC tạo ĐÚNG ${targetTargetNum} mục.`;
         } else if (reqGoal === 'mastery') {
-          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ ĐẠT ĐIỂM A+]: Quét vét cạn 100% ngóc ngách, ý chính lẫn ý phụ, các trường hợp ngoại lệ, chú thích nhỏ. Thiết kế câu hỏi tình huống thực tế, bài tập vận dụng và các phương án nhiễu rất sát nhau để bẫy thí sinh và phân loại học lực xuất sắc (cấp độ Vận dụng cao & Đánh giá).`;
+          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ ĐẠT ĐIỂM A+ / XUẤT SẮC]: BẮT BUỘC phân rã bài học theo 3 LỚP KIẾN THỨC để đạt CHÍNH XÁC ĐỦ ${targetTargetNum} mục (không được dừng lại sớm hay chỉ hỏi ý bề mặt):
+- Lớp 1 (3-4 câu): Khái niệm, vai trò & định nghĩa cơ bản.
+- Lớp 2 (4-5 câu): Chẻ nhỏ từng bước trong quy trình, phân tích cơ chế hoạt động chi tiết & so sánh phân biệt.
+- Lớp 3 (3-4 câu): Tình huống ứng dụng thực tế, trường hợp ngoại lệ, thách thức kỹ thuật & câu hỏi bẫy dễ nhầm lẫn.`;
         } else {
-          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ HIỂU]: Phủ đều các phần lớn của bài học. Tập trung câu hỏi vào bản chất khái niệm, cơ chế hoạt động, nguyên nhân - kết quả và so sánh phân tích (cấp độ Hiểu & Phân tích).`;
+          goalPedagogy = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ HIỂU]: Phủ đều các phần lớn của bài học. Tập trung câu hỏi vào bản chất khái niệm, cơ chế hoạt động, nguyên nhân - kết quả và so sánh phân tích (cấp độ Hiểu & Phân tích). BẮT BUỘC tạo ĐÚNG ${targetTargetNum} mục.`;
         }
 
         let countInstruction = '';
@@ -40376,13 +40381,24 @@
           let directPrompt = '';
 
           if (config.testType === 'flashcard') {
-            directSystem = `Bạn là chuyên gia sư phạm của Thư viện Sách HTML. Hãy CHỈ biên soạn bộ Thẻ nhớ Flashcard gồm title (bắt đầu bằng "Thẻ nhớ:"), summary và flashcards (mỗi thẻ gồm "q" câu hỏi/thuật ngữ mặt trước và "a" đáp án mặt sau). TUYỆT ĐỐI không tạo câu hỏi trắc nghiệm. Bắt buộc trả về đúng định dạng JSON.`;
+            directSystem = `Bạn là chuyên gia sư phạm của Thư viện Sách HTML. Hãy CHỈ biên soạn bộ Thẻ nhớ Flashcard gồm:
+1. title (bắt đầu bằng "Thẻ nhớ: [Tên bài]").
+2. summary: 1 câu tóm tắt phạm vi chủ đề (TUYỆT ĐỐI KHÔNG ghi số lượng đếm câu/thẻ vào summary để tránh mâu thuẫn).
+3. flashcards: mảng danh sách thẻ nhớ (mỗi thẻ gồm "q" câu hỏi/thuật ngữ mặt trước và "a" đáp án mặt sau). BẮT BUỘC mảng flashcards phải có CHÍNH XÁC ĐỦ ${expected.flashcards} phần tử, không được ít hơn. TUYỆT ĐỐI không tạo câu hỏi trắc nghiệm. Bắt buộc trả về đúng định dạng JSON.`;
             directPrompt = `Chỉ tạo bộ thẻ nhớ flashcard ${countInstruction} từ tài liệu sau:\n\n${fullDistilledText}`;
           } else if (config.testType === 'quiz') {
-            directSystem = `Bạn là chuyên gia khảo thí của Thư viện Sách HTML. Hãy CHỈ biên soạn bộ đề Trắc nghiệm gồm title (bắt đầu bằng "Trắc nghiệm:"), summary và quizzes (mỗi câu gồm "q" câu hỏi, "options" 4 lựa chọn, "ans" 0-3, "explanation" giải thích). TUYỆT ĐỐI không tạo thẻ flashcard. Bắt buộc trả về đúng định dạng JSON.`;
+            directSystem = `Bạn là chuyên gia khảo thí của Thư viện Sách HTML. Hãy CHỈ biên soạn bộ đề Trắc nghiệm gồm:
+1. title (bắt đầu bằng "Trắc nghiệm: [Tên bài]").
+2. summary: 1 câu tóm tắt phạm vi kiểm tra (TUYỆT ĐỐI KHÔNG ghi số lượng đếm câu vào summary).
+3. quizzes: mảng câu hỏi trắc nghiệm (mỗi câu gồm "q", "options" đúng 4 lựa chọn, "ans" 0-3, "explanation"). BẮT BUỘC mảng quizzes phải có CHÍNH XÁC ĐỦ ${expected.quizzes} phần tử, không được ít hơn. TUYỆT ĐỐI không tạo thẻ flashcard. Bắt buộc trả về đúng định dạng JSON.`;
             directPrompt = `Chỉ tạo bộ câu hỏi trắc nghiệm 4 đáp án ${countInstruction} từ tài liệu sau:\n\n${fullDistilledText}`;
           } else {
-            directSystem = `Bạn là chuyên gia khảo thí cao cấp của Thư viện Sách HTML. Hãy biên soạn bộ đề Tự kiểm tra & Thẻ nhớ gồm title tự đặt súc tích, tóm tắt summary, quizzes (mỗi câu 4 options, ans từ 0-3, explanation), flashcards (mỗi thẻ q và a). Bắt buộc trả về đúng định dạng JSON.`;
+            directSystem = `Bạn là chuyên gia khảo thí cao cấp của Thư viện Sách HTML. Hãy biên soạn bộ đề Tự kiểm tra & Thẻ nhớ gồm:
+1. title tự đặt súc tích.
+2. summary: 1 câu tóm tắt phạm vi (TUYỆT ĐỐI KHÔNG ghi số lượng đếm câu/thẻ vào summary).
+3. quizzes: đúng ${expected.quizzes} câu trắc nghiệm (mỗi câu 4 options, ans từ 0-3, explanation).
+4. flashcards: đúng ${expected.flashcards} thẻ flashcard (mỗi thẻ q và a).
+Tổng cộng BẮT BUỘC ĐỦ ĐÚNG ${expected.total} phần tử. Bắt buộc trả về đúng định dạng JSON.`;
             directPrompt = `Tạo bài kiểm tra kết hợp trắc nghiệm và thẻ nhớ ${countInstruction} từ tài liệu:\n\n${fullDistilledText}`;
           }
 
@@ -40449,16 +40465,99 @@
         // Lọc nghiêm ngặt theo đúng dạng bài người dùng chọn:
         // Nếu chọn "Chỉ Flashcards": Tuyệt đối KHÔNG lấy câu trắc nghiệm (quizzes = [])
         // Nếu chọn "Chỉ Trắc nghiệm": Tuyệt đối KHÔNG lấy thẻ nhớ (flashcards = [])
-        const rawQuizzes = (reqTestType === 'flashcard') ? [] : (
+        let rawFlashcards = (reqTestType === 'quiz') ? [] : (
+          Array.isArray(aiResult?.flashcards) ? aiResult.flashcards
+          : (Array.isArray(aiResult?.cards) ? aiResult.cards : [])
+        );
+        let rawQuizzesList = (reqTestType === 'flashcard') ? [] : (
           Array.isArray(aiResult?.quizzes) ? aiResult.quizzes
           : (Array.isArray(aiResult?.quiz) ? aiResult.quiz
           : (Array.isArray(aiResult?.questions) ? aiResult.questions : []))
         );
 
-        const rawFlashcards = (reqTestType === 'quiz') ? [] : (
-          Array.isArray(aiResult?.flashcards) ? aiResult.flashcards
-          : (Array.isArray(aiResult?.cards) ? aiResult.cards : [])
-        );
+        // =========================================================================
+        // FAIL-SAFE AUTO TOP-UP: TỰ ĐỘNG BÙ CÂU HỎI CHUYÊN SÂU NẾU AI TRẢ THIẾU
+        // =========================================================================
+        const targetExpectedFC = (reqTestType === 'flashcard') ? expected.flashcards : ((reqTestType === 'mixed') ? expected.flashcards : 0);
+        const targetExpectedQuiz = (reqTestType === 'quiz') ? expected.quizzes : ((reqTestType === 'mixed') ? expected.quizzes : 0);
+        const missingFC = targetExpectedFC - rawFlashcards.length;
+        const missingQuiz = targetExpectedQuiz - rawQuizzesList.length;
+
+        if (missingFC >= 2 || missingQuiz >= 2) {
+          try {
+            if (selfTestLoadingStepText) {
+              const detailNeed = (missingFC >= 2 ? `${missingFC} thẻ` : '') + ((missingFC >= 2 && missingQuiz >= 2) ? ' & ' : '') + (missingQuiz >= 2 ? `${missingQuiz} câu trắc nghiệm` : '');
+              selfTestLoadingStepText.innerText = `[2.5/3] Đang bóc tách thêm ${detailNeed} tình huống & bẫy đề để đạt 100% chuẩn...`;
+            }
+
+            const existingFCPrompt = rawFlashcards.map((f, i) => `${i + 1}. ${f.q || f.front}`).join('\n');
+            const existingQuizPrompt = rawQuizzesList.map((q, i) => `${i + 1}. ${q.q || q.question}`).join('\n');
+
+            let topupPrompt = `Dựa vào tài liệu bài học sau:\n${fullDistilledText.slice(0, 5000)}\n\n`;
+            if (missingFC >= 2) {
+              topupPrompt += `ĐÃ CÓ ${rawFlashcards.length} THẺ SAU (TUYỆT ĐỐI KHÔNG TRÙNG LẶP):\n${existingFCPrompt}\n\n`;
+              topupPrompt += `HÃY TẠO THÊM CHÍNH XÁC ĐỦ ${missingFC} THẺ FLASHCARD MỚI (mảng flashcards) tập trung vào LỚP 3: tình huống thực tế, trường hợp ngoại lệ, các bước phân tích chi tiết chuyên sâu của bài học.\n`;
+            }
+            if (missingQuiz >= 2) {
+              topupPrompt += `ĐÃ CÓ ${rawQuizzesList.length} CÂU TRẮC NGHIỆM SAU (TUYỆT ĐỐI KHÔNG TRÙNG LẶP):\n${existingQuizPrompt}\n\n`;
+              topupPrompt += `HÃY TẠO THÊM CHÍNH XÁC ĐỦ ${missingQuiz} CÂU HỎI TRẮC NGHIỆM MỚI 4 ĐÁP ÁN (mảng quizzes) với các phương án nhiễu rất sát nhau để phân loại xuất sắc.\n`;
+            }
+            topupPrompt += `Bắt buộc trả về đúng JSON Schema chứa flashcards và/hoặc quizzes tương ứng.`;
+
+            let topupResult = null;
+            if (customKey) {
+              const topEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(customKey)}`;
+              const topRes = await fetch(topEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ role: 'user', parts: [{ text: topupPrompt }] }],
+                  systemInstruction: { parts: [{ text: "Bạn là chuyên gia sư phạm khảo thí. Hãy bổ sung thêm các câu hỏi/thẻ nhớ chuyên sâu bị thiếu để đạt đủ số lượng mục tiêu, tuyệt đối không lặp lại câu đã có. Trả về đúng JSON." }] },
+                  generationConfig: { responseMimeType: "application/json", temperature: 0.3, maxOutputTokens: 3000 }
+                })
+              });
+              if (topRes.ok) {
+                const topData = await topRes.json();
+                const rawTop = topData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                const cleanTop = rawTop.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+                topupResult = JSON.parse(cleanTop);
+              }
+            } else {
+              const headers = { 'Content-Type': 'application/json' };
+              if (state && state.currentUserToken) headers['Authorization'] = `Bearer ${state.currentUserToken}`;
+              const topRes = await fetch('/api/ai/explain', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                  mode: 'self_test',
+                  text: topupPrompt,
+                  testType: reqTestType,
+                  countMode: 'word_count',
+                  goal: reqGoal,
+                  count: (missingFC > 0 ? missingFC : missingQuiz),
+                  wordCount: actualWordCount,
+                  lessonCount: selectedLessons.length,
+                  lessonTitles: selectedLessons.map(l => l.title)
+                })
+              });
+              if (topRes.ok) {
+                topupResult = await topRes.json();
+              }
+            }
+
+            if (topupResult) {
+              if (missingFC >= 2 && Array.isArray(topupResult.flashcards)) {
+                rawFlashcards = rawFlashcards.concat(topupResult.flashcards);
+              }
+              if (missingQuiz >= 2 && Array.isArray(topupResult.quizzes)) {
+                rawQuizzesList = rawQuizzesList.concat(topupResult.quizzes);
+              }
+            }
+          } catch (topErr) {
+            console.warn('[SelfTest] Auto Top-up bypass:', topErr);
+          }
+        }
+        const rawQuizzes = rawQuizzesList;
 
         // Tạo đối tượng Deck mới hoàn chỉnh
         const quizzes = rawQuizzes.map((q, idx) => ({

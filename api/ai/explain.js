@@ -528,12 +528,17 @@ D. [Phương án D]
         }
 
         let goalPedagogyInstruction = '';
+        const targetNumberFinal = (testType === 'flashcard' || testType === 'quiz') ? autoSingleCount : (autoQuizzesCount + autoFlashcardsCount);
+
         if (goal === 'cram') {
-          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC SƠ QUA ĐỂ THI]: Trích xuất các định nghĩa cốt lõi, công thức, số liệu then chốt nhất dễ xuất hiện trong đề thi. Câu hỏi ngắn gọn, trực diện, không hỏi tiểu tiết (cấp độ Nhớ - Remember).`;
+          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC SƠ QUA ĐỂ THI]: Trích xuất các định nghĩa cốt lõi, công thức, số liệu then chốt nhất dễ xuất hiện trong đề thi. Câu hỏi ngắn gọn, trực diện, không hỏi tiểu tiết (cấp độ Nhớ - Remember). BẮT BUỘC biên soạn ĐỦ ĐÚNG ${targetNumberFinal} mục.`;
         } else if (goal === 'mastery') {
-          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ ĐẠT ĐIỂM A+]: Quét vét cạn 100% ngóc ngách, ý chính lẫn ý phụ, các trường hợp ngoại lệ, chú thích nhỏ. Thiết kế câu hỏi tình huống thực tế, bài tập vận dụng và các phương án nhiễu rất sát nhau để bẫy thí sinh (cấp độ Vận dụng cao & Đánh giá - Apply & Evaluate).`;
+          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ ĐẠT ĐIỂM A+ / XUẤT SẮC]: BẮT BUỘC phân rã bài học theo 3 LỚP KIẾN THỨC để đạt CHÍNH XÁC ĐỦ ${targetNumberFinal} mục (không được dừng lại sớm hay chỉ hỏi ý bề mặt):
+- Lớp 1 (3-4 câu): Khái niệm, vai trò & định nghĩa đóng khung cơ bản.
+- Lớp 2 (4-5 câu): Chẻ nhỏ từng bước trong quy trình, phân tích cơ chế hoạt động chi tiết & so sánh phân biệt.
+- Lớp 3 (3-4 câu): Tình huống ứng dụng thực tế, trường hợp ngoại lệ, thách thức kỹ thuật & câu hỏi bẫy dễ nhầm lẫn.`;
         } else {
-          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ HIỂU]: Phủ đều các phần lớn của bài học. Tập trung câu hỏi vào bản chất khái niệm, cơ chế hoạt động, nguyên nhân - kết quả và so sánh phân tích (cấp độ Hiểu & Phân tích - Understand & Analyze).`;
+          goalPedagogyInstruction = `[MỤC TIÊU SƯ PHẠM: HỌC ĐỂ HIỂU]: Phủ đều các phần lớn của bài học. Tập trung câu hỏi vào bản chất khái niệm, cơ chế hoạt động, nguyên nhân - kết quả và so sánh phân tích (cấp độ Hiểu & Phân tích - Understand & Analyze). BẮT BUỘC biên soạn ĐỦ ĐÚNG ${targetNumberFinal} mục.`;
         }
 
         const coverageInstruction = lessonCount > 1
@@ -552,7 +557,7 @@ TUYỆT ĐỐI KHÔNG TẠO CÂU HỎI TRẮC NGHIỆM (quizzes).
 ${coverageInstruction}
 YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ THẺ (title): Bắt đầu bằng "Thẻ nhớ: [Tên bài học hoặc chủ đề]" (Ví dụ: "Thẻ nhớ: Chiến lược và Quá trình Logistics").
-2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm các khái niệm cốt lõi trong bộ thẻ nhớ.
+2. TÓM TẮT (summary): 1 câu tóm tắt phạm vi chủ đề (TUYỆT ĐỐI KHÔNG ghi số lượng đếm thẻ như "gồm 8 khái niệm..." vào summary để tránh mâu thuẫn số lượng).
 3. DANH SÁCH THẺ NHỚ (flashcards):
    - Mỗi thẻ gồm:
      + "q": Thuật ngữ, câu hỏi hoặc khái niệm cần ghi nhớ (mặt trước).
@@ -581,7 +586,7 @@ TUYỆT ĐỐI KHÔNG TẠO THẺ FLASHCARD (flashcards).
 ${coverageInstruction}
 YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ ĐỀ (title): Bắt đầu bằng "Trắc nghiệm: [Tên bài học hoặc chủ đề]" (Ví dụ: "Trắc nghiệm: Chiến lược và Quá trình Logistics").
-2. TÓM TẮT (summary): 1-2 câu tóm tắt phạm vi và kiến thức trọng tâm của bài kiểm tra.
+2. TÓM TẮT (summary): 1 câu tóm tắt phạm vi kiểm tra (TUYỆT ĐỐI KHÔNG ghi số lượng đếm câu vào summary).
 3. CÂU HỎI TRẮC NGHIỆM (quizzes):
    - Mỗi câu gồm:
      + "q": Nội dung câu hỏi trắc nghiệm bám sát bài học, có tính phân loại tốt.
@@ -611,7 +616,7 @@ ${goalPedagogyInstruction}
 ${coverageInstruction}
 YÊU CẦU CỤ THỂ:
 1. ĐẶT TÊN BỘ ĐỀ (title): Đặt tên dạng "Kiểm tra & Flashcard: [Tên bài học]" (Ví dụ: "Kiểm tra & Flashcard: Cấu trúc Dữ liệu Cây").
-2. TÓM TẮT (summary): 1-2 câu tóm tắt trọng tâm kiểm tra và ôn tập.
+2. TÓM TẮT (summary): 1 câu tóm tắt chủ đề (TUYỆT ĐỐI KHÔNG ghi số lượng đếm câu/thẻ vào summary).
 3. CÂU HỎI TRẮC NGHIỆM 4 ĐÁP ÁN (quizzes):
    - "q": Câu hỏi trắc nghiệm.
    - "options": Đúng 4 lựa chọn [A, B, C, D].
