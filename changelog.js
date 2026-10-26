@@ -2,6 +2,16 @@
 // Mục đầu tiên (CHANGELOG[0]) tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
 const CHANGELOG = [
   {
+    version: 'v5.8.73',
+    date: '2026-10-26T15:20:00+07:00',
+    title: 'Khắc Phục Triệt Để Lỗi Bấm Nút Đã Nhớ Nhảy Cóc Thẻ Flashcard',
+    items: [
+      { type: 'improved', text: 'Triệt tiêu hiện tượng double-firing trên nút Đã nhớ & Chưa nhớ: Loại bỏ listener click trùng lặp, đảm bảo mỗi lần bấm thẻ sẽ chuyển tuần tự chính xác sang đúng thẻ tiếp theo (từ thẻ 1 sang thẻ 2, không còn bị nhảy cóc sang thẻ 3 hay thẻ cuối).' },
+      { type: 'new', text: 'Kích hoạt toàn diện 4 nút đánh giá SM-2 ở mặt sau: Gán sự kiện cho các nút Lại, Khó, Tốt và Dễ giúp ghi nhận chu kỳ lặp lại ngắt quãng chuẩn xác.' },
+      { type: 'improved', text: 'Bổ sung cơ chế chống chạm liên hoàn (Transit Debounce): Tích hợp khóa chuyển thẻ 220ms ngăn ngừa tình trạng click đúp vô tình hoặc chạm đa điểm trên màn hình cảm ứng.' }
+    ]
+  },
+  {
     version: 'v5.8.72',
     date: '2026-10-26T15:00:00+07:00',
     title: 'Nâng Cấp IndexedDB v2 Chống Tràn 5MB & Dọn Dẹp Kho Mã Nguồn Chuẩn Hóa',

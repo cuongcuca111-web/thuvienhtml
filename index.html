@@ -177,14 +177,14 @@
     window.tierBadge = tierBadge;
   </script>
 
-  <script src="./changelog.js?v=5.8.72"></script>
+  <script src="./changelog.js?v=5.8.73"></script>
   <script>
     // CÁCH THÊM BẢN CẬP NHẬT MỚI: Thêm một object mới lên ĐẦU mảng CHANGELOG trong file changelog.js.
     // Mục đầu tiên (CHANGELOG[0]) sẽ tự động cập nhật số phiên bản, ngày build và kích hoạt thông báo "Có gì mới".
     if (typeof window.CHANGELOG === "undefined" || !Array.isArray(window.CHANGELOG)) {
       window.CHANGELOG = [
       {
-        version: 'v5.8.72',
+        version: 'v5.8.73',
         date: '2026-10-24T09:40:00+07:00',
         title: 'Tìm Kiếm Ngữ Nghĩa Bằng AI (Semantic Search) & Tự Động Đóng Khung Nổi Bật Đoạn Khớp',
         items: [
@@ -210,7 +210,7 @@
     const CHANGELOG = window.CHANGELOG;
 
     // // FIX-1 & FIX-2: Các hàm tiện ích dùng chung toàn cục và nhận diện thiết bị cảm ứng
-    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.72';
+    const CURRENT_APP_VERSION = (CHANGELOG && CHANGELOG.length > 0) ? CHANGELOG[0].version : 'v5.8.73';
     window.__APP_VERSION__ = CURRENT_APP_VERSION;
 
     function updateAppVersionLabels() {
@@ -698,8 +698,8 @@
   </script>
 
   <!-- Bảng định kiểu giao diện chính đã tách sang styles.css để tối ưu bộ nhớ đệm -->
-  <link rel="stylesheet" href="./styles.css?v=5.8.72">
-  <script src="./bridge.js?v=5.8.72"></script>
+  <link rel="stylesheet" href="./styles.css?v=5.8.73">
+  <script src="./bridge.js?v=5.8.73"></script>
   <!-- // FIX-1: Xóa đăng ký Service Worker trùng lặp trong head. Điểm đăng ký duy nhất chuyển vào registerPwaServiceWorker() -->
   <link rel="manifest" href="./manifest.json">
 </head>
@@ -2432,7 +2432,7 @@
       <div class="relative border-t border-gray-200/50 dark:border-gray-800/50 flex items-center">
         <button id="btnDesktopVersionChangelog" type="button" class="w-full pr-11 pl-3 py-1.5 bg-[#FAF9F5]/70 dark:bg-[#111317]/50 hover:bg-black/5 dark:hover:bg-white/5 text-[10px] text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono text-center select-none transition-colors cursor-pointer group flex items-center justify-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500" title="Bấm để xem Lịch sử cập nhật">
           <svg class="w-3 h-3 text-indigo-500/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 shrink-0"><use href="#version-glyph"></use></svg>
-          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.72 • build 26/10/2026 15:00</span>
+          <span id="desktopAppVersionLabel">Thư viện Sách HTML v5.8.73 • build 26/10/2026 15:20</span>
         </button>
         <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
         <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị -->
@@ -3258,7 +3258,7 @@
         </span>
         <span class="menu-item-title">Có gì mới &amp; Lịch sử</span>
       </div>
-      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.72</span>
+      <span id="menuVersionBadge" class="menu-item-badge text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.73</span>
     </button>
 
     <div id="logoutDivider" class="border-t border-[#E6E6E1] dark:border-[#262C36] my-1.5"></div>
@@ -3280,7 +3280,7 @@
     <div class="relative border-t border-[#E6E6E1]/50 dark:border-[#262C36]/50 mt-1 flex items-center">
       <button id="btnMobileVersionChangelog" type="button" class="w-full pt-2 pb-1 pr-11 pl-3 text-[10px] text-center text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-mono select-none transition-colors cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none" title="Bấm để xem Lịch sử cập nhật">
         <svg class="w-3 h-3 text-indigo-500/80 shrink-0"><use href="#version-glyph"></use></svg>
-        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.72 • build 26/10/2026 15:00</span>
+        <span id="mobileAppVersionLabel">Thư viện Sách HTML v5.8.73 • build 26/10/2026 15:20</span>
       </button>
       <script>if (typeof updateAppVersionLabels === 'function') updateAppVersionLabels();</script>
       <!-- // FIX: Nút con dấu thư viện kích hoạt lối vào Quản trị trên Drawer điện thoại -->
@@ -6851,8 +6851,8 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.72</h3>
-            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.72</span>
+            <h3 id="whatsNewTitle" class="font-serif font-bold text-base sm:text-lg text-[#1A1A1A] dark:text-[#ECEEF2]">Có gì mới ở v5.8.73</h3>
+            <span id="whatsNewVersionBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">v5.8.73</span>
           </div>
           <p id="whatsNewDate" class="text-xs text-[#6E6B65] dark:text-[#979DA8] mt-0.5">10:30, 11/10/2026 • Hôm nay</p>
         </div>
@@ -39024,19 +39024,58 @@
       if (guide) guide.classList.toggle('hidden');
     }
 
-    // Gắn sự kiện tường minh cho tất cả các nút điều khiển Flashcard
+    // Gắn sự kiện tường minh cho tất cả các nút điều khiển Flashcard (Chống double-firing và nhảy cóc)
     function initFlashcardControlsEvents() {
       const btnForgot = document.getElementById('btnFcForgot');
-      if (btnForgot) btnForgot.onclick = () => { if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(1); };
+      if (btnForgot) btnForgot.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(1);
+        else answerFlashcard(false);
+      };
 
       const btnFlipBig = document.getElementById('btnFcFlipBig');
-      if (btnFlipBig) btnFlipBig.onclick = flipCurrentFlashcard;
+      if (btnFlipBig) btnFlipBig.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        flipCurrentFlashcard();
+      };
 
       const btnRemembered = document.getElementById('btnFcRemembered');
-      if (btnRemembered) btnRemembered.onclick = () => { if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(4); };
+      if (btnRemembered) btnRemembered.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(4);
+        else answerFlashcard(true);
+      };
 
-      const btnFlipBack = document.getElementById('btnFcFlipBack');
-      if (btnFlipBack) btnFlipBack.onclick = flipCurrentFlashcard;
+      // 4 Nút đánh giá SM-2 khi đã lật thẻ (Lại, Khó, Tốt, Dễ)
+      const btnSm2Again = document.getElementById('btnSm2Again');
+      if (btnSm2Again) btnSm2Again.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(1);
+      };
+
+      const btnSm2Hard = document.getElementById('btnSm2Hard');
+      if (btnSm2Hard) btnSm2Hard.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(3);
+      };
+
+      const btnSm2Good = document.getElementById('btnSm2Good');
+      if (btnSm2Good) btnSm2Good.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(4);
+      };
+
+      const btnSm2Easy = document.getElementById('btnSm2Easy');
+      if (btnSm2Easy) btnSm2Easy.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(5);
+      };
+
+      const btnFlipBack = document.getElementById('btnFlipBack');
+      if (btnFlipBack) btnFlipBack.onclick = (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        flipCurrentFlashcard();
+      };
 
       const btnPrev = document.getElementById('btnFcPrev');
       if (btnPrev) btnPrev.onclick = () => navigateFlashcard(-1);
@@ -39074,6 +39113,9 @@
     window.renderCurrentFlashcard = renderCurrentFlashcard;
 
     function answerFlashcard(isKnown) {
+      if (typeof answerFlashcardWithSM2 === 'function') {
+        return answerFlashcardWithSM2(isKnown ? 4 : 1);
+      }
       if (flashcardIndex >= flashcardQueue.length) return;
       const card = flashcardQueue[flashcardIndex];
 
@@ -39097,7 +39139,7 @@
       saveLearningData();
 
       flashcardIndex++;
-      renderCurrentFlashcard();
+      renderCurrentFlashcard('next');
     }
 
     function showFlashcardSummary() {
@@ -39148,11 +39190,7 @@
     const btnFcFlip = document.getElementById('btnFcFlip');
     if (btnFcFlip) btnFcFlip.addEventListener('click', flipCurrentFlashcard);
 
-    const btnFcRemembered = document.getElementById('btnFcRemembered');
-    if (btnFcRemembered) btnFcRemembered.addEventListener('click', () => answerFlashcard(true));
-
-    const btnFcForgot = document.getElementById('btnFcForgot');
-    if (btnFcForgot) btnFcForgot.addEventListener('click', () => answerFlashcard(false));
+    // (Đã loại bỏ addEventListener trùng lặp trên btnFcRemembered và btnFcForgot để triệt tiêu lỗi double-firing nhảy cóc thẻ)
 
     const btnCloseFc = document.getElementById('btnCloseFcModal');
     if (btnCloseFc) {
@@ -39194,18 +39232,7 @@
 
     // (Đã dọn dẹp listener Space/Arrow cũ để tránh double-call gây lỗi lật thẻ; hợp nhất vào listener SM-2 chuẩn)
 
-    // Touch swipe left / right for Flashcard
-    let fcTouchStartX = 0;
-    if (flippableCard) {
-      flippableCard.addEventListener('touchstart', (e) => {
-        fcTouchStartX = e.changedTouches[0].screenX;
-      }, { passive: true });
-      flippableCard.addEventListener('touchend', (e) => {
-        const diffX = e.changedTouches[0].screenX - fcTouchStartX;
-        if (diffX > 60) answerFlashcard(true);
-        else if (diffX < -60) answerFlashcard(false);
-      }, { passive: true });
-    }
+    // (Đã dọn dẹp touch swipe cũ; sử dụng hệ thống vuốt vật lý mượt mà initFlashcardCardSwipe chuẩn SM-2 bên dưới)
 
     // =========================================================================
     // // FEATURE: HỆ THỐNG TỰ KIỂM TRA BẰNG AI & TRUNG TÂM BỘ THẺ (ICON 2 TRÊN HEADER)
@@ -46791,10 +46818,15 @@ QUY TẮC:
   }
 
   /**
-   * Đánh giá thẻ với cấp độ SM-2
+   * Đánh giá thẻ với cấp độ SM-2 (Tích hợp debounce chống double-click nhảy cóc)
    */
+  let isFcAnsweringTransit = false;
   function answerFlashcardWithSM2(quality) {
+    if (isFcAnsweringTransit) return;
     if (!flashcardQueue || flashcardIndex >= flashcardQueue.length) return;
+    isFcAnsweringTransit = true;
+    setTimeout(() => { isFcAnsweringTransit = false; }, 220);
+
     const card = flashcardQueue[flashcardIndex];
 
     // Áp dụng thuật toán SM-2

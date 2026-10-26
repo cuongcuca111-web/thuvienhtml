@@ -1,61 +1,51 @@
-# SPEC.md — Gói Tối Ưu Hiệu Năng & Bộ Nhớ Cốt Lõi P0 (v5.8.72)
+# SPEC.md — Khắc Phục Lỗi Bấm Nút "Đã Nhớ" Bị Nhảy Cóc Thẻ Flashcard (v5.8.73)
 
-## 1. MỤC TIÊU & BỐI CẢNH
-Gói **P0 (Tối ưu Hiệu năng & Bộ nhớ Cốt lõi)** giải quyết 3 điểm nghẽn quan trọng nhất của dự án:
-1. **Chống tràn hạn mức 5MB LocalStorage (QuotaExceededError)**:
-   - Hiện tại: Bộ đề Flashcard & Trắc nghiệm (`thuvienhtml_study_decks`), câu sai (`thuvienhtml_wrong_items`), câu gắn sao (`thuvienhtml_starred_items`) và lịch sử câu trả lời AI (`thuvienhtml_ai_history_*`) đang lưu trực tiếp vào `localStorage`.
-   - Vấn đề: Trình duyệt áp trần 5MB cho toàn bộ domain. Khi người dùng sinh nhiều bài học và bộ đề AI, `localStorage` bị đầy sẽ dẫn đến lỗi không lưu được dữ liệu mới.
-   - Giải pháp: Nâng cấp IndexedDB `thuvienhtml_db` lên version 2, bổ sung Object Store `app_data` để lưu trữ bộ đề và lịch sử AI với dung lượng hàng Gigabytes, kèm cơ chế tự động chuyển đổi (Auto-migration) và fallback an toàn 2 chiều.
-2. **Dọn dẹp mã nguồn thư mục `scripts/`**:
-   - Hiện tại: Hơn 150 kịch bản `.py` tạm (`inspect_*.py`, `patch_*.py`, `find_*.py`...) từ các phiên debug trước đó đang nằm trong thư mục `scripts/`.
-   - Giải pháp: Dọn dẹp sạch sẽ các kịch bản dùng một lần, chỉ giữ lại các công cụ hệ thống chuẩn (`check_syntax.py`, `sync_version.py`, `analyze_health.py`, `backup_to_gdrive.py`, `create_project_zip.py`, các script admin).
-3. **Bảo toàn và Tối ưu hóa Bộ nhớ đệm (Cache/SW)**:
-   - Đồng bộ version `v5.8.72`, cập nhật changelog và xác thực 100% cú pháp script.
+## 1. NGUYÊN NHÂN GỐC RỄ (ROOT CAUSE ANALYSIS)
+Người dùng phản ánh: Khi đang ở Thẻ 1/4 (ảnh 1), bấm nút "Đã nhớ" thì thẻ bị nhảy ngay tới Thẻ 3/4 (ảnh 2), bỏ qua hoàn toàn Thẻ 2/4. Người dùng mong muốn khi bấm "Đã nhớ", ứng dụng chuyển tuần tự sang đúng thẻ tiếp theo (Thẻ 2/4).
 
----
-
-## 2. THIẾT KẾ KIẾN TRÚC & TRIỂN KHAI KỸ THUẬT
-
-### 2.1. Nâng cấp IndexedDB `thuvienhtml_db` (Version 2)
-* Tăng `IDB_VERSION = 2`.
-* Tại sự kiện `onupgradeneeded`:
-  ```javascript
-  if (!idb.objectStoreNames.contains('app_data')) {
-    idb.createObjectStore('app_data', { keyPath: 'key' });
-  }
-  ```
-* Bổ sung bộ 3 hàm thao tác bất đồng bộ:
-  - `putAppDataIDB(key, value)`: Lưu trữ đối tượng vào IndexedDB không giới hạn dung lượng.
-  - `getAppDataIDB(key)`: Đọc đối tượng từ IndexedDB.
-  - `deleteAppDataIDB(key)`: Xóa đối tượng khỏi IndexedDB.
-
-### 2.2. Cơ chế Tự động Di trú Dữ liệu (Auto-Migration)
-* Khi khởi động ứng dụng:
-  - Kiểm tra và tự động sao chép `thuvienhtml_study_decks`, `thuvienhtml_starred_items`, `thuvienhtml_wrong_items` từ `localStorage` sang `app_data` trong IndexedDB.
-  - Quét tất cả các khóa `thuvienhtml_ai_history_*` để đồng bộ sang IndexedDB.
-  - Khi lưu dữ liệu (`saveStudyDecksAndItems`, `recordLessonAiResponse`):
-    * Ghi bất đồng bộ vào IndexedDB `app_data`.
-    * Vẫn duy trì ghi `localStorage` có bọc khối `try-catch QuotaExceededError`. Nếu `localStorage` bị đầy, dữ liệu trong IndexedDB vẫn bảo toàn 100% và không làm gián đoạn trải nghiệm người dùng.
-
-### 2.3. Dọn dẹp thư mục `scripts/`
-* Giữ lại danh sách file cần thiết:
-  - `analyze_health.py`
-  - `backup_to_gdrive.py`
-  - `check_syntax.py`
-  - `create_project_zip.py`
-  - `sync_version.py`
-  - `verify.py`
-  - `create-admin.js`
-  - `seed-payment-config.js`
-  - `set-admin.js`
-* Di chuyển/xóa các file tạm khác.
+Qua kiểm tra mã nguồn `index.html`:
+1. **Lỗi Double-Firing (Gắn 2 sự kiện cùng lúc cho nút bấm)**:
+   - Tại dòng 39035-39036 (`initFlashcardControlsEvents`):
+     ```javascript
+     const btnRemembered = document.getElementById('btnFcRemembered');
+     if (btnRemembered) btnRemembered.onclick = () => { if (typeof answerFlashcardWithSM2 === 'function') answerFlashcardWithSM2(4); };
+     ```
+   - Đồng thời, tại dòng 39151-39152:
+     ```javascript
+     const btnFcRemembered = document.getElementById('btnFcRemembered');
+     if (btnFcRemembered) btnFcRemembered.addEventListener('click', () => answerFlashcard(true));
+     ```
+   - Khi người dùng click nút "Đã nhớ", trình duyệt kích hoạt CẢ HAI trình xử lý liên tiếp trong cùng 1 lần nhấn:
+     * Trình xử lý 1 (`onclick`): Chạy `answerFlashcardWithSM2(4)` -> Đánh giá Thẻ 1, tăng `flashcardIndex` từ 0 lên 1.
+     * Trình xử lý 2 (`addEventListener`): Chạy `answerFlashcard(true)` -> Đánh giá tiếp luôn Thẻ 2, tăng `flashcardIndex` từ 1 lên 2!
+     * Kết quả: Thẻ 2 bị lướt qua trong 0 mili-giây, giao diện lập tức hiển thị Thẻ 3 (`Thẻ 3 / 4`), đếm sai số lượng thẻ đã học (`cardsReviewed` bị cộng 2 lần, `fcKnownCount` bị cộng 2 lần).
+2. **Lỗi tương tự ở nút "Chưa nhớ" (`btnFcForgot`)**:
+   - Vừa có `btnForgot.onclick = () => answerFlashcardWithSM2(1)` vừa có `btnFcForgot.addEventListener('click', () => answerFlashcard(false))`, cũng bị nhảy cóc thẻ khi bấm "Chưa nhớ".
+3. **Lỗi dư thừa sự kiện vuốt cảm ứng (Swipe)**:
+   - Dòng 39198-39208 có một listener vuốt cảm ứng cũ (`touchstart`/`touchend` gọi `answerFlashcard`), trong khi dòng 46998 (`initFlashcardCardSwipe`) đã có hệ thống vuốt cảm ứng mượt mà 60fps kèm hiệu ứng xoay và SM-2.
+4. **4 nút đánh giá SM-2 ở mặt sau (Lại, Khó, Tốt, Dễ) chưa được gán sự kiện click**:
+   - `btnSm2Again`, `btnSm2Hard`, `btnSm2Good`, `btnSm2Easy` chưa được bind sự kiện trong `initFlashcardControlsEvents()`.
 
 ---
 
-## 3. TIÊU CHUẨN KIỂM THỬ (QA CHECKLIST)
-1. Cú pháp JavaScript của `index.html` và toàn bộ script phải đạt 100% PASS khi chạy `check_syntax.py`.
-2. Kiểm tra IndexedDB trên trình duyệt: Object store `app_data` được khởi tạo thành công khi tải trang.
-3. Tạo bộ đề AI, gắn sao, làm sai câu hỏi: Dữ liệu được ghi thành công vào IndexedDB.
-4. Lịch sử câu trả lời AI: Được lưu và nạp mượt mà từ IndexedDB.
-5. Thư mục `scripts/` gọn gàng, sạch sẽ.
-6. Đồng bộ phiên bản `v5.8.72`, commit và đẩy Git thành công.
+## 2. GIẢI PHÁP TRIỂN KHAI (BUILDER PLAN)
+1. **Loại bỏ hoàn toàn trình xử lý trùng lặp**:
+   - Xóa bỏ `addEventListener('click')` trùng lặp tại dòng 39151-39156 cho cả `btnFcRemembered` và `btnFcForgot`.
+   - Xóa bỏ listener vuốt cảm ứng cũ tại dòng 39198-39208 trên `flippableCard`.
+2. **Chuẩn hóa hàm `answerFlashcard`**:
+   - Chuyển `answerFlashcard(isKnown)` thành hàm chuyển tiếp (proxy) an toàn gọi tới `answerFlashcardWithSM2(isKnown ? 4 : 1)` để bất kỳ vị trí gọi nào cũng đồng bộ theo chuẩn SM-2 và lưu trữ IndexedDB.
+3. **Bổ sung cơ chế chống bấm liên hoàn (Debounce / Transit Lock)**:
+   - Đặt cờ `let isAnsweringFlashcard = false;` trong `answerFlashcardWithSM2`.
+   - Khóa trong 180ms để ngăn chặn tuyệt đối tình trạng double-click chuột phần cứng hoặc chạm đa điểm trên màn hình cảm ứng điện thoại.
+4. **Gán đầy đủ sự kiện cho 4 nút SM-2 khi lật thẻ**:
+   - Gán `onclick` cho `btnSm2Again` (1), `btnSm2Hard` (3), `btnSm2Good` (4), `btnSm2Easy` (5) trong `initFlashcardControlsEvents()`.
+5. **Cập nhật Changelog & Đồng bộ phiên bản v5.8.73**:
+   - Cập nhật `changelog.js`, chạy `sync_version.py`, kiểm thử cú pháp `check_syntax.py`, commit & push GitHub và sao lưu Google Drive.
+
+---
+
+## 3. TIÊU CHUẨN KIỂM THỬ (QA CRITERIA)
+- [ ] Bấm "Đã nhớ" ở Thẻ 1/4: Chuyển chính xác sang Thẻ 2/4 (không nhảy cóc sang Thẻ 3/4).
+- [ ] Bấm "Chưa nhớ" ở Thẻ 1/4: Chuyển chính xác sang Thẻ 2/4 và thêm thẻ vào hàng đợi ôn lại.
+- [ ] Bấm các nút SM-2 (Lại, Khó, Tốt, Dễ) ở mặt sau hoạt động chính xác từng thẻ.
+- [ ] Cú pháp Node.js đạt 100% PASS cho toàn bộ file và script inline.
